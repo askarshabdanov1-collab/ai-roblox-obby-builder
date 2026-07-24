@@ -21,8 +21,24 @@ afterEach(async () => {
 describe("orchestrator", () => {
   it("validates the configured port", () => {
     expect(parsePort(undefined)).toBe(4317);
-    expect(() => parsePort("0")).toThrow();
-    expect(() => parsePort("not-a-port")).toThrow();
+    expect(parsePort(" 4317 ")).toBe(4317);
+    expect(parsePort("65535")).toBe(65_535);
+    for (const invalid of [
+      "",
+      " ",
+      "+4317",
+      "-4317",
+      "43.17",
+      "0x10",
+      "4317junk",
+      "43 17",
+      "0",
+      "65536",
+    ]) {
+      expect(() => parsePort(invalid), invalid).toThrow(
+        "ORCHESTRATOR_PORT must be an integer from 1 to 65535",
+      );
+    }
   });
 
   it("serves health and fails closed for unknown routes", async () => {

@@ -4,8 +4,12 @@ export const SERVICE_NAME = "ai-roblox-obby-orchestrator";
 export const SERVICE_VERSION = "0.2.0";
 
 export function parsePort(value: string | undefined): number {
-  const port = Number.parseInt(value ?? "4317", 10);
-  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
+  const normalized = (value ?? "4317").trim();
+  if (!/^[0-9]+$/.test(normalized)) {
+    throw new Error("ORCHESTRATOR_PORT must be an integer from 1 to 65535");
+  }
+  const port = Number(normalized);
+  if (!Number.isSafeInteger(port) || port < 1 || port > 65_535) {
     throw new Error("ORCHESTRATOR_PORT must be an integer from 1 to 65535");
   }
   return port;

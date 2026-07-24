@@ -3,7 +3,14 @@
   "version": "0.2.0",
   "private": true,
   "type": "module",
-  "exports": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "dependencies": {
     "@obby/canonical-json": "0.2.0",
     "ajv": "8.20.0"
