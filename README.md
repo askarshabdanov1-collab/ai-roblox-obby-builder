@@ -1,51 +1,59 @@
 # AI Roblox Obby Builder
 
-Deterministic-first pipeline for generating Roblox Obbies from a structured description.
+A deterministic-first foundation for converting a validated game description into a native-Part
+Roblox Obby.
 
-## Current milestone
+## Phase 0
 
-1. `PlaceSpec` describes the intended Obby.
-2. `SceneManifest` describes the exact scene to build.
-3. A Roblox builder creates the first playable vertical slice from native Parts.
-4. AI image generation, Modly, mesh processing, visual ranking, and retention analytics are connected only after the deterministic pipeline is stable.
+Phase 0 establishes:
 
-## Planned pipeline
+- JSON Schema `0.2` PlaceSpec and SceneManifest contracts;
+- strict Ajv structural validation and separate semantic validation;
+- canonical JSON serialization and SHA-256 provenance;
+- deterministic PlaceSpec-to-SceneManifest compilation;
+- generated, drift-checked Roblox manifest transport;
+- native spawn, platforms, checkpoint, kill hazard, and finish behavior;
+- pinned TypeScript and Roblox toolchains with CI.
 
-```text
-Description
-→ PlaceSpec
-→ Game Design Agent
-→ Art Director Agent
-→ SceneManifest
-→ Roblox Builder
-→ Play Tests
-→ Screenshots
-→ Visual Evaluation
-→ Retention Feedback
-```
+Vertex AI, Modly, Blender, Roblox Open Cloud, image generation, analytics, and external ML models are
+not integrated.
 
-## Confirmed open-source 3D component
-
-- Repository: `lightningpixel/modly`
-- Role: local image-to-3D generation and GLB export
-- Integration target: Modly CLI / local API
-- Required attribution: `Based on Modly by Lightning Pixel`
-
-Modly is not bundled yet. It will run as an external audited worker.
-
-## Repository layout
+## Pipeline
 
 ```text
-docs/                    Architecture and decisions
-packages/contracts/      PlaceSpec and SceneManifest schemas
-examples/                Example validated specifications
-roblox/                  Rojo project and deterministic builder
+PlaceSpec + seed + generator version
+                  |
+                  v
+        structural validation (Ajv)
+                  |
+                  v
+          semantic validation
+                  |
+                  v
+       deterministic Obby compiler
+                  |
+                  v
+    canonical SceneManifest + hashes
+                  |
+                  v
+       generated Luau transport
+                  |
+                  v
+       native-Part Roblox runtime
 ```
 
-## Security rules
+The checked fixture lives in `examples/vertical-slice/`. Its SceneManifest and Luau transport are
+generated from its PlaceSpec and must not be edited manually.
 
-- Never commit Google Cloud, Roblox Open Cloud, or GitHub credentials.
-- Pin external repositories and model extensions to audited commit SHAs.
-- Do not execute arbitrary GitHub extensions.
-- Native Roblox Parts remain the gameplay and collision layer.
-- AI meshes are decorative until separately validated.
+## Development
+
+See `CONTRIBUTING.md` and `docs/local-development.md`. The complete local gate is:
+
+```text
+npm ci
+npm run validate
+git diff --check
+git status --short
+```
+
+All development uses branches and reviewed pull requests.

@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install pinned Roblox tools
+        uses: roblox-ts/setup-rokit@d49be92bd9502180218c3f43e7988faa945217b0 # v0.1.2
+        with:
+          version: v1.2.0
+          path: .
+          cache: false
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Validate repository
+        run: npm run validate
+
+      - name: Verify generated files are unchanged
+        run: git diff --exit-code
