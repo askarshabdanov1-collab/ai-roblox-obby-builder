@@ -40,4 +40,60 @@ describe("deterministic compiler", () => {
     ]);
     expect(manifest.layers.decorative.objects).toEqual([]);
   });
+
+  it("preserves byte-stable stage and safe-route topology without hazards", async () => {
+    const first = compilePlaceSpec(await fixture());
+    const second = compilePlaceSpec(await fixture());
+    expect(canonicalStringify(first.navigation)).toBe(
+      canonicalStringify(second.navigation),
+    );
+    expect(first.navigation.stages).toEqual([
+      {
+        id: "tower-entry",
+        order: 1,
+        safeRouteObjectIds: [
+          "JumpPlatform01",
+          "Checkpoint01",
+          "WedgeClimb01",
+          "FinishPlatform",
+        ],
+      },
+    ]);
+    expect(first.navigation.safeRouteObjectIds).not.toContain("KillFloor");
+    expect(first.navigation.routeEntries).toEqual([
+      {
+        objectId: "JumpPlatform01",
+        routeOrder: 1,
+        stageId: "tower-entry",
+        stageRouteOrder: 1,
+      },
+      {
+        objectId: "Checkpoint01",
+        routeOrder: 2,
+        stageId: "tower-entry",
+        stageRouteOrder: 2,
+      },
+      {
+        objectId: "WedgeClimb01",
+        routeOrder: 3,
+        stageId: "tower-entry",
+        stageRouteOrder: 3,
+      },
+      {
+        objectId: "FinishPlatform",
+        routeOrder: 4,
+        stageId: "tower-entry",
+        stageRouteOrder: 4,
+      },
+    ]);
+    expect(first.navigation.coarseReachability).toEqual({
+      model: "axis-aligned-surfaces-v1",
+      avatarRig: "R15-default",
+      walkSpeed: 16,
+      jumpPower: 50,
+      maxHorizontalGap: 6,
+      maxVerticalRise: 5,
+      maxDownwardDrop: 20,
+    });
+  });
 });

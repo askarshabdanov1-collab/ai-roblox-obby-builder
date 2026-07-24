@@ -1,0 +1,24 @@
+{
+  "name": "AIObbyBuilderPhase0Smoke",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "ObbyRuntime": {
+        "$path": "src/ReplicatedStorage/ObbyRuntime"
+      }
+    },
+    "ServerScriptService": {
+      "Phase0SmokeBootstrap": {
+        "$path": "smoke/Phase0SmokeBootstrap.server.luau"
+      }
+    },
+    "ServerStorage": {
+      "GeneratedManifests": {
+        "$className": "Folder",
+        "VerticalSliceManifest": {
+          "$path": "generated/VerticalSliceManifest.luau"
+        }
+      }
+    }
+  }
+}

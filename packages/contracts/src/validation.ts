@@ -9,6 +9,7 @@ import placeSpecSchema from "../schemas/place-spec.schema.json" with { type: "js
 import sceneManifestSchema from "../schemas/scene-manifest.schema.json" with { type: "json" };
 import type { PlaceSpec } from "./generated/place-spec.js";
 import type {
+  DecorativeObject,
   GameplayObject,
   SceneManifest,
 } from "./generated/scene-manifest.js";
@@ -63,12 +64,12 @@ function duplicates(
   values: readonly (number | string)[],
 ): Set<number | string> {
   const seen = new Set<number | string>();
-  const duplicateValues = new Set<number | string>();
+  const result = new Set<number | string>();
   for (const value of values) {
-    if (seen.has(value)) duplicateValues.add(value);
+    if (seen.has(value)) result.add(value);
     seen.add(value);
   }
-  return duplicateValues;
+  return result;
 }
 
 function expectContiguous(values: readonly number[], start: number): boolean {
@@ -82,7 +83,7 @@ type Positioned = {
   size: { x: number; y: number; z: number };
 };
 
-function horizontalSurfaceGap(from: Positioned, to: Positioned): number {
+function coarseHorizontalSurfaceGap(from: Positioned, to: Positioned): number {
   const xGap = Math.max(
     0,
     Math.abs(to.transform.position.x - from.transform.position.x) -
@@ -96,10 +97,52 @@ function horizontalSurfaceGap(from: Positioned, to: Positioned): number {
   return Math.hypot(xGap, zGap);
 }
 
-function verticalSurfaceRise(from: Positioned, to: Positioned): number {
-  const fromTop = from.transform.position.y + from.size.y / 2;
-  const toBottom = to.transform.position.y - to.size.y / 2;
-  return Math.max(0, toBottom - fromTop);
+function topSurface(object: Positioned): number {
+  return object.transform.position.y + object.size.y / 2;
+}
+
+function coarseVerticalRise(from: Positioned, to: Positioned): number {
+  return Math.max(0, topSurface(to) - topSurface(from));
+}
+
+function coarseDownwardDrop(from: Positioned, to: Positioned): number {
+  return Math.max(0, topSurface(from) - topSurface(to));
+}
+
+function validateObjectBudget(
+  object: Positioned,
+  path: string,
+  spec: PlaceSpec,
+  issues: ContractIssue[],
+): void {
+  if (
+    Math.max(object.size.x, object.size.y, object.size.z) >
+    spec.budgets.maxPartSize
+  ) {
+    issues.push(
+      issue(
+        "part-size-budget",
+        `${path}/size`,
+        "part exceeds budgets.maxPartSize",
+      ),
+    );
+  }
+  const extent =
+    Math.max(
+      Math.abs(object.transform.position.x),
+      Math.abs(object.transform.position.y),
+      Math.abs(object.transform.position.z),
+    ) +
+    Math.hypot(object.size.x, object.size.y, object.size.z) / 2;
+  if (extent > spec.budgets.maxWorldExtent) {
+    issues.push(
+      issue(
+        "world-extent-budget",
+        `${path}/transform`,
+        "part exceeds budgets.maxWorldExtent",
+      ),
+    );
+  }
 }
 
 export function semanticPlaceSpecIssues(spec: PlaceSpec): ContractIssue[] {
@@ -193,6 +236,7 @@ export function semanticPlaceSpecIssues(spec: PlaceSpec): ContractIssue[] {
     );
   }
 
+  validateObjectBudget(spec.spawn, "/spawn", spec, issues);
   for (const [index, obstacle] of spec.obstacles.entries()) {
     if (!stageIds.has(obstacle.stageId)) {
       issues.push(
@@ -203,34 +247,7 @@ export function semanticPlaceSpecIssues(spec: PlaceSpec): ContractIssue[] {
         ),
       );
     }
-    if (
-      Math.max(obstacle.size.x, obstacle.size.y, obstacle.size.z) >
-      spec.budgets.maxPartSize
-    ) {
-      issues.push(
-        issue(
-          "part-size-budget",
-          `/obstacles/${index}/size`,
-          "part exceeds budgets.maxPartSize",
-        ),
-      );
-    }
-    const extent =
-      Math.max(
-        Math.abs(obstacle.transform.position.x),
-        Math.abs(obstacle.transform.position.y),
-        Math.abs(obstacle.transform.position.z),
-      ) +
-      Math.hypot(obstacle.size.x, obstacle.size.y, obstacle.size.z) / 2;
-    if (extent > spec.budgets.maxWorldExtent) {
-      issues.push(
-        issue(
-          "world-extent-budget",
-          `/obstacles/${index}/transform`,
-          "part exceeds budgets.maxWorldExtent",
-        ),
-      );
-    }
+    validateObjectBudget(obstacle, `/obstacles/${index}`, spec, issues);
   }
 
   const routeIds: string[] = [];
@@ -276,17 +293,15 @@ export function semanticPlaceSpecIssues(spec: PlaceSpec): ContractIssue[] {
       ),
     );
   }
-
-  const safeObstacleIds = spec.obstacles
-    .filter((obstacle) => obstacle.role !== "kill")
-    .map((obstacle) => obstacle.id);
-  for (const obstacleId of safeObstacleIds) {
-    if (!routeIds.includes(obstacleId)) {
+  for (const obstacle of spec.obstacles.filter(
+    (candidate) => candidate.role !== "kill",
+  )) {
+    if (!routeIds.includes(obstacle.id)) {
       issues.push(
         issue(
           "unrouted-obstacle",
           "/stages",
-          `${obstacleId} is not present in the ordered route`,
+          `${obstacle.id} is not present in the ordered route`,
         ),
       );
     }
@@ -390,21 +405,37 @@ export function semanticPlaceSpecIssues(spec: PlaceSpec): ContractIssue[] {
     const from = routeWithSpawn[index - 1];
     const to = routeWithSpawn[index];
     if (from === undefined || to === undefined) continue;
-    if (horizontalSurfaceGap(from, to) > spec.movement.maxHorizontalGap) {
+    if (
+      coarseHorizontalSurfaceGap(from, to) >
+      spec.coarseReachability.maxHorizontalGap
+    ) {
       issues.push(
         issue(
-          "unreachable-gap",
+          "coarse-reachability-gap",
           "/stages",
-          `route step ${index} exceeds maxHorizontalGap`,
+          `safe-route step ${index} exceeds maxHorizontalGap`,
         ),
       );
     }
-    if (verticalSurfaceRise(from, to) > spec.movement.maxVerticalRise) {
+    if (
+      coarseVerticalRise(from, to) > spec.coarseReachability.maxVerticalRise
+    ) {
       issues.push(
         issue(
-          "unreachable-rise",
+          "coarse-reachability-rise",
           "/stages",
-          `route step ${index} exceeds maxVerticalRise`,
+          `safe-route step ${index} exceeds maxVerticalRise`,
+        ),
+      );
+    }
+    if (
+      coarseDownwardDrop(from, to) > spec.coarseReachability.maxDownwardDrop
+    ) {
+      issues.push(
+        issue(
+          "coarse-reachability-drop",
+          "/stages",
+          `safe-route step ${index} exceeds maxDownwardDrop`,
         ),
       );
     }
@@ -413,7 +444,9 @@ export function semanticPlaceSpecIssues(spec: PlaceSpec): ContractIssue[] {
   return issues;
 }
 
-function expectedClass(object: GameplayObject): GameplayObject["className"] {
+function expectedClass(
+  object: GameplayObject | DecorativeObject,
+): GameplayObject["className"] | DecorativeObject["className"] {
   if (object.role === "spawn") return "SpawnLocation";
   return object.shape === "Wedge" ? "WedgePart" : "Part";
 }
@@ -422,6 +455,152 @@ export function computeManifestHash(
   manifest: SceneManifest,
 ): `sha256:${string}` {
   return sha256({ ...manifest, manifestHash: MANIFEST_HASH_PLACEHOLDER });
+}
+
+function validateNavigation(
+  manifest: SceneManifest,
+  issues: ContractIssue[],
+): void {
+  const { navigation } = manifest;
+  const gameplayById = new Map(
+    manifest.layers.gameplay.objects.map((object) => [object.id, object]),
+  );
+  const stageById = new Map(
+    navigation.stages.map((stage) => [stage.id, stage]),
+  );
+
+  for (const duplicate of duplicates(
+    navigation.stages.map((stage) => stage.id),
+  )) {
+    issues.push(
+      issue(
+        "duplicate-navigation-stage-id",
+        "/navigation/stages",
+        `stage id ${String(duplicate)} is duplicated`,
+      ),
+    );
+  }
+  if (!navigation.stages.every((stage, index) => stage.order === index + 1)) {
+    issues.push(
+      issue(
+        "navigation-stage-order",
+        "/navigation/stages",
+        "stage array order must be contiguous and start at 1",
+      ),
+    );
+  }
+
+  const flattened = navigation.stages.flatMap(
+    (stage) => stage.safeRouteObjectIds,
+  );
+  if (
+    flattened.length !== navigation.safeRouteObjectIds.length ||
+    flattened.some(
+      (objectId, index) => objectId !== navigation.safeRouteObjectIds[index],
+    )
+  ) {
+    issues.push(
+      issue(
+        "safe-route-order",
+        "/navigation/safeRouteObjectIds",
+        "global safe route must equal the ordered concatenation of stage routes",
+      ),
+    );
+  }
+  for (const duplicate of duplicates(navigation.safeRouteObjectIds)) {
+    issues.push(
+      issue(
+        "duplicate-safe-route-object",
+        "/navigation/safeRouteObjectIds",
+        `${String(duplicate)} appears more than once`,
+      ),
+    );
+  }
+
+  const intendedSafeObjects = manifest.layers.gameplay.objects
+    .filter((object) => object.role !== "spawn" && object.role !== "kill")
+    .map((object) => object.id);
+  for (const objectId of intendedSafeObjects) {
+    if (!navigation.safeRouteObjectIds.includes(objectId)) {
+      issues.push(
+        issue(
+          "missing-safe-route-object",
+          "/navigation/safeRouteObjectIds",
+          `${objectId} is missing from the safe route`,
+        ),
+      );
+    }
+  }
+  for (const objectId of navigation.safeRouteObjectIds) {
+    const object = gameplayById.get(objectId);
+    if (object === undefined) {
+      issues.push(
+        issue(
+          "unknown-safe-route-object",
+          "/navigation/safeRouteObjectIds",
+          `${objectId} does not reference a gameplay object`,
+        ),
+      );
+    } else if (object.role === "spawn" || object.role === "kill") {
+      issues.push(
+        issue(
+          "unsafe-route-object",
+          "/navigation/safeRouteObjectIds",
+          `${objectId} cannot be part of the safe route`,
+        ),
+      );
+    }
+  }
+
+  if (navigation.routeEntries.length !== navigation.safeRouteObjectIds.length) {
+    issues.push(
+      issue(
+        "route-entry-count",
+        "/navigation/routeEntries",
+        "route entries must cover every safe-route object exactly once",
+      ),
+    );
+  }
+  const stageEntryCounts = new Map<string, number>();
+  for (const [index, entry] of navigation.routeEntries.entries()) {
+    if (
+      entry.routeOrder !== index + 1 ||
+      entry.objectId !== navigation.safeRouteObjectIds[index]
+    ) {
+      issues.push(
+        issue(
+          "route-entry-order",
+          `/navigation/routeEntries/${index}`,
+          "route entry order and object ID must match the global safe route",
+        ),
+      );
+    }
+    const stage = stageById.get(entry.stageId);
+    if (stage === undefined) {
+      issues.push(
+        issue(
+          "unknown-route-stage",
+          `/navigation/routeEntries/${index}/stageId`,
+          `${entry.stageId} is unknown`,
+        ),
+      );
+      continue;
+    }
+    const expectedStageOrder = (stageEntryCounts.get(entry.stageId) ?? 0) + 1;
+    stageEntryCounts.set(entry.stageId, expectedStageOrder);
+    if (
+      entry.stageRouteOrder !== expectedStageOrder ||
+      stage.safeRouteObjectIds[entry.stageRouteOrder - 1] !== entry.objectId
+    ) {
+      issues.push(
+        issue(
+          "stage-route-entry-order",
+          `/navigation/routeEntries/${index}`,
+          "stage route order must be contiguous and match its stage route",
+        ),
+      );
+    }
+  }
 }
 
 export function semanticSceneManifestIssues(
@@ -480,10 +659,9 @@ export function semanticSceneManifestIssues(
     );
   }
 
-  const checkpoints = gameplay.filter((object) => object.role === "checkpoint");
-  const checkpointOrders = checkpoints.map(
-    (object) => object.behavior.checkpointOrder ?? -1,
-  );
+  const checkpointOrders = gameplay
+    .filter((object) => object.role === "checkpoint")
+    .map((object) => object.behavior.checkpointOrder ?? -1);
   if (!expectContiguous(checkpointOrders, 1)) {
     issues.push(
       issue(
@@ -505,12 +683,15 @@ export function semanticSceneManifestIssues(
         ),
       );
     }
-    if (object.className !== expectedClass(object)) {
+    if (
+      object.className !== expectedClass(object) ||
+      (object.role === "spawn" && object.shape !== "Block")
+    ) {
       issues.push(
         issue(
           "class-shape",
           `${path}/className`,
-          "className does not implement role and shape",
+          "className and shape are not a supported native implementation",
         ),
       );
     }
@@ -533,41 +714,57 @@ export function semanticSceneManifestIssues(
         ),
       );
     }
-    if (
-      object.role === "checkpoint" &&
-      object.behavior.checkpointOrder === undefined
-    ) {
+    const hasCheckpointOrder = object.behavior.checkpointOrder !== undefined;
+    if ((object.role === "checkpoint") !== hasCheckpointOrder) {
       issues.push(
         issue(
           "checkpoint-behavior",
           `${path}/behavior`,
-          "checkpointOrder is required",
+          "checkpointOrder is required only for checkpoints",
+        ),
+      );
+    }
+    const hasKillMode = object.behavior.killMode !== undefined;
+    if (
+      (object.role === "kill") !== hasKillMode ||
+      (hasKillMode && object.behavior.killMode !== "set-health-zero")
+    ) {
+      issues.push(
+        issue(
+          "kill-behavior",
+          `${path}/behavior`,
+          "killMode set-health-zero is required only for kill objects",
         ),
       );
     }
     if (
-      object.role !== "checkpoint" &&
-      object.behavior.checkpointOrder !== undefined
+      (object.role === "kill" && object.colorRole !== "hazard") ||
+      (object.role !== "kill" && object.colorRole === "hazard")
     ) {
       issues.push(
         issue(
-          "checkpoint-behavior",
-          `${path}/behavior`,
-          "checkpointOrder is checkpoint-only",
+          "color-role",
+          `${path}/colorRole`,
+          "hazard color role must correspond exactly to kill objects",
         ),
-      );
-    }
-    if (object.role === "kill" && object.behavior.damage === undefined) {
-      issues.push(
-        issue("kill-behavior", `${path}/behavior`, "damage is required"),
-      );
-    }
-    if (object.role !== "kill" && object.behavior.damage !== undefined) {
-      issues.push(
-        issue("kill-behavior", `${path}/behavior`, "damage is kill-only"),
       );
     }
   }
+
+  for (const [index, object] of decorative.entries()) {
+    const path = `/layers/decorative/objects/${index}`;
+    if (object.className !== expectedClass(object)) {
+      issues.push(
+        issue(
+          "decorative-class-shape",
+          path,
+          "decoration class and shape must be natively supported",
+        ),
+      );
+    }
+  }
+
+  validateNavigation(manifest, issues);
 
   for (const [index, object] of allObjects.entries()) {
     const radius = Math.hypot(object.size.x, object.size.y, object.size.z) / 2;

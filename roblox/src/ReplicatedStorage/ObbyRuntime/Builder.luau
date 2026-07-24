@@ -2,11 +2,14 @@ local Players = game:GetService("Players")
 
 local BuildPlan = require(script.Parent.BuildPlan)
 local ManifestValidator = require(script.Parent.ManifestValidator)
+local NativePartFactory = require(script.Parent.NativePartFactory)
+local PlayerProgress = require(script.Parent.PlayerProgress)
+local SceneBuilderCore = require(script.Parent.SceneBuilderCore)
 
 local Builder = {}
-local OWNER_ATTRIBUTE = "GeneratedBy"
-local OWNER_VALUE = "AIObbyBuilder/0.2"
-local ROOT_NAME = "GeneratedObby"
+local progress = PlayerProgress.new(0.75)
+local activeSceneId = nil
+local playerConnections = {}
 
 local MATERIALS = {
     SmoothPlastic = Enum.Material.SmoothPlastic,
@@ -24,13 +27,14 @@ local SHAPES = {
 }
 
 local function colorFromHex(hex)
-    local red = tonumber(string.sub(hex, 2, 3), 16)
-    local green = tonumber(string.sub(hex, 4, 5), 16)
-    local blue = tonumber(string.sub(hex, 6, 7), 16)
-    if red == nil or green == nil or blue == nil then
+    if type(hex) ~= "string" or string.match(hex, "^#[0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F][0-9A-F]$") == nil then
         error(string.format("Invalid color %s", tostring(hex)))
     end
-    return Color3.fromRGB(red, green, blue)
+    return Color3.fromRGB(
+        tonumber(string.sub(hex, 2, 3), 16),
+        tonumber(string.sub(hex, 4, 5), 16),
+        tonumber(string.sub(hex, 6, 7), 16)
+    )
 end
 
 local function cframeFromTransform(transform)
@@ -45,17 +49,56 @@ local function humanoidFromHit(hit)
     if character == nil then
         return nil, nil
     end
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    local player = Players:GetPlayerFromCharacter(character)
-    return humanoid, player
+    return character:FindFirstChildOfClass("Humanoid"), Players:GetPlayerFromCharacter(character)
 end
 
-local function connectBehavior(part, object, checkpointSpawn, sceneId)
+local function bindPlayer(player)
+    if playerConnections[player] ~= nil then
+        return
+    end
+    playerConnections[player] = player.CharacterAdded:Connect(function(character)
+        local respawnCFrame = progress:respawnTransform(player, activeSceneId)
+        if respawnCFrame ~= nil then
+            task.defer(function()
+                if character.Parent ~= nil then
+                    character:PivotTo(respawnCFrame)
+                end
+            end)
+        end
+    end)
+end
+
+for _, player in ipairs(Players:GetPlayers()) do
+    bindPlayer(player)
+end
+Players.PlayerAdded:Connect(bindPlayer)
+Players.PlayerRemoving:Connect(function(player)
+    local connection = playerConnections[player]
+    if connection ~= nil then
+        connection:Disconnect()
+        playerConnections[player] = nil
+    end
+    progress:clear(player)
+end)
+
+local function connectBehavior(part, object, sceneId)
     if object.role == "checkpoint" then
         part.Touched:Connect(function(hit)
             local _, player = humanoidFromHit(hit)
-            if player ~= nil and checkpointSpawn ~= nil then
-                player.RespawnLocation = checkpointSpawn
+            if player == nil then
+                return
+            end
+            local respawnCFrame = cframeFromTransform(object.transform) * CFrame.new(0, object.size.y / 2 + 3, 0)
+            if
+                progress:activateCheckpoint(
+                    player,
+                    sceneId,
+                    object.id,
+                    object.behavior.checkpointOrder,
+                    respawnCFrame,
+                    os.clock()
+                )
+            then
                 player:SetAttribute("ObbyCheckpointOrder", object.behavior.checkpointOrder)
             end
         end)
@@ -63,119 +106,41 @@ local function connectBehavior(part, object, checkpointSpawn, sceneId)
         part.Touched:Connect(function(hit)
             local humanoid = humanoidFromHit(hit)
             if humanoid ~= nil then
-                humanoid:TakeDamage(object.behavior.damage)
+                PlayerProgress.kill(humanoid)
             end
         end)
     elseif object.role == "finish" then
         part.Touched:Connect(function(hit)
             local _, player = humanoidFromHit(hit)
-            if player ~= nil then
+            if player ~= nil and progress:finish(player, sceneId) then
                 player:SetAttribute("ObbyFinishedScene", sceneId)
             end
         end)
     end
 end
 
-local function createPart(object)
-    local part
-    if object.className == "SpawnLocation" then
-        part = Instance.new("SpawnLocation")
-        part.Neutral = true
-        part.Duration = 0
-    elseif object.className == "WedgePart" then
-        part = Instance.new("WedgePart")
-    elseif object.className == "Part" then
-        part = Instance.new("Part")
-        part.Shape = SHAPES[object.shape]
-    else
-        error(string.format("Unsupported className %s", object.className))
-    end
-
-    part.Name = object.id
-    part.Size = Vector3.new(object.size.x, object.size.y, object.size.z)
-    part.CFrame = cframeFromTransform(object.transform)
-    part.Color = colorFromHex(object.color)
-    part.Material = MATERIALS[object.material]
-    part.Anchored = object.physics.anchored
-    part.CanCollide = object.physics.canCollide
-    part.CanTouch = object.physics.canTouch
-    part.CanQuery = object.physics.canQuery
-    part:SetAttribute("Role", object.role)
-    return part
-end
-
-local function createCheckpointSpawn(object)
-    local spawn = Instance.new("SpawnLocation")
-    spawn.Name = string.format("%sRespawn", object.id)
-    spawn.Size = Vector3.new(math.max(4, object.size.x - 2), 1, math.max(4, object.size.z - 2))
-    spawn.CFrame = cframeFromTransform(object.transform) * CFrame.new(0, object.size.y / 2 + 3, 0)
-    spawn.Transparency = 1
-    spawn.Anchored = true
-    spawn.CanCollide = false
-    spawn.CanTouch = false
-    spawn.CanQuery = false
-    spawn.Neutral = true
-    spawn.Duration = 0
-    spawn:SetAttribute("Role", "checkpoint-spawn")
-    return spawn
-end
-
-local function ownedRoot(workspace)
-    local existing = workspace:FindFirstChild(ROOT_NAME)
-    if existing ~= nil then
-        if not existing:IsA("Folder") or existing:GetAttribute(OWNER_ATTRIBUTE) ~= OWNER_VALUE then
-            error(string.format("Refusing to replace unowned Workspace.%s", ROOT_NAME))
-        end
-        return existing
-    end
-
-    local folder = Instance.new("Folder")
-    folder.Name = ROOT_NAME
-    folder:SetAttribute(OWNER_ATTRIBUTE, OWNER_VALUE)
-    folder.Parent = workspace
-    return folder
-end
+local partRuntime = {
+    newInstance = Instance.new,
+    vector3 = Vector3.new,
+    cframe = cframeFromTransform,
+    color = colorFromHex,
+    materials = MATERIALS,
+    shapes = SHAPES,
+}
 
 function Builder.build(manifest, workspace)
-    local valid, validationError = ManifestValidator.validate(manifest)
-    if not valid then
-        error(string.format("SceneManifest rejected: %s", validationError), 2)
-    end
-    local plan = BuildPlan.create(manifest)
-    local staging = Instance.new("Folder")
-    staging.Name = string.format("%sStaging", ROOT_NAME)
-
-    local ok, buildError = pcall(function()
-        for _, instruction in ipairs(plan.instructions) do
-            local object = instruction.object
-            local part = createPart(object)
-            part:SetAttribute("SceneId", plan.sceneId)
-            part:SetAttribute("ManifestHash", plan.manifestHash)
-
-            local checkpointSpawn = nil
-            if instruction.createsCheckpointSpawn then
-                checkpointSpawn = createCheckpointSpawn(object)
-                checkpointSpawn.Parent = staging
-            end
-            connectBehavior(part, object, checkpointSpawn, plan.sceneId)
-            part.Parent = staging
-        end
-    end)
-    if not ok then
-        staging:Destroy()
-        error(string.format("Failed to stage generated Obby: %s", tostring(buildError)))
-    end
-
-    local root = ownedRoot(workspace)
-    for _, child in ipairs(root:GetChildren()) do
-        child:Destroy()
-    end
-    for _, child in ipairs(staging:GetChildren()) do
-        child.Parent = root
-    end
-    staging:Destroy()
-    root:SetAttribute("SceneId", plan.sceneId)
-    root:SetAttribute("ManifestHash", plan.manifestHash)
+    local root = SceneBuilderCore.build(manifest, workspace, {
+        validate = ManifestValidator.validate,
+        createPlan = BuildPlan.create,
+        newFolder = function()
+            return Instance.new("Folder")
+        end,
+        createPart = function(object)
+            return NativePartFactory.create(object, partRuntime)
+        end,
+        connectBehavior = connectBehavior,
+    })
+    activeSceneId = manifest.sceneId
     return root
 end
 

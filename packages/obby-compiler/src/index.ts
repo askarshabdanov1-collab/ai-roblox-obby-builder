@@ -53,7 +53,7 @@ function behaviorFor(
       };
     }
     case "kill":
-      return { kind: "kill", damage: 100 };
+      return { kind: "kill", killMode: "set-health-zero" };
     case "finish":
       return { kind: "finish" };
     case "platform":
@@ -112,6 +112,7 @@ export function compilePlaceSpec(input: unknown): SceneManifest {
     transform: spec.spawn.transform,
     size: spec.spawn.size,
     color: spec.visualBrief.primaryColors[0],
+    colorRole: "primary",
     material: "SmoothPlastic",
     physics: {
       anchored: true,
@@ -133,6 +134,7 @@ export function compilePlaceSpec(input: unknown): SceneManifest {
       transform: obstacle.transform,
       size: obstacle.size,
       color: colorFor(spec, obstacle.colorSlot),
+      colorRole: obstacle.colorSlot,
       material: obstacle.material,
       physics: {
         anchored: true,
@@ -147,6 +149,20 @@ export function compilePlaceSpec(input: unknown): SceneManifest {
     spawn,
     ...obstacles,
   ] as SceneManifest["layers"]["gameplay"]["objects"];
+  const orderedStages = [...spec.stages].sort(
+    (left, right) => left.order - right.order,
+  );
+  const safeRouteObjectIds = orderedStages.flatMap(
+    (stage) => stage.routeObstacleIds,
+  ) as SceneManifest["navigation"]["safeRouteObjectIds"];
+  const routeEntries = orderedStages.flatMap((stage) =>
+    stage.routeObstacleIds.map((objectId, stageIndex) => ({
+      objectId,
+      routeOrder: safeRouteObjectIds.indexOf(objectId) + 1,
+      stageId: stage.id,
+      stageRouteOrder: stageIndex + 1,
+    })),
+  ) as SceneManifest["navigation"]["routeEntries"];
   const provisional: SceneManifest = {
     schemaVersion: "0.2",
     generatorVersion: GENERATOR_VERSION,
@@ -164,6 +180,16 @@ export function compilePlaceSpec(input: unknown): SceneManifest {
       rotationOrder: "XYZ",
     },
     worldBounds: boundsFor(gameplayObjects),
+    navigation: {
+      coarseReachability: spec.coarseReachability,
+      stages: orderedStages.map((stage) => ({
+        id: stage.id,
+        order: stage.order,
+        safeRouteObjectIds: stage.routeObstacleIds,
+      })) as SceneManifest["navigation"]["stages"],
+      safeRouteObjectIds,
+      routeEntries,
+    },
     layers: {
       gameplay: { objects: gameplayObjects },
       decorative: { objects: [] },

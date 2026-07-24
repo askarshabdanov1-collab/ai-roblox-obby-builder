@@ -18,11 +18,14 @@ export interface PlaceSpec {
     createdBy: "human" | "codex";
     containsSecrets: false;
   };
-  movement: {
+  coarseReachability: {
+    model: "axis-aligned-surfaces-v1";
+    avatarRig: "R15-default";
     walkSpeed: number;
     jumpPower: number;
     maxHorizontalGap: number;
     maxVerticalRise: number;
+    maxDownwardDrop: number;
   };
   spawn: {
     transform: Transform;

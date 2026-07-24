@@ -26,6 +26,24 @@ export interface SceneManifest {
     minimum: Vector3;
     maximum: Vector3;
   };
+  navigation: {
+    coarseReachability: CoarseReachability;
+    /**
+     * @minItems 1
+     * @maxItems 20
+     */
+    stages: [NavigationStage, ...NavigationStage[]];
+    /**
+     * @minItems 1
+     * @maxItems 500
+     */
+    safeRouteObjectIds: [PascalId, ...PascalId[]];
+    /**
+     * @minItems 1
+     * @maxItems 500
+     */
+    routeEntries: [RouteEntry, ...RouteEntry[]];
+  };
   layers: {
     gameplay: {
       /**
@@ -47,6 +65,30 @@ export interface Vector3 {
   y: BoundedNumber;
   z: BoundedNumber;
 }
+export interface CoarseReachability {
+  model: "axis-aligned-surfaces-v1";
+  avatarRig: "R15-default";
+  walkSpeed: number;
+  jumpPower: number;
+  maxHorizontalGap: number;
+  maxVerticalRise: number;
+  maxDownwardDrop: number;
+}
+export interface NavigationStage {
+  id: KebabId;
+  order: number;
+  /**
+   * @minItems 1
+   * @maxItems 500
+   */
+  safeRouteObjectIds: [PascalId, ...PascalId[]];
+}
+export interface RouteEntry {
+  objectId: PascalId;
+  routeOrder: number;
+  stageId: KebabId;
+  stageRouteOrder: number;
+}
 export interface GameplayObject {
   id: PascalId;
   order: number;
@@ -56,6 +98,7 @@ export interface GameplayObject {
   transform: Transform;
   size: PositiveSize;
   color: HexColor;
+  colorRole: "primary" | "secondary" | "reward" | "hazard";
   material: "SmoothPlastic" | "Plastic" | "Metal" | "Neon" | "Concrete" | "Wood";
   physics: Physics;
   behavior: GameplayBehavior;
@@ -83,7 +126,7 @@ export interface Physics {
 export interface GameplayBehavior {
   kind: "spawn" | "platform" | "checkpoint" | "kill" | "finish";
   checkpointOrder?: number;
-  damage?: number;
+  killMode?: "set-health-zero";
 }
 export interface DecorativeObject {
   id: PascalId;

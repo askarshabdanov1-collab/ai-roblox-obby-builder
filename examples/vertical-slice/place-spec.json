@@ -10,11 +10,14 @@
     "createdBy": "codex",
     "containsSecrets": false
   },
-  "movement": {
+  "coarseReachability": {
+    "model": "axis-aligned-surfaces-v1",
+    "avatarRig": "R15-default",
     "walkSpeed": 16,
     "jumpPower": 50,
     "maxHorizontalGap": 6,
-    "maxVerticalRise": 4
+    "maxVerticalRise": 5,
+    "maxDownwardDrop": 20
   },
   "spawn": {
     "transform": {
