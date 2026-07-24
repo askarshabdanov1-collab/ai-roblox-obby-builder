@@ -1,12 +1,52 @@
 {
   "name": "ai-roblox-obby-builder",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
+  "description": "Deterministic-first tooling for generating native-Part Roblox Obbies.",
   "type": "module",
-  "scripts": {
-    "test": "npm run validate:examples",
-    "validate:examples": "node packages/contracts/src/validate-examples.mjs",
-    "dev:orchestrator": "node apps/orchestrator/src/index.mjs"
+  "packageManager": "npm@10.8.2",
+  "engines": {
+    "node": ">=20.20.0 <21",
+    "npm": ">=10.8.0 <11"
   },
-  "engines": {"node": ">=20"}
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "contracts:check": "tsx tools/check-contracts.ts",
+    "contracts:generate": "tsx tools/generate-contract-types.ts",
+    "dev:orchestrator": "tsx apps/orchestrator/src/index.ts",
+    "fixtures:check": "tsx tools/check-generated.ts",
+    "fixtures:generate": "tsx tools/generate-fixtures.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings=0",
+    "roblox:build": "tsx tools/prepare-build.ts && rojo build roblox/default.project.json --output build/AIObbyBuilder.rbxlx && rojo sourcemap roblox/default.project.json --output build/roblox-sourcemap.json",
+    "roblox:format": "stylua roblox/src roblox/tests roblox/generated",
+    "roblox:format:check": "stylua --check roblox/src roblox/tests roblox/generated",
+    "roblox:lint": "selene roblox/src roblox/tests roblox/generated",
+    "roblox:test": "lune run roblox/tests/run.luau",
+    "security:dependencies": "npm audit --audit-level=high",
+    "security:secrets": "secretlint \"**/*\"",
+    "test": "vitest run",
+    "toolchain:install": "rokit install",
+    "typecheck": "tsc --noEmit",
+    "validate": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run contracts:check && npm run fixtures:check && npm run test && npm run security:secrets && npm run security:dependencies && npm run roblox:format:check && npm run roblox:lint && npm run roblox:test && npm run roblox:build"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@secretlint/secretlint-rule-preset-recommend": "11.7.1",
+    "@types/node": "20.19.43",
+    "ajv": "8.20.0",
+    "eslint": "10.8.0",
+    "json-schema-to-typescript": "15.0.4",
+    "prettier": "3.9.6",
+    "secretlint": "11.7.1",
+    "tsx": "4.23.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.65.0",
+    "vitest": "4.1.10"
+  }
 }

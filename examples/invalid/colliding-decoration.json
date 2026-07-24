@@ -1,0 +1,31 @@
+{
+  "contract": "SceneManifest",
+  "mutation": {
+    "operation": "set",
+    "path": "/layers/decorative/objects",
+    "value": [
+      {
+        "id": "UnsafeDecoration",
+        "order": 0,
+        "role": "decoration",
+        "className": "Part",
+        "shape": "Block",
+        "transform": {
+          "position": { "x": 0, "y": 20, "z": 0 },
+          "rotation": { "x": 0, "y": 0, "z": 0 }
+        },
+        "size": { "x": 2, "y": 2, "z": 2 },
+        "color": "#FFFFFF",
+        "material": "SmoothPlastic",
+        "physics": {
+          "anchored": true,
+          "canCollide": true,
+          "canTouch": false,
+          "canQuery": true
+        },
+        "behavior": { "kind": "decoration" }
+      }
+    ]
+  },
+  "expectedIssue": "const"
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@obby/obby-compiler",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.ts",
+  "dependencies": {
+    "@obby/canonical-json": "0.2.0",
+    "@obby/contracts": "0.2.0"
+  }
+}

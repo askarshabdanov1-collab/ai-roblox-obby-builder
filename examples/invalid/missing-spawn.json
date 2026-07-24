@@ -1,0 +1,8 @@
+{
+  "contract": "PlaceSpec",
+  "mutation": {
+    "operation": "delete",
+    "path": "/spawn"
+  },
+  "expectedIssue": "required"
+}

@@ -1,0 +1,8 @@
+build/
+coverage/
+dist/
+node_modules/
+examples/vertical-slice/scene-manifest.json
+packages/contracts/src/generated/
+roblox/generated/
+roblox.yml

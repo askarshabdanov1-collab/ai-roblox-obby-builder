@@ -1,0 +1,9 @@
+{
+  "contract": "PlaceSpec",
+  "mutation": {
+    "operation": "set",
+    "path": "/obstacles/0/material",
+    "value": "Unobtainium"
+  },
+  "expectedIssue": "enum"
+}

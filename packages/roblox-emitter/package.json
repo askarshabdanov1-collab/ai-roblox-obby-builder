@@ -1,0 +1,10 @@
+{
+  "name": "@obby/roblox-emitter",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.ts",
+  "dependencies": {
+    "@obby/contracts": "0.2.0"
+  }
+}

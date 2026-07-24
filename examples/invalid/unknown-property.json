@@ -1,0 +1,9 @@
+{
+  "contract": "PlaceSpec",
+  "mutation": {
+    "operation": "set",
+    "path": "/unexpected",
+    "value": true
+  },
+  "expectedIssue": "additionalProperties"
+}

@@ -1,0 +1,9 @@
+{
+  "contract": "PlaceSpec",
+  "mutation": {
+    "operation": "set",
+    "path": "/obstacles/3/role",
+    "value": "finish"
+  },
+  "expectedIssue": "finish-count"
+}

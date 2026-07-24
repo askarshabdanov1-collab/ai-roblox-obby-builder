@@ -2,8 +2,23 @@
   "name": "AIObbyBuilder",
   "tree": {
     "$className": "DataModel",
-    "Workspace": {"GeneratedObby": {"$className": "Folder"}},
-    "ReplicatedStorage": {"ObbyBuilder": {"$path": "src/ReplicatedStorage/ObbyBuilder"}},
-    "ServerScriptService": {"ObbyBuilderServer": {"$path": "src/ServerScriptService/ObbyBuilder.server.lua"}}
+    "ReplicatedStorage": {
+      "ObbyRuntime": {
+        "$path": "src/ReplicatedStorage/ObbyRuntime"
+      }
+    },
+    "ServerScriptService": {
+      "ObbyBootstrap": {
+        "$path": "src/ServerScriptService/ObbyBootstrap.server.luau"
+      }
+    },
+    "ServerStorage": {
+      "GeneratedManifests": {
+        "$className": "Folder",
+        "VerticalSliceManifest": {
+          "$path": "generated/VerticalSliceManifest.luau"
+        }
+      }
+    }
   }
 }

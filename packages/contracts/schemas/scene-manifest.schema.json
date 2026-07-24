@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-roblox-obby-builder.local/schemas/0.2/scene-manifest.schema.json",
+  "title": "SceneManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "generatorVersion",
+    "sceneId",
+    "sourceSpecId",
+    "sourceSpecHash",
+    "seed",
+    "manifestHash",
+    "coordinateSystem",
+    "worldBounds",
+    "layers"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "0.2" },
+    "generatorVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "sceneId": { "$ref": "#/$defs/kebabId" },
+    "sourceSpecId": { "$ref": "#/$defs/kebabId" },
+    "sourceSpecHash": { "$ref": "#/$defs/sha256" },
+    "seed": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+    "manifestHash": { "$ref": "#/$defs/sha256" },
+    "coordinateSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "units",
+        "handedness",
+        "upAxis",
+        "forwardAxis",
+        "rotationUnit",
+        "rotationOrder"
+      ],
+      "properties": {
+        "units": { "const": "studs" },
+        "handedness": { "const": "right-handed" },
+        "upAxis": { "const": "+Y" },
+        "forwardAxis": { "const": "-Z" },
+        "rotationUnit": { "const": "degrees" },
+        "rotationOrder": { "const": "XYZ" }
+      }
+    },
+    "worldBounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum", "maximum"],
+      "properties": {
+        "minimum": { "$ref": "#/$defs/vector3" },
+        "maximum": { "$ref": "#/$defs/vector3" }
+      }
+    },
+    "layers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gameplay", "decorative"],
+      "properties": {
+        "gameplay": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["objects"],
+          "properties": {
+            "objects": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 501,
+              "items": { "$ref": "#/$defs/gameplayObject" }
+            }
+          }
+        },
+        "decorative": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["objects"],
+          "properties": {
+            "objects": {
+              "type": "array",
+              "maxItems": 1000,
+              "items": { "$ref": "#/$defs/decorativeObject" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "hexColor": { "type": "string", "pattern": "^#[0-9A-F]{6}$" },
+    "kebabId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 80
+    },
+    "pascalId": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*$",
+      "maxLength": 80
+    },
+    "boundedNumber": { "type": "number", "minimum": -2048, "maximum": 2048 },
+    "vector3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "$ref": "#/$defs/boundedNumber" },
+        "y": { "$ref": "#/$defs/boundedNumber" },
+        "z": { "$ref": "#/$defs/boundedNumber" }
+      }
+    },
+    "rotation3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number", "minimum": -360, "maximum": 360 },
+        "y": { "type": "number", "minimum": -360, "maximum": 360 },
+        "z": { "type": "number", "minimum": -360, "maximum": 360 }
+      }
+    },
+    "positiveSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number", "exclusiveMinimum": 0, "maximum": 256 },
+        "y": { "type": "number", "exclusiveMinimum": 0, "maximum": 256 },
+        "z": { "type": "number", "exclusiveMinimum": 0, "maximum": 256 }
+      }
+    },
+    "transform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["position", "rotation"],
+      "properties": {
+        "position": { "$ref": "#/$defs/vector3" },
+        "rotation": { "$ref": "#/$defs/rotation3" }
+      }
+    },
+    "physics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["anchored", "canCollide", "canTouch", "canQuery"],
+      "properties": {
+        "anchored": { "const": true },
+        "canCollide": { "type": "boolean" },
+        "canTouch": { "type": "boolean" },
+        "canQuery": { "type": "boolean" }
+      }
+    },
+    "gameplayBehavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "enum": ["spawn", "platform", "checkpoint", "kill", "finish"]
+        },
+        "checkpointOrder": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "damage": { "type": "number", "exclusiveMinimum": 0, "maximum": 1000 }
+      }
+    },
+    "gameplayObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "order",
+        "role",
+        "className",
+        "shape",
+        "transform",
+        "size",
+        "color",
+        "material",
+        "physics",
+        "behavior"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/pascalId" },
+        "order": { "type": "integer", "minimum": 0, "maximum": 500 },
+        "role": {
+          "enum": ["spawn", "platform", "checkpoint", "kill", "finish"]
+        },
+        "className": { "enum": ["Part", "SpawnLocation", "WedgePart"] },
+        "shape": { "enum": ["Block", "Ball", "Cylinder", "Wedge"] },
+        "transform": { "$ref": "#/$defs/transform" },
+        "size": { "$ref": "#/$defs/positiveSize" },
+        "color": { "$ref": "#/$defs/hexColor" },
+        "material": {
+          "enum": [
+            "SmoothPlastic",
+            "Plastic",
+            "Metal",
+            "Neon",
+            "Concrete",
+            "Wood"
+          ]
+        },
+        "physics": { "$ref": "#/$defs/physics" },
+        "behavior": { "$ref": "#/$defs/gameplayBehavior" }
+      }
+    },
+    "decorativeObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "order",
+        "role",
+        "className",
+        "shape",
+        "transform",
+        "size",
+        "color",
+        "material",
+        "physics",
+        "behavior"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/pascalId" },
+        "order": { "type": "integer", "minimum": 0, "maximum": 999 },
+        "role": { "const": "decoration" },
+        "className": { "enum": ["Part", "WedgePart"] },
+        "shape": { "enum": ["Block", "Ball", "Cylinder", "Wedge"] },
+        "transform": { "$ref": "#/$defs/transform" },
+        "size": { "$ref": "#/$defs/positiveSize" },
+        "color": { "$ref": "#/$defs/hexColor" },
+        "material": {
+          "enum": [
+            "SmoothPlastic",
+            "Plastic",
+            "Metal",
+            "Neon",
+            "Concrete",
+            "Wood"
+          ]
+        },
+        "physics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["anchored", "canCollide", "canTouch", "canQuery"],
+          "properties": {
+            "anchored": { "const": true },
+            "canCollide": { "const": false },
+            "canTouch": { "const": false },
+            "canQuery": { "type": "boolean" }
+          }
+        },
+        "behavior": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {
+            "kind": { "const": "decoration" }
+          }
+        }
+      }
+    }
+  }
+}

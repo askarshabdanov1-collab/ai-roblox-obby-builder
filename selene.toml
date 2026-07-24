@@ -1,0 +1,8 @@
+std = "roblox"
+roblox-std-source = "pinned"
+
+[lints]
+global_usage = "deny"
+multiple_statements = "deny"
+shadowing = "deny"
+unscoped_variables = "deny"

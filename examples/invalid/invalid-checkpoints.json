@@ -1,0 +1,9 @@
+{
+  "contract": "PlaceSpec",
+  "mutation": {
+    "operation": "set",
+    "path": "/checkpointPlan/checkpointObstacleIds/0",
+    "value": "MissingCheckpoint"
+  },
+  "expectedIssue": "checkpoint-plan"
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@obby/contracts",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.ts",
+  "dependencies": {
+    "@obby/canonical-json": "0.2.0",
+    "ajv": "8.20.0"
+  }
+}
