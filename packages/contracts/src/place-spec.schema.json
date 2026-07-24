@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-roblox-obby-builder.local/schemas/place-spec.schema.json",
+  "title": "PlaceSpec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "name", "genre", "floors", "visualStyle", "retention"],
+  "properties": {
+    "version": {"const": "0.1"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 80},
+    "genre": {"const": "obby"},
+    "floors": {"type": "integer", "minimum": 1, "maximum": 100},
+    "visualStyle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["summary", "primaryColors", "rewardColor", "shapeLanguage", "materials"],
+      "properties": {
+        "summary": {"type": "string", "minLength": 1},
+        "primaryColors": {"type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": true, "items": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"}},
+        "rewardColor": {"type": "string", "pattern": "^#[0-9A-Fa-f]{6}$"},
+        "shapeLanguage": {"type": "string", "minLength": 1},
+        "materials": {"type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": true, "items": {"type": "string"}}
+      }
+    },
+    "retention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["targetSessionMinutes", "firstRewardSeconds", "checkpointIntervalSeconds"],
+      "properties": {
+        "targetSessionMinutes": {"type": "integer", "minimum": 3, "maximum": 120},
+        "firstRewardSeconds": {"type": "integer", "minimum": 5, "maximum": 120},
+        "checkpointIntervalSeconds": {"type": "integer", "minimum": 10, "maximum": 180}
+      }
+    }
+  }
+}
