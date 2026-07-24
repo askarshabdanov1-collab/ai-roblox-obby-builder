@@ -1,0 +1,18 @@
+{
+  "version": "0.1",
+  "name": "Brainrot Tower Vertical Slice",
+  "genre": "obby",
+  "floors": 3,
+  "visualStyle": {
+    "summary": "Colorful low-poly Roblox simulator with strong route readability",
+    "primaryColors": ["#22D3EE", "#D946EF", "#1F2937"],
+    "rewardColor": "#FACC15",
+    "shapeLanguage": "Large rounded forms with clear silhouettes",
+    "materials": ["SmoothPlastic", "Metal", "Neon"]
+  },
+  "retention": {
+    "targetSessionMinutes": 12,
+    "firstRewardSeconds": 20,
+    "checkpointIntervalSeconds": 35
+  }
+}
