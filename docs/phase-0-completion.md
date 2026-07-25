@@ -1,8 +1,11 @@
 # Phase 0 completion record
 
-**Status:** Complete  
-**Completion date:** 2026-07-25  
-**Pull request:** #1, `chore/phase-0-foundation`  
+**Status:** Complete
+
+**Completion date:** 2026-07-25
+
+**Pull request:** #1, `chore/phase-0-foundation`
+
 **Final implementation commit:** `5c2de0b` (`fix: face players toward the safe route`)
 
 ## Final scope
