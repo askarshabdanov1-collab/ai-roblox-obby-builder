@@ -19,7 +19,7 @@ import {
   evaluationRequest,
   metricDefinition,
   scoringProfile,
-  ZERO_HASH,
+  TEST_IDENTITIES,
 } from "./fixtures.js";
 
 function errorPayload(run: () => unknown): string {
@@ -59,7 +59,10 @@ function graph(
       metricVersion: item.metricVersion,
       metricDefinitionHash: item.metricDefinitionHash,
     }));
-  const metricCatalog = catalog();
+  const metricCatalog = catalog(
+    (definitions[0]?.metricDefinitionHash ??
+      TEST_IDENTITIES.calculationConfigurationHash) as string,
+  );
   metricCatalog.metricDefinitions = references;
   metricCatalog.metricCatalogHash = hashMetricCatalog(metricCatalog).hash;
   const metricIds =
@@ -112,20 +115,20 @@ function evidence(
     schemaVersion: "0.1",
     evidenceId,
     kind: "geometry-fact",
-    manifestHash: ZERO_HASH,
+    manifestHash: TEST_IDENTITIES.manifestHash,
     subject: { kind: "scene" },
     producer: { component: "geometry-evaluator", version: "0.1.0" },
     payload: {
       kind: "geometry-fact",
       objectIds: ["platform-a"],
       factKind: "normalized-object",
-      geometryHash: ZERO_HASH,
+      geometryHash: TEST_IDENTITIES.geometryHash,
     },
     parentEvidenceHashes,
     artifactHashes: [],
     quality: { completeness: "complete", validityCodes: [] },
     limitations,
-    evidenceContentHash: ZERO_HASH,
+    evidenceContentHash: TEST_IDENTITIES.geometryHash,
   };
   value.evidenceContentHash = hashEvidenceContent(value).hash;
   return value;
@@ -137,7 +140,7 @@ function availability(effectiveAt: string) {
     subject: {
       kind: "evidence",
       stableId: "geometry:scene",
-      contentHash: ZERO_HASH,
+      contentHash: TEST_IDENTITIES.availabilitySubjectHash,
     },
     availabilityState: "available",
     reasonCode: "created",
@@ -148,13 +151,85 @@ function availability(effectiveAt: string) {
     policy: { component: "availability", version: "1.0.0" },
     impactScope: {
       scopeKind: "subject-only",
-      affectedIdentityHashes: [ZERO_HASH],
+      affectedIdentityHashes: [TEST_IDENTITIES.availabilitySubjectHash],
     },
-    availabilityRecordHash: ZERO_HASH,
+    availabilityRecordHash: TEST_IDENTITIES.ruleBuildHash,
   };
 }
 
 describe("focused remediation regressions", () => {
+  it("orders metric-definition identity failures before verification", () => {
+    const a = definition("metric.a");
+    const b = definition("metric.b");
+    a.metricDefinitionHash = `sha256:${"a".repeat(64)}`;
+    b.metricDefinitionHash = `sha256:${"b".repeat(64)}`;
+    const forward = errorPayload(() =>
+      assertValidEvaluatorConfigurationGraph(graph([b, a])),
+    );
+    const reversed = errorPayload(() =>
+      assertValidEvaluatorConfigurationGraph(graph([a, b])),
+    );
+    expect(forward).toBe(reversed);
+    const issues = JSON.parse(forward) as {
+      code: string;
+      path: string;
+      message: string;
+    }[];
+    expect(issues).toHaveLength(2);
+    expect(issues[0]).toMatchObject({
+      code: "metric-definition-identity-mismatch",
+      path: "/metricDefinitions/0.1:metric.a@1.0.0",
+    });
+    expect(issues[0]?.message).toMatch(
+      /^0\.1:metric\.a@1\.0\.0: metricDefinitionHash expected sha256:/,
+    );
+    expect(forward).toContain("metric.b@1.0.0");
+    expect(forward.indexOf("metric.a@1.0.0")).toBeLessThan(
+      forward.indexOf("metric.b@1.0.0"),
+    );
+  });
+
+  it("orders evidence identity failures before verification", () => {
+    const a = evidence("evidence-a");
+    const b = evidence("evidence-b");
+    a.evidenceContentHash = `sha256:${"a".repeat(64)}`;
+    b.evidenceContentHash = `sha256:${"b".repeat(64)}`;
+    const forward = errorPayload(() => assertValidEvidenceGraph([b, a]));
+    const reversed = errorPayload(() => assertValidEvidenceGraph([a, b]));
+    expect(forward).toBe(reversed);
+    const issues = JSON.parse(forward) as {
+      code: string;
+      path: string;
+      message: string;
+    }[];
+    expect(issues).toHaveLength(2);
+    expect(issues[0]?.code).toBe("evidence-content-identity-mismatch");
+    expect(issues[0]?.path).toContain("evidence-a");
+    expect(issues[0]?.message).toMatch(
+      /^0\.1:evidence-a:geometry-fact:sha256:/,
+    );
+    expect(forward).toContain("evidence-b");
+    expect(forward.indexOf("evidence-a")).toBeLessThan(
+      forward.indexOf("evidence-b"),
+    );
+  });
+
+  it("rejects a plan that excludes a required invariant metric", () => {
+    const candidate = graph([definition("metric.a")]);
+    candidate.plan.metricInclude = [];
+    candidate.plan.metricExclude = ["metric.a"];
+    candidate.plan.configurationHash = hashEvaluationPlanConfiguration(
+      candidate.plan,
+    ).hash;
+    candidate.request.configurationHash = candidate.plan.configurationHash;
+    candidate.request.evaluationRequestHash = hashEvaluationRequest(
+      candidate.request,
+    ).hash;
+    expect(() => assertValidEvaluatorConfigurationGraph(candidate)).toThrow(
+      /required invariant metric/i,
+    );
+  });
+
   it("selects the same catalog error for reversed equivalent references", () => {
     const definitions = [definition("metric.a"), definition("metric.b")];
     const references = [

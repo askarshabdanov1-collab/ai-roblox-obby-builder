@@ -1,4 +1,9 @@
-import { evaluatorCanonicalStringify } from "@obby/canonical-json";
+import {
+  canonicalizeEvaluatorSnapshot,
+  evaluatorCanonicalStringify,
+  snapshotEvaluatorInput,
+  type JsonValue,
+} from "@obby/canonical-json";
 
 import type {
   EvaluationPlan,
@@ -15,6 +20,7 @@ import {
   verifyMetricCatalogIdentity,
   verifyMetricDefinitionIdentity,
   verifyScoringProfileIdentity,
+  ContentHashMismatchError,
 } from "./hashing.js";
 import { ContractValidationError } from "./validation.js";
 import { assertAcyclicResolvedEvidenceGraph } from "./internal/evidence-cycle.js";
@@ -85,100 +91,12 @@ export function versionSatisfiesSupportedRange(
   });
 }
 
-export type RequestPlanIdentityContext = {
-  metricDefinitions: readonly unknown[];
-  catalog: unknown;
-  profile: unknown;
-};
-
-function verifyRequestPlanIdentityContext(
-  identities: RequestPlanIdentityContext | undefined,
-): { catalog: MetricCatalog; profile: ScoringProfile } {
-  if (
-    identities === undefined ||
-    !Array.isArray(identities.metricDefinitions) ||
-    identities.catalog === undefined ||
-    identities.profile === undefined
-  ) {
-    reject(
-      "EvaluationRequestPlanBinding",
-      "missing-identity-context",
-      "/identities",
-      "request-plan binding requires metric definitions, catalog, and profile objects",
-    );
-  }
-  const definitions = identities.metricDefinitions.map(
-    verifyMetricDefinitionIdentity,
-  );
-  const byIdentity = new Map(
-    definitions.map((definition) => [
-      `${definition.metricId}@${definition.metricVersion}`,
-      definition.metricDefinitionHash,
-    ]),
-  );
-  const catalog = verifyMetricCatalogIdentity(identities.catalog);
-  if (
-    byIdentity.size !== definitions.length ||
-    catalog.metricDefinitions.length !== definitions.length
-  ) {
-    reject(
-      "EvaluationRequestPlanBinding",
-      "catalog-definition-set-mismatch",
-      "/identities/metricDefinitions",
-      "catalog entries must resolve one-to-one to verified metric definitions",
-    );
-  }
-  for (const reference of catalog.metricDefinitions.toSorted((left, right) =>
-    `${left.metricId}@${left.metricVersion}`.localeCompare(
-      `${right.metricId}@${right.metricVersion}`,
-    ),
-  )) {
-    const identity = `${reference.metricId}@${reference.metricVersion}`;
-    if (byIdentity.get(identity) !== reference.metricDefinitionHash) {
-      reject(
-        "EvaluationRequestPlanBinding",
-        "unknown-catalog-definition",
-        "/identities/catalog/metricDefinitions",
-        `catalog definition ${identity} is not backed by a verified definition`,
-      );
-    }
-  }
-  const profile = verifyScoringProfileIdentity(identities.profile);
-  if (profile.metricCatalogHash !== catalog.metricCatalogHash) {
-    reject(
-      "EvaluationRequestPlanBinding",
-      "profile-catalog-mismatch",
-      "/identities/profile/metricCatalogHash",
-      "profile is not backed by the verified catalog",
-    );
-  }
-  const metricIds = new Set(
-    definitions.map((definition) => definition.metricId),
-  );
-  for (const metricId of [
-    ...profile.requiredMetricIds,
-    ...profile.optionalMetricIds,
-  ].toSorted()) {
-    if (!metricIds.has(metricId)) {
-      reject(
-        "EvaluationRequestPlanBinding",
-        "unknown-profile-metric",
-        "/identities/profile",
-        `profile metric ${metricId} is not backed by the verified catalog graph`,
-      );
-    }
-  }
-  return { catalog, profile };
-}
-
-export function assertEvaluationRequestMatchesPlan(
-  requestInput: unknown,
-  planInput: unknown,
-  identities: RequestPlanIdentityContext | undefined,
+function assertVerifiedEvaluationRequestMatchesPlan(
+  request: EvaluationRequest,
+  plan: EvaluationPlan,
+  catalog: MetricCatalog,
+  profile: ScoringProfile,
 ): EvaluationRequest {
-  const verifiedIdentities = verifyRequestPlanIdentityContext(identities);
-  const request = verifyEvaluationRequestIdentity(requestInput);
-  const plan = verifyEvaluationPlanConfigurationIdentity(planInput);
   const mismatches: string[] = [];
   if (request.configurationHash !== plan.configurationHash) {
     mismatches.push("configurationHash");
@@ -213,7 +131,6 @@ export function assertEvaluationRequestMatchesPlan(
   ) {
     mismatches.push("deterministicRequestOptions");
   }
-  const catalog = verifiedIdentities.catalog;
   if (
     catalog.catalogId !== plan.catalog.catalogId ||
     catalog.catalogVersion !== plan.catalog.catalogVersion ||
@@ -221,7 +138,6 @@ export function assertEvaluationRequestMatchesPlan(
   ) {
     mismatches.push("catalogIdentity");
   }
-  const profile = verifiedIdentities.profile;
   if (
     profile.profileId !== plan.profile.profileId ||
     profile.profileVersion !== plan.profile.profileVersion ||
@@ -239,6 +155,111 @@ export function assertEvaluationRequestMatchesPlan(
     );
   }
   return request;
+}
+
+type CanonicallyOrderedInput = {
+  snapshot: JsonValue;
+  semanticIdentity: string;
+  withoutResultHash: string;
+  completePayload: string;
+};
+
+function compareCanonicalText(left: string, right: string): number {
+  return left < right ? -1 : left > right ? 1 : 0;
+}
+
+function snapshotObject(
+  value: JsonValue,
+): Record<string, JsonValue> | undefined {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    ? value
+    : undefined;
+}
+
+function snapshotString(
+  value: Record<string, JsonValue> | undefined,
+  field: string,
+): string {
+  const candidate = value?.[field];
+  return typeof candidate === "string" ? candidate : "<invalid>";
+}
+
+function canonicalWithoutRootField(
+  snapshot: JsonValue,
+  resultHashField: string,
+): string {
+  const object = snapshotObject(snapshot);
+  if (object === undefined) {
+    return canonicalizeEvaluatorSnapshot(snapshot).canonicalText;
+  }
+  const preimage: Record<string, JsonValue> = Object.create(null) as Record<
+    string,
+    JsonValue
+  >;
+  for (const [key, value] of Object.entries(object)) {
+    if (key !== resultHashField) preimage[key] = value;
+  }
+  return canonicalizeEvaluatorSnapshot(preimage).canonicalText;
+}
+
+function orderBeforeIdentityVerification(
+  inputs: readonly unknown[],
+  resultHashField: string,
+  semanticIdentity: (value: Record<string, JsonValue> | undefined) => string,
+): CanonicallyOrderedInput[] {
+  return inputs
+    .map((input) => {
+      const snapshot = snapshotEvaluatorInput(input);
+      return {
+        snapshot,
+        semanticIdentity: semanticIdentity(snapshotObject(snapshot)),
+        withoutResultHash: canonicalWithoutRootField(snapshot, resultHashField),
+        completePayload: canonicalizeEvaluatorSnapshot(snapshot).canonicalText,
+      };
+    })
+    .sort(
+      (left, right) =>
+        compareCanonicalText(left.semanticIdentity, right.semanticIdentity) ||
+        compareCanonicalText(left.withoutResultHash, right.withoutResultHash) ||
+        compareCanonicalText(left.completePayload, right.completePayload),
+    );
+}
+
+function escapeJsonPointer(value: string): string {
+  return value.replaceAll("~", "~0").replaceAll("/", "~1");
+}
+
+function verifyOrderedIdentityCollection<T>(
+  ordered: readonly CanonicallyOrderedInput[],
+  contractName: string,
+  issueCode: string,
+  pathPrefix: string,
+  verify: (input: unknown) => T,
+): T[] {
+  const verified: T[] = [];
+  const identityIssues: {
+    kind: "semantic";
+    code: string;
+    path: string;
+    message: string;
+  }[] = [];
+  for (const entry of ordered) {
+    try {
+      verified.push(verify(entry.snapshot));
+    } catch (caught) {
+      if (!(caught instanceof ContentHashMismatchError)) throw caught;
+      identityIssues.push({
+        kind: "semantic",
+        code: issueCode,
+        path: `${pathPrefix}/${escapeJsonPointer(entry.semanticIdentity)}`,
+        message: `${entry.semanticIdentity}: ${caught.identityName} expected ${caught.expected}, received ${caught.actual ?? "missing"}`,
+      });
+    }
+  }
+  if (identityIssues.length > 0) {
+    throw new ContractValidationError(contractName, identityIssues);
+  }
+  return verified;
 }
 
 export type EvaluatorConfigurationGraphInput = {
@@ -262,13 +283,18 @@ export type ValidatedEvaluatorConfigurationGraph = {
 export function assertValidEvaluatorConfigurationGraph(
   input: EvaluatorConfigurationGraphInput,
 ): ValidatedEvaluatorConfigurationGraph {
-  const definitions = input.metricDefinitions
-    .map(verifyMetricDefinitionIdentity)
-    .sort((left, right) =>
-      `${left.metricId}@${left.metricVersion}`.localeCompare(
-        `${right.metricId}@${right.metricVersion}`,
-      ),
-    );
+  const definitions = verifyOrderedIdentityCollection(
+    orderBeforeIdentityVerification(
+      input.metricDefinitions,
+      "metricDefinitionHash",
+      (value) =>
+        `${snapshotString(value, "schemaVersion")}:${snapshotString(value, "metricId")}@${snapshotString(value, "metricVersion")}`,
+    ),
+    "EvaluatorConfigurationGraph",
+    "metric-definition-identity-mismatch",
+    "/metricDefinitions",
+    verifyMetricDefinitionIdentity,
+  );
   const byIdentity = new Map<string, MetricDefinition>();
   const byId = new Map<string, MetricDefinition[]>();
   for (const definition of definitions) {
@@ -399,10 +425,11 @@ export function assertValidEvaluatorConfigurationGraph(
       );
     }
   }
+  const request = verifyEvaluationRequestIdentity(input.request);
   if (
     !versionSatisfiesSupportedRange(
       input.evaluatorVersion,
-      verifyEvaluationRequestIdentity(input.request).evaluatorVersionConstraint,
+      request.evaluatorVersionConstraint,
     )
   ) {
     reject(
@@ -495,11 +522,21 @@ export function assertValidEvaluatorConfigurationGraph(
       );
     }
   }
-  const request = assertEvaluationRequestMatchesPlan(input.request, plan, {
-    metricDefinitions: definitions,
-    catalog,
-    profile,
-  });
+  for (const definition of definitions) {
+    if (
+      definition.invariantGateId !== undefined &&
+      (!include.has(definition.metricId) ||
+        plan.metricExclude.includes(definition.metricId))
+    ) {
+      reject(
+        "EvaluatorConfigurationGraph",
+        "plan-excludes-required-invariant-metric",
+        "/plan/metricExclude",
+        `plan cannot exclude required invariant metric ${definition.metricId}`,
+      );
+    }
+  }
+  assertVerifiedEvaluationRequestMatchesPlan(request, plan, catalog, profile);
   return { metricDefinitions: definitions, catalog, profile, plan, request };
 }
 
@@ -517,11 +554,22 @@ function subjectsCompatible(
 export function assertValidEvidenceGraph(
   inputs: readonly unknown[],
 ): EvidenceRecord[] {
-  const records = inputs
-    .map(verifyEvidenceContentIdentity)
-    .sort((left, right) =>
-      left.evidenceContentHash.localeCompare(right.evidenceContentHash),
-    );
+  const records = verifyOrderedIdentityCollection(
+    orderBeforeIdentityVerification(inputs, "evidenceContentHash", (value) => {
+      const subject = value?.subject;
+      const subjectIdentity =
+        subject === undefined
+          ? "<invalid>"
+          : canonicalizeEvaluatorSnapshot(subject).canonicalText;
+      return `${snapshotString(value, "schemaVersion")}:${snapshotString(value, "evidenceId")}:${snapshotString(value, "kind")}:${snapshotString(value, "manifestHash")}:${subjectIdentity}`;
+    }),
+    "EvidenceGraph",
+    "evidence-content-identity-mismatch",
+    "/evidence",
+    verifyEvidenceContentIdentity,
+  ).sort((left, right) =>
+    left.evidenceContentHash.localeCompare(right.evidenceContentHash),
+  );
   const byHash = new Map<string, EvidenceRecord>();
   const evidenceIds = new Set<string>();
   for (const record of records) {

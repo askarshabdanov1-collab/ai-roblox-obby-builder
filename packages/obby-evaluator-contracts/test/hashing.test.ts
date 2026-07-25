@@ -18,53 +18,57 @@ import {
   evaluationRequest,
   metricDefinition,
   scoringProfile,
-  ZERO_HASH,
+  TEST_IDENTITIES,
 } from "./fixtures.js";
 
 describe("named evaluator preimages", () => {
   it("derives every named digest from the exact returned bytes", () => {
+    const definition = metricDefinition();
+    const metricCatalog = catalog(definition.metricDefinitionHash as string);
     const cases = [
-      hashMetricDefinition(metricDefinition()),
-      hashMetricCatalog(catalog()),
-      hashScoringProfile(scoringProfile()),
+      hashMetricDefinition(definition),
+      hashMetricCatalog(metricCatalog),
+      hashScoringProfile(
+        scoringProfile(metricCatalog.metricCatalogHash as string),
+      ),
       hashEvaluationPlanConfiguration(evaluationPlan()),
       hashEvaluationRequest(evaluationRequest()),
       hashEvidenceContent({
         schemaVersion: "0.1",
         kind: "geometry-fact",
-        manifestHash: ZERO_HASH,
+        manifestHash: TEST_IDENTITIES.manifestHash,
         subject: { kind: "scene" },
         producer: { component: "geometry-evaluator", version: "0.1.0" },
         payload: {
           kind: "geometry-fact",
           objectIds: ["platform-a"],
           factKind: "normalized-object",
-          geometryHash: ZERO_HASH,
+          geometryHash: TEST_IDENTITIES.geometryHash,
         },
         parentEvidenceHashes: [],
         artifactHashes: [],
         quality: { completeness: "complete", validityCodes: [] },
         limitations: [],
-        evidenceContentHash: ZERO_HASH,
+        evidenceContentHash: TEST_IDENTITIES.geometryHash,
       }),
       hashCalculationBundle({
         schemaVersion: "0.1",
-        manifestHash: ZERO_HASH,
-        configurationHash: ZERO_HASH,
+        manifestHash: TEST_IDENTITIES.manifestHash,
+        configurationHash: TEST_IDENTITIES.calculationConfigurationHash,
         evaluatorVersion: "0.1.0",
-        metricCatalogHash: ZERO_HASH,
-        scoringProfileHash: ZERO_HASH,
+        metricCatalogHash: metricCatalog.metricCatalogHash,
+        scoringProfileHash: TEST_IDENTITIES.calculationConfigurationHash,
         environmentCompatibilityClass: "static-native-parts-v1",
         evidence: [],
         ruleVersions: [],
-        calculationBundleHash: ZERO_HASH,
+        calculationBundleHash: TEST_IDENTITIES.calculationBundleHash,
       }),
       hashAvailabilityRecord({
         schemaVersion: "0.1",
         subject: {
           kind: "evidence",
           stableId: "geometry:scene",
-          contentHash: ZERO_HASH,
+          contentHash: TEST_IDENTITIES.availabilitySubjectHash,
         },
         availabilityState: "available",
         reasonCode: "created",
@@ -78,9 +82,9 @@ describe("named evaluator preimages", () => {
         policy: { component: "availability", version: "1.0.0" },
         impactScope: {
           scopeKind: "subject-only",
-          affectedIdentityHashes: [ZERO_HASH],
+          affectedIdentityHashes: [TEST_IDENTITIES.availabilitySubjectHash],
         },
-        availabilityRecordHash: ZERO_HASH,
+        availabilityRecordHash: TEST_IDENTITIES.ruleBuildHash,
       }),
     ];
     for (const result of cases) {
@@ -94,9 +98,9 @@ describe("named evaluator preimages", () => {
 
   it("excludes every resulting self hash and exposes canonical bytes", () => {
     const first = hashMetricDefinition(metricDefinition());
-    const second = hashMetricDefinition(
-      metricDefinition({ metricDefinitionHash: `sha256:${"f".repeat(64)}` }),
-    );
+    const alternate = metricDefinition();
+    alternate.metricDefinitionHash = `sha256:${"f".repeat(64)}`;
+    const second = hashMetricDefinition(alternate);
     expect(first).toEqual(second);
     expect(first.hash).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(new TextDecoder().decode(first.canonicalBytes)).not.toContain(
@@ -131,15 +135,17 @@ describe("named evaluator preimages", () => {
   });
 
   it("orders catalog and profile semantic sets deterministically", () => {
+    const definition = metricDefinition();
+    const baseCatalog = catalog(definition.metricDefinitionHash as string);
     const a = hashMetricCatalog({
-      ...catalog(),
+      ...baseCatalog,
       supportedVersions: [
         { component: "z", versionRange: "1.x" },
         { component: "a", versionRange: "1.x" },
       ],
     });
     const b = hashMetricCatalog({
-      ...catalog(),
+      ...baseCatalog,
       supportedVersions: [
         { component: "a", versionRange: "1.x" },
         { component: "z", versionRange: "1.x" },
@@ -149,8 +155,9 @@ describe("named evaluator preimages", () => {
     expect(new TextDecoder().decode(a.canonicalBytes)).not.toContain(
       "metricCatalogHash",
     );
+    const baseProfile = scoringProfile(baseCatalog.metricCatalogHash as string);
     const profile = hashScoringProfile({
-      ...scoringProfile(),
+      ...baseProfile,
       requiredMetricIds: [
         "policy.decorative-collision-violations",
         "playability.route-completeness",
@@ -158,7 +165,7 @@ describe("named evaluator preimages", () => {
     });
     expect(profile.hash).toBe(
       hashScoringProfile({
-        ...scoringProfile(),
+        ...baseProfile,
         requiredMetricIds: [
           "playability.route-completeness",
           "policy.decorative-collision-violations",
@@ -217,24 +224,24 @@ describe("named evaluator preimages", () => {
     const content = {
       schemaVersion: "0.1",
       kind: "geometry-fact",
-      manifestHash: ZERO_HASH,
+      manifestHash: TEST_IDENTITIES.manifestHash,
       subject: { kind: "scene" },
       producer: {
         component: "geometry-evaluator",
         version: "0.1.0",
-        buildHash: ZERO_HASH,
+        buildHash: TEST_IDENTITIES.producerBuildHash,
       },
       payload: {
         kind: "geometry-fact",
         objectIds: ["platform-a"],
         factKind: "normalized-object",
-        geometryHash: ZERO_HASH,
+        geometryHash: TEST_IDENTITIES.geometryHash,
       },
       parentEvidenceHashes: [],
       artifactHashes: [],
       quality: { completeness: "complete", validityCodes: ["finite"] },
       limitations: [],
-      evidenceContentHash: ZERO_HASH,
+      evidenceContentHash: TEST_IDENTITIES.geometryHash,
     };
     const result = hashEvidenceContent(content);
     expect(new TextDecoder().decode(result.canonicalBytes)).not.toContain(
@@ -248,27 +255,27 @@ describe("named evaluator preimages", () => {
   it("hashes calculation and availability foundations", () => {
     const calculation = hashCalculationBundle({
       schemaVersion: "0.1",
-      manifestHash: ZERO_HASH,
-      configurationHash: ZERO_HASH,
+      manifestHash: TEST_IDENTITIES.manifestHash,
+      configurationHash: TEST_IDENTITIES.calculationConfigurationHash,
       evaluatorVersion: "0.1.0",
-      metricCatalogHash: ZERO_HASH,
-      scoringProfileHash: ZERO_HASH,
+      metricCatalogHash: TEST_IDENTITIES.calculationConfigurationHash,
+      scoringProfileHash: TEST_IDENTITIES.calculationConfigurationHash,
       environmentCompatibilityClass: "static-native-parts-v1",
       evidence: [
         {
           kind: "geometry-fact",
           subjectKey: "scene",
-          evidenceContentHash: ZERO_HASH,
+          evidenceContentHash: TEST_IDENTITIES.geometryHash,
         },
       ],
       ruleVersions: [
         {
           component: "geometry-evaluator",
           version: "0.1.0",
-          buildHash: ZERO_HASH,
+          buildHash: TEST_IDENTITIES.ruleBuildHash,
         },
       ],
-      calculationBundleHash: ZERO_HASH,
+      calculationBundleHash: TEST_IDENTITIES.calculationBundleHash,
     });
     expect(calculation.hash).toMatch(/^sha256:/);
     expect(new TextDecoder().decode(calculation.canonicalBytes)).not.toContain(
@@ -279,7 +286,7 @@ describe("named evaluator preimages", () => {
       subject: {
         kind: "evidence",
         stableId: "geometry:scene",
-        contentHash: ZERO_HASH,
+        contentHash: TEST_IDENTITIES.availabilitySubjectHash,
       },
       availabilityState: "restricted",
       reasonCode: "rights-review",
@@ -293,13 +300,13 @@ describe("named evaluator preimages", () => {
       policy: {
         component: "availability",
         version: "1.0.0",
-        buildHash: ZERO_HASH,
+        buildHash: TEST_IDENTITIES.ruleBuildHash,
       },
       impactScope: {
         scopeKind: "subject-only",
-        affectedIdentityHashes: [ZERO_HASH],
+        affectedIdentityHashes: [TEST_IDENTITIES.availabilitySubjectHash],
       },
-      availabilityRecordHash: ZERO_HASH,
+      availabilityRecordHash: TEST_IDENTITIES.ruleBuildHash,
     });
     expect(availability.hash).toMatch(/^sha256:/);
     expect(new TextDecoder().decode(availability.canonicalBytes)).not.toContain(

@@ -6,7 +6,7 @@ import type {
   RouteTransitionPayload,
   RuntimeObservationContentContract,
 } from "../src/generated/evaluator-contracts.js";
-import { assertEvaluationRequestMatchesPlan } from "../src/integrity.js";
+import { assertValidEvaluatorConfigurationGraph } from "../src/integrity.js";
 
 declare const deterministicWithoutKind: Omit<
   DeterministicFact,
@@ -79,5 +79,8 @@ void closedGeometry;
 
 declare const requestInput: unknown;
 declare const planInput: unknown;
-// @ts-expect-error Request-plan binding requires the complete identity graph.
-assertEvaluationRequestMatchesPlan(requestInput, planInput);
+// @ts-expect-error Configuration validation requires the complete identity graph.
+assertValidEvaluatorConfigurationGraph({
+  request: requestInput,
+  plan: planInput,
+});

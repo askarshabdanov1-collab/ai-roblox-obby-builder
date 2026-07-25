@@ -1,9 +1,47 @@
-export const ZERO_HASH = `sha256:${"0".repeat(64)}`;
+import { sha256 } from "@obby/canonical-json";
+
+import {
+  hashEvaluationPlanConfiguration,
+  hashEvaluationRequest,
+  hashMetricCatalog,
+  hashMetricDefinition,
+  hashScoringProfile,
+} from "../src/hashing.js";
+
+export const TEST_IDENTITY_SOURCES = Object.freeze({
+  manifest: "fixture:scene-manifest:vertical-slice:v1",
+  geometry: "fixture:normalized-geometry:platform-a:v1",
+  calculationConfiguration: "fixture:calculation-config:route-completeness:v1",
+  producerBuild: "fixture:producer-build:geometry-evaluator:0.1.0",
+  ruleBuild: "fixture:rule-build:route-completeness:1.0.0",
+  calculationBundle: "fixture:calculation-bundle:e1a:v1",
+  availabilitySubject: "fixture:availability-subject:geometry-scene:v1",
+});
+
+function pinnedIdentity(source: string): `sha256:${string}` {
+  return sha256({ domain: "evaluator-test-fixture-v1", source });
+}
+
+export const TEST_IDENTITIES = Object.freeze({
+  manifestHash: pinnedIdentity(TEST_IDENTITY_SOURCES.manifest),
+  geometryHash: pinnedIdentity(TEST_IDENTITY_SOURCES.geometry),
+  calculationConfigurationHash: pinnedIdentity(
+    TEST_IDENTITY_SOURCES.calculationConfiguration,
+  ),
+  producerBuildHash: pinnedIdentity(TEST_IDENTITY_SOURCES.producerBuild),
+  ruleBuildHash: pinnedIdentity(TEST_IDENTITY_SOURCES.ruleBuild),
+  calculationBundleHash: pinnedIdentity(
+    TEST_IDENTITY_SOURCES.calculationBundle,
+  ),
+  availabilitySubjectHash: pinnedIdentity(
+    TEST_IDENTITY_SOURCES.availabilitySubject,
+  ),
+});
 
 export function metricDefinition(
   overrides: Record<string, unknown> = {},
 ): Record<string, unknown> {
-  return {
+  const value: Record<string, unknown> = {
     schemaVersion: "0.1",
     metricId: "playability.route-completeness",
     metricVersion: "1.0.0",
@@ -23,7 +61,7 @@ export function metricDefinition(
     calculation: {
       methodId: "route-completeness",
       version: "1.0.0",
-      configurationHash: ZERO_HASH,
+      configurationHash: TEST_IDENTITIES.calculationConfigurationHash,
     },
     confidenceMethod: {
       methodId: "exact-input-coverage",
@@ -45,13 +83,15 @@ export function metricDefinition(
     comparisonCompatibilityClass: "e1-static-v1",
     calibrationStatus: "invariant",
     parentMetricIds: [],
-    metricDefinitionHash: ZERO_HASH,
+    metricDefinitionHash: TEST_IDENTITIES.calculationConfigurationHash,
     ...overrides,
   };
+  value.metricDefinitionHash = hashMetricDefinition(value).hash;
+  return value;
 }
 
-export function catalog(definitionHash = ZERO_HASH): Record<string, unknown> {
-  return {
+export function catalog(definitionHash: string): Record<string, unknown> {
+  const value: Record<string, unknown> = {
     schemaVersion: "0.1",
     catalogId: "e1-static",
     catalogVersion: "1.0.0",
@@ -73,14 +113,14 @@ export function catalog(definitionHash = ZERO_HASH): Record<string, unknown> {
     supportedVersions: [
       { component: "obby-evaluator-contracts", versionRange: ">=0.1.0 <0.2.0" },
     ],
-    metricCatalogHash: ZERO_HASH,
+    metricCatalogHash: TEST_IDENTITIES.calculationConfigurationHash,
   };
+  value.metricCatalogHash = hashMetricCatalog(value).hash;
+  return value;
 }
 
-export function scoringProfile(
-  catalogHash = ZERO_HASH,
-): Record<string, unknown> {
-  return {
+export function scoringProfile(catalogHash: string): Record<string, unknown> {
+  const value: Record<string, unknown> = {
     schemaVersion: "0.1",
     profileId: "e1-static-default",
     profileVersion: "1.0.0",
@@ -101,30 +141,43 @@ export function scoringProfile(
     aggregateScore: false,
     calibrationStatus: "provisional",
     compatibilityClass: "e1-static-v1",
-    scoringProfileHash: ZERO_HASH,
+    scoringProfileHash: TEST_IDENTITIES.calculationConfigurationHash,
   };
+  value.scoringProfileHash = hashScoringProfile(value).hash;
+  return value;
+}
+
+function defaultConfigurationReferences(): {
+  catalog: Record<string, unknown>;
+  profile: Record<string, unknown>;
+} {
+  const definition = metricDefinition();
+  const metricCatalog = catalog(definition.metricDefinitionHash as string);
+  const profile = scoringProfile(metricCatalog.metricCatalogHash as string);
+  return { catalog: metricCatalog, profile };
 }
 
 export function evaluationPlan(
   overrides: Record<string, unknown> = {},
 ): Record<string, unknown> {
-  return {
+  const references = defaultConfigurationReferences();
+  const value: Record<string, unknown> = {
     schemaVersion: "0.1",
     planId: "e1-static-plan",
     scene: {
-      manifestHash: ZERO_HASH,
+      manifestHash: TEST_IDENTITIES.manifestHash,
       manifestSchemaVersion: "1.0.0",
     },
     profile: {
-      profileId: "e1-static-default",
-      profileVersion: "1.0.0",
-      scoringProfileHash: ZERO_HASH,
-      compatibilityClass: "e1-static-v1",
+      profileId: references.profile.profileId,
+      profileVersion: references.profile.profileVersion,
+      scoringProfileHash: references.profile.scoringProfileHash,
+      compatibilityClass: references.profile.compatibilityClass,
     },
     catalog: {
-      catalogId: "e1-static",
-      catalogVersion: "1.0.0",
-      metricCatalogHash: ZERO_HASH,
+      catalogId: references.catalog.catalogId,
+      catalogVersion: references.catalog.catalogVersion,
+      metricCatalogHash: references.catalog.metricCatalogHash,
     },
     requiredCapabilities: ["geometry", "route"],
     views: [],
@@ -141,38 +194,29 @@ export function evaluationPlan(
     partialEvidencePolicy: "reject",
     seed: 42,
     createdAt: "2030-01-01T00:00:00Z",
-    configurationHash: ZERO_HASH,
+    configurationHash: TEST_IDENTITIES.calculationConfigurationHash,
     ...overrides,
   };
+  value.configurationHash = hashEvaluationPlanConfiguration(value).hash;
+  return value;
 }
 
 export function evaluationRequest(
   overrides: Record<string, unknown> = {},
 ): Record<string, unknown> {
-  return {
+  const defaultPlan = evaluationPlan();
+  const value: Record<string, unknown> = {
     schemaVersion: "0.1",
     requestId: "request-0001",
     submittedAt: "2030-01-01T00:00:00Z",
     callerId: "caller-a",
     transport: "local-api",
     retryAttempt: 0,
-    scene: {
-      manifestHash: ZERO_HASH,
-      manifestSchemaVersion: "1.0.0",
-    },
-    configurationHash: ZERO_HASH,
+    scene: defaultPlan.scene,
+    configurationHash: defaultPlan.configurationHash,
     evaluatorVersionConstraint: ">=0.1.0 <0.2.0",
-    profile: {
-      profileId: "e1-static-default",
-      profileVersion: "1.0.0",
-      scoringProfileHash: ZERO_HASH,
-      compatibilityClass: "e1-static-v1",
-    },
-    catalog: {
-      catalogId: "e1-static",
-      catalogVersion: "1.0.0",
-      metricCatalogHash: ZERO_HASH,
-    },
+    profile: defaultPlan.profile,
+    catalog: defaultPlan.catalog,
     requestedEvidenceRequirements: {
       requiredCapabilityIds: ["geometry", "route"],
       evidenceKindIds: ["geometry-fact", "route-transition"],
@@ -186,7 +230,22 @@ export function evaluationRequest(
       { outputKind: "report-payload" },
       { outputKind: "evidence-index" },
     ],
-    evaluationRequestHash: ZERO_HASH,
+    evaluationRequestHash: TEST_IDENTITIES.calculationConfigurationHash,
     ...overrides,
   };
+  value.evaluationRequestHash = hashEvaluationRequest(value).hash;
+  return value;
+}
+
+export function positiveEvaluatorFixtures(): Record<string, unknown>[] {
+  const definition = metricDefinition();
+  const metricCatalog = catalog(definition.metricDefinitionHash as string);
+  const profile = scoringProfile(metricCatalog.metricCatalogHash as string);
+  return [
+    definition,
+    metricCatalog,
+    profile,
+    evaluationPlan(),
+    evaluationRequest(),
+  ];
 }

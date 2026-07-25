@@ -15,12 +15,14 @@ to use the unchanged `@obby/canonical-json` 0.2.0 compatibility API.
 The aggregate validator resolves MetricDefinition → MetricCatalog → ScoringProfile →
 EvaluationPlan → EvaluationRequest, recomputes every supplied identity, resolves metric and
 invariant references, detects derived-metric cycles, and accepts only exact semantic versions or
-one/two strict comparator ranges. Evidence validation verifies content hashes before deterministic
-parent traversal and enforces manifest and subject scope.
+one/two strict comparator ranges. The aggregate validator is the only public request/plan binding
+boundary; no weaker standalone binding API is exported. Evidence validation verifies content
+hashes before deterministic parent traversal and enforces manifest and subject scope.
 
-Direct request-plan binding requires the complete verified MetricDefinition, MetricCatalog, and
-ScoringProfile object graph. Supplying only matching hash strings is intentionally unsupported.
-Semantic-set validation and error selection use the same stable ordering policy as hash preimages.
+Metric definitions and evidence records are descriptor-snapshotted, ordered by semantic non-hash
+keys plus canonical content tie-breakers, and only then identity-verified. Reversing identity-invalid
+inputs therefore cannot change the ordered issue list. Positive test fixtures use pinned semantic
+sources or normal named-hash helpers; all-zero identities occur only in explicit rejection tests.
 
 ```text
 npm run evaluator:contracts:generate

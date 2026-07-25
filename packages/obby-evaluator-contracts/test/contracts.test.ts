@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  assertEvaluationRequestMatchesPlan,
   assertValidEvaluatorConfigurationGraph,
   assertValidEvidenceGraph,
   hashEvaluationPlanConfiguration,
@@ -24,8 +23,9 @@ import {
   evaluationPlan,
   evaluationRequest,
   metricDefinition,
+  positiveEvaluatorFixtures,
   scoringProfile,
-  ZERO_HASH,
+  TEST_IDENTITIES,
 } from "./fixtures.js";
 
 function configurationGraph() {
@@ -66,14 +66,6 @@ function configurationGraph() {
   };
 }
 
-function bindingContext(graph: ReturnType<typeof configurationGraph>) {
-  return {
-    metricDefinitions: graph.metricDefinitions,
-    catalog: graph.catalog,
-    profile: graph.profile,
-  };
-}
-
 function evidence(
   overrides: Record<string, unknown> = {},
 ): Record<string, unknown> {
@@ -81,20 +73,20 @@ function evidence(
     schemaVersion: "0.1",
     evidenceId: "evidence-a",
     kind: "geometry-fact",
-    manifestHash: ZERO_HASH,
+    manifestHash: TEST_IDENTITIES.manifestHash,
     subject: { kind: "scene" },
     producer: { component: "geometry-evaluator", version: "0.1.0" },
     payload: {
       kind: "geometry-fact",
       objectIds: ["platform-a"],
       factKind: "normalized-object",
-      geometryHash: ZERO_HASH,
+      geometryHash: TEST_IDENTITIES.geometryHash,
     },
     parentEvidenceHashes: [],
     artifactHashes: [],
     quality: { completeness: "complete", validityCodes: [] },
     limitations: [],
-    evidenceContentHash: ZERO_HASH,
+    evidenceContentHash: TEST_IDENTITIES.geometryHash,
     ...overrides,
   };
   record.evidenceContentHash = hashEvidenceContent(record).hash;
@@ -103,49 +95,38 @@ function evidence(
 
 describe("evaluator contracts", () => {
   it("parses bounded E1a contracts", () => {
-    expect(parseMetricDefinition(metricDefinition()).metricId).toBe(
+    const definition = metricDefinition();
+    const metricCatalog = catalog(definition.metricDefinitionHash as string);
+    const profile = scoringProfile(metricCatalog.metricCatalogHash as string);
+    expect(parseMetricDefinition(definition).metricId).toBe(
       "playability.route-completeness",
     );
-    expect(parseMetricCatalog(catalog()).catalogId).toBe("e1-static");
-    expect(parseScoringProfile(scoringProfile()).aggregateScore).toBe(false);
-    expect(parseEvaluationPlan(evaluationPlan()).configurationHash).toBe(
-      ZERO_HASH,
+    expect(parseMetricCatalog(metricCatalog).catalogId).toBe("e1-static");
+    expect(parseScoringProfile(profile).aggregateScore).toBe(false);
+    expect(parseEvaluationPlan(evaluationPlan()).configurationHash).toMatch(
+      /^sha256:[0-9a-f]{64}$/,
     );
     expect(
       parseEvaluationRequest(evaluationRequest()).evaluationRequestHash,
-    ).toBe(ZERO_HASH);
+    ).toMatch(/^sha256:[0-9a-f]{64}$/);
     const graph = configurationGraph();
     expect(
-      assertEvaluationRequestMatchesPlan(
-        graph.request,
-        graph.plan,
-        bindingContext(graph),
-      ).requestId,
+      assertValidEvaluatorConfigurationGraph(graph).request.requestId,
     ).toBe("request-0001");
   });
 
   it("rejects request options that do not match the referenced plan", () => {
     const graph = configurationGraph();
-    expect(() =>
-      assertEvaluationRequestMatchesPlan(
-        {
-          ...graph.request,
-          deterministicRequestOptions: {
-            seed: 43,
-            partialEvidencePolicy: "reject",
-          },
-          evaluationRequestHash: hashEvaluationRequest({
-            ...graph.request,
-            deterministicRequestOptions: {
-              seed: 43,
-              partialEvidencePolicy: "reject",
-            },
-          }).hash,
-        },
-        graph.plan,
-        bindingContext(graph),
-      ),
-    ).toThrow(/deterministicRequestOptions/i);
+    graph.request.deterministicRequestOptions = {
+      seed: 43,
+      partialEvidencePolicy: "reject",
+    };
+    graph.request.evaluationRequestHash = hashEvaluationRequest(
+      graph.request,
+    ).hash;
+    expect(() => assertValidEvaluatorConfigurationGraph(graph)).toThrow(
+      /deterministicRequestOptions/i,
+    );
   });
 
   it("resolves and verifies the complete evaluator configuration graph", () => {
@@ -192,6 +173,28 @@ describe("evaluator contracts", () => {
       },
     ],
     [
+      "unknown invariant",
+      (graph: ReturnType<typeof configurationGraph>) => {
+        graph.profile.invariantGateIds = ["unknown-invariant"];
+        graph.profile.scoringProfileHash = hashScoringProfile(
+          graph.profile,
+        ).hash;
+      },
+    ],
+    [
+      "unknown plan metric",
+      (graph: ReturnType<typeof configurationGraph>) => {
+        graph.plan.metricInclude = ["unknown.metric"];
+        graph.plan.configurationHash = hashEvaluationPlanConfiguration(
+          graph.plan,
+        ).hash;
+        graph.request.configurationHash = graph.plan.configurationHash;
+        graph.request.evaluationRequestHash = hashEvaluationRequest(
+          graph.request,
+        ).hash;
+      },
+    ],
+    [
       "invalid version range",
       (graph: ReturnType<typeof configurationGraph>) => {
         graph.catalog.supportedVersions = [
@@ -209,7 +212,7 @@ describe("evaluator contracts", () => {
     expect(() => assertValidEvaluatorConfigurationGraph(graph)).toThrow();
   });
 
-  it("rejects derived self references and cycles", () => {
+  it("rejects a derived metric self reference", () => {
     const graph = configurationGraph();
     graph.metricDefinitions[0] = metricDefinition({
       resultKind: "derived-composite",
@@ -233,73 +236,39 @@ describe("evaluator contracts", () => {
   it("rejects stale plan and request hashes before binding", () => {
     const graph = configurationGraph();
     graph.plan.seed = 43;
-    expect(() =>
-      assertEvaluationRequestMatchesPlan(
-        graph.request,
-        graph.plan,
-        bindingContext(graph),
-      ),
-    ).toThrow(/configurationHash content hash mismatch/i);
+    expect(() => assertValidEvaluatorConfigurationGraph(graph)).toThrow(
+      /configurationHash content hash mismatch/i,
+    );
   });
 
-  it("requires and verifies the complete identity graph for request-plan binding", () => {
+  it("rejects stale catalog and profile objects through the aggregate boundary", () => {
+    const staleCatalog = configurationGraph();
+    staleCatalog.catalog.catalogVersion = "1.0.1";
+    expect(() => assertValidEvaluatorConfigurationGraph(staleCatalog)).toThrow(
+      /metricCatalogHash content hash mismatch/i,
+    );
+
+    const staleProfile = configurationGraph();
+    staleProfile.profile.profileVersion = "1.0.1";
+    expect(() => assertValidEvaluatorConfigurationGraph(staleProfile)).toThrow(
+      /scoringProfileHash content hash mismatch/i,
+    );
+  });
+
+  it("rejects an explicitly all-zero declared identity", () => {
+    const allZeroHash = `sha256:${"0".repeat(64)}`;
     const graph = configurationGraph();
-    expect(() =>
-      assertEvaluationRequestMatchesPlan(
-        graph.request,
-        graph.plan,
-        undefined as never,
-      ),
-    ).toThrow(/requires metric definitions, catalog, and profile/i);
+    graph.plan.configurationHash = allZeroHash;
+    expect(() => assertValidEvaluatorConfigurationGraph(graph)).toThrow(
+      /configurationHash content hash mismatch/i,
+    );
+  });
 
-    const zeroPlan = evaluationPlan();
-    zeroPlan.configurationHash = hashEvaluationPlanConfiguration(zeroPlan).hash;
-    const zeroRequest = evaluationRequest({
-      configurationHash: zeroPlan.configurationHash,
-    });
-    zeroRequest.evaluationRequestHash = hashEvaluationRequest(zeroRequest).hash;
-    expect(() =>
-      assertEvaluationRequestMatchesPlan(
-        zeroRequest,
-        zeroPlan,
-        bindingContext(graph),
-      ),
-    ).toThrow(/Identity|mismatch/i);
-
-    const wrongCatalog = structuredClone(graph.catalog);
-    wrongCatalog.catalogId = "other-catalog";
-    wrongCatalog.metricCatalogHash = hashMetricCatalog(wrongCatalog).hash;
-    expect(() =>
-      assertEvaluationRequestMatchesPlan(graph.request, graph.plan, {
-        ...bindingContext(graph),
-        catalog: wrongCatalog,
-      }),
-    ).toThrow(/catalogIdentity|profile is not backed/i);
-
-    const wrongProfile = structuredClone(graph.profile);
-    wrongProfile.profileId = "other-profile";
-    wrongProfile.scoringProfileHash = hashScoringProfile(wrongProfile).hash;
-    expect(() =>
-      assertEvaluationRequestMatchesPlan(graph.request, graph.plan, {
-        ...bindingContext(graph),
-        profile: wrongProfile,
-      }),
-    ).toThrow(/profileIdentity/i);
-
-    expect(() =>
-      assertEvaluationRequestMatchesPlan(graph.request, graph.plan, {
-        ...bindingContext(graph),
-        profile: { ...graph.profile, profileVersion: "1.0.1" },
-      }),
-    ).toThrow(/content hash mismatch/i);
-
-    expect(
-      assertEvaluationRequestMatchesPlan(
-        graph.request,
-        graph.plan,
-        bindingContext(graph),
-      ).requestId,
-    ).toBe("request-0001");
+  it("keeps every positive fixture free of all-zero identities", () => {
+    const allZeroHash = `sha256:${"0".repeat(64)}`;
+    expect(JSON.stringify(positiveEvaluatorFixtures())).not.toContain(
+      allZeroHash,
+    );
   });
 
   it("rejects unknown versions, discriminants, IDs, and properties", () => {
@@ -322,7 +291,7 @@ describe("evaluator contracts", () => {
       schemaVersion: "0.1",
       metricId: "playability.route-completeness",
       metricVersion: "1.0.0",
-      metricDefinitionHash: ZERO_HASH,
+      metricDefinitionHash: TEST_IDENTITIES.calculationConfigurationHash,
       category: "playability",
       status: "available",
       evidenceIds: ["geometry:scene:sha256:" + "1".repeat(64)],
@@ -331,7 +300,7 @@ describe("evaluator contracts", () => {
       severity: "info",
       blocking: false,
       thresholdsApplied: [],
-      calculationHash: ZERO_HASH,
+      calculationHash: TEST_IDENTITIES.calculationBundleHash,
     };
     expect(
       parseEvaluationMetric({
@@ -386,7 +355,7 @@ describe("evaluator contracts", () => {
       parseRuntimeObservationContent({
         schemaVersion: "0.1",
         kind: "scene-loaded",
-        manifestHash: ZERO_HASH,
+        manifestHash: TEST_IDENTITIES.manifestHash,
         subject: { kind: "scene" },
         sequence: 0,
         monotonicOffsetMs: 0,
@@ -399,7 +368,7 @@ describe("evaluator contracts", () => {
           transitionId: "route:platform-a/platform-b/0/1",
           result: "success",
         },
-        runtimeObservationContentHash: ZERO_HASH,
+        runtimeObservationContentHash: TEST_IDENTITIES.geometryHash,
       }),
     ).toThrow();
   });
@@ -410,7 +379,7 @@ describe("evaluator contracts", () => {
       subject: {
         kind: "evidence",
         stableId: "geometry:scene",
-        contentHash: ZERO_HASH,
+        contentHash: TEST_IDENTITIES.availabilitySubjectHash,
       },
       availabilityState: "deleted",
       reasonCode: "retention-expired",
@@ -424,13 +393,13 @@ describe("evaluator contracts", () => {
       policy: {
         component: "retention-policy",
         version: "1.0.0",
-        buildHash: ZERO_HASH,
+        buildHash: TEST_IDENTITIES.ruleBuildHash,
       },
       impactScope: {
         scopeKind: "subject-and-derived",
-        affectedIdentityHashes: [ZERO_HASH],
+        affectedIdentityHashes: [TEST_IDENTITIES.availabilitySubjectHash],
       },
-      availabilityRecordHash: ZERO_HASH,
+      availabilityRecordHash: TEST_IDENTITIES.ruleBuildHash,
     });
     expect(record.availabilityState).toBe("deleted");
     expect(() =>
@@ -447,7 +416,7 @@ describe("evaluator contracts", () => {
     ).toThrow();
   });
 
-  it("verifies evidence hashes, scope, IDs, parent compatibility, and cycles", () => {
+  it("verifies evidence hashes, scope, IDs, parent compatibility, and a valid acyclic graph", () => {
     const parent = evidence();
     const child = evidence({
       evidenceId: "evidence-b",
@@ -459,7 +428,7 @@ describe("evaluator contracts", () => {
       assertValidEvidenceGraph([
         { ...parent, evidenceContentHash: `sha256:${"f".repeat(64)}` },
       ]),
-    ).toThrow(/content hash mismatch/i);
+    ).toThrow(/evidenceContentHash expected/i);
 
     const otherManifest = evidence({
       evidenceId: "evidence-c",
