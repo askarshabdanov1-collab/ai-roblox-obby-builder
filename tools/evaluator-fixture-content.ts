@@ -15,7 +15,74 @@ import {
   hashScoringProfile,
 } from "@obby/obby-evaluator-contracts";
 
-const ZERO_HASH = `sha256:${"0".repeat(64)}`;
+function semanticIdentity(
+  identityId: string,
+  identityDomain: string,
+  semanticFixture: Record<string, unknown>,
+) {
+  const source = {
+    schemaVersion: "0.1",
+    identityId,
+    identityDomain,
+    semanticFixture,
+  };
+  const canonical = evaluatorCanonicalize({
+    canonicalizationAlgorithm: EVALUATOR_CANONICAL_JSON_ALGORITHM,
+    ...source,
+  });
+  return { ...source, identityHash: sha256Bytes(canonical.canonicalBytes) };
+}
+
+const identitySources = [
+  semanticIdentity("manifest-e1a-fixture-v1", "SceneManifest", {
+    manifestSchemaVersion: "1.0.0",
+    sceneId: "e1a-static-native-parts",
+    generatorVersion: "0.1.0",
+    seed: 42,
+  }),
+  semanticIdentity("geometry-e1a-fixture-v1", "NormalizedGeometry", {
+    algorithm: "native-part-geometry-v1",
+    objectIds: ["platform-a"],
+    units: "studs",
+  }),
+  semanticIdentity("producer-build-e1a-v1", "ProducerBuild", {
+    component: "geometry-evaluator",
+    version: "0.1.0",
+    sourceRevision: "phase-e1a-fixture",
+  }),
+  semanticIdentity("rule-build-e1a-v1", "RuleBuild", {
+    component: "geometry-evaluator",
+    ruleSet: "geometry-foundation",
+    version: "0.1.0",
+  }),
+  semanticIdentity("availability-policy-build-v1", "PolicyBuild", {
+    component: "availability",
+    policyId: "local-evidence-availability",
+    version: "1.0.0",
+  }),
+  semanticIdentity("fixture-generator-build-v1", "FixtureGeneratorBuild", {
+    component: "evaluator-fixture-content",
+    version: "1.0.0",
+  }),
+];
+
+const identityHash = (identityId: string): string => {
+  const identity = identitySources.find(
+    (candidate) => candidate.identityId === identityId,
+  );
+  if (identity === undefined)
+    throw new Error(`missing identity source ${identityId}`);
+  return identity.identityHash;
+};
+
+const SELF_HASH_SENTINEL = identityHash("fixture-generator-build-v1");
+const MANIFEST_HASH = identityHash("manifest-e1a-fixture-v1");
+const GEOMETRY_HASH = identityHash("geometry-e1a-fixture-v1");
+const PRODUCER_BUILD_HASH = identityHash("producer-build-e1a-v1");
+const RULE_BUILD_HASH = identityHash("rule-build-e1a-v1");
+const AVAILABILITY_POLICY_BUILD_HASH = identityHash(
+  "availability-policy-build-v1",
+);
 
 const definitionBase = {
   schemaVersion: "0.1",
@@ -34,7 +101,7 @@ const definitionBase = {
   comparisonCompatibilityClass: "e1-static-v1",
   calibrationStatus: "invariant",
   parentMetricIds: [],
-  metricDefinitionHash: ZERO_HASH,
+  metricDefinitionHash: SELF_HASH_SENTINEL,
 } as const;
 
 function semanticConfiguration(
@@ -176,7 +243,7 @@ const catalogSource = {
     },
     { component: "geometry-evaluator", versionRange: ">=0.1.0 <0.2.0" },
   ],
-  metricCatalogHash: ZERO_HASH,
+  metricCatalogHash: SELF_HASH_SENTINEL,
 };
 const metricCatalog = {
   ...catalogSource,
@@ -212,7 +279,7 @@ const profileSource = {
   aggregateScore: false,
   calibrationStatus: "provisional",
   compatibilityClass: "e1-static-v1",
-  scoringProfileHash: ZERO_HASH,
+  scoringProfileHash: SELF_HASH_SENTINEL,
 };
 const scoringProfile = {
   ...profileSource,
@@ -223,7 +290,7 @@ const plan = {
   schemaVersion: "0.1",
   planId: "e1-static-plan",
   scene: {
-    manifestHash: ZERO_HASH,
+    manifestHash: MANIFEST_HASH,
     manifestSchemaVersion: "1.0.0",
   },
   profile: {
@@ -252,7 +319,7 @@ const plan = {
   partialEvidencePolicy: "reject",
   seed: 42,
   createdAt: "2030-01-01T00:00:00Z",
-  configurationHash: ZERO_HASH,
+  configurationHash: SELF_HASH_SENTINEL,
 };
 const planConfigurationHash = hashEvaluationPlanConfiguration(plan).hash;
 
@@ -281,35 +348,35 @@ const request = {
     { outputKind: "report-payload" },
     { outputKind: "evidence-index" },
   ],
-  evaluationRequestHash: ZERO_HASH,
+  evaluationRequestHash: SELF_HASH_SENTINEL,
 };
 
 const evidence = {
   schemaVersion: "0.1",
   kind: "geometry-fact",
-  manifestHash: ZERO_HASH,
+  manifestHash: MANIFEST_HASH,
   subject: { kind: "scene" },
   producer: {
     component: "geometry-evaluator",
     version: "0.1.0",
-    buildHash: ZERO_HASH,
+    buildHash: PRODUCER_BUILD_HASH,
   },
   payload: {
     kind: "geometry-fact",
     objectIds: ["platform-a"],
     factKind: "normalized-object",
-    geometryHash: ZERO_HASH,
+    geometryHash: GEOMETRY_HASH,
   },
   parentEvidenceHashes: [],
   artifactHashes: [],
   quality: { completeness: "complete", validityCodes: ["finite"] },
   limitations: [],
-  evidenceContentHash: ZERO_HASH,
+  evidenceContentHash: SELF_HASH_SENTINEL,
 };
 
 const calculation = {
   schemaVersion: "0.1",
-  manifestHash: ZERO_HASH,
+  manifestHash: MANIFEST_HASH,
   configurationHash: planConfigurationHash,
   evaluatorVersion: "0.1.0",
   metricCatalogHash: metricCatalog.metricCatalogHash,
@@ -326,10 +393,10 @@ const calculation = {
     {
       component: "geometry-evaluator",
       version: "0.1.0",
-      buildHash: ZERO_HASH,
+      buildHash: RULE_BUILD_HASH,
     },
   ],
-  calculationBundleHash: ZERO_HASH,
+  calculationBundleHash: SELF_HASH_SENTINEL,
 };
 
 const availability = {
@@ -351,13 +418,13 @@ const availability = {
   policy: {
     component: "availability",
     version: "1.0.0",
-    buildHash: ZERO_HASH,
+    buildHash: AVAILABILITY_POLICY_BUILD_HASH,
   },
   impactScope: {
     scopeKind: "subject-only",
     affectedIdentityHashes: [hashEvidenceContent(evidence).hash],
   },
-  availabilityRecordHash: ZERO_HASH,
+  availabilityRecordHash: SELF_HASH_SENTINEL,
 };
 
 const vectors = [
@@ -379,7 +446,7 @@ function json(value: unknown): string {
 }
 
 export function expectedEvaluatorFixtures(): Record<string, string> {
-  return {
+  const fixtures = {
     "packages/obby-evaluator-contracts/fixtures/generated/e1-metric-definitions.json":
       json(metricDefinitions),
     "packages/obby-evaluator-contracts/fixtures/generated/e1-metric-catalog.json":
@@ -388,6 +455,8 @@ export function expectedEvaluatorFixtures(): Record<string, string> {
       json(scoringProfile),
     "packages/obby-evaluator-contracts/fixtures/generated/e1-semantic-configurations.json":
       json(semanticConfigurations),
+    "packages/obby-evaluator-contracts/fixtures/generated/e1-identity-sources.json":
+      json(identitySources),
     "packages/obby-evaluator-contracts/fixtures/generated/hash-vectors.json":
       json(
         vectors.map(([preimageName, result]) => ({
@@ -397,4 +466,11 @@ export function expectedEvaluatorFixtures(): Record<string, string> {
         })),
       ),
   };
+  const allZeroHash = `sha256:${"0".repeat(64)}`;
+  for (const [path, content] of Object.entries(fixtures)) {
+    if (content.includes(allZeroHash)) {
+      throw new Error(`${path} contains a forbidden all-zero fixture identity`);
+    }
+  }
+  return fixtures;
 }

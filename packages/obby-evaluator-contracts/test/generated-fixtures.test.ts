@@ -4,6 +4,11 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 
 import {
+  EVALUATOR_CANONICAL_JSON_ALGORITHM,
+  evaluatorCanonicalize,
+} from "@obby/canonical-json";
+
+import {
   parseMetricCatalog,
   parseMetricDefinition,
   parseScoringProfile,
@@ -22,6 +27,47 @@ async function fixture(name: string): Promise<unknown> {
 }
 
 describe("generated evaluator fixtures", () => {
+  it("pins reviewable non-placeholder semantic identity sources", async () => {
+    const identities = (await fixture("e1-identity-sources.json")) as {
+      identityId: string;
+      identityHash: string;
+      semanticFixture: Record<string, unknown>;
+    }[];
+    expect(identities.map((identity) => identity.identityId)).toEqual([
+      "manifest-e1a-fixture-v1",
+      "geometry-e1a-fixture-v1",
+      "producer-build-e1a-v1",
+      "rule-build-e1a-v1",
+      "availability-policy-build-v1",
+      "fixture-generator-build-v1",
+    ]);
+    for (const identity of identities) {
+      expect(identity.semanticFixture).toBeTypeOf("object");
+      expect(identity.identityHash).toMatch(/^sha256:[0-9a-f]{64}$/);
+      expect(identity.identityHash).not.toBe(`sha256:${"0".repeat(64)}`);
+      const { identityHash, ...source } = identity;
+      const bytes = evaluatorCanonicalize({
+        canonicalizationAlgorithm: EVALUATOR_CANONICAL_JSON_ALGORITHM,
+        ...source,
+      }).canonicalBytes;
+      expect(identityHash).toBe(
+        `sha256:${createHash("sha256").update(bytes).digest("hex")}`,
+      );
+    }
+    for (const name of [
+      "e1-metric-definitions.json",
+      "e1-metric-catalog.json",
+      "e1-scoring-profile.json",
+      "e1-semantic-configurations.json",
+      "e1-identity-sources.json",
+      "hash-vectors.json",
+    ]) {
+      expect(JSON.stringify(await fixture(name))).not.toContain(
+        `sha256:${"0".repeat(64)}`,
+      );
+    }
+  });
+
   it("contains a valid E1-only metric catalog and non-aggregate profile", async () => {
     const definitions = (await fixture(
       "e1-metric-definitions.json",

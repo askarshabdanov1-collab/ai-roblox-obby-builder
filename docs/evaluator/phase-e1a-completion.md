@@ -23,7 +23,9 @@ layer.
 Unicode scalar value, preserves ordinary array order, explicitly sorts only declared set-like
 collections, rejects sparse arrays and unsupported JavaScript values, permits finite binary64
 numbers only, and normalizes negative zero and exponent spelling. Inputs cross a descriptor-based
-plain-data snapshot boundary before serialization. Enumerable accessors, symbols, unexpected
+plain-data snapshot boundary before serialization. Descriptor snapshotting creates no canonical
+text or bytes; validation, including AvailabilityRecord effective-identity XOR inspection, runs
+only after the trusted snapshot exists. Enumerable accessors, symbols, unexpected
 prototypes, inherited enumerable state, Date/Map/Set/typed-array/class instances, descriptor trap
 failures, cycles, and NFC key collisions fail closed.
 
@@ -51,8 +53,9 @@ vectors:
 - `CalculationBundlePreimage`;
 - `AvailabilityRecordPreimage`.
 
-Every helper validates first, excludes its own result field, snapshots and canonicalizes once,
-hashes those exact bytes, and returns the same bytes with lowercase `sha256:` output. Direct tests
+Every helper snapshots raw input once without serialization, validates that snapshot, excludes its
+own result field, builds its named preimage, serializes that preimage once, hashes those exact bytes,
+and returns the same bytes with lowercase `sha256:` output. Direct tests
 recompute every returned digest through Node `crypto`. Request envelope fields and plan authoring
 time are excluded from their deterministic identities as defined in Phase E0.
 
@@ -60,9 +63,16 @@ The aggregate semantic validator verifies the complete MetricDefinition → Metr
 ScoringProfile → EvaluationPlan → EvaluationRequest graph. It resolves exact definition
 identities, metric/invariant references, all required invariants, derived parents/cycles, plan
 selection, actual catalog/profile/configuration/request hashes, and a deliberately narrow
-semantic-version range grammar. Request/plan binding independently verifies both identities before
-comparison. Evidence graphs verify every content hash, duplicate ID/hash rules, parent existence,
-manifest scope, compatible subjects, and deterministic acyclic traversal.
+semantic-version range grammar. Request/plan binding independently verifies both identities and
+requires the actual verified MetricDefinition, MetricCatalog, and ScoringProfile graph; a partial
+hash-only context is not accepted. Set-like catalog, profile, plan, evidence, parent, and transition
+validation follows canonical semantic order so equivalent shuffled inputs select identical errors.
+Evidence graphs verify every content hash, duplicate ID/hash rules, parent existence, manifest
+scope, compatible subjects, and deterministic acyclic traversal. Because parent hashes participate
+in evidence content identities, a fully hash-valid cyclic public fixture would require a
+cryptographic fixed point; the cycle algorithm is tested through an internal already-resolved-node
+seam while public tests retain hash mismatch, missing-parent, duplicate, scope, and valid-acyclic
+coverage.
 
 ## Geometry policy
 
@@ -95,6 +105,17 @@ Node `crypto`; a small manually pinned digest map covers every implemented hash 
 vectors validate implementation consistency, not compliance with an external canonical-JSON
 standard. Geometry fixtures cover horizontal, rising, downward, rotated, Wedge,
 Cylinder, invalid non-finite, decorative-target, and missing-reference cases.
+
+Generated `e1-identity-sources.json` commits small semantic sources for manifest, geometry, producer
+build, rule build, availability-policy build, and fixture-generator identities. Generation fails if
+any generated evaluator fixture contains an all-zero digest; the production fixture builder uses no
+all-zero temporary identity.
+
+Focused regressions cover a real three-node derived cycle, the resolved evidence-cycle guard,
+strict UTC timezone/fraction/calendar cases, duplicate evidence IDs with distinct valid content,
+minimum-dimension and binary64 rounding boundaries, exact near-zero gap policy, a genuinely rotated
+Cylinder, every safe-route identity mismatch, shuffled transition ordering, and distinct duplicate
+transition-ID/tuple checks.
 
 The E1 fixture catalog marks metrics `planned` and calculations `unavailable-in-e1a`; its presence
 does not claim that E1a calculates them. Semantic calculation configuration hashes come from
