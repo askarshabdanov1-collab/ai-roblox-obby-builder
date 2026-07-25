@@ -7,6 +7,7 @@ local ManifestValidator = require(script.Parent.ManifestValidator)
 local NativePartFactory = require(script.Parent.NativePartFactory)
 local PlacementController = require(script.Parent.PlacementController)
 local PlayerProgress = require(script.Parent.PlayerProgress)
+local SafeRouteNavigator = require(script.Parent.SafeRouteNavigator)
 local SceneBuilderCore = require(script.Parent.SceneBuilderCore)
 
 local Builder = {}
@@ -73,8 +74,8 @@ end
 local placementController = PlacementController.new(
     progress,
     waitForRootPart,
-    function(rootPart, object, verticalOffset)
-        CharacterPlacement.apply(rootPart, object, verticalOffset, cframeFromTransform)
+    function(rootPart, object, placement, nextObject)
+        CharacterPlacement.apply(rootPart, object, placement, nextObject, cframeFromTransform)
     end
 )
 
@@ -163,7 +164,8 @@ function Builder.build(manifest, workspace)
         placementController:activateScene(
             manifest.manifestHash,
             startObject,
-            manifest.navigation.characterPlacement.verticalOffset
+            manifest.navigation.characterPlacement,
+            SafeRouteNavigator.new(manifest)
         )
         for _, player in ipairs(Players:GetPlayers()) do
             local character = player.Character

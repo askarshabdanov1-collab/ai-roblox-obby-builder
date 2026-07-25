@@ -21,6 +21,7 @@
   },
   "characterPlacement": {
     "strategy": "humanoid-root-part-cframe-v1",
+    "orientationPolicy": "face-next-safe-route-object",
     "verticalOffset": 3
   },
   "spawn": {

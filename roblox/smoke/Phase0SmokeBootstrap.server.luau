@@ -5,6 +5,7 @@ local Workspace = game:GetService("Workspace")
 local BuildPlan = require(ReplicatedStorage.ObbyRuntime.BuildPlan)
 local Builder = require(ReplicatedStorage.ObbyRuntime.Builder)
 local CharacterPlacement = require(ReplicatedStorage.ObbyRuntime.CharacterPlacement)
+local SafeRouteNavigator = require(ReplicatedStorage.ObbyRuntime.SafeRouteNavigator)
 local SceneBuilderCore = require(ReplicatedStorage.ObbyRuntime.SceneBuilderCore)
 local manifest = require(ServerStorage.GeneratedManifests.VerticalSliceManifest)
 
@@ -21,6 +22,17 @@ local function cframeFromTransform(transform)
         * CFrame.Angles(math.rad(rotation.x), math.rad(rotation.y), math.rad(rotation.z))
 end
 
+local function clone(value)
+    if type(value) ~= "table" then
+        return value
+    end
+    local result = {}
+    for key, child in pairs(value) do
+        result[clone(key)] = clone(child)
+    end
+    return result
+end
+
 local cardinalDirections = {
     { yaw = 0, expected = Vector3.new(0, 0, -1) },
     { yaw = 90, expected = Vector3.new(-1, 0, 0) },
@@ -35,7 +47,11 @@ for _, cardinal in ipairs(cardinalDirections) do
             rotation = { x = 0, y = cardinal.yaw, z = 0 },
         },
         size = { x = 20, y = 4, z = 10 },
-    }, 3, cframeFromTransform)
+    }, {
+        strategy = "humanoid-root-part-cframe-v1",
+        orientationPolicy = "explicit-yaw",
+        verticalOffset = 3,
+    }, nil, cframeFromTransform)
     assertSmoke(placementRoot.Position == Vector3.new(12, 12, -9), "character placement center or offset failed")
     assertSmoke(
         (placementRoot.CFrame.LookVector - cardinal.expected).Magnitude < 0.000001,
@@ -43,6 +59,69 @@ for _, cardinal in ipairs(cardinalDirections) do
     )
     placementRoot:Destroy()
 end
+
+local objectsById = {}
+for _, object in ipairs(manifest.layers.gameplay.objects) do
+    objectsById[object.id] = object
+end
+local routeNavigator = SafeRouteNavigator.new(manifest)
+for _, check in ipairs({
+    { objectId = "Spawn", position = Vector3.new(0, 6.5, 0), lookVector = Vector3.new(0, 0, 1) },
+    { objectId = "Checkpoint01", position = Vector3.new(0, 10.5, 31), lookVector = Vector3.new(0, 0, 1) },
+}) do
+    local object = objectsById[check.objectId]
+    local placementRoot = Instance.new("Part")
+    CharacterPlacement.apply(
+        placementRoot,
+        object,
+        manifest.navigation.characterPlacement,
+        routeNavigator:nextObject(object.id),
+        cframeFromTransform
+    )
+    assertSmoke(placementRoot.Position == check.position, check.objectId .. " route placement was not centered")
+    assertSmoke(
+        (placementRoot.CFrame.LookVector - check.lookVector).Magnitude < 0.000001,
+        check.objectId .. " did not face its next safe-route object"
+    )
+    placementRoot:Destroy()
+end
+
+local changedRouteManifest = clone(manifest)
+changedRouteManifest.layers.gameplay.objects[2].transform.position.x = 16
+changedRouteManifest.layers.gameplay.objects[2].transform.position.z = 0
+local changedRouteNavigator = SafeRouteNavigator.new(changedRouteManifest)
+local changedSpawn = changedRouteManifest.layers.gameplay.objects[1]
+local changedPlacementRoot = Instance.new("Part")
+CharacterPlacement.apply(
+    changedPlacementRoot,
+    changedSpawn,
+    changedRouteManifest.navigation.characterPlacement,
+    changedRouteNavigator:nextObject(changedSpawn.id),
+    cframeFromTransform
+)
+assertSmoke(
+    (changedPlacementRoot.CFrame.LookVector - Vector3.new(1, 0, 0)).Magnitude < 0.000001,
+    "changing safe-route geometry did not update facing"
+)
+changedPlacementRoot:Destroy()
+
+local finalCheckpointManifest = clone(manifest)
+finalCheckpointManifest.navigation.safeRouteObjectIds = { "JumpPlatform01", "Checkpoint01" }
+local finalCheckpointNavigator = SafeRouteNavigator.new(finalCheckpointManifest)
+local finalCheckpoint = finalCheckpointManifest.layers.gameplay.objects[3]
+local fallbackRoot = Instance.new("Part")
+CharacterPlacement.apply(
+    fallbackRoot,
+    finalCheckpoint,
+    finalCheckpointManifest.navigation.characterPlacement,
+    finalCheckpointNavigator:nextObject(finalCheckpoint.id),
+    cframeFromTransform
+)
+assertSmoke(
+    (fallbackRoot.CFrame.LookVector - Vector3.new(-1, 0, 0)).Magnitude < 0.000001,
+    "final checkpoint did not fall back to explicit yaw"
+)
+fallbackRoot:Destroy()
 
 local root = Builder.build(manifest, Workspace)
 local spawnLocations = {}

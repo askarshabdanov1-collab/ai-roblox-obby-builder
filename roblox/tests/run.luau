@@ -4,6 +4,7 @@ local CharacterPlacement = require("../src/ReplicatedStorage/ObbyRuntime/Charact
 local NativePartFactory = require("../src/ReplicatedStorage/ObbyRuntime/NativePartFactory")
 local PlacementController = require("../src/ReplicatedStorage/ObbyRuntime/PlacementController")
 local PlayerProgress = require("../src/ReplicatedStorage/ObbyRuntime/PlayerProgress")
+local SafeRouteNavigator = require("../src/ReplicatedStorage/ObbyRuntime/SafeRouteNavigator")
 local SceneBuilderCore = require("../src/ReplicatedStorage/ObbyRuntime/SceneBuilderCore")
 local manifest = require("../generated/VerticalSliceManifest")
 
@@ -162,6 +163,22 @@ test("validates generated manifest and navigation", function()
     end
 end)
 
+test("resolves spawn and checkpoint targets from global safe-route metadata", function()
+    local navigator = SafeRouteNavigator.new(manifest)
+    expect(navigator:nextObject("Spawn").id == "JumpPlatform01", "spawn did not target the first route object")
+    expect(navigator:nextObject("Checkpoint01").id == "WedgeClimb01", "checkpoint did not target the next route object")
+    expect(navigator:nextObject("FinishPlatform") == nil, "final route object unexpectedly had a next target")
+
+    local reordered = clone(manifest)
+    reordered.layers.gameplay.objects[1], reordered.layers.gameplay.objects[5] =
+        reordered.layers.gameplay.objects[5], reordered.layers.gameplay.objects[1]
+    local reorderedNavigator = SafeRouteNavigator.new(reordered)
+    expect(
+        reorderedNavigator:nextObject("Spawn").id == "JumpPlatform01",
+        "construction order changed the first route target"
+    )
+end)
+
 test("fails closed on incompatible versions and malformed manifests", function()
     local wrongSchema = clone(manifest)
     wrongSchema.schemaVersion = "999"
@@ -183,6 +200,10 @@ test("fails closed on incompatible versions and malformed manifests", function()
     local badPlacement = clone(manifest)
     badPlacement.navigation.characterPlacement.verticalOffset = 1
     expect(not ManifestValidator.validate(badPlacement), "unsafe character offset was accepted")
+
+    local badOrientation = clone(manifest)
+    badOrientation.navigation.characterPlacement.orientationPolicy = "construction-order"
+    expect(not ManifestValidator.validate(badOrientation), "unsupported orientation policy was accepted")
 
     local tiltedSpawn = clone(manifest)
     tiltedSpawn.layers.gameplay.objects[1].transform.rotation.x = 15
@@ -228,35 +249,100 @@ test("configures only the initial SpawnLocation as an eligible spawn", function(
     expect(spawnCount == 1, "expected exactly one eligible SpawnLocation")
 end)
 
-test("places the HumanoidRootPart at exact center and configured height", function()
-    local object = {
+local routeAwarePlacement = {
+    strategy = "humanoid-root-part-cframe-v1",
+    orientationPolicy = "face-next-safe-route-object",
+    verticalOffset = 3,
+}
+
+local function placementObject(id, x, y, z, yaw)
+    return {
+        id = id,
         transform = {
-            position = { x = 12, y = 7, z = -9 },
-            rotation = { x = 0, y = 90, z = 0 },
+            position = { x = x, y = y, z = z },
+            rotation = { x = 0, y = yaw, z = 0 },
         },
         size = { x = 20, y = 4, z = 10 },
     }
-    local target = CharacterPlacement.transformFor(object, 3)
+end
+
+local function routeNavigator(nextByObjectId)
+    return {
+        nextObject = function(_, objectId)
+            return nextByObjectId[objectId]
+        end,
+    }
+end
+
+local function approximately(actual, expected)
+    return math.abs(actual - expected) < 0.000001
+end
+
+test("places the HumanoidRootPart at exact center and configured height", function()
+    local object = placementObject("Spawn", 12, 7, -9, 90)
+    local target = CharacterPlacement.transformFor(object, routeAwarePlacement, nil)
     expect(target.position.x == 12 and target.position.z == -9, "horizontal placement was not centered")
     expect(target.position.y == 12, "vertical offset was not measured from the top surface")
-    expect(target.rotation.y == 90, "declared orientation was not preserved")
+    expect(target.rotation.y == 90, "fallback orientation was not preserved")
 end)
 
-test("preserves cardinal spawn orientations", function()
-    for _, yaw in ipairs({ 0, 90, 180, 270 }) do
-        local object = {
-            transform = {
-                position = { x = 0, y = 0, z = 0 },
-                rotation = { x = 0, y = yaw, z = 0 },
-            },
-            size = { x = 10, y = 2, z = 10 },
-        }
-        local rootPart = {}
-        CharacterPlacement.apply(rootPart, object, 3, function(transform)
-            return clone(transform)
-        end)
-        expect(rootPart.CFrame.rotation.y == yaw, string.format("%d degree orientation changed", yaw))
+test("faces cardinal and diagonal safe-route directions", function()
+    local source = placementObject("Spawn", 0, 0, 0, 37)
+    local cases = {
+        { name = "+X", target = placementObject("Target", 10, 0, 0, 0), yaw = 270 },
+        { name = "-X", target = placementObject("Target", -10, 0, 0, 0), yaw = 90 },
+        { name = "+Z", target = placementObject("Target", 0, 0, 10, 0), yaw = 180 },
+        { name = "-Z", target = placementObject("Target", 0, 0, -10, 0), yaw = 0 },
+        { name = "diagonal", target = placementObject("Target", 10, 50, 10, 0), yaw = 225 },
+    }
+    for _, case in ipairs(cases) do
+        local target = CharacterPlacement.transformFor(source, routeAwarePlacement, case.target)
+        expect(approximately(target.rotation.y, case.yaw), case.name .. " route-facing yaw was incorrect")
     end
+end)
+
+test("uses explicit yaw for policy and route-facing fallbacks", function()
+    local source = placementObject("FinalCheckpoint", 4, 7, -2, 37)
+    local verticalOnly = placementObject("VerticalTarget", 4, 100, -2, 0)
+    local invalidHorizontal = placementObject("InvalidTarget", 10, 7, -2, 0)
+    invalidHorizontal.transform.position.x = "invalid"
+
+    expect(
+        CharacterPlacement.transformFor(source, routeAwarePlacement, verticalOnly).rotation.y == 37,
+        "vertical-only route target did not use fallback yaw"
+    )
+    expect(
+        CharacterPlacement.transformFor(source, routeAwarePlacement, invalidHorizontal).rotation.y == 37,
+        "invalid route direction did not use fallback yaw"
+    )
+    expect(
+        CharacterPlacement.transformFor(source, routeAwarePlacement, nil).rotation.y == 37,
+        "final checkpoint without a next route target did not use fallback yaw"
+    )
+    local finalCheckpointManifest = clone(manifest)
+    finalCheckpointManifest.navigation.safeRouteObjectIds = { "JumpPlatform01", "Checkpoint01" }
+    local finalCheckpointNavigator = SafeRouteNavigator.new(finalCheckpointManifest)
+    expect(
+        finalCheckpointNavigator:nextObject("Checkpoint01") == nil,
+        "final checkpoint unexpectedly resolved a next safe-route target"
+    )
+
+    local explicitPlacement = clone(routeAwarePlacement)
+    explicitPlacement.orientationPolicy = "explicit-yaw"
+    local routeTarget = placementObject("Target", 100, 7, -2, 0)
+    expect(
+        CharacterPlacement.transformFor(source, explicitPlacement, routeTarget).rotation.y == 37,
+        "explicit-yaw policy was overridden by route geometry"
+    )
+end)
+
+test("rejects unknown safe-route targets", function()
+    local unknownTarget = clone(manifest)
+    unknownTarget.navigation.safeRouteObjectIds[1] = "UnknownRouteTarget"
+    local ok = pcall(function()
+        SafeRouteNavigator.new(unknownTarget)
+    end)
+    expect(not ok, "unknown safe-route target was accepted")
 end)
 
 local function placementHarness(state)
@@ -266,11 +352,12 @@ local function placementHarness(state)
     controller = PlacementController.new(state, function(character)
         waitCount += 1
         return character.delayedRoot
-    end, function(rootPart, object, verticalOffset)
+    end, function(rootPart, object, placement, nextObject)
         table.insert(applied, {
             rootPart = rootPart,
             object = object,
-            verticalOffset = verticalOffset,
+            placement = placement,
+            nextObject = nextObject,
         })
     end)
     return controller, applied, function()
@@ -284,13 +371,28 @@ test("uses identical placement for initial spawn and checkpoint respawn", functi
     local player = {}
     local initialCharacter = { delayedRoot = { name = "initial-root" } }
     player.Character = initialCharacter
-    local spawn = { id = "Spawn" }
-    local checkpoint = { id = "Checkpoint01" }
-    controller:activateScene("scene", spawn, 3)
+    local spawn = placementObject("Spawn", 0, 3, 0, 0)
+    local firstRouteObject = placementObject("FirstRouteObject", 0, 4, 16, 0)
+    local checkpoint = placementObject("Checkpoint01", 0, 7, 31, 90)
+    local nextRouteObject = placementObject("NextRouteObject", 0, 10, 45, 0)
+    controller:activateScene(
+        "scene",
+        spawn,
+        routeAwarePlacement,
+        routeNavigator({
+            Spawn = firstRouteObject,
+            Checkpoint01 = nextRouteObject,
+        })
+    )
 
     expect(controller:placeCharacter(player, initialCharacter), "initial spawn placement failed")
     expect(applied[1].object == spawn, "initial spawn did not use start object")
-    expect(applied[1].verticalOffset == 3, "initial spawn did not use configured offset")
+    expect(applied[1].placement == routeAwarePlacement, "initial spawn did not use configured placement")
+    expect(applied[1].nextObject == firstRouteObject, "initial spawn did not face the first route object")
+    local initialTransform =
+        CharacterPlacement.transformFor(applied[1].object, applied[1].placement, applied[1].nextObject)
+    expect(initialTransform.position.x == 0 and initialTransform.position.z == 0, "initial spawn lost exact center")
+    expect(initialTransform.rotation.y == 180, "initial spawn did not face its first route objective")
     expect(waitCount() == 1, "delayed HumanoidRootPart lookup was not used")
 
     state:activateCheckpoint(player, "scene", "Checkpoint01", 1, checkpoint, 1)
@@ -298,27 +400,44 @@ test("uses identical placement for initial spawn and checkpoint respawn", functi
     player.Character = respawnCharacter
     expect(controller:placeCharacter(player, respawnCharacter), "checkpoint placement failed")
     expect(applied[2].object == checkpoint, "checkpoint respawn did not use checkpoint object")
-    expect(applied[2].verticalOffset == 3, "checkpoint did not use the shared configured offset")
+    expect(applied[2].placement == routeAwarePlacement, "checkpoint did not use shared placement")
+    expect(applied[2].nextObject == nextRouteObject, "checkpoint did not face the next route object")
+    local checkpointTransform =
+        CharacterPlacement.transformFor(applied[2].object, applied[2].placement, applied[2].nextObject)
+    expect(checkpointTransform.position.x == 0 and checkpointTransform.position.z == 31, "checkpoint lost exact center")
+    expect(checkpointTransform.rotation.y == 180, "checkpoint did not face its next route objective")
 end)
 
 test("keeps placement isolated between two players", function()
     local state = PlayerProgress.new(0.75)
     local controller, applied = placementHarness(state)
-    local spawn = { id = "Spawn" }
-    local checkpoint = { id = "Checkpoint01" }
+    local spawn = placementObject("Spawn", 0, 0, 0, 0)
+    local firstRouteObject = placementObject("FirstRouteObject", 10, 0, 0, 0)
+    local checkpoint = placementObject("Checkpoint01", 20, 0, 0, 90)
+    local nextRouteObject = placementObject("NextRouteObject", 20, 0, -10, 0)
     local playerA = {}
     local playerB = {}
     local characterA = { delayedRoot = {} }
     local characterB = { delayedRoot = {} }
     playerA.Character = characterA
     playerB.Character = characterB
-    controller:activateScene("scene", spawn, 3)
+    controller:activateScene(
+        "scene",
+        spawn,
+        routeAwarePlacement,
+        routeNavigator({
+            Spawn = firstRouteObject,
+            Checkpoint01 = nextRouteObject,
+        })
+    )
     state:activateCheckpoint(playerA, "scene", "Checkpoint01", 1, checkpoint, 1)
 
     controller:placeCharacter(playerA, characterA)
     controller:placeCharacter(playerB, characterB)
     expect(applied[1].object == checkpoint, "player A lost checkpoint placement")
+    expect(applied[1].nextObject == nextRouteObject, "player A lost checkpoint route target")
     expect(applied[2].object == spawn, "player B inherited player A checkpoint")
+    expect(applied[2].nextObject == firstRouteObject, "player B inherited player A route target")
 end)
 
 test("fails safely when HumanoidRootPart never appears", function()
@@ -332,7 +451,7 @@ test("fails safely when HumanoidRootPart never appears", function()
     local player = {}
     local character = {}
     player.Character = character
-    controller:activateScene("scene", { id = "Spawn" }, 3)
+    controller:activateScene("scene", placementObject("Spawn", 0, 0, 0, 0), routeAwarePlacement, routeNavigator({}))
     expect(not controller:placeCharacter(player, character), "missing root part was treated as placed")
     expect(not applied, "placement ran without a HumanoidRootPart")
 end)
@@ -340,24 +459,32 @@ end)
 test("rejects delayed callbacks from a replaced scene", function()
     local state = PlayerProgress.new(0.75)
     local applied = {}
-    local oldSpawn = { id = "OldSpawn" }
-    local newSpawn = { id = "NewSpawn" }
+    local oldSpawn = placementObject("OldSpawn", 0, 0, 0, 0)
+    local oldRouteTarget = placementObject("OldRouteTarget", 10, 0, 0, 0)
+    local newSpawn = placementObject("NewSpawn", 0, 0, 0, 0)
+    local newRouteTarget = placementObject("NewRouteTarget", -10, 0, 0, 0)
     local controller
     local replaceDuringWait = true
     controller = PlacementController.new(state, function(character)
         if replaceDuringWait then
             replaceDuringWait = false
-            controller:activateScene("new-scene", newSpawn, 4)
+            local newPlacement = clone(routeAwarePlacement)
+            newPlacement.verticalOffset = 4
+            controller:activateScene("new-scene", newSpawn, newPlacement, routeNavigator({ NewSpawn = newRouteTarget }))
         end
         return character.delayedRoot
-    end, function(_, object)
-        table.insert(applied, object)
+    end, function(_, object, placement, nextObject)
+        table.insert(applied, {
+            object = object,
+            placement = placement,
+            nextObject = nextObject,
+        })
     end)
     local player = {}
     local character = { delayedRoot = {} }
     player.Character = character
-    controller:activateScene("old-scene", oldSpawn, 3)
-    state:activateCheckpoint(player, "old-scene", "OldCheckpoint", 1, { id = "OldCheckpoint" }, 1)
+    controller:activateScene("old-scene", oldSpawn, routeAwarePlacement, routeNavigator({ OldSpawn = oldRouteTarget }))
+    state:activateCheckpoint(player, "old-scene", "OldCheckpoint", 1, placementObject("OldCheckpoint", 5, 0, 0, 0), 1)
 
     expect(not controller:placeCharacter(player, character), "stale scene callback relocated the player")
     expect(#applied == 0, "stale scene placement was applied")
@@ -365,7 +492,9 @@ test("rejects delayed callbacks from a replaced scene", function()
     local newCharacter = { delayedRoot = {} }
     player.Character = newCharacter
     expect(controller:placeCharacter(player, newCharacter), "replacement scene placement failed")
-    expect(applied[1] == newSpawn, "replacement scene used an old placement target")
+    expect(applied[1].object == newSpawn, "replacement scene used an old placement source")
+    expect(applied[1].nextObject == newRouteTarget, "replacement scene used old route data")
+    expect(applied[1].placement.verticalOffset == 4, "replacement scene used old placement data")
 end)
 
 test("constructs non-colliding decorative native objects", function()

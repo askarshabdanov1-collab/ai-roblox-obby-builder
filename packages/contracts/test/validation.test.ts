@@ -395,6 +395,11 @@ describe("contract validation", () => {
   });
 
   it("requires a safe deterministic character placement policy", async () => {
+    const valid = await validSpec();
+    expect(valid.characterPlacement.orientationPolicy).toBe(
+      "face-next-safe-route-object",
+    );
+
     const invalidOffset = await validSpec();
     invalidOffset.characterPlacement.verticalOffset = 1.999_999;
     const offsetResult = validatePlaceSpec(invalidOffset);
@@ -403,6 +408,23 @@ describe("contract validation", () => {
       expect(offsetResult.issues).toContainEqual(
         expect.objectContaining({ code: "minimum" }),
       );
+
+    const invalidOrientation = await validSpec();
+    Reflect.set(
+      invalidOrientation.characterPlacement,
+      "orientationPolicy",
+      "construction-order",
+    );
+    const orientationResult = validatePlaceSpec(invalidOrientation);
+    expect(orientationResult.ok).toBe(false);
+    if (!orientationResult.ok)
+      expect(orientationResult.issues).toContainEqual(
+        expect.objectContaining({ code: "enum" }),
+      );
+
+    const explicitOrientation = await validSpec();
+    explicitOrientation.characterPlacement.orientationPolicy = "explicit-yaw";
+    expect(validatePlaceSpec(explicitOrientation).ok).toBe(true);
 
     const tiltedSpawn = await validSpec();
     tiltedSpawn.spawn.transform.rotation.x = 1;
@@ -425,6 +447,21 @@ describe("contract validation", () => {
     if (!missing.ok)
       expect(missing.issues).toContainEqual(
         expect.objectContaining({ code: "required" }),
+      );
+
+    const unsupportedOrientation = await validateChangedManifestAsync(
+      (manifest) => {
+        Reflect.set(
+          manifest.navigation.characterPlacement,
+          "orientationPolicy",
+          "construction-order",
+        );
+      },
+    );
+    expect(unsupportedOrientation.ok).toBe(false);
+    if (!unsupportedOrientation.ok)
+      expect(unsupportedOrientation.issues).toContainEqual(
+        expect.objectContaining({ code: "enum" }),
       );
 
     const tilted = await validateChangedManifestAsync((manifest) => {

@@ -29,6 +29,7 @@ export interface PlaceSpec {
   };
   characterPlacement: {
     strategy: "humanoid-root-part-cframe-v1";
+    orientationPolicy: "face-next-safe-route-object" | "explicit-yaw";
     verticalOffset: number;
   };
   spawn: {

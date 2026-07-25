@@ -11,12 +11,13 @@ function PlacementController.new(progress, waitForRootPart, applyPlacement)
     }, PlacementController)
 end
 
-function PlacementController:activateScene(sceneKey, startObject, verticalOffset)
+function PlacementController:activateScene(sceneKey, startObject, placement, routeNavigator)
     self.generation += 1
     self.activeScene = {
         sceneKey = sceneKey,
         startObject = startObject,
-        verticalOffset = verticalOffset,
+        placement = placement,
+        routeNavigator = routeNavigator,
         generation = self.generation,
     }
 end
@@ -28,7 +29,12 @@ function PlacementController:placeCharacter(player, character)
     end
 
     local rootPart = self.waitForRootPart(character)
-    if rootPart == nil or self.activeScene ~= scene or player.Character ~= character then
+    if
+        rootPart == nil
+        or self.activeScene ~= scene
+        or self.generation ~= scene.generation
+        or player.Character ~= character
+    then
         return false
     end
 
@@ -36,7 +42,8 @@ function PlacementController:placeCharacter(player, character)
     if target == nil then
         target = scene.startObject
     end
-    self.applyPlacement(rootPart, target, scene.verticalOffset)
+    local nextObject = scene.routeNavigator:nextObject(target.id)
+    self.applyPlacement(rootPart, target, scene.placement, nextObject)
     return true
 end
 

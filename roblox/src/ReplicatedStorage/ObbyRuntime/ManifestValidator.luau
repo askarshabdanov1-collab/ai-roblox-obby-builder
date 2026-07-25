@@ -208,6 +208,7 @@ local function validateNavigation(manifest, gameplayIds)
     if
         type(placement) ~= "table"
         or placement.strategy ~= "humanoid-root-part-cframe-v1"
+        or (placement.orientationPolicy ~= "face-next-safe-route-object" and placement.orientationPolicy ~= "explicit-yaw")
         or type(placement.verticalOffset) ~= "number"
         or placement.verticalOffset ~= placement.verticalOffset
         or math.abs(placement.verticalOffset) == math.huge

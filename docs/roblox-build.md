@@ -21,8 +21,11 @@ recorded once per player and scene.
 
 Initial spawn and checkpoint respawn both set HumanoidRootPart CFrame explicitly. Placement uses the
 object's exact horizontal center, its top surface plus `characterPlacement.verticalOffset`, and the
-declared orientation. A generation guard prevents delayed callbacks from an older build from moving
-a character into a replacement scene. Checkpoint targets are keyed by `manifestHash`, so progress
-from a different scene revision cannot leak into the active build.
+configured orientation policy. The reference slice faces the next object in the global safe route,
+using only X/Z center differences; a missing, vertical-only, or invalid target falls back to the
+source object's declared yaw. `explicit-yaw` always uses the declared yaw. A generation guard
+prevents delayed callbacks from an older build from moving a character into a replacement scene or
+using its route data. Checkpoint targets are keyed by `manifestHash`, so progress from a different
+scene revision cannot leak into the active build.
 
 The engine-dependent procedure is in `docs/roblox-studio-smoke-test.md`.

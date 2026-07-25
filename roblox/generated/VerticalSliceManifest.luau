@@ -237,9 +237,10 @@ return {
             },
         },
     },
-    ["manifestHash"] = "sha256:41d83751bd860ad5a35a20d6f48293b028a10af66140aa6cd43b7fecaef13d79",
+    ["manifestHash"] = "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
     ["navigation"] = {
         ["characterPlacement"] = {
+            ["orientationPolicy"] = "face-next-safe-route-object",
             ["strategy"] = "humanoid-root-part-cframe-v1",
             ["verticalOffset"] = 3,
         },
@@ -300,7 +301,7 @@ return {
     ["sceneId"] = "brainrot-tower-vertical-slice-scene",
     ["schemaVersion"] = "0.2",
     ["seed"] = 424242,
-    ["sourceSpecHash"] = "sha256:a822282776d2a83f3168b9c4a0c91e0b2bb370f5379df8d9f42cad2c79c2543d",
+    ["sourceSpecHash"] = "sha256:69b1da53e3cd4da9b860779ca651a5dd4a84d513a5c41546a7416029ac7069cc",
     ["sourceSpecId"] = "brainrot-tower-vertical-slice",
     ["worldBounds"] = {
         ["maximum"] = {

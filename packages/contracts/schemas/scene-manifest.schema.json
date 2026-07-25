@@ -214,9 +214,12 @@
     "characterPlacement": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["strategy", "verticalOffset"],
+      "required": ["strategy", "orientationPolicy", "verticalOffset"],
       "properties": {
         "strategy": { "const": "humanoid-root-part-cframe-v1" },
+        "orientationPolicy": {
+          "enum": ["face-next-safe-route-object", "explicit-yaw"]
+        },
         "verticalOffset": {
           "type": "number",
           "minimum": 2,

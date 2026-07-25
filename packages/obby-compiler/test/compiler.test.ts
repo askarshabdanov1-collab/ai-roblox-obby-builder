@@ -97,7 +97,63 @@ describe("deterministic compiler", () => {
     });
     expect(first.navigation.characterPlacement).toEqual({
       strategy: "humanoid-root-part-cframe-v1",
+      orientationPolicy: "face-next-safe-route-object",
       verticalOffset: 3,
+    });
+  });
+
+  it("changes deterministic hashes when route geometry changes", async () => {
+    const input = (await fixture()) as {
+      obstacles: {
+        id: string;
+        transform: { position: { x: number } };
+      }[];
+    };
+    const changed = structuredClone(input);
+    const firstRouteObject = changed.obstacles.find(
+      ({ id }) => id === "JumpPlatform01",
+    );
+    expect(firstRouteObject).toBeDefined();
+    if (firstRouteObject === undefined) return;
+    firstRouteObject.transform.position.x = 4;
+
+    const baseline = compilePlaceSpec(input);
+    const first = compilePlaceSpec(changed);
+    const second = compilePlaceSpec(structuredClone(changed));
+    expect(first.sourceSpecHash).not.toBe(baseline.sourceSpecHash);
+    expect(first.manifestHash).not.toBe(baseline.manifestHash);
+    expect(canonicalStringify(first)).toBe(canonicalStringify(second));
+    expect(first.sourceSpecHash).toBe(second.sourceSpecHash);
+    expect(first.manifestHash).toBe(second.manifestHash);
+  });
+
+  it("identifies spawn and checkpoint facing targets from safe-route order", async () => {
+    const manifest = compilePlaceSpec(await fixture());
+    const objectsById = new Map(
+      manifest.layers.gameplay.objects.map((object) => [object.id, object]),
+    );
+    const firstRouteObjectId = manifest.navigation.safeRouteObjectIds[0];
+    const checkpointRouteIndex =
+      manifest.navigation.safeRouteObjectIds.indexOf("Checkpoint01");
+    const checkpointTargetId =
+      manifest.navigation.safeRouteObjectIds[checkpointRouteIndex + 1];
+
+    expect(manifest.navigation.characterPlacement.orientationPolicy).toBe(
+      "face-next-safe-route-object",
+    );
+    expect(firstRouteObjectId).toBe("JumpPlatform01");
+    expect(checkpointTargetId).toBeDefined();
+    if (checkpointTargetId === undefined) return;
+    expect(objectsById.get(firstRouteObjectId)?.transform.position).toEqual({
+      x: 0,
+      y: 4,
+      z: 16,
+    });
+    expect(checkpointTargetId).toBe("WedgeClimb01");
+    expect(objectsById.get(checkpointTargetId)?.transform.position).toEqual({
+      x: 0,
+      y: 10,
+      z: 45,
     });
   });
 });

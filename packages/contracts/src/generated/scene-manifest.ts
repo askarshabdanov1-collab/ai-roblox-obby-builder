@@ -77,6 +77,7 @@ export interface CoarseReachability {
 }
 export interface CharacterPlacement {
   strategy: "humanoid-root-part-cframe-v1";
+  orientationPolicy: "face-next-safe-route-object" | "explicit-yaw";
   verticalOffset: number;
 }
 export interface NavigationStage {
