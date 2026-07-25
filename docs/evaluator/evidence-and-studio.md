@@ -5,7 +5,7 @@
 Every metric and finding is a node derived from immutable evidence:
 
 ```text
-SceneManifest hash + EvaluationPlan hash + evaluator/config versions
+SceneManifest hash + EvaluationPlan configurationHash + evaluator/config versions
     ├── geometry facts ── route transitions ── feasibility metrics
     ├── runtime observations ── checkpoint/playability/performance metrics
     ├── screenshot artifacts ── image regions/features ── visual metrics
@@ -51,10 +51,12 @@ Rules:
 - binary artifacts have media type, dimensions, byte length, and capture provenance;
 - each external/reference artifact has a retention class and deletion/tombstone process;
 - deleting governed evidence never mutates its record or any finalized report;
-- an external `EvidenceAvailabilityOverlay` records unavailable evidence, reason, effective time,
-  and authority without containing deleted material;
-- a later derived report may reference the original report and overlay, but receives a new payload
-  hash; the original report and hash remain unchanged;
+- an external immutable `AvailabilityRecord`, identified by `availabilityRecordHash`, records the
+  affected evidence/artifact/reference identity, state, reason, semantic effective point, authority,
+  policy, supersession parents, optional successor, and impact scope without containing deleted
+  material;
+- a later derived report may reference the original report and ordered `availabilityRecordHash`
+  values, but receives a new payload hash; the original report and hash remain unchanged;
 - reproduction is `complete`, `partial`, or `impossible` according to whether all behavior-bearing
   inputs remain available and verifiable.
 
@@ -64,6 +66,9 @@ never absorb execution provenance. Runtime, screenshot, and human evidence keep 
 content/payload identity separate from execution-specific envelopes. Screenshot storage records
 `screenshotBinaryHash`, `screenshotProtocolMetadataHash`, and
 `screenshotEvidenceEnvelopeHash`; the three identities are never treated as interchangeable.
+Availability assertions use `availabilityRecordHash` computed only from
+`AvailabilityRecordPreimage`; conflicting or changed assertions create new records and never
+overwrite prior records.
 
 ## Explainability and reproduction
 

@@ -143,11 +143,13 @@ trained.
 1. Mark source `restricted` immediately on a credible request or policy issue.
 2. Stop new evaluation use and feature generation.
 3. Locate artifacts/derived features through provenance indexes.
-4. Delete according to rights/retention policy; create a non-reversible tombstone with reason/date.
+4. Delete according to rights/retention policy; create an immutable `AvailabilityRecord` with the
+   governed subject, reason, authority, semantic effective point, policy, and impact scope.
 5. Invalidate affected dataset snapshots and publish a successor snapshot.
 6. Identify dependent reports/models. Never rewrite a finalized report or its hash; publish an
-   external `EvidenceAvailabilityOverlay`, or a newly hashed derived report that references the
-   original, and classify later reproduction as `complete`, `partial`, or `impossible`.
+   external `AvailabilityRecord` identified by `availabilityRecordHash`, or a newly hashed derived
+   report that references the original and availability record, and classify later reproduction as
+   `complete`, `partial`, or `impossible`.
 7. Retrain/recalibrate future models when impact thresholds require it.
 
 ## Human pairwise labeling protocol

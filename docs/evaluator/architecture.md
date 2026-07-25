@@ -151,8 +151,8 @@ Dashed components or connections are designed for later phases and are not imple
 
 - Content-addressed, append-only store for canonical JSON records and binary artifacts.
 - Separates an index/database from immutable blobs; checks hashes on write and read.
-- Maintains provenance, retention class, access policy, and deletion tombstones where source
-  deletion is required.
+- Maintains provenance, retention class, access policy, and immutable `AvailabilityRecord` values
+  identified by `availabilityRecordHash` where source deletion is required.
 - Redacts tokens, usernames, chat, and unrelated player data before persistence.
 
 ### Report Generator
@@ -241,7 +241,8 @@ stateDiagram-v2
 The reproducibility identity includes:
 
 - SceneManifest canonical hash and schema version;
-- EvaluationPlan canonical hash and contract version;
+- EvaluationPlan `configurationHash` and contract version; `configurationHash` is the sole
+  deterministic EvaluationPlan identity;
 - evaluator build/version and metric-catalog version;
 - scoring profile ID/version and configuration hash;
 - analyzer/collector/model versions;

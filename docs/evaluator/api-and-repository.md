@@ -32,7 +32,8 @@ Input:
 
 Output:
 
-- `jobId`, `executionId`, accepted manifest/plan/catalog/profile/config hashes;
+- `jobId`, `executionId`, `evaluationRequestHash`, accepted `manifestHash`, `configurationHash`,
+  `metricCatalogHash`, and `scoringProfileHash`;
 - initial status and capability availability;
 - status/report resource links.
 
@@ -144,7 +145,12 @@ Input:
 
 Output:
 
-- immutable label ID/hash or rejection code.
+- `labelId`, `labelPayloadHash`, and `humanJudgmentEnvelopeHash`, or a rejection code.
+
+`labelId` identifies the label record. `labelPayloadHash` identifies the immutable subjective
+judgment and presentation payload. `humanJudgmentEnvelopeHash` binds that payload to its
+study/session, pseudonymous rater, consent, retention, and semantic time context. No fourth identity
+is defined for a label or judgment.
 
 It is unavailable unless the labeling study and retention policy are enabled.
 
@@ -170,26 +176,27 @@ Out-of-order, replayed, stale, oversized, or wrong-scene evidence is rejected.
 
 Proposed prefix: `/api/evaluator/v1`.
 
-| Method and endpoint                              | Behavior                                                            |
-| ------------------------------------------------ | ------------------------------------------------------------------- |
-| `POST /executions`                               | Validate plan/manifest and create asynchronous execution            |
-| `GET /executions/{executionId}`                  | Execution status, stage progress, capability completeness           |
-| `POST /executions/{executionId}/cancel`          | Idempotently request cancellation                                   |
-| `GET /executions/{executionId}/events?after=`    | Bounded progress/event stream or polling cursor                     |
-| `GET /executions/{executionId}/report`           | Final report metadata/content reference                             |
-| `GET /reports/{reportPayloadHash}`               | Immutable deterministic machine-readable report payload             |
-| `GET /reports/{reportPayloadHash}/explain`       | Filtered evidence/calculation graph                                 |
-| `GET /reports/{reportPayloadHash}/availability`  | Current external evidence-availability overlay                      |
-| `POST /reports/{reportPayloadHash}/derive`       | Produce a new report from an overlay without changing the original  |
-| `GET /evidence/{evidenceId}`                     | Evidence envelope subject to workspace access                       |
-| `GET /artifacts/{hash}`                          | Stream authorized content-addressed artifact with range/size limits |
-| `POST /comparisons`                              | Create asynchronous compatible-variant comparison                   |
-| `GET /comparisons/{jobId}`                       | Comparison status/result                                            |
-| `POST /studio/sessions`                          | Begin user-confirmed localhost Studio handshake                     |
-| `DELETE /studio/sessions/{sessionId}`            | End bridge session and trigger cleanup                              |
-| `POST /studio/executions/{executionId}/evidence` | Authenticated evidence batch submission                             |
-| `POST /preferences`                              | Record an enabled-study HumanPreferenceLabel                        |
-| `POST /correction-proposals`                     | Generate advisory correction proposal                               |
+| Method and endpoint                              | Behavior                                                                                      |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `POST /executions`                               | Validate plan/manifest and create asynchronous execution                                      |
+| `GET /executions/{executionId}`                  | Execution status, stage progress, capability completeness                                     |
+| `POST /executions/{executionId}/cancel`          | Idempotently request cancellation                                                             |
+| `GET /executions/{executionId}/events?after=`    | Bounded progress/event stream or polling cursor                                               |
+| `GET /executions/{executionId}/report`           | Final report metadata/content reference                                                       |
+| `GET /reports/{reportPayloadHash}`               | Immutable deterministic machine-readable report payload                                       |
+| `GET /reports/{reportPayloadHash}/explain`       | Filtered evidence/calculation graph                                                           |
+| `GET /reports/{reportPayloadHash}/availability`  | Ordered applicable `AvailabilityRecord` values and `availabilityRecordHash` identities        |
+| `POST /reports/{reportPayloadHash}/derive`       | Produce a new report from named `availabilityRecordHash` inputs without changing the original |
+| `GET /evidence/{evidenceId}`                     | Evidence envelope subject to workspace access                                                 |
+| `GET /availability/{availabilityRecordHash}`     | One immutable evidence/artifact/reference availability assertion                              |
+| `GET /artifacts/{hash}`                          | Stream authorized content-addressed artifact with range/size limits                           |
+| `POST /comparisons`                              | Create asynchronous compatible-variant comparison                                             |
+| `GET /comparisons/{jobId}`                       | Comparison status/result                                                                      |
+| `POST /studio/sessions`                          | Begin user-confirmed localhost Studio handshake                                               |
+| `DELETE /studio/sessions/{sessionId}`            | End bridge session and trigger cleanup                                                        |
+| `POST /studio/executions/{executionId}/evidence` | Authenticated evidence batch submission                                                       |
+| `POST /preferences`                              | Record an enabled-study HumanPreferenceLabel                                                  |
+| `POST /correction-proposals`                     | Generate advisory correction proposal                                                         |
 
 No endpoint in E0 is implemented.
 
@@ -197,9 +204,19 @@ No endpoint in E0 is implemented.
 
 ### Creation and idempotency
 
-- Client supplies an idempotency key scoped to workspace, endpoint, authenticated session, and
-  canonical request hash.
-- Same key/request returns the original job; same key/different request returns conflict.
+- Client supplies an idempotency key scoped to workspace, endpoint, and authenticated session,
+  together with `evaluationRequestHash`.
+- `evaluationRequestHash` is computed only from `EvaluationRequestPreimage` in
+  [Evaluation contract design](contracts.md#configuration-preimage-types). That preimage includes
+  scene identity, EvaluationPlan `configurationHash`, evaluator constraint, requested
+  profile/catalog identities, evidence requirements, deterministic request options, and explicitly
+  ordered outputs. It excludes its own hash, request/job/execution/session IDs, submission time,
+  caller/workspace identity, transport/retry/authentication metadata, paths, and logs.
+- The hash contains no execution/session ID or wall-clock timestamp. Semantic sets use the named
+  stable ordering; requested output order is preserved. The same semantic request produces the same
+  hash, so retries may reuse it. Every accepted execution still receives a distinct `executionId`.
+- Same scoped key and `evaluationRequestHash` returns the original job; the same key with a
+  different hash returns conflict.
 - Accepted response is `202` with job/execution ID and status endpoint.
 
 ### Status
@@ -247,7 +264,8 @@ ScoringProfile compatibility class, required evidence capability/coverage, and a
 profiles. Exact hashes are required unless a reviewed adapter names both hashes and proves preserved
 semantics. A display-only severity change does not change invariant status. Incompatible profiles
 yield `EVAL_COMPARISON_INCOMPATIBLE`; the API never renormalizes absent visual or retention
-categories. Evidence deletion is exposed only through overlays or newly hashed derived reports.
+categories. Evidence deletion is exposed only through immutable `AvailabilityRecord` values
+identified by `availabilityRecordHash`, or through newly hashed derived reports.
 
 ## Proposed repository structure
 

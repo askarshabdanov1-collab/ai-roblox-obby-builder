@@ -74,7 +74,8 @@ retention. Popularity indicators are contextual metadata, never ground-truth qua
   invariant display severity, but never blocking status or outcome effect.
 - Deterministic geometry analysis runs before Studio or visual work and can stop an evaluation.
 - Evidence and finalized report payloads are content-addressed and immutable. Deletion uses an
-  external availability overlay or a newly hashed derived report.
+  immutable `AvailabilityRecord` identified by `availabilityRecordHash`, or a newly hashed derived
+  report.
 - A local orchestrator coordinates capability-specific workers through versioned contracts.
 - Studio integration is future work and uses an authenticated localhost bridge with scene hashes,
   generation tokens, cancellation, and timeouts.

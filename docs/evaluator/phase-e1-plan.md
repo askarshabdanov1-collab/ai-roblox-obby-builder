@@ -49,7 +49,7 @@ types have a separate ownership/drift boundary from Phase 0 contracts.
 
 - Add bounded Draft 2020-12 evaluator schemas and generated TypeScript types for the E1 subsets of
   EvaluationPlan, deterministic/heuristic/derived evidence and metric results, EvaluationFinding,
-  deterministic EvaluationReport payload, execution envelope, EvidenceAvailabilityOverlay,
+  deterministic EvaluationReport payload, execution envelope, `AvailabilityRecord`,
   MetricDefinition, MetricCatalog, and ScoringProfile.
 - Implement structural then semantic validation, canonical JSON, content hashes, compatibility
   checks, and immutable fixture identities.
@@ -167,7 +167,8 @@ tested; or runtime/Studio access becomes necessary.
   confidence calculations, evidence completeness, missing/not-applicable/incomplete states, and no
   aggregate score.
 - Assemble content-addressed evidence, deterministic report payloads, renderer-specific Markdown,
-  availability overlays, and newly hashed derived reports.
+  `AvailabilityRecord` values identified by `availabilityRecordHash`, and newly hashed derived
+  reports.
 - Add a local CLI for plan validation, evaluation, and finding explanation with stable exit codes,
   atomic caller-owned output, interruption safety, and machine-readable summaries.
 - Add end-to-end valid/invalid fixtures and deterministic report snapshots/hashes.
@@ -181,12 +182,15 @@ workflow, external data, automated correction, API server, MCP, or dashboard is 
   results. Model-relative coarse failures are separately `fail-under-profile`.
 - All weights, thresholds, confidence/completeness rules, and coverage requirements are classified
   [I], [P], or [C]; E1 exposes no scientifically implied aggregate.
-- Reports include catalog/profile/calculation hashes, component evidence, limitations, missing
-  capabilities, and compatibility class. Incompatible profiles are not directly compared.
-- Same manifest/plan/catalog/profile/evaluator produces byte-identical evidence and report payload
-  hashes across repeated Ubuntu/Windows runs despite new execution IDs/timestamps.
-- Original reports remain unchanged after an evidence overlay; derived reports get new hashes and
-  reproduction becomes complete/partial/impossible as defined.
+- Reports include `metricCatalogHash`, `scoringProfileHash`, `calculationBundleHash`, component
+  `calculationHash` values, evidence, limitations, missing capabilities, and compatibility class.
+  Incompatible profiles are not directly compared.
+- Same `manifestHash`, `configurationHash`, `metricCatalogHash`, `scoringProfileHash`, and evaluator
+  identity produce byte-identical evidence and report payload hashes across repeated Ubuntu/Windows
+  runs despite new execution IDs/timestamps.
+- Original reports remain unchanged after an `AvailabilityRecord`; derived reports get new hashes
+  with `availabilityRecordHash` parent references, and reproduction becomes
+  complete/partial/impossible as defined.
 - CLI tests cover pass, fail, fail-under-profile, invalid, incomplete, cancel/interruption, path
   traversal/symlink policy, existing-output preservation, corruption, and package import.
 
