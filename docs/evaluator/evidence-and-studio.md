@@ -22,7 +22,8 @@ An evidence record identifies:
 - source kind and derivation parents;
 - exact subject object IDs, route transitions, coordinates, screenshots, and image regions;
 - artifact hashes, runtime log ranges, test-player slots, and performance sample windows;
-- capture/calculation time and deterministic sequence where applicable;
+- capture wall-clock time only in the named execution envelope, monotonic sequence/relative time
+  only for runtime or performance content, and calculation time only as execution metadata;
 - validity checks, confidence, limitations, and retention/access class.
 
 The graph is acyclic and content-addressed. Final reports can be reproduced without resolving
@@ -57,6 +58,13 @@ Rules:
 - reproduction is `complete`, `partial`, or `impossible` according to whether all behavior-bearing
   inputs remain available and verifiable.
 
+Evidence identities follow the named preimages in
+[Evaluation contract design](contracts.md#hash-and-reproducibility-domains). Static content hashes
+never absorb execution provenance. Runtime, screenshot, and human evidence keep deterministic
+content/payload identity separate from execution-specific envelopes. Screenshot storage records
+`screenshotBinaryHash`, `screenshotProtocolMetadataHash`, and
+`screenshotEvidenceEnvelopeHash`; the three identities are never treated as interchangeable.
+
 ## Explainability and reproduction
 
 Every finding includes a minimal reproduction:
@@ -65,13 +73,14 @@ Every finding includes a minimal reproduction:
 - analyzer and metric definition versions;
 - input coordinates/surface regions and resolved thresholds;
 - for runtime evidence: session, sequence range, player slot, scene generation, Studio version;
-- for screenshots: view protocol, camera transform, artifact hash, regions and overlay coordinates;
+- for screenshots: view protocol, camera transform, `screenshotBinaryHash`,
+  `screenshotProtocolMetadataHash`, execution-envelope reference, regions, and overlay coordinates;
 - for performance: sample interval, device profile, summary method, and raw sample artifact;
 - for comparisons: reference snapshot and candidate/reference feature versions;
 - deterministic root command or future API request using content hashes.
 
 Human-readable reports may render annotated images, but the annotations are separate overlays so
-the original screenshot hash remains unchanged.
+the original `screenshotBinaryHash` remains unchanged.
 
 ## Future Roblox Studio integration
 
