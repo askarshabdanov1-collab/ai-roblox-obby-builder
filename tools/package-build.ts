@@ -5,7 +5,12 @@ import { fileURLToPath } from "node:url";
 const outputs = [
   ["dist/packages/canonical-json/src", "packages/canonical-json/dist"],
   ["dist/packages/contracts/src", "packages/contracts/dist"],
+  ["dist/packages/geometry-evaluator/src", "packages/geometry-evaluator/dist"],
   ["dist/packages/obby-compiler/src", "packages/obby-compiler/dist"],
+  [
+    "dist/packages/obby-evaluator-contracts/src",
+    "packages/obby-evaluator-contracts/dist",
+  ],
   ["dist/packages/roblox-emitter/src", "packages/roblox-emitter/dist"],
   ["dist/apps/orchestrator/src", "apps/orchestrator/dist"],
 ] as const;

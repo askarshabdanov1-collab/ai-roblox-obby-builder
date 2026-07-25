@@ -11,8 +11,17 @@ export default defineConfig({
       "@obby/contracts": fileURLToPath(
         new URL("./packages/contracts/src/index.ts", import.meta.url),
       ),
+      "@obby/geometry-evaluator": fileURLToPath(
+        new URL("./packages/geometry-evaluator/src/index.ts", import.meta.url),
+      ),
       "@obby/obby-compiler": fileURLToPath(
         new URL("./packages/obby-compiler/src/index.ts", import.meta.url),
+      ),
+      "@obby/obby-evaluator-contracts": fileURLToPath(
+        new URL(
+          "./packages/obby-evaluator-contracts/src/index.ts",
+          import.meta.url,
+        ),
       ),
       "@obby/roblox-emitter": fileURLToPath(
         new URL("./packages/roblox-emitter/src/index.ts", import.meta.url),

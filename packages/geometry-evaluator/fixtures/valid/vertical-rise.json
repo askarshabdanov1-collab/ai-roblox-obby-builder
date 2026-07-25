@@ -1,0 +1,36 @@
+{
+  "objects": [
+    {
+      "schemaVersion": "0.1",
+      "objectId": "platform-a",
+      "shape": "Block",
+      "authority": "native-gameplay",
+      "transform": {
+        "position": { "x": 0, "y": 0, "z": 0 },
+        "rotationDegrees": { "x": 0, "y": 0, "z": 0 }
+      },
+      "size": { "x": 10, "y": 2, "z": 10 }
+    },
+    {
+      "schemaVersion": "0.1",
+      "objectId": "platform-b",
+      "shape": "Block",
+      "authority": "native-gameplay",
+      "transform": {
+        "position": { "x": 10, "y": 4, "z": 0 },
+        "rotationDegrees": { "x": 0, "y": 0, "z": 0 }
+      },
+      "size": { "x": 10, "y": 2, "z": 10 }
+    }
+  ],
+  "transition": {
+    "schemaVersion": "0.1",
+    "transitionId": "route:platform-a/platform-b/0/1",
+    "fromObjectId": "platform-a",
+    "toObjectId": "platform-b",
+    "fromGlobalIndex": 0,
+    "toGlobalIndex": 1,
+    "controllerProfileRef": "roblox-default-r15"
+  },
+  "expected": { "horizontalGap": 0, "verticalRise": 4, "downwardDrop": 0 }
+}

@@ -19,6 +19,9 @@
     "contracts:check": "tsx tools/check-contracts.ts",
     "contracts:generate": "tsx tools/generate-contract-types.ts",
     "dev:orchestrator": "tsx apps/orchestrator/src/index.ts",
+    "evaluator:contracts:check": "tsx tools/check-evaluator-contracts.ts",
+    "evaluator:contracts:generate": "tsx tools/generate-evaluator-contracts.ts",
+    "evaluator:test": "vitest run packages/obby-evaluator-contracts packages/geometry-evaluator",
     "fixtures:check": "tsx tools/check-generated.ts",
     "fixtures:generate": "tsx tools/generate-fixtures.ts",
     "format": "prettier --write .",
@@ -34,7 +37,7 @@
     "test": "vitest run",
     "toolchain:install": "rokit install",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run contracts:check && npm run fixtures:check && npm run test && npm run security:secrets && npm run security:dependencies && npm run roblox:format:check && npm run roblox:lint && npm run roblox:test && npm run roblox:build"
+    "validate": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run contracts:check && npm run evaluator:contracts:check && npm run fixtures:check && npm run test && npm run security:secrets && npm run security:dependencies && npm run roblox:format:check && npm run roblox:lint && npm run roblox:test && npm run roblox:build"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

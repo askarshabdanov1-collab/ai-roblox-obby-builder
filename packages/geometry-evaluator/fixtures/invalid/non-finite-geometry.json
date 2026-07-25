@@ -1,0 +1,16 @@
+{
+  "objects": [
+    {
+      "schemaVersion": "0.1",
+      "objectId": "invalid-platform",
+      "shape": "Block",
+      "authority": "native-gameplay",
+      "transform": {
+        "position": { "x": "NaN", "y": 0, "z": 0 },
+        "rotationDegrees": { "x": 0, "y": 0, "z": 0 }
+      },
+      "size": { "x": 10, "y": 2, "z": 10 }
+    }
+  ],
+  "expectedError": "non-finite geometry cannot be represented in JSON"
+}
