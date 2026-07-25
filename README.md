@@ -18,6 +18,13 @@ Phase 0 establishes:
 Vertex AI, Modly, Blender, Roblox Open Cloud, image generation, analytics, and external ML models are
 not integrated.
 
+## Evaluator design
+
+Phase E0 design for the future explainable Roblox Obby Evaluator is documented in
+[`docs/evaluator/`](docs/evaluator/README.md). Phase E0 contains architecture and planning only; it
+does not implement evaluator code, external models, Studio automation, data collection, training,
+or the Windows desktop application.
+
 ## Pipeline
 
 ```text

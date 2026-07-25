@@ -8,6 +8,8 @@
 
 **Final implementation commit:** `5c2de0b` (`fix: face players toward the safe route`)
 
+**Final merge commit:** `36310b7` (`Implement deterministic Phase 0 foundation (#1)`)
+
 ## Final scope
 
 Phase 0 established the repository-first deterministic foundation:
