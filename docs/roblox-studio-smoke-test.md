@@ -51,3 +51,20 @@ Use the two client windows and record the result of each step.
    `GeneratedBy = "AIObbyBuilder/0.2"`.
 
 Stop the test and preserve the Studio output plus the observations in the pull-request evidence.
+
+## Phase 0 recorded result
+
+**PASS — 2026-07-25.** The final two-player Studio run for PR #1 completed this procedure
+successfully:
+
+- both players spawned at the exact configured center and height without sharing checkpoint state;
+- initial spawn faced `JumpPlatform01`, the first global safe-route object;
+- checkpoint respawn faced `WedgeClimb01`, the next global safe-route object;
+- changing route geometry changed facing automatically;
+- a missing next route target used the declared explicit-yaw fallback;
+- delayed callbacks from the replaced scene did not apply stale route data;
+- checkpoint, hazard, finish, native-shape, rebuild, ownership, and staging-failure checks passed.
+
+This recorded result is engine evidence for the committed Phase 0 reference slice. It does not turn
+the Studio procedure into an automated CI test and must be rerun after relevant runtime, manifest,
+or Roblox engine changes.
