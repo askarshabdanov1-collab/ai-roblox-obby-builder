@@ -1,11 +1,12 @@
-# Roblox Obby Evaluator — Phase E0 design
+# Roblox Obby Evaluator
 
 ## Status and scope
 
-Phase E0 is a design-only phase for an explainable evaluator that can later support the Windows
-desktop AI Roblox Obby Builder. It introduces no evaluator production code, schemas, external model
-dependencies, Studio plugin, MCP server, scraping, training, analytics collection, or desktop
-application.
+Phase E0 remains the authoritative reviewed design history. Phase E1a now implements only its
+versioned evaluator contracts, canonical identities, E1 catalog/profile fixtures, and deterministic
+native-Part geometry/transition inputs. See [the E1a completion record](phase-e1a-completion.md).
+There is still no route verdict engine, scoring/report workflow, CLI, external model dependency,
+Studio plugin, MCP server, scraping, training, analytics collection, or desktop application.
 
 The evaluator is intended to assess:
 
@@ -51,6 +52,7 @@ retention. Popularity indicators are contextual metadata, never ground-truth qua
 - [Visual evaluation, reference data, human labels, and analytics](visual-data-and-feedback.md)
 - [MCP, local API, and repository structure](api-and-repository.md)
 - [Phase E1 rule-based implementation plan](phase-e1-plan.md)
+- [Phase E1a implementation completion record](phase-e1a-completion.md)
 - [Independent-audit remediation matrix](audit-remediation.md)
 
 ## Phase boundaries

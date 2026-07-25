@@ -18,12 +18,13 @@ Phase 0 establishes:
 Vertex AI, Modly, Blender, Roblox Open Cloud, image generation, analytics, and external ML models are
 not integrated.
 
-## Evaluator design
+## Evaluator
 
-Phase E0 design for the future explainable Roblox Obby Evaluator is documented in
-[`docs/evaluator/`](docs/evaluator/README.md). Phase E0 contains architecture and planning only; it
-does not implement evaluator code, external models, Studio automation, data collection, training,
-or the Windows desktop application.
+The reviewed Phase E0 design and Phase E1 plan are documented in
+[`docs/evaluator/`](docs/evaluator/README.md). Phase E1a implements the evaluator-owned contract and
+native-Part geometry foundations only. It does not implement route verdicts, scoring, reports, a
+CLI, external models, Studio automation, data collection, training, analytics, or a desktop
+application.
 
 ## Pipeline
 
@@ -58,6 +59,8 @@ See `CONTRIBUTING.md` and `docs/local-development.md`. The complete local gate i
 
 ```text
 npm ci
+npm run evaluator:contracts:check
+npm run evaluator:test
 npm run validate
 git diff --check
 git status --short
