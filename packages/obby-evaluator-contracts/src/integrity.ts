@@ -17,6 +17,7 @@ import {
   verifyScoringProfileIdentity,
 } from "./hashing.js";
 import { ContractValidationError } from "./validation.js";
+import { assertAcyclicResolvedEvidenceGraph } from "./internal/evidence-cycle.js";
 
 function reject(
   contractName: string,
@@ -85,15 +86,97 @@ export function versionSatisfiesSupportedRange(
 }
 
 export type RequestPlanIdentityContext = {
-  catalog?: unknown;
-  profile?: unknown;
+  metricDefinitions: readonly unknown[];
+  catalog: unknown;
+  profile: unknown;
 };
+
+function verifyRequestPlanIdentityContext(
+  identities: RequestPlanIdentityContext | undefined,
+): { catalog: MetricCatalog; profile: ScoringProfile } {
+  if (
+    identities === undefined ||
+    !Array.isArray(identities.metricDefinitions) ||
+    identities.catalog === undefined ||
+    identities.profile === undefined
+  ) {
+    reject(
+      "EvaluationRequestPlanBinding",
+      "missing-identity-context",
+      "/identities",
+      "request-plan binding requires metric definitions, catalog, and profile objects",
+    );
+  }
+  const definitions = identities.metricDefinitions.map(
+    verifyMetricDefinitionIdentity,
+  );
+  const byIdentity = new Map(
+    definitions.map((definition) => [
+      `${definition.metricId}@${definition.metricVersion}`,
+      definition.metricDefinitionHash,
+    ]),
+  );
+  const catalog = verifyMetricCatalogIdentity(identities.catalog);
+  if (
+    byIdentity.size !== definitions.length ||
+    catalog.metricDefinitions.length !== definitions.length
+  ) {
+    reject(
+      "EvaluationRequestPlanBinding",
+      "catalog-definition-set-mismatch",
+      "/identities/metricDefinitions",
+      "catalog entries must resolve one-to-one to verified metric definitions",
+    );
+  }
+  for (const reference of catalog.metricDefinitions.toSorted((left, right) =>
+    `${left.metricId}@${left.metricVersion}`.localeCompare(
+      `${right.metricId}@${right.metricVersion}`,
+    ),
+  )) {
+    const identity = `${reference.metricId}@${reference.metricVersion}`;
+    if (byIdentity.get(identity) !== reference.metricDefinitionHash) {
+      reject(
+        "EvaluationRequestPlanBinding",
+        "unknown-catalog-definition",
+        "/identities/catalog/metricDefinitions",
+        `catalog definition ${identity} is not backed by a verified definition`,
+      );
+    }
+  }
+  const profile = verifyScoringProfileIdentity(identities.profile);
+  if (profile.metricCatalogHash !== catalog.metricCatalogHash) {
+    reject(
+      "EvaluationRequestPlanBinding",
+      "profile-catalog-mismatch",
+      "/identities/profile/metricCatalogHash",
+      "profile is not backed by the verified catalog",
+    );
+  }
+  const metricIds = new Set(
+    definitions.map((definition) => definition.metricId),
+  );
+  for (const metricId of [
+    ...profile.requiredMetricIds,
+    ...profile.optionalMetricIds,
+  ].toSorted()) {
+    if (!metricIds.has(metricId)) {
+      reject(
+        "EvaluationRequestPlanBinding",
+        "unknown-profile-metric",
+        "/identities/profile",
+        `profile metric ${metricId} is not backed by the verified catalog graph`,
+      );
+    }
+  }
+  return { catalog, profile };
+}
 
 export function assertEvaluationRequestMatchesPlan(
   requestInput: unknown,
   planInput: unknown,
-  identities: RequestPlanIdentityContext = {},
+  identities: RequestPlanIdentityContext | undefined,
 ): EvaluationRequest {
+  const verifiedIdentities = verifyRequestPlanIdentityContext(identities);
   const request = verifyEvaluationRequestIdentity(requestInput);
   const plan = verifyEvaluationPlanConfigurationIdentity(planInput);
   const mismatches: string[] = [];
@@ -130,26 +213,22 @@ export function assertEvaluationRequestMatchesPlan(
   ) {
     mismatches.push("deterministicRequestOptions");
   }
-  if (identities.catalog !== undefined) {
-    const catalog = verifyMetricCatalogIdentity(identities.catalog);
-    if (
-      catalog.catalogId !== plan.catalog.catalogId ||
-      catalog.catalogVersion !== plan.catalog.catalogVersion ||
-      catalog.metricCatalogHash !== plan.catalog.metricCatalogHash
-    ) {
-      mismatches.push("catalogIdentity");
-    }
+  const catalog = verifiedIdentities.catalog;
+  if (
+    catalog.catalogId !== plan.catalog.catalogId ||
+    catalog.catalogVersion !== plan.catalog.catalogVersion ||
+    catalog.metricCatalogHash !== plan.catalog.metricCatalogHash
+  ) {
+    mismatches.push("catalogIdentity");
   }
-  if (identities.profile !== undefined) {
-    const profile = verifyScoringProfileIdentity(identities.profile);
-    if (
-      profile.profileId !== plan.profile.profileId ||
-      profile.profileVersion !== plan.profile.profileVersion ||
-      profile.scoringProfileHash !== plan.profile.scoringProfileHash ||
-      profile.compatibilityClass !== plan.profile.compatibilityClass
-    ) {
-      mismatches.push("profileIdentity");
-    }
+  const profile = verifiedIdentities.profile;
+  if (
+    profile.profileId !== plan.profile.profileId ||
+    profile.profileVersion !== plan.profile.profileVersion ||
+    profile.scoringProfileHash !== plan.profile.scoringProfileHash ||
+    profile.compatibilityClass !== plan.profile.compatibilityClass
+  ) {
+    mismatches.push("profileIdentity");
   }
   if (mismatches.length > 0) {
     reject(
@@ -218,7 +297,11 @@ export function assertValidEvaluatorConfigurationGraph(
       "catalog entries and supplied definitions must resolve one-to-one",
     );
   }
-  for (const reference of catalog.metricDefinitions) {
+  for (const reference of catalog.metricDefinitions.toSorted((left, right) =>
+    `${left.metricId}@${left.metricVersion}`.localeCompare(
+      `${right.metricId}@${right.metricVersion}`,
+    ),
+  )) {
     const identity = `${reference.metricId}@${reference.metricVersion}`;
     const definition = byIdentity.get(identity);
     if (definition?.metricDefinitionHash !== reference.metricDefinitionHash) {
@@ -343,7 +426,7 @@ export function assertValidEvaluatorConfigurationGraph(
     ...profile.requiredMetricIds,
     ...profile.optionalMetricIds,
   ]);
-  for (const metricId of selected) {
+  for (const metricId of [...selected].toSorted()) {
     if (!byId.has(metricId)) {
       reject(
         "EvaluatorConfigurationGraph",
@@ -353,7 +436,9 @@ export function assertValidEvaluatorConfigurationGraph(
       );
     }
   }
-  for (const threshold of profile.thresholds) {
+  for (const threshold of profile.thresholds.toSorted((left, right) =>
+    left.thresholdId.localeCompare(right.thresholdId),
+  )) {
     if (!selected.has(threshold.metricId)) {
       reject(
         "EvaluatorConfigurationGraph",
@@ -364,7 +449,7 @@ export function assertValidEvaluatorConfigurationGraph(
     }
   }
   const profileInvariants = new Set(profile.invariantGateIds);
-  for (const invariantId of profileInvariants) {
+  for (const invariantId of [...profileInvariants].toSorted()) {
     if (!invariantIds.has(invariantId)) {
       reject(
         "EvaluatorConfigurationGraph",
@@ -374,7 +459,7 @@ export function assertValidEvaluatorConfigurationGraph(
       );
     }
   }
-  for (const invariantId of invariantIds) {
+  for (const invariantId of [...invariantIds].toSorted()) {
     if (!profileInvariants.has(invariantId)) {
       reject(
         "EvaluatorConfigurationGraph",
@@ -387,7 +472,10 @@ export function assertValidEvaluatorConfigurationGraph(
 
   const plan = verifyEvaluationPlanConfigurationIdentity(input.plan);
   const include = new Set(plan.metricInclude);
-  for (const metricId of [...plan.metricInclude, ...plan.metricExclude]) {
+  for (const metricId of [
+    ...plan.metricInclude,
+    ...plan.metricExclude,
+  ].toSorted()) {
     if (!byId.has(metricId) || !selected.has(metricId)) {
       reject(
         "EvaluatorConfigurationGraph",
@@ -397,7 +485,7 @@ export function assertValidEvaluatorConfigurationGraph(
       );
     }
   }
-  for (const metricId of plan.metricExclude) {
+  for (const metricId of plan.metricExclude.toSorted()) {
     if (include.has(metricId)) {
       reject(
         "EvaluatorConfigurationGraph",
@@ -408,6 +496,7 @@ export function assertValidEvaluatorConfigurationGraph(
     }
   }
   const request = assertEvaluationRequestMatchesPlan(input.request, plan, {
+    metricDefinitions: definitions,
     catalog,
     profile,
   });
@@ -486,26 +575,11 @@ export function assertValidEvidenceGraph(
       }
     }
   }
-  const visiting = new Set<string>();
-  const visited = new Set<string>();
-  const visit = (hash: string): void => {
-    if (visiting.has(hash)) {
-      reject(
-        "EvidenceGraph",
-        "evidence-cycle",
-        "/parentEvidenceHashes",
-        `evidence graph contains a cycle at ${hash}`,
-      );
-    }
-    if (visited.has(hash)) return;
-    visiting.add(hash);
-    const record = byHash.get(hash);
-    for (const parent of record?.parentEvidenceHashes.toSorted() ?? []) {
-      visit(parent);
-    }
-    visiting.delete(hash);
-    visited.add(hash);
-  };
-  for (const hash of [...byHash.keys()].toSorted()) visit(hash);
+  assertAcyclicResolvedEvidenceGraph(
+    records.map((record) => ({
+      identity: record.evidenceContentHash,
+      parentIdentities: record.parentEvidenceHashes,
+    })),
+  );
   return records;
 }

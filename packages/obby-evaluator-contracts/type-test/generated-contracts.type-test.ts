@@ -6,6 +6,7 @@ import type {
   RouteTransitionPayload,
   RuntimeObservationContentContract,
 } from "../src/generated/evaluator-contracts.js";
+import { assertEvaluationRequestMatchesPlan } from "../src/integrity.js";
 
 declare const deterministicWithoutKind: Omit<
   DeterministicFact,
@@ -75,3 +76,8 @@ void mismatchedObservation;
 void missingAvailabilityIdentity;
 void duplicateAvailabilityIdentity;
 void closedGeometry;
+
+declare const requestInput: unknown;
+declare const planInput: unknown;
+// @ts-expect-error Request-plan binding requires the complete identity graph.
+assertEvaluationRequestMatchesPlan(requestInput, planInput);

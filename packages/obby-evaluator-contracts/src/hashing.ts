@@ -1,6 +1,6 @@
 import {
   EVALUATOR_CANONICAL_JSON_ALGORITHM,
-  evaluatorCanonicalize,
+  canonicalizeEvaluatorSnapshot,
   sha256Bytes,
   sortSemanticSet,
 } from "@obby/canonical-json";
@@ -51,7 +51,7 @@ function namedHash(payload: Record<string, unknown>): NamedHashResult {
     canonicalizationAlgorithm: EVALUATOR_CANONICAL_JSON_ALGORITHM,
     ...payload,
   };
-  const canonical = evaluatorCanonicalize(preimage);
+  const canonical = canonicalizeEvaluatorSnapshot(preimage);
   return {
     hash: sha256Bytes(canonical.canonicalBytes),
     canonicalBytes: canonical.canonicalBytes,

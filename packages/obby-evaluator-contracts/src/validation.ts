@@ -3,7 +3,7 @@ import {
   type ErrorObject,
   type ValidateFunction,
 } from "ajv/dist/2020.js";
-import { evaluatorCanonicalize } from "@obby/canonical-json";
+import { snapshotEvaluatorInput } from "@obby/canonical-json";
 
 import schema from "../schemas/evaluator-contracts.schema.json" with { type: "json" };
 import type {
@@ -98,12 +98,18 @@ const validators = {
 function structuralIssues(
   errors: ErrorObject[] | null | undefined,
 ): ContractIssue[] {
-  return (errors ?? []).map((error) => ({
-    kind: "structural",
-    code: error.keyword,
-    path: error.instancePath || "/",
-    message: error.message ?? "schema validation failed",
-  }));
+  return (errors ?? [])
+    .map((error): ContractIssue => ({
+      kind: "structural",
+      code: error.keyword,
+      path: error.instancePath || "/",
+      message: error.message ?? "schema validation failed",
+    }))
+    .toSorted((left, right) =>
+      `${left.path}\u0000${left.code}\u0000${left.message}`.localeCompare(
+        `${right.path}\u0000${right.code}\u0000${right.message}`,
+      ),
+    );
 }
 
 function semanticIssue(
@@ -121,7 +127,7 @@ function duplicateValues(values: readonly string[]): string[] {
     if (seen.has(value)) duplicates.add(value);
     seen.add(value);
   }
-  return [...duplicates];
+  return [...duplicates].toSorted();
 }
 
 function semanticMetricDefinitionIssues(
@@ -211,7 +217,9 @@ function semanticMetricCatalogIssues(value: MetricCatalog): ContractIssue[] {
 function semanticScoringProfileIssues(value: ScoringProfile): ContractIssue[] {
   const issues: ContractIssue[] = [];
   const required = new Set(value.requiredMetricIds);
-  const overlap = value.optionalMetricIds.filter((id) => required.has(id));
+  const overlap = value.optionalMetricIds
+    .filter((id) => required.has(id))
+    .toSorted();
   if (overlap.length > 0) {
     issues.push(
       semanticIssue(
@@ -225,8 +233,10 @@ function semanticScoringProfileIssues(value: ScoringProfile): ContractIssue[] {
     ...value.requiredMetricIds,
     ...value.optionalMetricIds,
   ]);
-  for (const category of value.categories) {
-    for (const metricId of category.metricIds) {
+  for (const category of value.categories.toSorted((left, right) =>
+    left.categoryId.localeCompare(right.categoryId),
+  )) {
+    for (const metricId of category.metricIds.toSorted()) {
       if (!selected.has(metricId)) {
         issues.push(
           semanticIssue(
@@ -351,6 +361,24 @@ function semanticGeometryObjectIssues(
   return issues;
 }
 
+function semanticAvailabilityRecordIssues(
+  value: AvailabilityRecord,
+): ContractIssue[] {
+  if (
+    (value.effectiveAt === undefined) ===
+    (value.effectiveSequence === undefined)
+  ) {
+    return [
+      semanticIssue(
+        "effective-identity",
+        "/",
+        "exactly one of effectiveAt or effectiveSequence is required",
+      ),
+    ];
+  }
+  return [];
+}
+
 function validate<T>(
   name: keyof typeof validators,
   input: unknown,
@@ -358,7 +386,7 @@ function validate<T>(
 ): ValidationResult<T> {
   let trusted: unknown;
   try {
-    trusted = evaluatorCanonicalize(input).snapshot;
+    trusted = snapshotEvaluatorInput(input);
   } catch (caught) {
     return {
       ok: false,
@@ -430,22 +458,7 @@ export const parseCalculationBundlePreimage = (
 ): CalculationBundlePreimage => parse("CalculationBundlePreimage", input);
 
 export function parseAvailabilityRecord(input: unknown): AvailabilityRecord {
-  if (typeof input === "object" && input !== null) {
-    const record = input as Record<string, unknown>;
-    if (
-      (record.effectiveAt === undefined) ===
-      (record.effectiveSequence === undefined)
-    ) {
-      throw new ContractValidationError("AvailabilityRecord", [
-        semanticIssue(
-          "effective-identity",
-          "/",
-          "exactly one of effectiveAt or effectiveSequence is required",
-        ),
-      ]);
-    }
-  }
-  return parse("AvailabilityRecord", input);
+  return parse("AvailabilityRecord", input, semanticAvailabilityRecordIssues);
 }
 
 export class ContractValidationError extends Error {

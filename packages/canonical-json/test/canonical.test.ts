@@ -6,6 +6,8 @@ import {
   CanonicalJsonValidationError,
   canonicalStringify,
   evaluatorCanonicalize,
+  canonicalizeEvaluatorSnapshot,
+  snapshotEvaluatorInput,
   evaluatorCanonicalStringify,
   normalizeNumber,
   sha256,
@@ -94,6 +96,18 @@ describe("canonical JSON", () => {
 });
 
 describe("obby-canonical-json-v1 trusted snapshot", () => {
+  it("separates descriptor snapshotting from canonical serialization", () => {
+    const trusted = snapshotEvaluatorInput({
+      value: "e\u0301",
+      nested: [1, -0],
+    });
+    expect(trusted).toEqual({ nested: [1, 0], value: "\u00e9" });
+    const canonical = canonicalizeEvaluatorSnapshot(trusted);
+    expect(canonical.canonicalText).toBe('{"nested":[1,0],"value":"\u00e9"}');
+    expect(new TextDecoder().decode(canonical.canonicalBytes)).toBe(
+      canonical.canonicalText,
+    );
+  });
   it("preserves the committed Phase 0 serializer and hash identity", async () => {
     const fixture = JSON.parse(
       await readFile(

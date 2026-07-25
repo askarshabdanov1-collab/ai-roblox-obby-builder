@@ -113,6 +113,23 @@ describe("named evaluator preimages", () => {
     expect(() => hashMetricDefinition(input)).toThrow(/accessor/i);
   });
 
+  it("rejects availability accessors without executing getters", () => {
+    let reads = 0;
+    const input = {
+      schemaVersion: "0.1",
+      effectiveSequence: 1,
+    } as Record<string, unknown>;
+    Object.defineProperty(input, "effectiveAt", {
+      enumerable: true,
+      get: () => {
+        reads += 1;
+        return "2030-01-01T00:00:00Z";
+      },
+    });
+    expect(() => hashAvailabilityRecord(input)).toThrow(/accessor/i);
+    expect(reads).toBe(0);
+  });
+
   it("orders catalog and profile semantic sets deterministically", () => {
     const a = hashMetricCatalog({
       ...catalog(),

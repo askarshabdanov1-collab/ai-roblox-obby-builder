@@ -429,10 +429,14 @@ export type EvaluatorCanonicalResult = {
   canonicalBytes: Uint8Array;
 };
 
-export function evaluatorCanonicalize(
-  value: unknown,
-  limits: Partial<EvaluatorCanonicalLimits> = {},
-): EvaluatorCanonicalResult {
+export type EvaluatorSerializedSnapshot = Omit<
+  EvaluatorCanonicalResult,
+  "snapshot"
+>;
+
+function resolveEvaluatorLimits(
+  limits: Partial<EvaluatorCanonicalLimits>,
+): EvaluatorCanonicalLimits {
   const resolved = { ...DEFAULT_EVALUATOR_CANONICAL_LIMITS, ...limits };
   for (const [name, limit] of Object.entries(resolved)) {
     if (!Number.isSafeInteger(limit) || limit < 0) {
@@ -443,17 +447,41 @@ export function evaluatorCanonicalize(
       );
     }
   }
-  const trusted = snapshot(value, "/", 0, {
+  return resolved;
+}
+
+export function snapshotEvaluatorInput(
+  value: unknown,
+  limits: Partial<EvaluatorCanonicalLimits> = {},
+): JsonValue {
+  const resolved = resolveEvaluatorLimits(limits);
+  return snapshot(value, "/", 0, {
     limits: resolved,
     nodes: 0,
     ancestors: new Set(),
   });
-  const canonicalText = serializeSnapshot(trusted);
+}
+
+export function canonicalizeEvaluatorSnapshot(
+  trustedSnapshot: JsonValue,
+  limits: Partial<EvaluatorCanonicalLimits> = {},
+): EvaluatorSerializedSnapshot {
+  const resolved = resolveEvaluatorLimits(limits);
+  const canonicalText = serializeSnapshot(trustedSnapshot);
   const resultBytes = textEncoder.encode(canonicalText);
   if (resultBytes.byteLength > resolved.maxCanonicalBytes) {
     fail("maximum-bytes", "/", "maximum canonical byte length exceeded");
   }
-  return { snapshot: trusted, canonicalText, canonicalBytes: resultBytes };
+  return { canonicalText, canonicalBytes: resultBytes };
+}
+
+export function evaluatorCanonicalize(
+  value: unknown,
+  limits: Partial<EvaluatorCanonicalLimits> = {},
+): EvaluatorCanonicalResult {
+  const trusted = snapshotEvaluatorInput(value, limits);
+  const serialized = canonicalizeEvaluatorSnapshot(trusted, limits);
+  return { snapshot: trusted, ...serialized };
 }
 
 export function evaluatorCanonicalStringify(

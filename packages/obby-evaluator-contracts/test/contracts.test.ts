@@ -66,6 +66,14 @@ function configurationGraph() {
   };
 }
 
+function bindingContext(graph: ReturnType<typeof configurationGraph>) {
+  return {
+    metricDefinitions: graph.metricDefinitions,
+    catalog: graph.catalog,
+    profile: graph.profile,
+  };
+}
+
 function evidence(
   overrides: Record<string, unknown> = {},
 ): Record<string, unknown> {
@@ -108,7 +116,11 @@ describe("evaluator contracts", () => {
     ).toBe(ZERO_HASH);
     const graph = configurationGraph();
     expect(
-      assertEvaluationRequestMatchesPlan(graph.request, graph.plan).requestId,
+      assertEvaluationRequestMatchesPlan(
+        graph.request,
+        graph.plan,
+        bindingContext(graph),
+      ).requestId,
     ).toBe("request-0001");
   });
 
@@ -131,6 +143,7 @@ describe("evaluator contracts", () => {
           }).hash,
         },
         graph.plan,
+        bindingContext(graph),
       ),
     ).toThrow(/deterministicRequestOptions/i);
   });
@@ -221,8 +234,72 @@ describe("evaluator contracts", () => {
     const graph = configurationGraph();
     graph.plan.seed = 43;
     expect(() =>
-      assertEvaluationRequestMatchesPlan(graph.request, graph.plan),
+      assertEvaluationRequestMatchesPlan(
+        graph.request,
+        graph.plan,
+        bindingContext(graph),
+      ),
     ).toThrow(/configurationHash content hash mismatch/i);
+  });
+
+  it("requires and verifies the complete identity graph for request-plan binding", () => {
+    const graph = configurationGraph();
+    expect(() =>
+      assertEvaluationRequestMatchesPlan(
+        graph.request,
+        graph.plan,
+        undefined as never,
+      ),
+    ).toThrow(/requires metric definitions, catalog, and profile/i);
+
+    const zeroPlan = evaluationPlan();
+    zeroPlan.configurationHash = hashEvaluationPlanConfiguration(zeroPlan).hash;
+    const zeroRequest = evaluationRequest({
+      configurationHash: zeroPlan.configurationHash,
+    });
+    zeroRequest.evaluationRequestHash = hashEvaluationRequest(zeroRequest).hash;
+    expect(() =>
+      assertEvaluationRequestMatchesPlan(
+        zeroRequest,
+        zeroPlan,
+        bindingContext(graph),
+      ),
+    ).toThrow(/Identity|mismatch/i);
+
+    const wrongCatalog = structuredClone(graph.catalog);
+    wrongCatalog.catalogId = "other-catalog";
+    wrongCatalog.metricCatalogHash = hashMetricCatalog(wrongCatalog).hash;
+    expect(() =>
+      assertEvaluationRequestMatchesPlan(graph.request, graph.plan, {
+        ...bindingContext(graph),
+        catalog: wrongCatalog,
+      }),
+    ).toThrow(/catalogIdentity|profile is not backed/i);
+
+    const wrongProfile = structuredClone(graph.profile);
+    wrongProfile.profileId = "other-profile";
+    wrongProfile.scoringProfileHash = hashScoringProfile(wrongProfile).hash;
+    expect(() =>
+      assertEvaluationRequestMatchesPlan(graph.request, graph.plan, {
+        ...bindingContext(graph),
+        profile: wrongProfile,
+      }),
+    ).toThrow(/profileIdentity/i);
+
+    expect(() =>
+      assertEvaluationRequestMatchesPlan(graph.request, graph.plan, {
+        ...bindingContext(graph),
+        profile: { ...graph.profile, profileVersion: "1.0.1" },
+      }),
+    ).toThrow(/content hash mismatch/i);
+
+    expect(
+      assertEvaluationRequestMatchesPlan(
+        graph.request,
+        graph.plan,
+        bindingContext(graph),
+      ).requestId,
+    ).toBe("request-0001");
   });
 
   it("rejects unknown versions, discriminants, IDs, and properties", () => {
