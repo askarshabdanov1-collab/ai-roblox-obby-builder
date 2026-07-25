@@ -41,11 +41,12 @@ deterministic identities as defined in Phase E0.
 
 ## Geometry policy
 
-Geometry uses studs and intrinsic XYZ Euler degrees. Angles normalize to `[-180, 180)`. Each object
-retains its ID, shape, normalized center/rotation/size, oriented bounds, conservative world
-axis-aligned bounds, top-surface support/approximation markers, safe-route reference, and collision
-authority. Transition normalization references declared source/destination IDs and computes only
-horizontal surface gap, vertical rise, downward drop, and surface/profile inputs.
+Geometry uses studs and Roblox `CFrame.Angles`/`CFrame.fromEulerAnglesXYZ` composition in degrees.
+Angles normalize to `[-180, 180)`. Each object retains its ID, shape, normalized
+center/rotation/size, oriented bounds, conservative world axis-aligned bounds, top-surface
+support/approximation markers, safe-route reference, and collision authority. Transition
+normalization references declared source/destination IDs and computes only horizontal surface gap,
+vertical rise, downward drop, and surface/profile inputs.
 
 Ball, Cylinder, and Wedge support summaries retain conservative approximation markers where a box
 bound is not an exact surface model. No result is labeled feasible, infeasible, indeterminate,

@@ -97,6 +97,22 @@ describe("deterministic geometry normalization", () => {
     expect(normalized.axisAlignedBounds.maximum).toEqual(extents);
   });
 
+  it("matches Roblox CFrame XYZ composition for compound rotation", () => {
+    const normalized = normalizeGeometryObject(
+      object({
+        transform: {
+          position: { x: 0, y: 0, z: 0 },
+          rotationDegrees: { x: 30, y: 40, z: 50 },
+        },
+      }),
+    );
+    expect(normalized.orientedBounds.rotationMatrix).toEqual([
+      [0.492403876506, -0.586824088833, 0.642787609687],
+      [0.870001903752, 0.310468460973, -0.383022221559],
+      [0.025201386257, 0.747828070819, 0.663413948169],
+    ]);
+  });
+
   it("distinguishes decorative geometry from gameplay authority", () => {
     const normalized = normalizeGeometryObject(
       object({ authority: "decorative" }),

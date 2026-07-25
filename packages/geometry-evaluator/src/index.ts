@@ -91,11 +91,11 @@ function rotationMatrix(rotation: Vector3): Matrix3 {
   const cz = Math.cos(radians.z);
   const sz = Math.sin(radians.z);
 
-  // Intrinsic XYZ Euler rotation, matching the declared E1a transform contract.
+  // Roblox CFrame.Angles / CFrame.fromEulerAnglesXYZ composition: Rx * Ry * Rz.
   return [
-    [cy * cz, cz * sx * sy - cx * sz, sx * sz + cx * cz * sy],
-    [cy * sz, cx * cz + sx * sy * sz, cx * sy * sz - cz * sx],
-    [-sy, cy * sx, cx * cy],
+    [cy * cz, -cy * sz, sy],
+    [cx * sz + cz * sx * sy, cx * cz - sx * sy * sz, -cy * sx],
+    [sx * sz - cx * cz * sy, cz * sx + cx * sy * sz, cx * cy],
   ];
 }
 
