@@ -1,276 +1,200 @@
-# Phase E1 — deterministic rule-based evaluator plan
-
-## Objective
-
-Implement a repository-first, test-driven evaluator that deterministically analyzes a validated
-SceneManifest and emits an explainable, content-addressed report without Studio, screenshots,
-external models, reference data, human labels, analytics, scraping, training, or desktop work.
-
-Proposed branch:
-
-`feat/phase-e1-rule-based-evaluator`
-
-Development remains branch/PR based and must not change Phase 0 PlaceSpec/SceneManifest unless a
-test-backed requirement cannot be represented by evaluator-owned contracts and an ADR approves the
-change.
-
-## E1 scope
-
-- evaluator-owned contracts and generated TypeScript types;
-- canonical native-Part geometry facts;
-- safe-route graph and transition facts;
-- Phase 0-compatible coarse gaps, rises, drops, and landing checks;
-- checkpoint order/route/respawn policy checks available from manifest evidence;
-- hazard overlap/safe-margin checks;
-- finish reachability;
-- conservative softlock and unintended route-skip candidates;
-- gameplay/decorative collision and object-budget checks;
-- deterministic metric, finding, evidence, and report generation;
-- local CLI and fixtures;
-- byte/hash determinism and security/resource bounds.
-
-E1 outputs static or heuristic findings; it does not claim exact Roblox physics.
-
-## Dependencies
-
-Reuse:
-
-- `@obby/canonical-json` for canonical serialization and hashes;
-- `@obby/contracts` to validate SceneManifest inputs;
-- generated-contract workflow patterns;
-- Vitest/TypeScript repository toolchain.
-
-No new runtime dependency should be added unless the standard library/current workspace cannot meet
-a proven need and the dependency passes license/security/pinning review. No Roblox Studio or Python
-runtime is required in E1.
-
-## Task breakdown
-
-### E1.1 — Freeze decisions and fixtures
-
-- Approve E0 contracts/metric subset and add ADR for evaluator determinism/evidence separation.
-- Define representative valid and invalid evaluator fixtures:
-  - reference vertical slice;
-  - exact-limit gap/rise/drop;
-  - impossible transition;
-  - unreachable finish;
-  - bad checkpoint order/route position;
-  - unsafe checkpoint/hazard overlap;
-  - route softlock candidate;
-  - unintended checkpoint/finish skip;
-  - decorative collision violation;
-  - budget boundary/excess;
-  - rotated/wedge approximation;
-  - malformed/oversized input.
-- Record expected findings and known approximations before implementation.
-
-Acceptance:
-
-- fixture intent and expected evidence subjects are reviewable;
-- no Phase 0 generated file is edited manually;
-- each planned blocking rule has positive and negative fixtures.
-
-### E1.2 — Evaluator contracts
-
-- Create schemas for the E1 subsets of EvaluationPlan, EvaluationRun, EvaluationEvidence,
-  EvaluationMetric, EvaluationFinding, and EvaluationReport.
-- Create metric-catalog/scoring-profile schemas or immutable typed definitions.
-- Generate TypeScript types and validate structural/semantic layers separately.
-- Add canonical hash helpers and version compatibility.
-- Explicitly defer ScreenshotView, RuntimeObservation, ReferenceProfile, and HumanPreferenceLabel
-  implementation while reserving no unsafe generic payload escape hatch.
-
-Acceptance:
-
-- valid fixtures pass; malformed/unknown/oversized/unsupported versions fail closed;
-- generated types drift-check;
-- facts, heuristic estimates, and findings cannot be structurally confused;
-- every available metric/finding requires evidence IDs.
-
-### E1.3 — Canonical geometry analyzer
-
-- Normalize gameplay/decorative objects into immutable primitives and conservative surfaces.
-- Compute centers, bounds, top surfaces, horizontal gaps, vertical rise/drop, overlap, clearance,
-  route/world density, and spatial indexing.
-- Encode rotated/wedge approximation flags in evidence.
-- Reject non-finite/out-of-budget geometry before analysis.
-
-Acceptance:
-
-- boundary tests cover every primitive/axis and touching/separated/overlapping cases;
-- input object/array order does not change canonical facts or hashes;
-- analyzer never mutates the SceneManifest;
-- unsupported geometry yields explicit evidence/failure, not guessed precision.
-
-### E1.4 — Route and transition analyzer
-
-- Resolve spawn → first global safe-route object and every ordered transition by object ID.
-- Verify all route references, stage flattening, checkpoint/finish membership, and order.
-- Build declared-route and conservative spatial adjacency graphs.
-- Emit transition evidence with source/target surface regions and coordinates.
-
-Acceptance:
-
-- hazards, decoration, and construction order never define the safe route;
-- route completeness and finish reachability are deterministic;
-- unknown/duplicate/missing route targets fail closed;
-- evidence points to exact object IDs and route indices.
-
-### E1.5 — Coarse playability rules
-
-- Reproduce Phase 0 coarse gap/rise/drop semantics from explicit avatar profile settings.
-- Count impossible transitions, excessive drops, and clearance violations.
-- Identify conservative softlock regions and non-adjacent feasible edges that may skip
-  checkpoints/stages/finish gating.
-- Separate confirmed graph facts from heuristic candidate findings.
-
-Acceptance:
-
-- exact boundary and epsilon tests for all limits;
-- impossible required transition and unreachable finish are blocking;
-- rotated/wedge cases carry reduced confidence/approximation limitations;
-- candidate softlocks/skips never claim exact exploitability.
-
-### E1.6 — Checkpoint, hazard, finish, and policy rules
-
-- Check checkpoint order/route monotonicity and manifest-evidenced respawn geometry.
-- Calculate hazard overlap and safe margins around route/landing regions.
-- Verify finish is uniquely resolved and coarsely reachable.
-- Count decorative collision/touch behavior violations.
-- Evaluate part/material/world/object budgets available from manifest facts.
-
-Acceptance:
-
-- known unsafe checkpoint/hazard overlap blocks when required;
-- decorative collision violation always blocks;
-- no runtime/player-isolation claim is emitted without runtime evidence;
-- every rule has a remediation-oriented finding and reproducible coordinates.
-
-### E1.7 — Metric catalog and scoring
-
-- Implement only approved E1 D/H metrics.
-- Produce category profile, confidence, blocking failures, caps, and optional aggregate.
-- Implement missing/not-applicable/failed distinctly.
-- Ensure visual/retention categories are unavailable, not fabricated.
-
-Acceptance:
-
-- impossible route cannot exceed overall cap `20`;
-- deterministic blocker output is stable under irrelevant visual/property changes;
-- missing metrics are never replaced with a perfect or zero score;
-- weights, thresholds, caps, and profile version are visible in report.
-
-### E1.8 — Evidence store and report generation
-
-- Emit content-addressed canonical JSON evidence/report artifacts in a caller-selected workspace
-  store.
-- Use atomic writes and verify content hashes.
-- Generate Markdown from the finalized JSON report.
-- Include reproduction versions, configuration hash, findings, evidence index, limitations, and
-  missing capabilities.
-
-Acceptance:
-
-- same manifest/plan/evaluator produces byte-identical behavior-bearing JSON and hashes;
-- reports contain no absolute machine paths or timestamps inside deterministic hashes;
-- corrupted artifact/hash read fails;
-- JSON/Markdown agree on outcome, caps, scores, and finding IDs.
-
-### E1.9 — CLI
-
-Proposed commands:
-
-```text
-npm run evaluator -- validate-plan <plan.json>
-npm run evaluator -- evaluate <scene-manifest.json> --plan <plan.json> --out <directory>
-npm run evaluator -- explain <report.json> --finding <finding-id>
-```
-
-- CLI uses package application services; no evaluator logic lives in argument parsing.
-- Exit codes distinguish pass, findings/fail, invalid input, incomplete evidence, and internal error.
-- Output supports machine-readable JSON summary.
-
-Acceptance:
-
-- CLI never overwrites a non-owned output directory;
-- path traversal/out-of-workspace behavior is rejected according to caller policy;
-- cancellation/interrupt leaves no published partial report;
-- end-to-end fixture reports match checked snapshots/hashes.
-
-### E1.10 — CI, documentation, and review
-
-- Add evaluator generation/drift checks to `npm run validate`.
-- Document contracts, rules, CLI, limitations, and rule/evidence trace.
-- Add security tests, package exports/build smoke, and cross-platform paths.
-- Review all blocker thresholds against fixtures before PR readiness.
-
-Acceptance:
-
-- Ubuntu and Windows CI pass;
-- dependency/secret checks pass;
-- no external model, Studio, scraping, training, analytics, or desktop code/dependency is present;
-- Phase 0 fixture/runtime validation remains unchanged and green.
-
-## Exact test strategy
-
-### Contract tests
-
-- Positive valid contract for every E1 schema.
-- Mutation matrix: required fields, unknown fields, version mismatch, non-finite/bounds, array
-  limits, invalid IDs/hashes, source-kind/value mismatch, evidence-free result.
-- Semantic tests: cross-reference integrity, evidence DAG, run/report identity, metric catalog,
-  blocking consistency.
-- Generated-type and schema drift checks.
-
-### Geometry property/matrix tests
-
-- Table-driven primitives on X/Y/Z boundaries.
-- Symmetry under translation and expected axis reflection.
-- Same geometry under shuffled object/construction order.
-- Exact touching, epsilon gap/overlap, max coordinate/size/budget.
-- Rotated/wedge evidence explicitly marked approximate.
-- No input mutation.
-
-### Route/playability tests
-
-- Spawn/route/checkpoint/finish graph success and each failure class.
-- Gap/rise/drop exact limits and epsilon outside.
-- Multiple stages and checkpoint boundaries.
-- Hazard/decoration excluded from safe-route derivation.
-- Softlock/skip candidates with false-positive control fixtures.
-- Score caps and blocking propagation.
-
-### Determinism tests
-
-- Same input/plan/version produces identical canonical evidence/report bytes and hashes across
-  repeated runs.
-- Shuffled map/object insertion order does not change result.
-- Behavior-affecting geometry/plan/profile change changes relevant hashes.
-- Informational timestamps/output locations do not change calculation hashes.
-- Generated Markdown has deterministic ordering.
-
-### Security/resource tests
-
-- Oversized/deep JSON, excessive objects, invalid numbers, unknown versions.
-- Output ownership/path traversal/symlink policy.
-- Existing output preservation on failure.
-- No credentials/absolute paths in records.
-- Atomic publication and corruption detection.
-
-### End-to-end tests
-
-- Evaluate the Phase 0 vertical slice.
-- Evaluate every invalid evaluator fixture and assert stable finding IDs/severities/evidence subjects.
-- Build/import every new package from plain Node.
-- Execute CLI pass/fail/invalid/incomplete exit paths on Windows and Ubuntu.
-
-## Exact root validation commands
-
-Commands expected at E1 completion:
+# Phase E1 — staged deterministic evaluator plan
+
+## Objective and shared boundaries
+
+E1 delivers a deterministic, static evaluator in three focused pull requests. It consumes a
+validated SceneManifest and produces progressively richer, evidence-linked results. Its coarse
+geometry model never claims exact Roblox physics.
+
+All three phases exclude visual ML, Studio automation, runtime controller trials, screenshots,
+reference-data acquisition, scraping, analytics ingestion, human labeling, MCP, desktop UI, cloud
+infrastructure, automatic corrections, and changes to Phase 0 gameplay behavior.
+
+The non-overridable invariants are malformed/incompatible required inputs or evidence,
+integrity/hash failure that makes evaluation untrustworthy, incomplete/unreachable required route
+topology, unreachable finish topology, confirmed cross-player/cross-scene checkpoint leakage, and
+decorative collision/touch behavior affecting gameplay. E1 has no runtime evidence and therefore
+cannot claim checkpoint isolation passed. Profiles may alter invariant display severity, never
+blocking status or outcome effect.
+
+E1 coarse transitions use only `feasible-under-model`, `infeasible-under-model`, and
+`indeterminate`. A conservative profile may return `fail-under-profile` for model-relative
+infeasibility. Only a future approved proof standard may use "impossible."
+
+## Command ownership
+
+Existing Phase 0 commands remain unchanged and are not described as missing.
+
+| Command                                | Owner/introduction                                 | Purpose                                               |
+| -------------------------------------- | -------------------------------------------------- | ----------------------------------------------------- |
+| `npm run contracts:generate`           | Existing Phase 0                                   | Generate PlaceSpec/SceneManifest contract outputs     |
+| `npm run validate`                     | Existing aggregate gate; extended by each E1 phase | Run all checks owned by the repository                |
+| `npm run evaluator:contracts:generate` | E1a                                                | Generate evaluator contract types only                |
+| `npm run evaluator:contracts:check`    | E1a                                                | Fail when evaluator generated contracts drift         |
+| `npm run evaluator:test`               | E1a, expanded in E1b/E1c                           | Run implemented evaluator unit/property/fixture tests |
+| `npm run evaluator:fixtures:generate`  | E1c                                                | Regenerate finalized end-to-end report fixtures       |
+| `npm run evaluator:fixtures:check`     | E1c                                                | Drift-check finalized evaluator fixtures              |
+| `npm run evaluator:smoke`              | E1c                                                | Build/import packages and exercise CLI end to end     |
+| `npm run evaluator -- ...`             | E1c                                                | Run the evaluator CLI                                 |
+
+`npm run validate` becomes the only required aggregate gate and invokes only scripts that exist in
+the current phase. Evaluator contracts use their own commands because their schemas and generated
+types have a separate ownership/drift boundary from Phase 0 contracts.
+
+## E1a — contracts and geometry foundation
+
+**Branch:** `feat/phase-e1a-evaluator-contracts-geometry`
+
+### Exact scope
+
+- Add bounded Draft 2020-12 evaluator schemas and generated TypeScript types for the E1 subsets of
+  EvaluationPlan, deterministic/heuristic/derived evidence and metric results, EvaluationFinding,
+  deterministic EvaluationReport payload, execution envelope, EvidenceAvailabilityOverlay,
+  MetricDefinition, MetricCatalog, and ScoringProfile.
+- Implement structural then semantic validation, canonical JSON, content hashes, compatibility
+  checks, and immutable fixture identities.
+- Define a content-addressed E1 MetricCatalog and an E1-specific profile with categories available
+  in E1 only; no aggregate score.
+- Add valid/invalid fixtures before behavior.
+- Add immutable native-Part geometry primitives, centers, bounds, supported top surfaces, overlap,
+  horizontal gap, rise/drop input facts, clearance inputs, and approximation markers.
+- Enforce finite-number, coordinate, size, depth, object-count, and byte budgets before analysis.
+
+No route verdict engine, topology verdict, coarse transition state, scoring workflow, CLI, report
+renderer, evidence store, or Studio/runtime behavior is included.
+
+### Acceptance criteria and tests
+
+- Every metric result is structurally one of deterministic fact, heuristic estimate, learned
+  estimate, analytics-derived estimate, human judgment, or derived composite; E1 accepts only its
+  supported variants and no generic payload escape hatch.
+- Catalog/profile hashes and execution/calculation/evidence/report hash domains match the contracts
+  document; random IDs and timestamps cannot change deterministic identities.
+- Valid fixtures pass; unknown fields/versions/kinds, malformed hashes, non-finite/oversized/deep
+  inputs, source/value mismatch, mixed sources, and broken evidence DAGs fail closed.
+- Geometry tests cover every primitive/axis, touching/separated/overlap boundaries, epsilon cases,
+  translation/reflection properties, shuffled input order, unsupported rotation/wedge
+  approximations, and no input mutation.
+- Same valid input/config/version produces byte-identical geometry evidence on Ubuntu and Windows.
+
+### Root validation commands
 
 ```text
 npm ci
 npm run contracts:generate
+npm run evaluator:contracts:generate
+npm run evaluator:contracts:check
+npm run evaluator:test
+npm run validate
+git diff --check origin/main...HEAD
+git status --short --branch
+```
+
+**Rollback boundary:** remove the two new packages and their root-script/workspace registrations;
+no Phase 0 schema or generated fixture is migrated.
+
+**Stop conditions:** schema needs an unbounded/generic payload; hashes differ cross-platform;
+geometry requires engine simulation; Phase 0 contracts require an unapproved breaking migration;
+or bounds cannot reject before allocation/work.
+
+**Expected PR size:** medium, approximately 25–45 focused source/test/schema/generated files; split
+generated output mechanically but keep contracts and geometry together only while review remains
+tractable.
+
+## E1b — route and coarse playability evidence
+
+**Branch:** `feat/phase-e1b-route-playability-evidence`
+
+### Exact scope
+
+- Build the declared global safe-route/stage graph only from committed route metadata.
+- Validate references, order, stage continuity, checkpoint/finish membership, unique finish, and
+  required-route topology.
+- Emit source/target geometry evidence and per-transition coarse states using an explicit
+  avatar/model profile.
+- Emit `coarse-infeasible-transition-count`, indeterminate count, excessive-drop and clearance
+  estimates, checkpoint topology/respawn-geometry facts, hazard-route overlap/safe-margin facts or
+  estimates, and conservative softlock/skip candidates.
+- Preserve conflicting future coarse/runtime components as separate evidence plus a derived conflict
+  result; E1b fixtures model the contract but do not run Studio.
+- Store developer-fixture evidence in memory or test-owned temporary directories only.
+
+No aggregate/category scoring, finalized report workflow, public CLI, persistent workspace evidence
+store, runtime isolation verdict, or external integration is included.
+
+### Acceptance criteria and tests
+
+- Hazards, decoration, spatial proximity, and construction order never define the safe route.
+- Unknown/duplicate route targets, missing required topology, and unreachable finish fail as
+  invariants with deterministic object/transition evidence.
+- +X/-X/+Z/-Z and diagonal transitions, multiple stages/checkpoints, declared model limits, epsilon
+  outside limits, vertical-only/degenerate inputs, rotated/wedge approximations, and shuffled order
+  are covered.
+- Coarse states never use "impossible"; runtime trials are represented as empirical
+  controller/avatar/engine evidence and cannot overwrite the coarse component.
+- Softlock/skip candidates are heuristic and have false-positive-control fixtures.
+- Zero checkpoint-isolation opportunities produce `missing-evidence`, not pass; no multiplayer
+  isolation claim is emitted.
+
+### Root validation commands
+
+```text
+npm ci
+npm run evaluator:contracts:check
+npm run evaluator:test
+npm run validate
+git diff --check origin/main...HEAD
+git status --short --branch
+```
+
+**Rollback boundary:** remove `packages/playability-evaluator` and its fixtures/tests; E1a contracts
+and geometry remain independently usable.
+
+**Stop conditions:** route truth would depend on hazards/decoration/order; a heuristic must be
+misreported as deterministic; blocker evidence is not reproducible; model boundaries cannot be
+tested; or runtime/Studio access becomes necessary.
+
+**Expected PR size:** medium, approximately 20–40 focused source/test/fixture files.
+
+## E1c — scoring, reports, CLI, and end-to-end fixtures
+
+**Branch:** `feat/phase-e1c-scoring-reports-cli`
+
+### Exact scope
+
+- Apply invariant gates before E1 profile acceptance thresholds and advisory category results.
+- Implement E1-only playability, checkpoint, hazard, policy, and performance category results,
+  confidence calculations, evidence completeness, missing/not-applicable/incomplete states, and no
+  aggregate score.
+- Assemble content-addressed evidence, deterministic report payloads, renderer-specific Markdown,
+  availability overlays, and newly hashed derived reports.
+- Add a local CLI for plan validation, evaluation, and finding explanation with stable exit codes,
+  atomic caller-owned output, interruption safety, and machine-readable summaries.
+- Add end-to-end valid/invalid fixtures and deterministic report snapshots/hashes.
+
+Visual/retention categories remain `unavailable` and are never renormalized. No Studio/manual upload
+workflow, external data, automated correction, API server, MCP, or dashboard is included.
+
+### Acceptance criteria and tests
+
+- Invariants cannot be waived, excluded, severity-downgraded in outcome, or offset by category
+  results. Model-relative coarse failures are separately `fail-under-profile`.
+- All weights, thresholds, confidence/completeness rules, and coverage requirements are classified
+  [I], [P], or [C]; E1 exposes no scientifically implied aggregate.
+- Reports include catalog/profile/calculation hashes, component evidence, limitations, missing
+  capabilities, and compatibility class. Incompatible profiles are not directly compared.
+- Same manifest/plan/catalog/profile/evaluator produces byte-identical evidence and report payload
+  hashes across repeated Ubuntu/Windows runs despite new execution IDs/timestamps.
+- Original reports remain unchanged after an evidence overlay; derived reports get new hashes and
+  reproduction becomes complete/partial/impossible as defined.
+- CLI tests cover pass, fail, fail-under-profile, invalid, incomplete, cancel/interruption, path
+  traversal/symlink policy, existing-output preservation, corruption, and package import.
+
+### Root validation commands
+
+```text
+npm ci
+npm run evaluator:contracts:check
 npm run evaluator:fixtures:generate
 npm run evaluator:fixtures:check
 npm run evaluator:test
@@ -280,52 +204,24 @@ git diff --check origin/main...HEAD
 git status --short --branch
 ```
 
-The first four evaluator scripts do not exist in E0; E1 adds them only when their implementations
-exist. `npm run validate` remains the complete required gate and must include evaluator checks.
+**Rollback boundary:** remove scoring-engine/CLI packages and E1c reports/fixtures/root scripts;
+E1a geometry/contracts and E1b evidence analyzers remain valid libraries.
 
-## E1 acceptance criteria
+**Stop conditions:** any score can clear an invariant; report identity includes execution
+randomness; output cannot publish atomically; profile comparison silently renormalizes missing
+categories; stable cross-platform fixtures fail; or an excluded integration becomes necessary.
 
-- All E1 contracts are versioned, generated, drift-checked, and fail closed.
-- Valid SceneManifest + EvaluationPlan deterministically produces a report with evidence-linked
-  metrics/findings.
-- Route completeness, transitions, gaps, rises, drops, checkpoints, hazards, finish, candidate
-  softlocks/skips, collision policy, and budgets are covered.
-- Required-route impossibility/unreachable finish and decorative collision are blocking and cap the
-  aggregate.
-- Facts and heuristic candidates are visibly separated with confidence/limitations.
-- No metric/finding lacks reproducible object/transition/coordinate evidence.
-- Same inputs/versions are byte/hash deterministic on Ubuntu and Windows.
-- Phase 0 contracts/runtime and generated fixture remain green.
-- No external AI/model, Studio bridge/plugin, reference dataset collection, scraping, training,
-  analytics collection, MCP adapter, or desktop application is introduced.
-- Documentation states that E1 is coarse/static and does not prove exact playability, objective
-  visual quality, or retention.
+**Expected PR size:** medium, approximately 25–45 focused source/test/fixture/generated files. Split
+the CLI/report renderer from scoring before review if that bound is exceeded.
 
-## Risks and mitigations
+## Shared risk controls and final E1 acceptance
 
-| Risk                                   | Mitigation                                                                                                 |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Coarse geometry overclaims playability | Name model/version, lower confidence for approximations, use “candidate,” require runtime for exact claims |
-| Softlock/skip false positives          | Conservative classification, evidence graph, non-blocking default until fixture-calibrated                 |
-| Contract overdesign slows delivery     | Implement E1 subsets only; defer runtime/visual/reference/human contracts                                  |
-| Duplicate semantics drift from Phase 0 | Reuse validated SceneManifest and shared documented coarse model; parity boundary tests                    |
-| Score hides blockers                   | Apply caps after weighting and show blocker/cap trace                                                      |
-| Non-determinism from maps/order/time   | Canonical ordering/hashing; exclude informational time/path from behavior hashes                           |
-| Monorepo coupling                      | Enforce one-way package dependencies and package import smoke tests                                        |
-| Malicious/huge input                   | Contract bounds, resource budgets, fail-before-write, atomic outputs                                       |
-| Thresholds lack evidence               | Mark provisional, fixture calibration, catalog versions, stop release if blockers are unstable             |
-
-## Stop conditions
-
-Stop E1 and request architectural review if:
-
-- a required deterministic metric cannot be linked to reproducible evidence;
-- implementation requires changing Phase 0 contracts without an approved ADR and migration plan;
-- exact Roblox physics claims would be needed to meet acceptance;
-- safe-route analysis would need hazards, decoration, or construction order as route truth;
-- a score can bypass an impossible-route or collision blocker;
-- cross-platform byte/hash determinism cannot be achieved;
-- output cannot be published atomically without risking existing user data;
-- an external model, Studio automation, scraping, analytics, or desktop dependency becomes necessary;
-- new credentials or network access would be required;
-- fixture calibration cannot distinguish confirmed failures from heuristic candidates reliably.
+- Tests precede behavior and every finding links to stable object/transition/coordinate evidence.
+- Generated files are changed only through their owning commands and drift-checked.
+- Input order, output path, execution ID, and timestamps do not change calculation or report payload
+  identity.
+- Uncalibrated constants are visibly [P]/[C]; missing evidence is never converted to zero, perfect,
+  or a renormalized score.
+- Phase 0 validation remains green throughout.
+- Each pull request is independently revertible and contains no external model, Studio, scraping,
+  analytics, desktop, MCP, cloud, or credential dependency.

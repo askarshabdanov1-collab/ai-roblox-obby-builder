@@ -20,8 +20,9 @@ retention. Popularity indicators are contextual metadata, never ground-truth qua
 
 ## Design principles
 
-1. **Playability gates presentation.** An impossible required route is blocking and caps aggregate
-   scores regardless of visual quality.
+1. **Invariant integrity gates presentation.** Required-route/finish topology failures and other
+   catalog invariants block independently of profile thresholds or visual quality. Coarse geometry
+   may only report model-relative infeasibility.
 2. **Facts, estimates, and judgments stay distinct.** Reports never disguise heuristic, learned,
    subjective, or analytics-derived values as deterministic facts.
 3. **Every result is evidence-linked.** Metrics and findings identify the objects, transitions,
@@ -50,23 +51,30 @@ retention. Popularity indicators are contextual metadata, never ground-truth qua
 - [Visual evaluation, reference data, human labels, and analytics](visual-data-and-feedback.md)
 - [MCP, local API, and repository structure](api-and-repository.md)
 - [Phase E1 rule-based implementation plan](phase-e1-plan.md)
+- [Independent-audit remediation matrix](audit-remediation.md)
 
 ## Phase boundaries
 
-| Phase                         | Deliverable                                                                                                                   | Explicitly excluded                                                           |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| E0                            | Reviewed architecture, contracts, metric/scoring definitions, evidence protocol, integrations design, governance, and E1 plan | Production schemas/code, models, Studio bridge, data collection, training     |
-| E1                            | Deterministic rule-based evaluator and reproducible reports                                                                   | Visual models, external datasets, analytics calibration, automatic correction |
-| Future runtime evidence phase | Authenticated Studio evidence collector and deterministic screenshot capture                                                  | Learned scoring unless separately approved                                    |
-| Future visual phase           | Audited, pinned visual workers and calibrated weak-signal fusion                                                              | A single “beauty” ground truth                                                |
-| Future calibration phase      | Consented human preferences and first-party analytics calibration                                                             | Private competitor analytics or causal retention claims                       |
+| Phase                         | Deliverable                                                                                                                   | Explicitly excluded                                                       |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| E0                            | Reviewed architecture, contracts, metric/scoring definitions, evidence protocol, integrations design, governance, and E1 plan | Production schemas/code, models, Studio bridge, data collection, training |
+| E1a                           | Evaluator contracts, content hashes, metric catalog/profile, fixtures, and geometry primitives                                | Route verdict engine, scoring workflow, CLI, integrations                 |
+| E1b                           | Safe-route topology and coarse playability evidence                                                                           | Aggregate/category workflow, public CLI, runtime evidence                 |
+| E1c                           | Invariant gates, E1 category results, reports, CLI, and end-to-end fixtures                                                   | Visual models, external datasets, Studio, analytics, corrections          |
+| Studio feasibility milestone  | Permissions/transport/lifecycle prototype before automation                                                                   | Assumed multiplayer reliability or production plugin                      |
+| Future runtime evidence phase | Authenticated Studio evidence collector and deterministic screenshot capture                                                  | Learned scoring unless separately approved                                |
+| Future visual phase           | Audited, pinned visual workers and calibrated weak-signal fusion                                                              | A single “beauty” ground truth                                            |
+| Future calibration phase      | Consented human preferences and first-party analytics calibration                                                             | Private competitor analytics or causal retention claims                   |
 
 ## Phase E0 decisions
 
-- The evaluator produces a **score profile plus blocking findings**, never only one overall number.
+- E1 produces category results, evidence completeness, confidence, and separately reported
+  invariant/profile blockers; it has no aggregate score.
+- MetricDefinition, MetricCatalog, and ScoringProfile are content-addressed. A profile may change
+  invariant display severity, but never blocking status or outcome effect.
 - Deterministic geometry analysis runs before Studio or visual work and can stop an evaluation.
-- Evidence is content-addressed and immutable; reports reference evidence instead of embedding
-  mutable external state.
+- Evidence and finalized report payloads are content-addressed and immutable. Deletion uses an
+  external availability overlay or a newly hashed derived report.
 - A local orchestrator coordinates capability-specific workers through versioned contracts.
 - Studio integration is future work and uses an authenticated localhost bridge with scene hashes,
   generation tokens, cancellation, and timeouts.
@@ -78,9 +86,10 @@ retention. Popularity indicators are contextual metadata, never ground-truth qua
 
 These require prototypes or policy review and are intentionally not settled in E0:
 
-- exact Roblox avatar rigs, controller parameters, and physics tolerances for “exact” jump
-  simulation;
-- whether runtime automation should use a Studio plugin, an MCP bridge hosted by Studio, or both;
+- the future approved proof standard, controller/avatar profiles, engine scope, and tolerances
+  needed before any transition may be called impossible;
+- which transport passes the Studio feasibility milestone; reliable automated multiplayer control
+  is explicitly unproven;
 - screenshot storage retention, encryption, and workspace quota defaults;
 - legal review and permitted transformations for each public reference source;
 - the specific visual model set, licenses, hardware requirements, and whether workers remain local;
@@ -89,3 +98,18 @@ These require prototypes or policy review and are intentionally not settled in E
 - rater recruitment, age policy, compensation, and jurisdiction-specific consent requirements;
 - the approved desktop transport and packaging technology;
 - whether approved correction patches require a new evaluator-owned patch contract.
+
+## Documentation validation
+
+E0 deliberately adds no Markdown/Mermaid dependency. Current validation uses Prettier, the
+repository aggregate validation, a repository-local relative-link existence check, and manual
+review of Mermaid blocks:
+
+```text
+npx prettier --check README.md "docs/**/*.md"
+npm run validate
+```
+
+A future phase may add a small pinned link/Mermaid checker only when CI rendering proves a need and
+the dependency passes license/security review. External link availability is not a deterministic
+build gate.

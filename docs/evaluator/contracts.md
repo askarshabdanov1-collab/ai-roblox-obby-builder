@@ -14,8 +14,8 @@ Each contract has:
 - canonical JSON hashing for immutable records;
 - UTC RFC 3339 wall-clock timestamps plus monotonic offsets for runtime sequences;
 - namespaced stable IDs;
-- explicit source classification: `deterministic`, `heuristic`, `learned`, `analytics-derived`, or
-  `subjective`;
+- explicit source classification: `deterministic`, `heuristic`, `learned`, `analytics-derived`,
+  `subjective`, or `derived`;
 - no credentials, local absolute paths, usernames, or private identifiers in persisted records.
 
 Evaluation contracts reference a SceneManifest by immutable hash. They do not copy or modify Phase 0
@@ -23,78 +23,120 @@ PlaceSpec/SceneManifest structure.
 
 ## Shared primitives
 
-| Type               | Fields and constraints                                                     |
-| ------------------ | -------------------------------------------------------------------------- |
-| `ContentHash`      | `sha256:` followed by 64 lowercase hexadecimal characters                  |
-| `EvaluatorVersion` | Semantic version plus optional build hash                                  |
-| `RunId`            | UUIDv7 or another sortable opaque ID; generated once                       |
-| `EvidenceId`       | Run-scoped stable ID plus content hash                                     |
-| `MetricId`         | Namespaced kebab ID such as `playability.route-completeness`               |
-| `ObjectRef`        | `objectId`, optional `role`, manifest hash                                 |
-| `TransitionRef`    | `fromObjectId`, `toObjectId`, global route indices                         |
-| `Point3`           | Finite bounded `x`, `y`, `z` in studs                                      |
-| `ImageRegion`      | Normalized `[0,1]` `x`, `y`, `width`, `height`, screenshot evidence ID     |
-| `Confidence`       | `value` in `[0,1]`, `basis`, `limitations[]`, `sampleCount?`               |
-| `SourceKind`       | `deterministic`, `heuristic`, `learned`, `analytics-derived`, `subjective` |
-| `Severity`         | `info`, `warning`, `error`, `blocking`                                     |
-| `ArtifactRef`      | content hash, media type, byte length, store key, retention class          |
-| `VersionRef`       | component name, semantic version, build/config hash                        |
+| Type               | Fields and constraints                                                                |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| `ContentHash`      | `sha256:` followed by 64 lowercase hexadecimal characters                             |
+| `EvaluatorVersion` | Semantic version plus optional build hash                                             |
+| `ExecutionId`      | UUIDv7 or another sortable opaque ID; unique per attempt                              |
+| `EvidenceId`       | Stable kind/subject ID plus evidence content hash                                     |
+| `MetricId`         | Namespaced kebab ID such as `playability.route-completeness`                          |
+| `ObjectRef`        | `objectId`, optional `role`, manifest hash                                            |
+| `TransitionRef`    | `fromObjectId`, `toObjectId`, global route indices                                    |
+| `Point3`           | Finite bounded `x`, `y`, `z` in studs                                                 |
+| `ImageRegion`      | Normalized `[0,1]` `x`, `y`, `width`, `height`, screenshot evidence ID                |
+| `Confidence`       | `value` in `[0,1]`, `basis`, `limitations[]`, `sampleCount?`                          |
+| `SourceKind`       | `deterministic`, `heuristic`, `learned`, `analytics-derived`, `subjective`, `derived` |
+| `Severity`         | `info`, `warning`, `error`, `blocking`                                                |
+| `ArtifactRef`      | content hash, media type, byte length, store key, retention class                     |
+| `VersionRef`       | component name, semantic version, build/config hash                                   |
 
-## Deterministic facts versus estimates and judgments
+## Discriminated metric-result contracts
 
-The contract model prevents category confusion:
+`EvaluationMetric` is a tagged union. A result has exactly one variant and cannot use mixed labels:
 
-- `fact` values require deterministic evidence, exact units, and reproduction metadata;
-- `estimate` values require method, confidence, uncertainty/limitations, and may be heuristic,
-  learned, or analytics-derived;
-- `judgment` values require a human instruction version, rater/aggregate provenance, tie/uncertain
-  support, and cannot be promoted to fact;
-- a metric declares exactly one `sourceKind`, although its evidence may include lower-level facts;
-- report aggregation retains the original class and may not relabel it.
+| Variant                      | Required fields and confidence semantics                                                                                                      | Evidence and limitations                                                                                     | Blocking participation                                                                          |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| `deterministic-fact`         | `sourceKind: deterministic`, exact typed value/unit, method/version; confidence is `1` only when all required inputs and operations are exact | Deterministic evidence IDs; limitations identify modeled omissions but cannot turn the fact into an estimate | May trigger an invariant only when the MetricDefinition explicitly names that invariant         |
+| `heuristic-estimate`         | `sourceKind: heuristic`, typed value/unit, confidence calculation ID and inputs                                                               | Evidence IDs, uncertainty/coverage, non-empty limitations                                                    | May trigger only a model-relative profile gate; never a universal impossibility invariant       |
+| `learned-estimate`           | `sourceKind: learned`, typed value/unit, model/config/input hashes, calibrated confidence                                                     | Evidence IDs, domain/coverage status, non-empty limitations                                                  | Never independently invariant-blocking                                                          |
+| `analytics-derived-estimate` | `sourceKind: analytics-derived`, typed value/unit, calibration snapshot, sample/uncertainty fields                                            | Aggregate evidence IDs, cohort/experiment limitations                                                        | Never independently invariant-blocking or automatically generation-controlling                  |
+| `human-judgment`             | `sourceKind: subjective`, label distribution rather than a promoted scalar fact, instructions/study versions                                  | Label evidence IDs, rater effects, agreement, ties/uncertain, limitations                                    | Never independently invariant-blocking                                                          |
+| `derived-composite`          | `sourceKind: derived`, typed value/unit, fusion/calculation definition hash, ordered `parentMetricIds[]`                                      | Parent metric and derived evidence IDs, propagation rule, non-empty limitations                              | Cannot be more authoritative than its parents and never inherits invariant authority implicitly |
+
+Each source produces a separate component metric. Fusion produces only a `derived-composite`;
+reports preserve component values and source classes. Human judgments remain subjective, learned
+outputs remain estimates, and deterministic findings remain facts.
+
+## Metric catalog and scoring-profile contracts
+
+These behavior-bearing configurations are content-addressed:
+
+### `MetricDefinition`
+
+- stable `metricId` and semantic `metricVersion`;
+- exactly one result variant;
+- value schema/unit/range and applicability;
+- required evidence kinds/capabilities and zero-observation behavior;
+- calculation method/configuration and confidence method;
+- invariant ID, profile threshold definitions, and advisory thresholds kept separate;
+- normalization rule, limitations template, and comparison compatibility class;
+- `metricDefinitionHash` over the canonical definition.
+
+### `MetricCatalog`
+
+- ordered MetricDefinitions with unique IDs/versions;
+- invariant registry and non-overridable behavior;
+- catalog semantic version plus `metricCatalogHash`;
+- supported evaluator/contract ranges;
+- no mutable “latest” definition inside a finalized execution.
+
+### `ScoringProfile`
+
+- profile ID/version plus `scoringProfileHash`;
+- required/optional metric IDs, category/display configuration, evidence completeness rules;
+- profile-selectable acceptance and advisory thresholds;
+- optional experimental aggregation configuration;
+- explicit compatibility class.
+
+A ScoringProfile may change display severity for an invariant finding, but cannot change its
+`blocking: true`, invariant ID, outcome effect, or evidence requirements. Profiles cannot exclude,
+weaken, waive, or downgrade registered invariants.
 
 ## `EvaluationPlan`
 
 An immutable request describing what evidence and scores are required.
 
-| Field                             | Design                                                                                                                   |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `schemaVersion`                   | Evaluator plan contract version                                                                                          |
-| `planId`                          | Stable caller-provided kebab ID                                                                                          |
-| `scene`                           | `manifestHash`, `schemaVersion`, optional content-addressed manifest artifact                                            |
-| `profile`                         | scoring profile ID and version                                                                                           |
-| `requiredCapabilities`            | Subset of `geometry`, `route`, `coarse-jump`, `exact-jump`, `runtime`, `screenshots`, `visual`, `reference`, `analytics` |
-| `views`                           | Ordered `ScreenshotView` specifications or protocol IDs                                                                  |
-| `avatarProfiles`                  | Ordered rig/controller/movement parameter references                                                                     |
-| `deviceProfiles`                  | Ordered viewport/performance classes                                                                                     |
-| `metricInclude` / `metricExclude` | Bounded stable metric IDs; unknown IDs fail                                                                              |
-| `budgets`                         | Per-stage timeout, total timeout, memory, evidence bytes, screenshot count                                               |
-| `partialEvidencePolicy`           | `reject`, `finalize-with-missing`, or capability-specific map                                                            |
-| `comparisonGroupId?`              | Shared group for variant comparison                                                                                      |
-| `seed`                            | Integer used only by explicitly seeded evaluator operations                                                              |
-| `createdAt`                       | Informational; excluded from deterministic configuration hash                                                            |
-| `configurationHash`               | Canonical hash of all behavior-affecting fields                                                                          |
+| Field                             | Design                                                                                                                                  |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `schemaVersion`                   | Evaluator plan contract version                                                                                                         |
+| `planId`                          | Stable caller-provided kebab ID                                                                                                         |
+| `scene`                           | `manifestHash`, `schemaVersion`, optional content-addressed manifest artifact                                                           |
+| `profile`                         | scoring profile ID, version, content hash, and compatibility class                                                                      |
+| `catalog`                         | metric catalog ID, version, and content hash                                                                                            |
+| `requiredCapabilities`            | Subset of `geometry`, `route`, `coarse-jump`, `runtime-controller-trials`, `runtime`, `screenshots`, `visual`, `reference`, `analytics` |
+| `views`                           | Ordered `ScreenshotView` specifications or protocol IDs                                                                                 |
+| `avatarProfiles`                  | Ordered rig/controller/movement parameter references                                                                                    |
+| `deviceProfiles`                  | Ordered viewport/performance classes                                                                                                    |
+| `metricInclude` / `metricExclude` | Bounded stable metric IDs; unknown IDs fail                                                                                             |
+| `budgets`                         | Per-stage timeout, total timeout, memory, evidence bytes, screenshot count                                                              |
+| `partialEvidencePolicy`           | `reject`, `finalize-with-missing`, or capability-specific map                                                                           |
+| `comparisonGroupId?`              | Shared group for variant comparison                                                                                                     |
+| `seed`                            | Integer used only by explicitly seeded evaluator operations                                                                             |
+| `createdAt`                       | Informational; excluded from deterministic configuration hash                                                                           |
+| `configurationHash`               | Canonical hash of all behavior-affecting fields                                                                                         |
 
-Semantic rules include: required metrics must have required capabilities; exact-jump requires
-runtime; visual requires screenshots; reference requires visual features; analytics uses only an
-approved first-party snapshot; exclusions cannot remove mandatory blocking playability metrics.
+Semantic rules include: required metrics must have required capabilities; runtime controller trials
+require a compatible Studio capability; visual requires screenshots; reference and analytics
+require approved immutable snapshot hashes; exclusions cannot remove invariant metrics.
 
 ## `EvaluationRun`
 
-The lifecycle and immutable identity of one execution.
+The lifecycle and execution-specific identity of one attempt.
 
-| Field                                                               | Design                                                                                                                                                 |
-| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `schemaVersion`, `runId`, `planId`                                  | Identity                                                                                                                                               |
-| `manifestHash`, `planHash`, `configurationHash`                     | Pinned inputs                                                                                                                                          |
-| `evaluatorVersion`, `metricCatalogVersion`, `scoringProfileVersion` | Reproduction versions                                                                                                                                  |
-| `status`                                                            | `queued`, `validating`, `analyzing`, `collecting-runtime`, `capturing`, `analyzing-visuals`, `scoring`, `finalized`, `rejected`, `cancelled`, `failed` |
-| `stageStates[]`                                                     | Stage ID, attempt, status, timestamps, timeout, error code                                                                                             |
-| `startedAt`, `finishedAt?`                                          | UTC timestamps                                                                                                                                         |
-| `supersedesRunId?`                                                  | New run created as retry/re-evaluation                                                                                                                 |
-| `capabilityResults[]`                                               | Capability, `complete`/`partial`/`missing`/`failed`, evidence IDs                                                                                      |
-| `environment`                                                       | OS/architecture, evaluator build, Studio/engine version when applicable                                                                                |
-| `failure?`                                                          | Stable code, safe message, stage, retryability; no stack trace secrets                                                                                 |
-| `runHash`                                                           | Canonical hash once terminal                                                                                                                           |
+| Field                                                         | Design                                                                                                                                                 |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `schemaVersion`, `executionId`, `planId`                      | Execution identity; `executionId` is random/unique                                                                                                     |
+| `manifestHash`, `planHash`, `configurationHash`               | Pinned inputs                                                                                                                                          |
+| `evaluatorVersion`, `metricCatalogHash`, `scoringProfileHash` | Reproduction identities                                                                                                                                |
+| `status`                                                      | `queued`, `validating`, `analyzing`, `collecting-runtime`, `capturing`, `analyzing-visuals`, `scoring`, `finalized`, `rejected`, `cancelled`, `failed` |
+| `stageStates[]`                                               | Stage ID, attempt, status, timestamps, timeout, error code                                                                                             |
+| `startedAt`, `finishedAt?`                                    | Execution-specific UTC timestamps                                                                                                                      |
+| `supersedesExecutionId?`                                      | New execution created as retry/re-evaluation                                                                                                           |
+| `capabilityResults[]`                                         | Capability, `complete`/`partial`/`missing`/`failed`, evidence IDs                                                                                      |
+| `environment`                                                 | OS/architecture and applicable Studio/engine/renderer/GPU/driver/locale/colorspace settings                                                            |
+| `calculationBundleHash?`, `reportPayloadHash?`                | Deterministic outputs when finalized                                                                                                                   |
+| `failure?`                                                    | Stable code, safe message, stage, retryability; no stack trace secrets                                                                                 |
+| `executionEnvelopeHash`                                       | Hash of the complete execution envelope, including execution ID/timestamps                                                                             |
 
 Terminal runs are immutable. Progress messages are transient and are not part of the finalized
 contract.
@@ -103,86 +145,96 @@ contract.
 
 An envelope for one reproducible evidence item.
 
-| Field                                  | Design                                                                                                                                                                        |
-| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `schemaVersion`, `evidenceId`, `runId` | Identity                                                                                                                                                                      |
-| `kind`                                 | `geometry-fact`, `route-transition`, `runtime-observation`, `screenshot`, `image-feature`, `performance-sample`, `reference-comparison`, `analytics-aggregate`, `human-label` |
-| `sourceKind`                           | One of the five source classifications                                                                                                                                        |
-| `manifestHash`, `generationToken?`     | Scene binding                                                                                                                                                                 |
-| `subject`                              | Object refs, transition refs, coordinates, image regions, or whole-scene scope                                                                                                |
-| `producer`                             | Component/model/collector version and configuration hash                                                                                                                      |
-| `capturedAt?`, `monotonicOffsetMs?`    | Runtime ordering where relevant                                                                                                                                               |
-| `payload`                              | Kind-specific bounded structure                                                                                                                                               |
-| `artifactRefs[]`                       | Content-addressed screenshots/log chunks/etc.                                                                                                                                 |
-| `parentEvidenceIds[]`                  | Inputs used to derive this evidence                                                                                                                                           |
-| `quality`                              | Completeness, validity checks, confidence where non-deterministic                                                                                                             |
-| `limitations[]`                        | Required for non-deterministic evidence                                                                                                                                       |
-| `evidenceHash`                         | Canonical envelope hash                                                                                                                                                       |
+| Field                               | Design                                                                                                                                                                        |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `schemaVersion`, `evidenceId`       | Content identity                                                                                                                                                              |
+| `executionId?`                      | Optional provenance; excluded from deterministic evidence content when the payload is execution-independent                                                                   |
+| `kind`                              | `geometry-fact`, `route-transition`, `runtime-observation`, `screenshot`, `image-feature`, `performance-sample`, `reference-comparison`, `analytics-aggregate`, `human-label` |
+| `sourceKind`                        | One of the six source classifications                                                                                                                                         |
+| `manifestHash`, `generationToken?`  | Scene binding                                                                                                                                                                 |
+| `subject`                           | Object refs, transition refs, coordinates, image regions, or whole-scene scope                                                                                                |
+| `producer`                          | Component/model/collector version and configuration hash                                                                                                                      |
+| `capturedAt?`, `monotonicOffsetMs?` | Runtime ordering where relevant                                                                                                                                               |
+| `payload`                           | Discriminated union keyed by `kind`; generic unvalidated maps are prohibited                                                                                                  |
+| `artifactRefs[]`                    | Content-addressed screenshots/log chunks/etc.                                                                                                                                 |
+| `parentEvidenceIds[]`               | Inputs used to derive this evidence                                                                                                                                           |
+| `quality`                           | Completeness, validity checks, confidence where non-deterministic                                                                                                             |
+| `limitations[]`                     | Required for non-deterministic evidence                                                                                                                                       |
+| `evidenceContentHash`               | Canonical hash over kind, scene/subject, producer/config, payload, ordered parents/artifacts, quality, and limitations                                                        |
 
-Evidence derivation must be acyclic. Every parent must belong to the same manifest/run or be an
+Evidence derivation must be acyclic. Every parent must belong to the same manifest/execution or be an
 explicitly versioned approved reference/calibration snapshot.
 
 ## `EvaluationMetric`
 
-A metric result, separate from its catalog definition.
+A metric result is one of the six discriminated variants above and shares:
 
-| Field                                                 | Design                                                                                                                                 |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `schemaVersion`, `runId`, `metricId`, `metricVersion` | Identity                                                                                                                               |
-| `category`                                            | Playability, readability, checkpoint, hazard, composition, style, performance, difficulty, onboarding, retention-readiness, confidence |
-| `sourceKind`                                          | Declared calculation class                                                                                                             |
-| `status`                                              | `available`, `not-applicable`, `missing-evidence`, `failed`                                                                            |
-| `rawValue`                                            | Typed number, integer, boolean, enum, or bounded vector                                                                                |
-| `unit`                                                | Stable unit such as `count`, `ratio`, `studs`, `milliseconds`, `score-0-100`                                                           |
-| `normalizedScore?`                                    | `[0,100]`; absent for unscored facts                                                                                                   |
-| `confidence`                                          | Required, including deterministic metrics (`1` only when inputs/method are exact)                                                      |
-| `severity`                                            | Highest severity triggered                                                                                                             |
-| `blocking`                                            | Boolean derived from catalog threshold, never model discretion                                                                         |
-| `evidenceIds[]`                                       | Non-empty for available results                                                                                                        |
-| `thresholdsApplied`                                   | Catalog/profile version and resolved limits                                                                                            |
-| `limitations[]`                                       | Metric-specific caveats                                                                                                                |
-| `calculationHash`                                     | Hash of definition, parameters, ordered evidence, and output                                                                           |
+| Field                                                                | Design                                                                                                                                 |
+| -------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `schemaVersion`, `metricId`, `metricVersion`, `metricDefinitionHash` | Identity                                                                                                                               |
+| `category`                                                           | Playability, readability, checkpoint, hazard, composition, style, performance, difficulty, onboarding, retention-readiness, confidence |
+| `resultKind`, `sourceKind`                                           | Contract-enforced variant tags                                                                                                         |
+| `status`                                                             | `available`, `not-applicable`, `missing-evidence`, `failed`                                                                            |
+| `rawValue`, `unit`                                                   | Variant-defined typed value and stable unit                                                                                            |
+| `normalizedScore?`                                                   | `[0,100]`; absent for unscored facts and unavailable results                                                                           |
+| `confidence`                                                         | Variant-specific semantics; no unexplained constant                                                                                    |
+| `severity`, `blocking`, `invariantId?`                               | Invariant status resolved before profile display severity                                                                              |
+| `evidenceIds[]`                                                      | Non-empty for available results                                                                                                        |
+| `parentMetricIds[]?`                                                 | Required only for a derived composite                                                                                                  |
+| `thresholdsApplied`                                                  | Invariant plus profile acceptance/advisory thresholds, each classified                                                                 |
+| `limitations[]`                                                      | Required for every non-deterministic or derived result                                                                                 |
+| `calculationHash`                                                    | Deterministic hash of definition, parameters, ordered evidence/parents, and result                                                     |
+
+Ratio MetricDefinitions declare `zeroObservationBehavior` as one of `not-applicable`,
+`missing-evidence`, or a domain-justified exact value. No ratio defaults to pass when its denominator
+is zero; checkpoint isolation with zero observed checkpoint/respawn opportunities is
+`missing-evidence`.
 
 ## `EvaluationFinding`
 
 An actionable, evidence-backed observation.
 
-| Field                                  | Design                                                                                                                  |
-| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `schemaVersion`, `findingId`, `runId`  | Identity                                                                                                                |
-| `ruleId`, `ruleVersion`, `metricIds[]` | Source rules                                                                                                            |
-| `title`, `summary`                     | Safe bounded text generated from templates where deterministic                                                          |
-| `severity`, `blocking`                 | Profile-resolved classification                                                                                         |
-| `sourceKind`                           | Inherited from rule/metric                                                                                              |
-| `subjects`                             | Object IDs, transitions, coordinates, views, image regions                                                              |
-| `evidenceIds[]`                        | Required                                                                                                                |
-| `reproduction`                         | Analyzer inputs or Studio steps without machine-specific paths                                                          |
-| `suggestedCorrection?`                 | Advisory typed intent, affected object IDs, predicted tradeoffs                                                         |
-| `limitations[]`                        | Why the finding may be incomplete                                                                                       |
-| `disposition?`                         | Future human state: `unreviewed`, `accepted`, `rejected`, `duplicate`, `waived`; waiver includes reviewer/reason/expiry |
+| Field                                  | Design                                                                                                              |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `schemaVersion`, `findingId`           | Deterministic finding identity                                                                                      |
+| `executionId?`                         | Optional execution provenance; excluded from deterministic finding calculation identity                             |
+| `ruleId`, `ruleVersion`, `metricIds[]` | Source rules                                                                                                        |
+| `title`, `summary`                     | Safe bounded text generated from templates where deterministic                                                      |
+| `severity`, `blocking`, `invariantId?` | Invariant blocking is catalog-resolved; profile may alter display severity only                                     |
+| `sourceKind`                           | Inherited from rule/metric                                                                                          |
+| `subjects`                             | Object IDs, transitions, coordinates, views, image regions                                                          |
+| `evidenceIds[]`                        | Required                                                                                                            |
+| `reproduction`                         | Analyzer inputs or Studio steps without machine-specific paths                                                      |
+| `suggestedCorrection?`                 | Advisory typed intent, affected object IDs, predicted tradeoffs                                                     |
+| `limitations[]`                        | Why the finding may be incomplete                                                                                   |
+| `disposition?`                         | Future human review state; a display/workflow waiver never changes an invariant's blocking status or outcome effect |
 
 Suggested corrections do not contain executable scripts and cannot be automatically applied.
 
 ## `EvaluationReport`
 
-The finalized output that ties the run together.
+The finalized deterministic payload that ties the calculation together. Execution timing/status
+remains in EvaluationRun.
 
-| Field                                              | Design                                                               |
-| -------------------------------------------------- | -------------------------------------------------------------------- |
-| `schemaVersion`, `reportId`, `runId`, `reportHash` | Identity                                                             |
-| `scene`, `plan`, `versions`                        | Manifest/plan/config/evaluator/catalog/profile hashes                |
-| `outcome`                                          | `pass`, `pass-with-warnings`, `fail`, `incomplete`                   |
-| `blockingFindingIds[]`                             | Deterministic list                                                   |
-| `scoreProfile`                                     | Category scores, confidence, caps, weighted aggregate when permitted |
-| `metrics[]`                                        | Ordered embedded metric results or references                        |
-| `findings[]`                                       | Ordered finding references                                           |
-| `evidenceIndex[]`                                  | Evidence ID, kind, hash, artifact refs                               |
-| `missingEvidence[]`                                | Capability/metric, reason, consequence                               |
-| `comparability`                                    | Comparison group/profile and compatible dimensions                   |
-| `limitations[]`                                    | Run-wide limitations and prohibited interpretations                  |
-| `generatedAt`                                      | UTC timestamp                                                        |
+| Field                                | Design                                                                                        |
+| ------------------------------------ | --------------------------------------------------------------------------------------------- |
+| `schemaVersion`, `reportPayloadHash` | Deterministic payload identity                                                                |
+| `calculationBundleHash`              | Ordered behavior-bearing input/evidence/calculation identity                                  |
+| `scene`, `plan`, `versions`          | Manifest/plan/config/evaluator/catalog/profile content hashes                                 |
+| `outcome`                            | `pass`, `pass-with-warnings`, `fail-under-profile`, `fail`, `incomplete`                      |
+| `blockingFindingIds[]`               | Deterministic list                                                                            |
+| `scoreProfile`                       | Category results, confidence, and classified optional experimental aggregation when permitted |
+| `metrics[]`                          | Ordered embedded metric results or references                                                 |
+| `findings[]`                         | Ordered finding references                                                                    |
+| `evidenceIndex[]`                    | Evidence ID, kind, hash, artifact refs                                                        |
+| `missingEvidence[]`                  | Capability/metric, reason, consequence                                                        |
+| `comparability`                      | Comparison group/profile and compatible dimensions                                            |
+| `limitations[]`                      | Report-wide limitations and prohibited interpretations                                        |
 
 Ordering is canonical: category, metric ID, finding severity/rule/subject, evidence ID.
+`generatedAt`, execution ID, local paths, and renderer metadata are excluded from this payload.
+A rendered Markdown/HTML report is a separate artifact with `reportRenderHash`, renderer
+version/configuration, report payload hash, locale, and render timestamp.
 
 ## `ScreenshotView`
 
@@ -199,25 +251,39 @@ The requested and observed deterministic capture definition.
 | `visibility`                                 | UI, character, nameplates, debug overlays                                                                                                                                     |
 | `timing`                                     | Settle frames/ms, capture offset, animation policy                                                                                                                            |
 | `expectedManifestHash`                       | Stale-scene guard                                                                                                                                                             |
-| `observed`                                   | Actual camera/render/viewport/engine settings                                                                                                                                 |
+| `observed`                                   | Actual camera/render/viewport/engine plus OS/scaling, renderer/API, GPU/driver, locale, DPI/device-pixel ratio, and colorspace                                                |
 | `artifact`                                   | Image `ArtifactRef`                                                                                                                                                           |
 
 ## `RuntimeObservation`
 
 One ordered Studio fact or measurement.
 
-| Field                                                  | Design                                                                                                                                                                                                           |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `schemaVersion`, `observationId`, `runId`, `sessionId` | Identity                                                                                                                                                                                                         |
-| `manifestHash`, `generationToken`, `playerSlot?`       | Scope                                                                                                                                                                                                            |
-| `sequence`, `monotonicOffsetMs`, `observedAt`          | Ordering                                                                                                                                                                                                         |
-| `kind`                                                 | `scene-loaded`, `character-spawned`, `checkpoint-activated`, `character-died`, `character-respawned`, `finish-touched`, `softlock-candidate`, `transition-attempt`, `frame-sample`, `log-event`, `capture-ready` |
-| `subject`                                              | Object/transition/player-slot refs and position/orientation                                                                                                                                                      |
-| `value`                                                | Kind-specific bounded payload                                                                                                                                                                                    |
-| `collectorVersion`, `engineVersion`                    | Reproduction                                                                                                                                                                                                     |
-| `validity`                                             | Required scene/generation/session checks                                                                                                                                                                         |
+| Field                                                        | Design                                                                                                                                                                                                           |
+| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `schemaVersion`, `observationId`, `executionId`, `sessionId` | Identity                                                                                                                                                                                                         |
+| `manifestHash`, `generationToken`, `playerSlot?`             | Scope                                                                                                                                                                                                            |
+| `sequence`, `monotonicOffsetMs`, `observedAt`                | Ordering                                                                                                                                                                                                         |
+| `kind`                                                       | `scene-loaded`, `character-spawned`, `checkpoint-activated`, `character-died`, `character-respawned`, `finish-touched`, `softlock-candidate`, `transition-attempt`, `frame-sample`, `log-event`, `capture-ready` |
+| `subject`                                                    | Object/transition/player-slot refs and position/orientation                                                                                                                                                      |
+| `payload`                                                    | Kind-discriminated bounded payload; generic maps are prohibited                                                                                                                                                  |
+| `collectorVersion`, `engineVersion`                          | Reproduction                                                                                                                                                                                                     |
+| `validity`                                                   | Required scene/generation/session checks                                                                                                                                                                         |
 
 Player slots are evaluator-local pseudonyms, never Roblox usernames or user IDs.
+
+Runtime payload variants define their required fields:
+
+- scene/capture readiness: ownership, manifest/generation, readiness checks;
+- character spawn/respawn/death: player slot, character generation, root transform, cause/source;
+- checkpoint/finish: player slot, object ID, activation order/result;
+- transition attempt: transition ID, controller/avatar profile, start/end transforms, result,
+  duration, attempt policy;
+- frame sample: sample interval, frame/physics/memory counters and device/render environment;
+- log event: allowlisted event code, structured fields, severity and source component;
+- softlock candidate: region/route subjects, recovery actions attempted, timeout policy.
+
+Unknown kinds or missing kind-specific fields fail validation. Runtime controller trials emit
+empirical results for their recorded profile; they never emit a universal `exact` verdict.
 
 ## `ReferenceProfile`
 
@@ -267,5 +333,45 @@ and exclusion rules.
   version.
 - Finalized reports are never rewritten in place; migration creates a derived artifact with parent
   hash and migration version.
-- An evaluator run pins all contract versions. Mixed-version evidence is rejected unless an
+- An evaluator execution pins all contract versions. Mixed-version evidence is rejected unless an
   explicit, tested adapter is listed in the plan.
+
+## Hash and reproducibility domains
+
+All hashes use repository canonical JSON and SHA-256. Arrays with semantic order preserve it; sets
+and maps are normalized by their contract-defined stable ordering.
+
+| Identity                | Included fields                                                                                                                                                                             | Excluded fields                                                                                       | Timestamp/random ID policy                                                                     | Equivalent-run guarantee                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `executionId`           | None; opaque UUIDv7 identity                                                                                                                                                                | All content                                                                                           | Random and unique                                                                              | Intentionally different                                      |
+| `executionEnvelopeHash` | Complete EvaluationRun including execution ID, stage attempts/status, timestamps, environment and output hashes                                                                             | Transient progress messages and local diagnostic stacks                                               | Includes execution ID/timestamps                                                               | Not byte-identical across executions                         |
+| `calculationBundleHash` | Manifest, plan configuration, evaluator, MetricCatalog/ScoringProfile content hashes, compatible environment class, ordered deterministic/approved evidence content hashes and calculations | Execution ID, wall-clock timestamps, local paths, retry counters, renderer-only fields                | Excludes random IDs/timestamps                                                                 | Must be byte-identical for equivalent calculation inputs     |
+| `evidenceContentHash`   | Kind, manifest/subject, producer/configuration, typed payload, ordered parent/artifact hashes, quality and limitations                                                                      | Execution ID when execution-independent, storage key, capture wall clock unless semantically required | Runtime capture/sequence fields remain when they are evidence; arbitrary storage time does not | Identical only for semantically identical evidence           |
+| `reportPayloadHash`     | Canonical deterministic EvaluationReport payload and calculation bundle hash                                                                                                                | Execution ID, generated timestamp, local paths, render metadata                                       | Excludes random IDs/timestamps                                                                 | Must be byte-identical for equivalent calculation inputs     |
+| `reportRenderHash`      | Report payload hash, renderer/version/configuration, locale, rendered bytes                                                                                                                 | Local output path                                                                                     | Render timestamp is metadata outside the rendered-byte hash                                    | Identical only for the same payload and renderer environment |
+
+Semantic equivalence requires the exact contract, evaluator, definition/catalog/profile hashes and
+compatible environment class. Merely reusing a version string is insufficient.
+
+## Evidence availability and immutable reports
+
+Deleting governed evidence never mutates EvaluationEvidence or EvaluationReport:
+
+- an `EvidenceAvailabilityOverlay` is a separate, content-addressed status record containing
+  evidence/artifact hash, status (`available`, `restricted`, `deleted`), reason, effective time,
+  authority, and tombstone hash;
+- the original report and `reportPayloadHash` remain unchanged;
+- report retrieval joins the latest authorized overlay for display without changing original bytes;
+- a new derived report may reference the original payload hash and overlay hashes, but receives a
+  new payload hash;
+- reproduction is `complete`, `partial`, or `impossible` based on currently available required
+  evidence, and this status is external to the original report.
+
+## Profile and report compatibility
+
+Runs/reports are directly comparable only when manifest comparison intent, calculation bundle
+schema, evaluator compatibility class, MetricCatalog hash, ScoringProfile hash, required metric
+set, evidence capability/coverage class, and environment class match. A tested adapter may declare
+specific compatible differences. Otherwise comparisons are component-only or `incomparable`;
+missing visual/retention categories are never renormalized into equivalence with a future full
+profile.

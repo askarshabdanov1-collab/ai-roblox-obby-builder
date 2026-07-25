@@ -44,6 +44,15 @@ Reports expose component signals and disagreement. A fused score is not accepted
 outperforms simple baselines on held-out Roblox-specific validation and remains stable across
 device/view/style strata.
 
+Before collecting labels for a proposed fusion, publish a preregistered protocol defining datasets
+and immutable splits, hypotheses, component inputs, simple baselines, primary/secondary metrics,
+subgroups, ablations, statistical tests, OOD detector, failure criteria, and stop/rollback rules.
+At minimum compare against single-signal, uniform-average, and geometry-only baselines; ablate every
+learned and human component. Evaluation must include held-out experiences and time periods,
+mobile/desktop and visual-style strata, an OOD/challenge set, calibration error, and documented
+false-positive/false-negative cases. Failure to beat baselines, unstable subgroup behavior,
+uncalibrated OOD behavior, or material protocol sensitivity keeps fusion unavailable.
+
 ### Visual evaluation limitations
 
 - Beauty and appeal are subjective, audience-specific, cultural, and context-dependent.
@@ -136,7 +145,9 @@ trained.
 3. Locate artifacts/derived features through provenance indexes.
 4. Delete according to rights/retention policy; create a non-reversible tombstone with reason/date.
 5. Invalidate affected dataset snapshots and publish a successor snapshot.
-6. Identify reports/models depending on the source; historical reports retain a limitation marker.
+6. Identify dependent reports/models. Never rewrite a finalized report or its hash; publish an
+   external `EvidenceAvailabilityOverlay`, or a newly hashed derived report that references the
+   original, and classify later reproduction as `complete`, `partial`, or `impossible`.
 7. Retrain/recalibrate future models when impact thresholds require it.
 
 ## Human pairwise labeling protocol
@@ -167,6 +178,20 @@ Do not ask “Which game is better?” when the evidence only supports a visual 
 Left/right order, scene identifiers, and nonessential branding are randomized/blinded where
 possible. The same rater does not see repeated near-identical pairs close together.
 
+### Presentation controls
+
+- Preregister minimum physical/pixel resolution and supported desktop or mobile assignment.
+- Record viewport, device pixel ratio, browser/app zoom, UI scale, safe-area insets, image scaling
+  method, and whether full-screen presentation was used.
+- Never upscale one variant differently from the other; preserve aspect ratio and expose identical
+  pan/zoom controls when allowed.
+- Give brightness/ambient-light guidance and a calibration image; record self-reported inability to
+  meet it without collecting device fingerprints.
+- Provide accessibility accommodations such as zoom, extra time, keyboard navigation, and
+  color-vision-safe instructions, and analyze accommodation effects rather than excluding raters.
+- Detect or self-report low-quality displays, compression, unsupported viewports, or rendering
+  failures; retain the label as flagged/uncertain or exclude only under preregistered rules.
+
 ### Quality control
 
 - gold questions with clear protocol defects, not subjective “correct beauty” answers;
@@ -183,6 +208,8 @@ possible. The same rater does not see repeated near-identical pairs close togeth
 - Report raw counts for left/right/tie/uncertain/skip.
 - Use pairwise models such as Bradley–Terry only after checking fit and transitivity assumptions.
 - Report bootstrap uncertainty or credible intervals, effective sample size, and rater clustering.
+- Preserve label-level uncertainty, ties, skips, repeated-rater structure, presentation conditions,
+  and rater effects in any future ranker; never collapse them to unqualified binary truth.
 - Measure agreement with statistics appropriate for pairwise/tie labels and report per-question
   family/cohort.
 - Low agreement is a result, not a reason to manufacture a decisive label.
@@ -228,6 +255,12 @@ Only from Roblox experiences owned/operated by this project and after privacy/pl
 - D1/D7 retention where legitimately available;
 - experiment assignment and eligibility.
 
+Acquisition source, age, and geography are not evaluator features. If a separately approved study
+needs them for bias/confounding analysis, it must use consented, coarse, minimum-size cohorts and
+must not infer protected attributes. Cross-device identity linkage is prohibited by default; a
+future exception requires explicit necessity, consent/lawful basis, security review, and a documented
+identity-error analysis.
+
 ### Event-to-calibration flow
 
 1. Version scene, evaluator report, experiment, event schema, and release.
@@ -245,10 +278,12 @@ Only from Roblox experiences owned/operated by this project and after privacy/pl
 
 - Observational association is labeled correlation.
 - A high evaluator score does not guarantee retention.
-- D1/D7 is influenced by acquisition, audience, content cadence, social context, monetization, bugs,
-  and external events.
+- D1/D7 is influenced by acquisition source, age/audience, geography, device, time since
+  release/update, novelty decay, content cadence, campaigns, social context, monetization, bugs,
+  platform changes, and external events.
 - Causal claims require pre-registered randomized experiments, valid assignment/exposure, sufficient
-  power, guardrail metrics, and analysis of attrition/interference.
+  power, guardrail metrics, and analysis of attrition, interference, experiment noncompliance, and
+  cross-device assignment error.
 - Even experiments estimate effects for tested populations/variants, not universal laws.
 - Retention readiness remains a multi-component advisory profile.
 
@@ -260,6 +295,10 @@ Only from Roblox experiences owned/operated by this project and after privacy/pl
 - Do not optimize engagement at the expense of child safety, deceptive design, accessibility, or
   platform rules.
 - Evaluator calibration cannot automatically publish or mutate a live experience.
+- Observational retention metrics and reference popularity cannot automatically alter generation.
+- Preference-model output cannot automatically select, apply, or publish a correction.
+- Causal automation requires an approved experiment, data and model governance, explicit guardrails,
+  human review of the proposed action, and rollback authorization.
 
 ### Privacy and governance
 

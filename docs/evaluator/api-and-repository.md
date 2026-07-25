@@ -3,15 +3,19 @@
 ## API principles
 
 - All state-changing requests are authenticated, local, explicit, idempotent where possible, and
-  scoped to an immutable manifest hash/run ID.
+  scoped to an immutable manifest hash/execution ID.
 - Long-running work is asynchronous. Clients submit a job, receive an opaque ID, observe bounded
   progress, and retrieve immutable results.
 - Tool and endpoint responses use the same evaluator contracts.
-- Cancellation is explicit and terminal; retry creates a new run.
+- Cancellation is explicit and terminal; retry creates a new execution.
 - API errors use stable codes and safe messages without secrets or machine-specific paths.
 - Production APIs do not accept arbitrary shell commands, Luau, model names, filesystem paths, or
   external URLs.
 - E0 implements none of these tools/endpoints.
+- Every request resolves content-addressed MetricCatalog and ScoringProfile hashes. Profiles may
+  change acceptance/advisory thresholds and invariant display severity, but may never disable,
+  weaken, exclude, or downgrade invariant blocking behavior.
+- Malformed/incompatible evidence and evaluator integrity/hash failures reject the evaluation.
 
 ## Future MCP tools
 
@@ -28,7 +32,7 @@ Input:
 
 Output:
 
-- `jobId`, `runId`, accepted manifest/plan/config hashes;
+- `jobId`, `executionId`, accepted manifest/plan/catalog/profile/config hashes;
 - initial status and capability availability;
 - status/report resource links.
 
@@ -60,7 +64,7 @@ Future Studio-backed screenshot job.
 
 Input:
 
-- finalized scene/run identity;
+- finalized scene/execution identity;
 - ordered ScreenshotViews or approved protocol;
 - expected Studio session/capabilities;
 - timeout/artifact budgets.
@@ -86,10 +90,10 @@ Input:
 Output:
 
 - comparability decision;
-- per-metric/category deltas, caps, confidence, Pareto summary;
+- per-metric/category deltas, invariant/profile gate changes, confidence, Pareto summary;
 - evidence coverage differences and pairwise human labels where separately available.
 
-The tool returns `incomparable` instead of coercing incompatible runs into a ranking.
+The tool returns `incomparable` instead of coercing incompatible executions into a ranking.
 
 ### `explain_evaluation`
 
@@ -98,7 +102,7 @@ region.
 
 Input:
 
-- report hash;
+- report payload hash;
 - selector;
 - depth/artifact-preview limits.
 
@@ -115,7 +119,7 @@ Creates advisory, typed correction intents for selected findings.
 
 Input:
 
-- report hash and finding IDs;
+- report payload hash and finding IDs;
 - current manifest hash;
 - allowed correction categories and budgets.
 
@@ -150,7 +154,7 @@ Studio bridge submits a bounded batch of observations/artifacts.
 
 Input:
 
-- authenticated Studio session, run, manifest, generation, sequence range;
+- authenticated Studio session, execution, manifest, generation, sequence range;
 - RuntimeObservations/EvaluationEvidence envelopes;
 - artifact hashes and sizes.
 
@@ -158,7 +162,7 @@ Output:
 
 - accepted/rejected sequence IDs;
 - next expected sequence;
-- run evidence completeness.
+- execution evidence completeness.
 
 Out-of-order, replayed, stale, oversized, or wrong-scene evidence is rejected.
 
@@ -166,24 +170,26 @@ Out-of-order, replayed, stale, oversized, or wrong-scene evidence is rejected.
 
 Proposed prefix: `/api/evaluator/v1`.
 
-| Method and endpoint                   | Behavior                                                            |
-| ------------------------------------- | ------------------------------------------------------------------- |
-| `POST /runs`                          | Validate plan/manifest and create asynchronous run                  |
-| `GET /runs/{runId}`                   | Run status, stage progress, capability completeness                 |
-| `POST /runs/{runId}/cancel`           | Idempotently request cancellation                                   |
-| `GET /runs/{runId}/events?after=`     | Bounded server-sent progress/event stream or polling cursor         |
-| `GET /runs/{runId}/report`            | Final report metadata/content reference                             |
-| `GET /reports/{reportHash}`           | Immutable machine-readable report                                   |
-| `GET /reports/{reportHash}/explain`   | Filtered evidence/calculation graph                                 |
-| `GET /evidence/{evidenceId}`          | Evidence envelope subject to workspace access                       |
-| `GET /artifacts/{hash}`               | Stream authorized content-addressed artifact with range/size limits |
-| `POST /comparisons`                   | Create asynchronous compatible-variant comparison                   |
-| `GET /comparisons/{jobId}`            | Comparison status/result                                            |
-| `POST /studio/sessions`               | Begin user-confirmed localhost Studio handshake                     |
-| `DELETE /studio/sessions/{sessionId}` | End bridge session and trigger cleanup                              |
-| `POST /studio/runs/{runId}/evidence`  | Authenticated evidence batch submission                             |
-| `POST /preferences`                   | Record an enabled-study HumanPreferenceLabel                        |
-| `POST /correction-proposals`          | Generate advisory correction proposal                               |
+| Method and endpoint                              | Behavior                                                            |
+| ------------------------------------------------ | ------------------------------------------------------------------- |
+| `POST /executions`                               | Validate plan/manifest and create asynchronous execution            |
+| `GET /executions/{executionId}`                  | Execution status, stage progress, capability completeness           |
+| `POST /executions/{executionId}/cancel`          | Idempotently request cancellation                                   |
+| `GET /executions/{executionId}/events?after=`    | Bounded progress/event stream or polling cursor                     |
+| `GET /executions/{executionId}/report`           | Final report metadata/content reference                             |
+| `GET /reports/{reportPayloadHash}`               | Immutable deterministic machine-readable report payload             |
+| `GET /reports/{reportPayloadHash}/explain`       | Filtered evidence/calculation graph                                 |
+| `GET /reports/{reportPayloadHash}/availability`  | Current external evidence-availability overlay                      |
+| `POST /reports/{reportPayloadHash}/derive`       | Produce a new report from an overlay without changing the original  |
+| `GET /evidence/{evidenceId}`                     | Evidence envelope subject to workspace access                       |
+| `GET /artifacts/{hash}`                          | Stream authorized content-addressed artifact with range/size limits |
+| `POST /comparisons`                              | Create asynchronous compatible-variant comparison                   |
+| `GET /comparisons/{jobId}`                       | Comparison status/result                                            |
+| `POST /studio/sessions`                          | Begin user-confirmed localhost Studio handshake                     |
+| `DELETE /studio/sessions/{sessionId}`            | End bridge session and trigger cleanup                              |
+| `POST /studio/executions/{executionId}/evidence` | Authenticated evidence batch submission                             |
+| `POST /preferences`                              | Record an enabled-study HumanPreferenceLabel                        |
+| `POST /correction-proposals`                     | Generate advisory correction proposal                               |
 
 No endpoint in E0 is implemented.
 
@@ -194,7 +200,7 @@ No endpoint in E0 is implemented.
 - Client supplies an idempotency key scoped to workspace, endpoint, authenticated session, and
   canonical request hash.
 - Same key/request returns the original job; same key/different request returns conflict.
-- Accepted response is `202` with job/run ID and status endpoint.
+- Accepted response is `202` with job/execution ID and status endpoint.
 
 ### Status
 
@@ -203,16 +209,16 @@ an invented percentage when duration is unknown.
 
 ### Events
 
-- Cursor is opaque and run-scoped.
+- Cursor is opaque and execution-scoped.
 - Events are bounded, ordered, resumable, and safe to repeat.
-- Clients must fetch final run/report as source of truth.
+- Clients must fetch final execution/report as source of truth.
 - Progress events are not persisted as evaluation evidence unless promoted through a contract.
 
 ### Cancellation and retry
 
 - `cancel` is idempotent.
 - Terminal jobs cannot return to running.
-- Retry creates a new run with `supersedesRunId`.
+- Retry creates a new execution with `supersedesExecutionId`.
 - Non-idempotent Studio capture/runtime stages are never silently retried; the plan decides whether
   a new session/attempt is allowed and records it.
 
@@ -233,6 +239,15 @@ Examples:
 - `EVAL_INTERNAL`.
 
 Errors include retryability and stage/field pointers where safe. Internal stacks remain local.
+
+### Report and profile compatibility
+
+Comparison requires compatible report-payload schema, calculation bundle, MetricCatalog,
+ScoringProfile compatibility class, required evidence capability/coverage, and affected environment
+profiles. Exact hashes are required unless a reviewed adapter names both hashes and proves preserved
+semantics. A display-only severity change does not change invariant status. Incompatible profiles
+yield `EVAL_COMPARISON_INCOMPATIBLE`; the API never renormalizes absent visual or retention
+categories. Evidence deletion is exposed only through overlays or newly hashed derived reports.
 
 ## Proposed repository structure
 
@@ -287,13 +302,11 @@ visual worker → composition adapter through a versioned process/API boundary
 
 ### E1 folders
 
-Only these are justified for E1:
+Folders are introduced only in the phase that owns their first behavior:
 
-- `packages/obby-evaluator-contracts`;
-- `packages/geometry-evaluator`;
-- `packages/playability-evaluator`;
-- `packages/scoring-engine`;
-- `apps/evaluator-cli`.
+- **E1a:** `packages/obby-evaluator-contracts` and `packages/geometry-evaluator`;
+- **E1b:** `packages/playability-evaluator`;
+- **E1c:** `packages/scoring-engine` and `apps/evaluator-cli`.
 
 The dashboard, visual worker, MCP adapter, and dataset metadata wait for phases that exercise them.
 

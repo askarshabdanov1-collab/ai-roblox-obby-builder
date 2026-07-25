@@ -18,7 +18,7 @@ metrics + catalog/profile versions ── findings ── EvaluationReport
 
 An evidence record identifies:
 
-- manifest, run, plan, evaluator, configuration, and producer versions;
+- manifest, execution, plan, evaluator, catalog, profile, configuration, and producer versions;
 - source kind and derivation parents;
 - exact subject object IDs, route transitions, coordinates, screenshots, and image regions;
 - artifact hashes, runtime log ranges, test-player slots, and performance sample windows;
@@ -34,7 +34,7 @@ Proposed local layout (logical, not created in E0):
 
 ```text
 workspace evaluation store
-├── runs/<run-id>/index.json
+├── executions/<execution-id>/index.json
 ├── records/sha256/<prefix>/<hash>.json
 ├── artifacts/sha256/<prefix>/<hash>
 ├── reports/sha256/<prefix>/<hash>.json
@@ -49,10 +49,13 @@ Rules:
 - store only evaluator player slots and approved event fields;
 - binary artifacts have media type, dimensions, byte length, and capture provenance;
 - each external/reference artifact has a retention class and deletion/tombstone process;
-- deletion of a governed source preserves a non-reversible tombstone and invalidates dependent
-  future comparisons without rewriting historical reports;
-- reports remain readable when optional artifacts are deleted, but declare missing governed
-  evidence.
+- deleting governed evidence never mutates its record or any finalized report;
+- an external `EvidenceAvailabilityOverlay` records unavailable evidence, reason, effective time,
+  and authority without containing deleted material;
+- a later derived report may reference the original report and overlay, but receives a new payload
+  hash; the original report and hash remain unchanged;
+- reproduction is `complete`, `partial`, or `impossible` according to whether all behavior-bearing
+  inputs remain available and verifiable.
 
 ## Explainability and reproduction
 
@@ -72,6 +75,47 @@ the original screenshot hash remains unchanged.
 
 ## Future Roblox Studio integration
 
+Studio automation is not assumed feasible. A dedicated future **Studio feasibility milestone** must
+precede implementation. It must test permissions, transport, lifecycle recovery, single-player
+control, and evidence integrity against a pinned Studio/engine version. Multiplayer automation
+remains unproven until that prototype demonstrates repeatable slot creation and isolation.
+
+### Required permissions and Studio settings
+
+The feasibility prototype must inventory and minimize:
+
+- plugin install/enable permission and access only to the active place, selection, camera, and
+  evaluator-owned instances;
+- `HttpService` availability and the user's explicit **Allow HTTP Requests** setting when HTTP is
+  attempted; disabled HTTP must be detected, never silently enabled;
+- script injection/edit permissions, filesystem, clipboard, Open Cloud, asset upload, account
+  cookies, and arbitrary network access, all rejected for the evaluator;
+- local loopback networking and firewall behavior on supported Windows configurations;
+- playtest, camera, screenshot, and performance APIs actually exposed to the chosen plugin context.
+
+The plugin displays every required setting and permission before a run. Missing capability yields
+`manual-evidence-required` or `unsupported`, not a partial claim of automation.
+
+### Capability and version negotiation
+
+Before accepting work, each side exchanges protocol version/range, Studio and engine build,
+plugin/bridge/orchestrator versions, supported transports, playtest modes, capture capabilities,
+payload limits, and security features. The orchestrator selects only a documented compatible
+intersection. Unknown major versions, missing integrity features, unsupported required
+capabilities, or unapproved adapters reject the job before scene mutation.
+
+Transport availability is actively probed without changing Studio state:
+
+| Candidate                                                  | Feasibility question                                                                 | Reject when                                                                                   |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| Plugin-originated loopback HTTP polling                    | Can enabled `HttpService` reach only the authenticated local endpoint reliably?      | HTTP is disabled, peer/origin cannot be bound, or polling cannot meet lease/cancel guarantees |
+| Plugin-originated loopback WebSocket through a local proxy | Does the supported Studio/plugin environment expose a stable audited client path?    | Requires unsupported APIs, broad network exposure, or cannot authenticate every frame         |
+| File-based user-mediated bundle exchange                   | Can a user export/import signed bundles through explicit UI?                         | Paths cannot be safely scoped or artifact hashes cannot be verified                           |
+| MCP-hosted bridge with a narrow Studio adapter             | Can capabilities remain allowlisted and Studio-originated evidence be authenticated? | It exposes arbitrary Studio/script/tool execution or obscures provenance                      |
+
+No transport is selected in E0. Manual signed bundle import is the required fallback when automation
+or local networking is unavailable.
+
 ### Responsibilities
 
 The future Studio plugin or MCP bridge will:
@@ -81,7 +125,8 @@ The future Studio plugin or MCP bridge will:
 3. receive a validated manifest hash and scene payload reference;
 4. stage and rebuild through the existing owned-root runtime path;
 5. confirm generated-root ownership, manifest hash, and generation token;
-6. configure one-player or multiplayer test sessions;
+6. configure one-player test sessions and, only after proven capability negotiation, bounded
+   multiplayer sessions;
 7. start/stop playtests and reset deterministic evaluator player slots;
 8. collect bounded runtime observations and filtered logs;
 9. configure fixed cameras and capture screenshots;
@@ -109,21 +154,20 @@ unbounded log streaming.
 - No Roblox account credential, cookie, API key, or Open Cloud secret is needed for local Studio
   evaluation.
 
-The exact transport (plugin HTTP, WebSocket proxy, or MCP-hosted bridge) remains an E0 unresolved
-decision and requires a Studio capability/security prototype.
+The exact transport remains unresolved pending the feasibility milestone.
 
 ### Scene lifecycle and stale-scene protection
 
 Each command carries:
 
-- `runId`;
+- `executionId`;
 - expected `manifestHash`;
 - `sceneGeneration` opaque token;
 - command sequence and deadline;
 - optional playtest session ID.
 
 After any rebuild, Studio returns a new generation token. Collectors reject observations/captures
-unless current generated-root attributes, manifest hash, generation token, run ID, and playtest
+unless current generated-root attributes, manifest hash, generation token, execution ID, and playtest
 session all match. A callback registered under an older generation can log a discarded-stale-event
 counter but cannot publish evidence or apply corrections.
 
@@ -132,7 +176,8 @@ Rebuild remains staged and atomic. Failed validation/build preserves the previou
 ### Playtest control
 
 - One-player mode uses one evaluator-local slot.
-- Multiplayer mode declares an exact slot count, currently bounded to a small test profile.
+- Multiplayer automation is `unsupported-unproven` until the feasibility milestone passes; a
+  future compatible mode must declare an exact bounded slot count.
 - Session start waits for generated scene ready, all expected characters ready, and root placement
   complete.
 - Actions use a future bounded test-driver vocabulary (spawn, reset, move to test marker, attempt
@@ -155,8 +200,25 @@ Rebuild remains staged and atomic. Failed validation/build preserves the previou
 | Entire Studio stage  | Plan budget, initially 5 min | Stop playtest, restore camera/UI, release session                         |
 
 Cancellation requests are acknowledged quickly, then cleanup has a bounded grace period. The
-orchestrator force-closes transport after the grace period and marks cleanup uncertain; a new run
+orchestrator force-closes transport after the grace period and marks cleanup uncertain; a new execution
 must re-handshake and verify Studio state.
+
+### Lease, crash, and startup reconciliation
+
+- The controller grants one short lease keyed by session and execution IDs. Authenticated
+  heartbeats renew it; missed heartbeats expire control and prohibit new mutations.
+- Before mutation, the plugin persists a minimal pre-run snapshot: place identity, play/edit mode,
+  camera/UI state, generated-root identity/hash/generation, and evaluator-owned temporary IDs. It
+  never snapshots unrelated user content.
+- On normal cancellation it stops play, discards unpublished evidence, removes only owned temporary
+  objects, restores the snapshot, and releases the lease.
+- After an abrupt plugin, Studio, bridge, or orchestrator crash, the next startup performs
+  reconciliation before accepting work. Expired leases and owned temporary jobs become orphaned;
+  the user sees the detected state and approves destructive cleanup when ownership is not certain.
+- Evidence from an interrupted job remains quarantined until hashes, execution/session identity,
+  manifest generation, and completion markers validate. Stale jobs can never resume mutation.
+- If automatic restoration cannot be proven, the job is `cleanup-uncertain`, automation remains
+  locked, and the UI provides a bounded manual recovery checklist and signed evidence export.
 
 ### Logs and observations
 
@@ -181,24 +243,36 @@ No evaluator component directly edits collision geometry in Studio outside the v
 
 ### Global protocol
 
-Initial protocol ID: proposed `roblox-obby-fixed-views-v1`.
+Initial protocol ID: `roblox-obby-fixed-views-draft-0`. It is a design target, not a reproducible v1
+standard. Affected visual metrics are incomparable by default when any required requested/observed
+setting differs; a versioned compatibility rule supported by validation data is the only exception.
 
-| Setting          | Deterministic requirement                                                                                                               |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Camera           | `Scriptable`; world CFrame recorded to full supported precision                                                                         |
-| FOV              | 70° unless view override is versioned                                                                                                   |
-| Resolution       | Desktop `1920×1080`; mobile profile `1280×720` render with declared safe-area simulation, plus future portrait profile after validation |
-| Graphics quality | Fixed named quality level and observed engine quality recorded                                                                          |
-| Lighting         | Versioned evaluator lighting profile; time, ambient, brightness, shadows, atmosphere, post-processing recorded                          |
-| UI               | Core/game UI hidden unless a UI-specific plan requests it; evaluator overlay never included in source image                             |
-| Character        | Hidden for geometry/composition views; visible with fixed rig/pose for scale views; policy recorded                                     |
-| Dynamic state    | Physics paused or scene settled; animations seeded/frozen where possible                                                                |
-| Timing           | Wait for scene ready, two render frames, configured settle time, then capture at a fixed monotonic offset                               |
-| Format           | Lossless PNG preferred; colorspace and alpha policy recorded                                                                            |
-| Validity         | Manifest hash/generation checked immediately before and after capture                                                                   |
+| Parameter           | Draft-0 treatment                                                                                                         |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Graphics quality    | Fixed requested level and observed engine level recorded; exact supported level is deferred to feasibility testing        |
+| Renderer/API/GPU    | Renderer, graphics API, GPU vendor/device, and driver recorded; cross-environment compatibility is deferred               |
+| Resolution/viewport | Requested and observed pixel resolution plus viewport rectangle recorded                                                  |
+| DPI/OS scaling/DPR  | OS scaling, DPI, and device-pixel ratio recorded; no compatibility classes approved                                       |
+| Colorspace/format   | Lossless PNG target; observed colorspace, transfer/alpha behavior recorded and unresolved behavior rejects strict capture |
+| Lighting/time       | Content-addressed lighting profile, clock time, ambient, brightness, exposure, atmosphere, and post-processing recorded   |
+| Shadows/sky/clouds  | Requested and observed shadow mode, sky identity, cloud state recorded; final fixed assets/settings deferred              |
+| Particles           | Disabled/frozen when capability permits; otherwise count/state and deviation recorded                                     |
+| Animation/physics   | Seed/freeze policy, observed animation state, simulation state, and settle result recorded                                |
+| Settle/readiness    | Settle duration, frame count, streaming completion signal, and texture readiness signal recorded; thresholds deferred     |
+| Camera              | `Scriptable`; full observed CFrame, eye anchor, pitch, yaw, roll, and FOV recorded per view                               |
+| Desktop/mobile      | Desktop, mobile landscape, and mobile portrait profiles remain distinct; exact dimensions deferred                        |
+| UI/safe area        | Core/game/evaluator UI policy, UI scale, safe-area insets, and unexpected overlays recorded                               |
+| Character           | Explicit per-view hidden/visible policy, rig, pose, eye position, and scale recorded                                      |
+| Locale              | Studio/OS locale and language recorded because UI/text/rendering may differ                                               |
+| Validity            | Manifest hash, generation, execution/session, and protocol settings checked before and after capture                      |
 
 The protocol records requested and observed settings because Roblox/driver versions may not honor
 every request identically.
+
+Draft-0's proposed analysis views hide the character; a separately named scale view may show a
+pinned rig/pose. The exact eye offset and non-level camera pitch rule are deferred and therefore
+must be plan fields before a capture can claim protocol compliance. A plan that omits them produces
+draft evidence only, not comparable visual metrics.
 
 ### View definitions
 
@@ -235,6 +309,6 @@ unsampled objects.
 - Wrong hash/generation/session: discard and fail stale.
 - Missing anchor/target: finding plus missing screenshot; do not substitute another view.
 - Unsettled dynamic state: retry once only if plan permits and the retry is recorded.
-- Unsupported resolution/quality: mark protocol deviation and confidence penalty or reject if
-  strict.
+- Unsupported resolution/quality or any other required setting: mark protocol deviation and make
+  affected visual metrics incomparable; reject when the plan requires protocol compliance.
 - Blank/corrupt image or unexpected UI: reject artifact.
