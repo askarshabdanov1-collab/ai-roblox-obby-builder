@@ -35,9 +35,9 @@ describe("geometry fixtures", () => {
         normalizeGeometryObjects(value.objects),
       );
       expect({
-        horizontalGap: transition.horizontalGap,
-        verticalRise: transition.verticalRise,
-        downwardDrop: transition.downwardDrop,
+        horizontalGap: transition.horizontalSeparation.value,
+        verticalRise: transition.verticalRise.value,
+        downwardDrop: transition.downwardDrop.value,
       }).toEqual(value.expected);
     },
   );

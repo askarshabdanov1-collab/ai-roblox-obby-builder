@@ -5,6 +5,9 @@
       "objectId": "cylinder-a",
       "shape": "Cylinder",
       "authority": "native-gameplay",
+      "collision": { "canCollide": true, "canTouch": true, "canQuery": true },
+      "gameplayOwnership": "native-part",
+      "promotionStatus": "not-applicable",
       "transform": {
         "position": { "x": 0, "y": 2, "z": 0 },
         "rotationDegrees": { "x": 0, "y": 0, "z": 0 }
@@ -13,7 +16,7 @@
     }
   ],
   "expected": {
-    "supportKind": "planar",
-    "approximation": "conservative-bounds"
+    "kind": "cylinder-surfaces",
+    "upwardFacingCandidate": "curved-side"
   }
 }

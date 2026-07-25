@@ -370,6 +370,18 @@ This design does not claim RFC 8785 compliance.
   stable key named in its preimage definition; reject duplicate stable keys.
 - A preimage starts with `canonicalizationAlgorithm: "obby-canonical-json-v1"` and the applicable
   preimage/schema version, so a canonicalization change produces a new identity domain.
+- Build one trusted descriptor snapshot and serialize it once. Hash exactly the bytes returned by
+  the named helper. Reject enumerable accessors, inherited enumerable properties, symbol keys,
+  unexpected prototypes, Date/Map/Set/typed arrays/class instances, trap failures, cycles, and
+  normalized-key collisions. A transparent stable Proxy cannot be portably branded and is accepted
+  only insofar as its inspected descriptors are observationally ordinary and stable.
+- Default resource limits are depth 64, 4,096 enumerable properties per object, 100,000 array
+  entries, 200,000 visited nodes, and 16 MiB canonical UTF-8. Exceeding a limit produces a typed
+  deterministic validation error.
+
+The existing Phase 0 `@obby/canonical-json` 0.2.0 default API retains its prior byte identity.
+Evaluator hash helpers use separately named `obby-canonical-json-v1` APIs; this is not a silent
+Phase 0 identity migration.
 
 Direct binary hashes use SHA-256 over the exact stored bytes and do not use JSON canonicalization.
 A subject stable key is the kind-prefixed tuple: object `objectId`; transition
