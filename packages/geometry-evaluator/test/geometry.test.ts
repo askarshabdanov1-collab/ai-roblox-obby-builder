@@ -226,6 +226,11 @@ describe("deterministic geometry normalization", () => {
     );
     expect(normalized.topSurface.kind).toBe("cylinder-surfaces");
     if (normalized.topSurface.kind !== "cylinder-surfaces") return;
+    expect(normalized.orientedBounds.rotationMatrix).not.toEqual([
+      [1, 0, 0],
+      [0, 1, 0],
+      [0, 0, 1],
+    ]);
     expect(normalized.topSurface.axisDirection).toEqual({ x: 0, y: 1, z: 0 });
     expect(normalized.topSurface.positiveEndcap).toEqual({
       kind: "circular-endcap",
@@ -244,6 +249,11 @@ describe("deterministic geometry normalization", () => {
       z: 0,
     });
     expect(normalized.topSurface.upwardFacingCandidate).toBe("positive-endcap");
+    expect(normalized.topSurface.curvedSide.kind).toBe(
+      "cylindrical-curved-side",
+    );
+    expect(normalized.topSurface.curvedSide).not.toHaveProperty("plane");
+    expect(normalized.topSurface.curvedSide).not.toHaveProperty("corners");
     expect(normalized.topSurface.curvedSide.axisStart).toEqual({
       x: 2,
       y: -2,

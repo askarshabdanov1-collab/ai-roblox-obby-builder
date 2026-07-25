@@ -63,16 +63,23 @@ The aggregate semantic validator verifies the complete MetricDefinition → Metr
 ScoringProfile → EvaluationPlan → EvaluationRequest graph. It resolves exact definition
 identities, metric/invariant references, all required invariants, derived parents/cycles, plan
 selection, actual catalog/profile/configuration/request hashes, and a deliberately narrow
-semantic-version range grammar. Request/plan binding independently verifies both identities and
-requires the actual verified MetricDefinition, MetricCatalog, and ScoringProfile graph; a partial
-hash-only context is not accepted. Set-like catalog, profile, plan, evidence, parent, and transition
-validation follows canonical semantic order so equivalent shuffled inputs select identical errors.
+semantic-version range grammar. It is the sole public request/plan binding boundary and requires the
+complete actual MetricDefinition, MetricCatalog, ScoringProfile, EvaluationPlan, and
+EvaluationRequest graph; the former standalone binding helper is not exported. Metric-definition
+and evidence collections are snapshot-ordered by semantic non-hash keys and canonical tie-breakers
+before identity checks, so identity-invalid shuffled inputs produce the same full issue list.
+Set-like catalog, profile, plan, parent, and transition validation follows canonical semantic order.
 Evidence graphs verify every content hash, duplicate ID/hash rules, parent existence, manifest
 scope, compatible subjects, and deterministic acyclic traversal. Because parent hashes participate
 in evidence content identities, a fully hash-valid cyclic public fixture would require a
 cryptographic fixed point; the cycle algorithm is tested through an internal already-resolved-node
 seam while public tests retain hash mismatch, missing-parent, duplicate, scope, and valid-acyclic
 coverage.
+
+Positive evaluator fixtures derive self identities through the named hash helpers and use pinned,
+reviewable semantic sources for external manifest, geometry, calculation, producer, rule, and
+availability identities. Silent all-zero defaults have been removed; the all-zero form remains only
+in an explicitly named rejection regression.
 
 ## Geometry policy
 

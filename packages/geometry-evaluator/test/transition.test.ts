@@ -156,6 +156,15 @@ describe("transition input normalization", () => {
       expect(normalized.horizontalSeparation.approximationKind).toBe(
         "conservative-lower-bound",
       );
+      expect(normalized.horizontalSeparation.method).toBe(
+        "world-aabb-horizontal-separation",
+      );
+      expect(normalized.horizontalSeparation.applicability).toBe(
+        "broad-phase-only",
+      );
+      expect(normalized.horizontalSeparation.limitations).toEqual([
+        "World AABB overlap does not prove native primitive surface contact.",
+      ]);
     }
     const larger = normalizeTransitionInput(
       transition(),
@@ -165,6 +174,17 @@ describe("transition input normalization", () => {
       ]),
     );
     expect(larger.horizontalSeparation.value).toBe(0.0000000011);
+    expect(larger.horizontalSeparation.method).toBe(
+      "world-aabb-horizontal-separation",
+    );
+    expect(larger.horizontalSeparation.approximationKind).toBe(
+      "conservative-lower-bound",
+    );
+    expect(larger.horizontalSeparation.toleranceStuds).toBe(0.000000001);
+    expect(larger.horizontalSeparation.applicability).toBe("broad-phase-only");
+    expect(larger.horizontalSeparation.limitations).toEqual([
+      "World AABB overlap does not prove native primitive surface contact.",
+    ]);
   });
 
   it("rejects invalid route identities and duplicate transition tuples", () => {

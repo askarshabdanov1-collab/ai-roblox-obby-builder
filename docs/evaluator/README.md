@@ -7,6 +7,7 @@ versioned evaluator contracts, canonical identities, E1 catalog/profile fixtures
 native-Part geometry/transition inputs. See [the E1a completion record](phase-e1a-completion.md).
 There is still no route verdict engine, scoring/report workflow, CLI, external model dependency,
 Studio plugin, MCP server, scraping, training, analytics collection, or desktop application.
+The aggregate configuration-graph validator is the sole public request/plan binding boundary.
 
 The evaluator is intended to assess:
 

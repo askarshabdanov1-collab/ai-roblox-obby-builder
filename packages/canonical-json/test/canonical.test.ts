@@ -120,7 +120,7 @@ describe("obby-canonical-json-v1 trusted snapshot", () => {
     expect(sha256(value)).toBe(fixture.sha256);
   });
 
-  it("snapshots accessors once and hashes the exact returned bytes", () => {
+  it("rejects an accessor without executing its getter", () => {
     let reads = 0;
     const value = {};
     Object.defineProperty(value, "changing", {
