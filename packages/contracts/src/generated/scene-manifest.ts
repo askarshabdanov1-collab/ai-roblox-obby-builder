@@ -28,6 +28,7 @@ export interface SceneManifest {
   };
   navigation: {
     coarseReachability: CoarseReachability;
+    characterPlacement: CharacterPlacement;
     /**
      * @minItems 1
      * @maxItems 20
@@ -73,6 +74,10 @@ export interface CoarseReachability {
   maxHorizontalGap: number;
   maxVerticalRise: number;
   maxDownwardDrop: number;
+}
+export interface CharacterPlacement {
+  strategy: "humanoid-root-part-cframe-v1";
+  verticalOffset: number;
 }
 export interface NavigationStage {
   id: KebabId;

@@ -95,5 +95,9 @@ describe("deterministic compiler", () => {
       maxVerticalRise: 5,
       maxDownwardDrop: 20,
     });
+    expect(first.navigation.characterPlacement).toEqual({
+      strategy: "humanoid-root-part-cframe-v1",
+      verticalOffset: 3,
+    });
   });
 });

@@ -79,7 +79,10 @@ function expectContiguous(values: readonly number[], start: number): boolean {
 }
 
 type Positioned = {
-  transform: { position: { x: number; y: number; z: number } };
+  transform: {
+    position: { x: number; y: number; z: number };
+    rotation: { x: number; y: number; z: number };
+  };
   size: { x: number; y: number; z: number };
 };
 
@@ -143,6 +146,11 @@ function validateObjectBudget(
       ),
     );
   }
+}
+
+function hasHorizontalPlacementSurface(object: Positioned): boolean {
+  const rotation = object.transform.rotation;
+  return rotation.x === 0 && rotation.z === 0;
 }
 
 export function semanticPlaceSpecIssues(spec: PlaceSpec): ContractIssue[] {
@@ -237,6 +245,15 @@ export function semanticPlaceSpecIssues(spec: PlaceSpec): ContractIssue[] {
   }
 
   validateObjectBudget(spec.spawn, "/spawn", spec, issues);
+  if (!hasHorizontalPlacementSurface(spec.spawn)) {
+    issues.push(
+      issue(
+        "character-placement-surface-rotation",
+        "/spawn/transform/rotation",
+        "spawn placement surface may rotate around Y but cannot pitch or roll",
+      ),
+    );
+  }
   for (const [index, obstacle] of spec.obstacles.entries()) {
     if (!stageIds.has(obstacle.stageId)) {
       issues.push(
@@ -248,6 +265,18 @@ export function semanticPlaceSpecIssues(spec: PlaceSpec): ContractIssue[] {
       );
     }
     validateObjectBudget(obstacle, `/obstacles/${index}`, spec, issues);
+    if (
+      obstacle.role === "checkpoint" &&
+      !hasHorizontalPlacementSurface(obstacle)
+    ) {
+      issues.push(
+        issue(
+          "character-placement-surface-rotation",
+          `/obstacles/${index}/transform/rotation`,
+          "checkpoint placement surface may rotate around Y but cannot pitch or roll",
+        ),
+      );
+    }
   }
 
   const routeIds: string[] = [];
@@ -692,6 +721,18 @@ export function semanticSceneManifestIssues(
           "class-shape",
           `${path}/className`,
           "className and shape are not a supported native implementation",
+        ),
+      );
+    }
+    if (
+      (object.role === "spawn" || object.role === "checkpoint") &&
+      !hasHorizontalPlacementSurface(object)
+    ) {
+      issues.push(
+        issue(
+          "character-placement-surface-rotation",
+          `${path}/transform/rotation`,
+          "character placement surfaces may rotate around Y but cannot pitch or roll",
         ),
       );
     }

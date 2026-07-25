@@ -4,6 +4,7 @@ local Workspace = game:GetService("Workspace")
 
 local BuildPlan = require(ReplicatedStorage.ObbyRuntime.BuildPlan)
 local Builder = require(ReplicatedStorage.ObbyRuntime.Builder)
+local CharacterPlacement = require(ReplicatedStorage.ObbyRuntime.CharacterPlacement)
 local SceneBuilderCore = require(ReplicatedStorage.ObbyRuntime.SceneBuilderCore)
 local manifest = require(ServerStorage.GeneratedManifests.VerticalSliceManifest)
 
@@ -11,6 +12,36 @@ local function assertSmoke(condition, message)
     if not condition then
         error("[Phase 0 smoke setup] " .. message)
     end
+end
+
+local function cframeFromTransform(transform)
+    local position = transform.position
+    local rotation = transform.rotation
+    return CFrame.new(position.x, position.y, position.z)
+        * CFrame.Angles(math.rad(rotation.x), math.rad(rotation.y), math.rad(rotation.z))
+end
+
+local cardinalDirections = {
+    { yaw = 0, expected = Vector3.new(0, 0, -1) },
+    { yaw = 90, expected = Vector3.new(-1, 0, 0) },
+    { yaw = 180, expected = Vector3.new(0, 0, 1) },
+    { yaw = 270, expected = Vector3.new(1, 0, 0) },
+}
+for _, cardinal in ipairs(cardinalDirections) do
+    local placementRoot = Instance.new("Part")
+    CharacterPlacement.apply(placementRoot, {
+        transform = {
+            position = { x = 12, y = 7, z = -9 },
+            rotation = { x = 0, y = cardinal.yaw, z = 0 },
+        },
+        size = { x = 20, y = 4, z = 10 },
+    }, 3, cframeFromTransform)
+    assertSmoke(placementRoot.Position == Vector3.new(12, 12, -9), "character placement center or offset failed")
+    assertSmoke(
+        (placementRoot.CFrame.LookVector - cardinal.expected).Magnitude < 0.000001,
+        string.format("%d degree character orientation failed", cardinal.yaw)
+    )
+    placementRoot:Destroy()
 end
 
 local root = Builder.build(manifest, Workspace)

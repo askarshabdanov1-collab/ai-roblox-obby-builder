@@ -12,6 +12,7 @@
     "genre",
     "provenance",
     "coarseReachability",
+    "characterPlacement",
     "spawn",
     "stages",
     "obstacles",
@@ -69,6 +70,19 @@
           "type": "number",
           "exclusiveMinimum": 0,
           "maximum": 100
+        }
+      }
+    },
+    "characterPlacement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "verticalOffset"],
+      "properties": {
+        "strategy": { "const": "humanoid-root-part-cframe-v1" },
+        "verticalOffset": {
+          "type": "number",
+          "minimum": 2,
+          "maximum": 20
         }
       }
     },

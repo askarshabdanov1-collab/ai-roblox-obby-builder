@@ -27,6 +27,10 @@ export interface PlaceSpec {
     maxVerticalRise: number;
     maxDownwardDrop: number;
   };
+  characterPlacement: {
+    strategy: "humanoid-root-part-cframe-v1";
+    verticalOffset: number;
+  };
   spawn: {
     transform: Transform;
     size: PositiveSize;

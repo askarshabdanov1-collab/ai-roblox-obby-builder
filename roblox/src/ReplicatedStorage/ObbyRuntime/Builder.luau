@@ -1,15 +1,18 @@
 local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
 
 local BuildPlan = require(script.Parent.BuildPlan)
+local CharacterPlacement = require(script.Parent.CharacterPlacement)
 local ManifestValidator = require(script.Parent.ManifestValidator)
 local NativePartFactory = require(script.Parent.NativePartFactory)
+local PlacementController = require(script.Parent.PlacementController)
 local PlayerProgress = require(script.Parent.PlayerProgress)
 local SceneBuilderCore = require(script.Parent.SceneBuilderCore)
 
 local Builder = {}
 local progress = PlayerProgress.new(0.75)
-local activeSceneId = nil
 local playerConnections = {}
+local ROOT_WAIT_TIMEOUT_SECONDS = 10
 
 local MATERIALS = {
     SmoothPlastic = Enum.Material.SmoothPlastic,
@@ -52,19 +55,35 @@ local function humanoidFromHit(hit)
     return character:FindFirstChildOfClass("Humanoid"), Players:GetPlayerFromCharacter(character)
 end
 
+local function waitForRootPart(character)
+    local rootPart = character:FindFirstChild("HumanoidRootPart")
+    if rootPart == nil then
+        rootPart = character:WaitForChild("HumanoidRootPart", ROOT_WAIT_TIMEOUT_SECONDS)
+    end
+    if rootPart == nil or not rootPart:IsA("BasePart") then
+        return nil
+    end
+    task.wait()
+    if rootPart.Parent ~= character then
+        return nil
+    end
+    return rootPart
+end
+
+local placementController = PlacementController.new(
+    progress,
+    waitForRootPart,
+    function(rootPart, object, verticalOffset)
+        CharacterPlacement.apply(rootPart, object, verticalOffset, cframeFromTransform)
+    end
+)
+
 local function bindPlayer(player)
     if playerConnections[player] ~= nil then
         return
     end
     playerConnections[player] = player.CharacterAdded:Connect(function(character)
-        local respawnCFrame = progress:respawnTransform(player, activeSceneId)
-        if respawnCFrame ~= nil then
-            task.defer(function()
-                if character.Parent ~= nil then
-                    character:PivotTo(respawnCFrame)
-                end
-            end)
-        end
+        placementController:placeCharacter(player, character)
     end)
 end
 
@@ -81,21 +100,20 @@ Players.PlayerRemoving:Connect(function(player)
     progress:clear(player)
 end)
 
-local function connectBehavior(part, object, sceneId)
+local function connectBehavior(part, object, sceneId, sceneKey)
     if object.role == "checkpoint" then
         part.Touched:Connect(function(hit)
             local _, player = humanoidFromHit(hit)
             if player == nil then
                 return
             end
-            local respawnCFrame = cframeFromTransform(object.transform) * CFrame.new(0, object.size.y / 2 + 3, 0)
             if
                 progress:activateCheckpoint(
                     player,
-                    sceneId,
+                    sceneKey,
                     object.id,
                     object.behavior.checkpointOrder,
-                    respawnCFrame,
+                    object,
                     os.clock()
                 )
             then
@@ -140,7 +158,22 @@ function Builder.build(manifest, workspace)
         end,
         connectBehavior = connectBehavior,
     })
-    activeSceneId = manifest.sceneId
+    if workspace == Workspace then
+        local startObject = manifest.layers.gameplay.objects[1]
+        placementController:activateScene(
+            manifest.manifestHash,
+            startObject,
+            manifest.navigation.characterPlacement.verticalOffset
+        )
+        for _, player in ipairs(Players:GetPlayers()) do
+            local character = player.Character
+            if character ~= nil then
+                task.spawn(function()
+                    placementController:placeCharacter(player, character)
+                end)
+            end
+        end
+    end
     return root
 end
 

@@ -10,13 +10,13 @@ function PlayerProgress.new(debounceSeconds)
     }, PlayerProgress)
 end
 
-function PlayerProgress:activateCheckpoint(player, sceneId, checkpointId, checkpointOrder, transform, now)
+function PlayerProgress:activateCheckpoint(player, sceneKey, checkpointId, checkpointOrder, object, now)
     local touches = self.checkpointTouches[player]
     if touches == nil then
         touches = {}
         self.checkpointTouches[player] = touches
     end
-    local touchKey = string.format("%s:%s", sceneId, checkpointId)
+    local touchKey = string.format("%s:%s", sceneKey, checkpointId)
     local lastTouch = touches[touchKey]
     if lastTouch ~= nil and now - lastTouch < self.debounceSeconds then
         return false
@@ -24,29 +24,29 @@ function PlayerProgress:activateCheckpoint(player, sceneId, checkpointId, checkp
     touches[touchKey] = now
 
     local current = self.checkpoints[player]
-    if current ~= nil and current.sceneId == sceneId and current.checkpointOrder >= checkpointOrder then
+    if current ~= nil and current.sceneKey == sceneKey and current.checkpointOrder >= checkpointOrder then
         return false
     end
     self.checkpoints[player] = {
-        sceneId = sceneId,
+        sceneKey = sceneKey,
         checkpointId = checkpointId,
         checkpointOrder = checkpointOrder,
-        transform = transform,
+        object = object,
     }
     return true
 end
 
-function PlayerProgress:respawnTransform(player, sceneId)
+function PlayerProgress:respawnObject(player, sceneKey)
     local checkpoint = self.checkpoints[player]
-    if checkpoint == nil or checkpoint.sceneId ~= sceneId then
+    if checkpoint == nil or checkpoint.sceneKey ~= sceneKey then
         return nil
     end
-    return checkpoint.transform
+    return checkpoint.object
 end
 
-function PlayerProgress:checkpointOrder(player, sceneId)
+function PlayerProgress:checkpointOrder(player, sceneKey)
     local checkpoint = self.checkpoints[player]
-    if checkpoint == nil or checkpoint.sceneId ~= sceneId then
+    if checkpoint == nil or checkpoint.sceneKey ~= sceneKey then
         return nil
     end
     return checkpoint.checkpointOrder

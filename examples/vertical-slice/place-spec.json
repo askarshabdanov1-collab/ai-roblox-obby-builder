@@ -19,6 +19,10 @@
     "maxVerticalRise": 5,
     "maxDownwardDrop": 20
   },
+  "characterPlacement": {
+    "strategy": "humanoid-root-part-cframe-v1",
+    "verticalOffset": 3
+  },
   "spawn": {
     "transform": {
       "position": { "x": 0, "y": 3, "z": 0 },
@@ -63,7 +67,7 @@
       "shape": "Block",
       "transform": {
         "position": { "x": 0, "y": 7, "z": 31 },
-        "rotation": { "x": 0, "y": 0, "z": 0 }
+        "rotation": { "x": 0, "y": 90, "z": 0 }
       },
       "size": { "x": 12, "y": 1, "z": 12 },
       "colorSlot": "reward",

@@ -114,6 +114,12 @@ local function validateGameplayObject(object, index, ids)
         return fail(string.format("gameplay object %s has unsupported geometry or appearance", object.id))
     end
     if
+        (object.role == "spawn" or object.role == "checkpoint")
+        and (object.transform.rotation.x ~= 0 or object.transform.rotation.z ~= 0)
+    then
+        return fail(string.format("gameplay object %s has a tilted character placement surface", object.id))
+    end
+    if
         type(object.physics) ~= "table"
         or object.physics.anchored ~= true
         or object.physics.canCollide ~= true
@@ -197,6 +203,18 @@ local function validateNavigation(manifest, gameplayIds)
         or assumptions.maxDownwardDrop <= 0
     then
         return fail("coarse reachability assumptions are unsupported")
+    end
+    local placement = navigation.characterPlacement
+    if
+        type(placement) ~= "table"
+        or placement.strategy ~= "humanoid-root-part-cframe-v1"
+        or type(placement.verticalOffset) ~= "number"
+        or placement.verticalOffset ~= placement.verticalOffset
+        or math.abs(placement.verticalOffset) == math.huge
+        or placement.verticalOffset < 2
+        or placement.verticalOffset > 20
+    then
+        return fail("character placement policy is unsupported")
     end
 
     local stages = {}

@@ -394,6 +394,51 @@ describe("contract validation", () => {
     );
   });
 
+  it("requires a safe deterministic character placement policy", async () => {
+    const invalidOffset = await validSpec();
+    invalidOffset.characterPlacement.verticalOffset = 1.999_999;
+    const offsetResult = validatePlaceSpec(invalidOffset);
+    expect(offsetResult.ok).toBe(false);
+    if (!offsetResult.ok)
+      expect(offsetResult.issues).toContainEqual(
+        expect.objectContaining({ code: "minimum" }),
+      );
+
+    const tiltedSpawn = await validSpec();
+    tiltedSpawn.spawn.transform.rotation.x = 1;
+    expect(issueCodes(validatePlaceSpec(tiltedSpawn))).toContain(
+      "character-placement-surface-rotation",
+    );
+
+    const tiltedCheckpoint = await validSpec();
+    tiltedCheckpoint.obstacles[1].transform.rotation.z = 1;
+    expect(issueCodes(validatePlaceSpec(tiltedCheckpoint))).toContain(
+      "character-placement-surface-rotation",
+    );
+  });
+
+  it("rejects missing or tilted manifest placement semantics", async () => {
+    const missing = await validateChangedManifestAsync((manifest) => {
+      Reflect.deleteProperty(manifest.navigation, "characterPlacement");
+    });
+    expect(missing.ok).toBe(false);
+    if (!missing.ok)
+      expect(missing.issues).toContainEqual(
+        expect.objectContaining({ code: "required" }),
+      );
+
+    const tilted = await validateChangedManifestAsync((manifest) => {
+      manifest.layers.gameplay.objects[2].transform.rotation.x = 1;
+    });
+    expect(tilted.ok).toBe(false);
+    if (!tilted.ok)
+      expect(tilted.issues).toContainEqual(
+        expect.objectContaining({
+          code: "character-placement-surface-rotation",
+        }),
+      );
+  });
+
   it("documents rotated and wedge transitions as coarse axis-aligned checks", async () => {
     const spec = await validSpec();
     const first = spec.obstacles[0];

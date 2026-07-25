@@ -182,6 +182,7 @@ export function compilePlaceSpec(input: unknown): SceneManifest {
     worldBounds: boundsFor(gameplayObjects),
     navigation: {
       coarseReachability: spec.coarseReachability,
+      characterPlacement: spec.characterPlacement,
       stages: orderedStages.map((stage) => ({
         id: stage.id,
         order: stage.order,

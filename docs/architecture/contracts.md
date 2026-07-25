@@ -20,6 +20,12 @@ scope, a unique contiguous route entry for every safe gameplay object, and the s
 assumptions. Kill hazards remain outside the safe route. Gameplay objects also retain their semantic
 color role.
 
+`characterPlacement` defines `humanoid-root-part-cframe-v1`. After `CharacterAdded`, the runtime
+sets HumanoidRootPart CFrame to the source object's exact X/Z center, its top surface plus the
+configured root-center vertical offset, and its declared XYZ rotation. Spawn and checkpoint
+surfaces may use yaw but cannot pitch or roll, keeping the vertical non-intersection guarantee
+well-defined for the default R15 avatar.
+
 Contract `0.2` is deliberately incompatible with bootstrap `0.1`. No automatic migration is
 provided. A future change that alters accepted structure or semantics must update the schema
 version, generator compatibility, fixtures, negative tests, runtime validation, and documentation.

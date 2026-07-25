@@ -1,6 +1,8 @@
 local ManifestValidator = require("../src/ReplicatedStorage/ObbyRuntime/ManifestValidator")
 local BuildPlan = require("../src/ReplicatedStorage/ObbyRuntime/BuildPlan")
+local CharacterPlacement = require("../src/ReplicatedStorage/ObbyRuntime/CharacterPlacement")
 local NativePartFactory = require("../src/ReplicatedStorage/ObbyRuntime/NativePartFactory")
+local PlacementController = require("../src/ReplicatedStorage/ObbyRuntime/PlacementController")
 local PlayerProgress = require("../src/ReplicatedStorage/ObbyRuntime/PlayerProgress")
 local SceneBuilderCore = require("../src/ReplicatedStorage/ObbyRuntime/SceneBuilderCore")
 local manifest = require("../generated/VerticalSliceManifest")
@@ -177,6 +179,14 @@ test("fails closed on incompatible versions and malformed manifests", function()
     local badHash = clone(manifest)
     badHash.manifestHash = "sha256:abc"
     expect(not ManifestValidator.validate(badHash), "short hash was accepted")
+
+    local badPlacement = clone(manifest)
+    badPlacement.navigation.characterPlacement.verticalOffset = 1
+    expect(not ManifestValidator.validate(badPlacement), "unsafe character offset was accepted")
+
+    local tiltedSpawn = clone(manifest)
+    tiltedSpawn.layers.gameplay.objects[1].transform.rotation.x = 15
+    expect(not ManifestValidator.validate(tiltedSpawn), "tilted spawn placement surface was accepted")
 end)
 
 test("constructs every supported native shape with position and rotation", function()
@@ -218,6 +228,146 @@ test("configures only the initial SpawnLocation as an eligible spawn", function(
     expect(spawnCount == 1, "expected exactly one eligible SpawnLocation")
 end)
 
+test("places the HumanoidRootPart at exact center and configured height", function()
+    local object = {
+        transform = {
+            position = { x = 12, y = 7, z = -9 },
+            rotation = { x = 0, y = 90, z = 0 },
+        },
+        size = { x = 20, y = 4, z = 10 },
+    }
+    local target = CharacterPlacement.transformFor(object, 3)
+    expect(target.position.x == 12 and target.position.z == -9, "horizontal placement was not centered")
+    expect(target.position.y == 12, "vertical offset was not measured from the top surface")
+    expect(target.rotation.y == 90, "declared orientation was not preserved")
+end)
+
+test("preserves cardinal spawn orientations", function()
+    for _, yaw in ipairs({ 0, 90, 180, 270 }) do
+        local object = {
+            transform = {
+                position = { x = 0, y = 0, z = 0 },
+                rotation = { x = 0, y = yaw, z = 0 },
+            },
+            size = { x = 10, y = 2, z = 10 },
+        }
+        local rootPart = {}
+        CharacterPlacement.apply(rootPart, object, 3, function(transform)
+            return clone(transform)
+        end)
+        expect(rootPart.CFrame.rotation.y == yaw, string.format("%d degree orientation changed", yaw))
+    end
+end)
+
+local function placementHarness(state)
+    local applied = {}
+    local waitCount = 0
+    local controller
+    controller = PlacementController.new(state, function(character)
+        waitCount += 1
+        return character.delayedRoot
+    end, function(rootPart, object, verticalOffset)
+        table.insert(applied, {
+            rootPart = rootPart,
+            object = object,
+            verticalOffset = verticalOffset,
+        })
+    end)
+    return controller, applied, function()
+        return waitCount
+    end
+end
+
+test("uses identical placement for initial spawn and checkpoint respawn", function()
+    local state = PlayerProgress.new(0.75)
+    local controller, applied, waitCount = placementHarness(state)
+    local player = {}
+    local initialCharacter = { delayedRoot = { name = "initial-root" } }
+    player.Character = initialCharacter
+    local spawn = { id = "Spawn" }
+    local checkpoint = { id = "Checkpoint01" }
+    controller:activateScene("scene", spawn, 3)
+
+    expect(controller:placeCharacter(player, initialCharacter), "initial spawn placement failed")
+    expect(applied[1].object == spawn, "initial spawn did not use start object")
+    expect(applied[1].verticalOffset == 3, "initial spawn did not use configured offset")
+    expect(waitCount() == 1, "delayed HumanoidRootPart lookup was not used")
+
+    state:activateCheckpoint(player, "scene", "Checkpoint01", 1, checkpoint, 1)
+    local respawnCharacter = { delayedRoot = { name = "checkpoint-root" } }
+    player.Character = respawnCharacter
+    expect(controller:placeCharacter(player, respawnCharacter), "checkpoint placement failed")
+    expect(applied[2].object == checkpoint, "checkpoint respawn did not use checkpoint object")
+    expect(applied[2].verticalOffset == 3, "checkpoint did not use the shared configured offset")
+end)
+
+test("keeps placement isolated between two players", function()
+    local state = PlayerProgress.new(0.75)
+    local controller, applied = placementHarness(state)
+    local spawn = { id = "Spawn" }
+    local checkpoint = { id = "Checkpoint01" }
+    local playerA = {}
+    local playerB = {}
+    local characterA = { delayedRoot = {} }
+    local characterB = { delayedRoot = {} }
+    playerA.Character = characterA
+    playerB.Character = characterB
+    controller:activateScene("scene", spawn, 3)
+    state:activateCheckpoint(playerA, "scene", "Checkpoint01", 1, checkpoint, 1)
+
+    controller:placeCharacter(playerA, characterA)
+    controller:placeCharacter(playerB, characterB)
+    expect(applied[1].object == checkpoint, "player A lost checkpoint placement")
+    expect(applied[2].object == spawn, "player B inherited player A checkpoint")
+end)
+
+test("fails safely when HumanoidRootPart never appears", function()
+    local state = PlayerProgress.new(0.75)
+    local applied = false
+    local controller = PlacementController.new(state, function()
+        return nil
+    end, function()
+        applied = true
+    end)
+    local player = {}
+    local character = {}
+    player.Character = character
+    controller:activateScene("scene", { id = "Spawn" }, 3)
+    expect(not controller:placeCharacter(player, character), "missing root part was treated as placed")
+    expect(not applied, "placement ran without a HumanoidRootPart")
+end)
+
+test("rejects delayed callbacks from a replaced scene", function()
+    local state = PlayerProgress.new(0.75)
+    local applied = {}
+    local oldSpawn = { id = "OldSpawn" }
+    local newSpawn = { id = "NewSpawn" }
+    local controller
+    local replaceDuringWait = true
+    controller = PlacementController.new(state, function(character)
+        if replaceDuringWait then
+            replaceDuringWait = false
+            controller:activateScene("new-scene", newSpawn, 4)
+        end
+        return character.delayedRoot
+    end, function(_, object)
+        table.insert(applied, object)
+    end)
+    local player = {}
+    local character = { delayedRoot = {} }
+    player.Character = character
+    controller:activateScene("old-scene", oldSpawn, 3)
+    state:activateCheckpoint(player, "old-scene", "OldCheckpoint", 1, { id = "OldCheckpoint" }, 1)
+
+    expect(not controller:placeCharacter(player, character), "stale scene callback relocated the player")
+    expect(#applied == 0, "stale scene placement was applied")
+
+    local newCharacter = { delayedRoot = {} }
+    player.Character = newCharacter
+    expect(controller:placeCharacter(player, newCharacter), "replacement scene placement failed")
+    expect(applied[1] == newSpawn, "replacement scene used an old placement target")
+end)
+
 test("constructs non-colliding decorative native objects", function()
     local decoration = objectForShape("Wedge")
     decoration.role = "decoration"
@@ -236,14 +386,14 @@ test("isolates checkpoints and respawns for two players", function()
     local firstRespawn = { name = "first" }
     local laterRespawn = { name = "later" }
 
-    expect(state:respawnTransform(playerA, "scene") == nil, "new player A skipped initial spawn")
-    expect(state:respawnTransform(playerB, "scene") == nil, "new player B skipped initial spawn")
+    expect(state:respawnObject(playerA, "scene") == nil, "new player A skipped initial spawn")
+    expect(state:respawnObject(playerB, "scene") == nil, "new player B skipped initial spawn")
     expect(
         state:activateCheckpoint(playerA, "scene", "Checkpoint01", 1, firstRespawn, 1),
         "first checkpoint did not activate"
     )
-    expect(state:respawnTransform(playerA, "scene") == firstRespawn, "player A lost checkpoint")
-    expect(state:respawnTransform(playerB, "scene") == nil, "player B inherited player A checkpoint")
+    expect(state:respawnObject(playerA, "scene") == firstRespawn, "player A lost checkpoint")
+    expect(state:respawnObject(playerB, "scene") == nil, "player B inherited player A checkpoint")
     expect(
         not state:activateCheckpoint(playerA, "scene", "Checkpoint01", 1, firstRespawn, 1.1),
         "checkpoint touch was not debounced"
@@ -252,7 +402,7 @@ test("isolates checkpoints and respawns for two players", function()
         state:activateCheckpoint(playerA, "scene", "Checkpoint02", 2, laterRespawn, 1.2),
         "later checkpoint did not replace earlier progress"
     )
-    expect(state:respawnTransform(playerA, "scene") == laterRespawn, "latest checkpoint was not used")
+    expect(state:respawnObject(playerA, "scene") == laterRespawn, "latest checkpoint was not used")
     expect(
         not state:activateCheckpoint(playerA, "scene", "Checkpoint01", 1, firstRespawn, 2),
         "older checkpoint regressed progress"

@@ -28,7 +28,7 @@ function SceneBuilderCore.build(manifest, workspace, runtime)
             local part = runtime.createPart(object)
             part:SetAttribute("SceneId", plan.sceneId)
             part:SetAttribute("ManifestHash", plan.manifestHash)
-            runtime.connectBehavior(part, object, plan.sceneId)
+            runtime.connectBehavior(part, object, plan.sceneId, plan.manifestHash)
             part.Parent = staging
         end
     end)
