@@ -1,4 +1,8 @@
-import { normalizeNumber } from "@obby/canonical-json";
+import {
+  canonicalizeEvaluatorSnapshot,
+  normalizeNumber,
+  snapshotEvaluatorInput,
+} from "@obby/canonical-json";
 import {
   parseGeometryObjectInput,
   parseTransitionInput,
@@ -6,6 +10,7 @@ import {
   type TransitionInput,
   type Vector3,
 } from "@obby/obby-evaluator-contracts";
+import { assertUniqueTransitionCollection } from "./internal/transition-collection.js";
 
 export const GEOMETRY_NUMERIC_POLICY = Object.freeze({
   minimumDimensionStuds: 0.000001,
@@ -643,7 +648,19 @@ export function normalizeTransitionInputs(
   if (inputs.length > 100_000) {
     throw new Error("transition budget exceeds 100000");
   }
-  const normalized = inputs
+  const canonicallyOrderedInputs = inputs
+    .map((input) => {
+      const snapshot = snapshotEvaluatorInput(input);
+      return {
+        snapshot,
+        canonicalText: canonicalizeEvaluatorSnapshot(snapshot).canonicalText,
+      };
+    })
+    .sort((left, right) =>
+      left.canonicalText.localeCompare(right.canonicalText),
+    )
+    .map((entry) => entry.snapshot);
+  const normalized = canonicallyOrderedInputs
     .map((input) => normalizeTransitionInput(input, objects))
     .sort(
       (left, right) =>
@@ -651,24 +668,6 @@ export function normalizeTransitionInputs(
         left.toGlobalIndex - right.toGlobalIndex ||
         left.transitionId.localeCompare(right.transitionId),
     );
-  const ids = new Set<string>();
-  const tuples = new Set<string>();
-  for (const transition of normalized) {
-    if (ids.has(transition.transitionId)) {
-      throw new Error(`duplicate transition ID: ${transition.transitionId}`);
-    }
-    ids.add(transition.transitionId);
-    const tuple = [
-      transition.routeId,
-      transition.fromObjectId,
-      transition.toObjectId,
-      transition.fromGlobalIndex,
-      transition.toGlobalIndex,
-    ].join("/");
-    if (tuples.has(tuple)) {
-      throw new Error(`duplicate transition tuple: ${tuple}`);
-    }
-    tuples.add(tuple);
-  }
+  assertUniqueTransitionCollection(normalized);
   return normalized;
 }

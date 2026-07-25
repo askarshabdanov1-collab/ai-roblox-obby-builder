@@ -188,6 +188,72 @@ describe("deterministic geometry normalization", () => {
         normalizeGeometryObject(object({ size: { x: invalid, y: 1, z: 1 } })),
       ).toThrow();
     }
+    expect(
+      normalizeGeometryObject(
+        object({ size: { x: 0.000001000001, y: 1, z: 1 } }),
+      ).size.x,
+    ).toBe(0.000001000001);
+  });
+
+  it("normalizes documented binary64 rounding boundaries exactly", () => {
+    const below = 1.2345678901234;
+    const boundary = 1.2345678901235;
+    const above = 1.2345678901236;
+    expect(
+      normalizeGeometryObject(object({ size: { x: below, y: 1, z: 1 } })).size
+        .x,
+    ).toBe(1.234567890123);
+    expect(
+      normalizeGeometryObject(object({ size: { x: boundary, y: 1, z: 1 } }))
+        .size.x,
+    ).toBe(1.234567890123);
+    expect(
+      normalizeGeometryObject(object({ size: { x: above, y: 1, z: 1 } })).size
+        .x,
+    ).toBe(1.234567890124);
+  });
+
+  it("transforms a rotated Cylinder local-X axis and both endcaps", () => {
+    const normalized = normalizeGeometryObject(
+      object({
+        shape: "Cylinder",
+        size: { x: 10, y: 4, z: 4 },
+        transform: {
+          position: { x: 2, y: 3, z: 4 },
+          rotationDegrees: { x: 0, y: 0, z: 90 },
+        },
+      }),
+    );
+    expect(normalized.topSurface.kind).toBe("cylinder-surfaces");
+    if (normalized.topSurface.kind !== "cylinder-surfaces") return;
+    expect(normalized.topSurface.axisDirection).toEqual({ x: 0, y: 1, z: 0 });
+    expect(normalized.topSurface.positiveEndcap).toEqual({
+      kind: "circular-endcap",
+      center: { x: 2, y: 8, z: 4 },
+      normal: { x: 0, y: 1, z: 0 },
+      radius: 2,
+    });
+    expect(normalized.topSurface.negativeEndcap.center).toEqual({
+      x: 2,
+      y: -2,
+      z: 4,
+    });
+    expect(normalized.topSurface.negativeEndcap.normal).toEqual({
+      x: 0,
+      y: -1,
+      z: 0,
+    });
+    expect(normalized.topSurface.upwardFacingCandidate).toBe("positive-endcap");
+    expect(normalized.topSurface.curvedSide.axisStart).toEqual({
+      x: 2,
+      y: -2,
+      z: 4,
+    });
+    expect(normalized.topSurface.curvedSide.axisEnd).toEqual({
+      x: 2,
+      y: 8,
+      z: 4,
+    });
   });
 
   it("rejects non-finite coordinates, invalid sizes, and duplicate IDs", () => {

@@ -5,6 +5,7 @@ import {
   normalizeTransitionInput,
   normalizeTransitionInputs,
 } from "../src/index.js";
+import { assertUniqueTransitionCollection } from "../src/internal/transition-collection.js";
 
 function object(
   objectId: string,
@@ -140,23 +141,30 @@ describe("transition input normalization", () => {
     );
   });
 
-  it("is stable for shuffled object input and touching epsilon boundaries", () => {
+  it("normalizes gaps at or below tolerance to zero and preserves larger gaps", () => {
     const a = object("platform-a", { x: 0, y: 0, z: 0 });
-    const b = object("platform-b", {
-      x: 10.000000000000002,
-      y: 0,
-      z: 0,
-    });
-    const first = normalizeTransitionInput(
+    for (const gap of [0.0000000005, 0.000000001]) {
+      const normalized = normalizeTransitionInput(
+        transition(),
+        normalizeGeometryObjects([
+          a,
+          object("platform-b", { x: 10 + gap, y: 0, z: 0 }),
+        ]),
+      );
+      expect(normalized.horizontalSeparation.value).toBe(0);
+      expect(normalized.horizontalSeparation.toleranceStuds).toBe(0.000000001);
+      expect(normalized.horizontalSeparation.approximationKind).toBe(
+        "conservative-lower-bound",
+      );
+    }
+    const larger = normalizeTransitionInput(
       transition(),
-      normalizeGeometryObjects([a, b]),
+      normalizeGeometryObjects([
+        a,
+        object("platform-b", { x: 10.0000000011, y: 0, z: 0 }),
+      ]),
     );
-    const second = normalizeTransitionInput(
-      transition(),
-      normalizeGeometryObjects([b, a]),
-    );
-    expect(first).toEqual(second);
-    expect(first.horizontalSeparation.value).toBeGreaterThanOrEqual(0);
+    expect(larger.horizontalSeparation.value).toBe(0.0000000011);
   });
 
   it("rejects invalid route identities and duplicate transition tuples", () => {
@@ -196,5 +204,137 @@ describe("transition input normalization", () => {
     expect(() =>
       normalizeTransitionInputs([transition(), transition()], objects),
     ).toThrow(/duplicate/i);
+  });
+
+  it("rejects every safe-route identity mismatch explicitly", () => {
+    const a = object("platform-a", { x: 0, y: 0, z: 0 });
+    const b = object("platform-b", { x: 14, y: 0, z: 0 });
+    const nonAdjacent = normalizeGeometryObjects([
+      a,
+      object(
+        "platform-b",
+        { x: 14, y: 0, z: 0 },
+        {
+          safeRouteRef: { routeId: "global-safe-route", globalIndex: 2 },
+        },
+      ),
+    ]);
+    expect(() =>
+      normalizeTransitionInput(
+        transition({
+          fromGlobalIndex: 0,
+          toGlobalIndex: 2,
+          transitionId: "route:global-safe-route/platform-a/platform-b/0/2",
+        }),
+        nonAdjacent,
+      ),
+    ).toThrow(/adjacent forward indexes/i);
+    const missingRoute = object("platform-a", { x: 0, y: 0, z: 0 });
+    Reflect.deleteProperty(missingRoute, "safeRouteRef");
+    expect(() =>
+      normalizeTransitionInput(
+        transition(),
+        normalizeGeometryObjects([missingRoute, b]),
+      ),
+    ).toThrow(/require safeRouteRef metadata/i);
+    expect(() =>
+      normalizeTransitionInput(
+        transition(),
+        normalizeGeometryObjects([
+          a,
+          object(
+            "platform-b",
+            { x: 14, y: 0, z: 0 },
+            {
+              safeRouteRef: { routeId: "global-safe-route", globalIndex: 2 },
+            },
+          ),
+        ]),
+      ),
+    ).toThrow(/inconsistent with safeRouteRef metadata/i);
+    expect(() =>
+      normalizeTransitionInput(
+        transition(),
+        normalizeGeometryObjects([
+          a,
+          object(
+            "platform-b",
+            { x: 14, y: 0, z: 0 },
+            {
+              safeRouteRef: { routeId: "other-route", globalIndex: 1 },
+            },
+          ),
+        ]),
+      ),
+    ).toThrow(/inconsistent with safeRouteRef metadata/i);
+  });
+
+  it("orders shuffled transition collections deterministically", () => {
+    const objects = normalizeGeometryObjects([
+      object("platform-a", { x: 0, y: 0, z: 0 }),
+      object("platform-b", { x: 14, y: 0, z: 0 }),
+      object(
+        "platform-c",
+        { x: 28, y: 0, z: 0 },
+        {
+          safeRouteRef: { routeId: "global-safe-route", globalIndex: 2 },
+        },
+      ),
+    ]);
+    const first = transition();
+    const second = transition({
+      transitionId: "route:global-safe-route/platform-b/platform-c/1/2",
+      fromObjectId: "platform-b",
+      toObjectId: "platform-c",
+      fromGlobalIndex: 1,
+      toGlobalIndex: 2,
+    });
+    expect(normalizeTransitionInputs([second, first], objects)).toEqual(
+      normalizeTransitionInputs([first, second], objects),
+    );
+  });
+
+  it("selects the same error for shuffled equivalent invalid transitions", () => {
+    const objects = normalizeGeometryObjects([
+      object("platform-a", { x: 0, y: 0, z: 0 }),
+      object("platform-b", { x: 14, y: 0, z: 0 }),
+    ]);
+    const invalidA = transition({
+      routeId: "route-z",
+      transitionId: "route:route-z/platform-a/platform-b/0/1",
+    });
+    const invalidB = transition({
+      routeId: "route-a",
+      transitionId: "route:route-a/platform-a/platform-b/0/1",
+    });
+    const message = (values: unknown[]) => {
+      try {
+        normalizeTransitionInputs(values, objects);
+      } catch (caught) {
+        return String(caught);
+      }
+      throw new Error("expected transition failure");
+    };
+    expect(message([invalidA, invalidB])).toBe(message([invalidB, invalidA]));
+  });
+
+  it("distinguishes duplicate transition IDs from duplicate semantic tuples", () => {
+    const identity = {
+      transitionId: "route:r/a/b/0/1",
+      routeId: "r",
+      fromObjectId: "a",
+      toObjectId: "b",
+      fromGlobalIndex: 0,
+      toGlobalIndex: 1,
+    };
+    expect(() =>
+      assertUniqueTransitionCollection([identity, identity]),
+    ).toThrow(/duplicate transition ID/i);
+    expect(() =>
+      assertUniqueTransitionCollection([
+        identity,
+        { ...identity, transitionId: "synthetic-distinct-id" },
+      ]),
+    ).toThrow(/duplicate transition tuple/i);
   });
 });
