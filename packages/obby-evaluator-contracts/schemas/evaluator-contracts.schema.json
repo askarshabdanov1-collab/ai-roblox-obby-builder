@@ -364,21 +364,57 @@
         "schemaVersion",
         "metricId",
         "metricVersion",
+        "metricDefinitionHash",
+        "category",
         "resultKind",
         "sourceKind",
+        "status",
         "value",
+        "severity",
+        "blocking",
         "evidenceIds",
-        "limitations"
+        "thresholdsApplied",
+        "limitations",
+        "calculationHash"
       ],
       "properties": {
         "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
         "metricId": { "$ref": "#/$defs/StableId" },
         "metricVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "metricDefinitionHash": { "$ref": "#/$defs/ContentHash" },
+        "category": {
+          "enum": [
+            "playability",
+            "readability",
+            "checkpoint",
+            "hazard",
+            "composition",
+            "style",
+            "performance",
+            "difficulty",
+            "onboarding",
+            "retention-readiness",
+            "confidence",
+            "policy"
+          ]
+        },
         "resultKind": { "$ref": "#/$defs/ResultKind" },
         "sourceKind": { "$ref": "#/$defs/SourceKind" },
+        "status": {
+          "enum": ["available", "not-applicable", "missing-evidence", "failed"]
+        },
         "value": { "$ref": "#/$defs/MetricValue" },
+        "normalizedScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "severity": { "enum": ["info", "warning", "error", "blocking"] },
+        "blocking": { "type": "boolean" },
+        "invariantId": { "$ref": "#/$defs/StableId" },
         "evidenceIds": {
           "type": "array",
+          "minItems": 1,
           "maxItems": 4096,
           "uniqueItems": true,
           "items": {
@@ -387,12 +423,29 @@
             "maxLength": 320
           }
         },
+        "thresholdsApplied": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["thresholdId", "classification", "matched"],
+            "properties": {
+              "thresholdId": { "$ref": "#/$defs/StableId" },
+              "classification": {
+                "enum": ["invariant", "provisional", "calibration-required"]
+              },
+              "matched": { "type": "boolean" }
+            }
+          }
+        },
         "limitations": {
           "type": "array",
           "maxItems": 64,
           "uniqueItems": true,
           "items": { "type": "string", "minLength": 1, "maxLength": 512 }
-        }
+        },
+        "calculationHash": { "$ref": "#/$defs/ContentHash" }
       }
     },
     "DeterministicFact": {
@@ -432,7 +485,8 @@
           "properties": {
             "resultKind": { "const": "heuristic-estimate" },
             "sourceKind": { "const": "heuristic" },
-            "confidence": { "$ref": "#/$defs/Confidence" }
+            "confidence": { "$ref": "#/$defs/Confidence" },
+            "limitations": { "type": "array", "minItems": 1 }
           }
         }
       ],
@@ -450,7 +504,8 @@
             "resultKind": { "const": "learned-estimate" },
             "sourceKind": { "const": "learned" },
             "confidence": { "$ref": "#/$defs/Confidence" },
-            "model": { "$ref": "#/$defs/VersionRef" }
+            "model": { "$ref": "#/$defs/VersionRef" },
+            "limitations": { "type": "array", "minItems": 1 }
           }
         }
       ],
@@ -468,7 +523,8 @@
             "resultKind": { "const": "analytics-derived-estimate" },
             "sourceKind": { "const": "analytics-derived" },
             "confidence": { "$ref": "#/$defs/Confidence" },
-            "sourceSnapshotHash": { "$ref": "#/$defs/ContentHash" }
+            "sourceSnapshotHash": { "$ref": "#/$defs/ContentHash" },
+            "limitations": { "type": "array", "minItems": 1 }
           }
         }
       ],
@@ -492,7 +548,8 @@
               "uniqueItems": true,
               "items": { "$ref": "#/$defs/ContentHash" }
             },
-            "studyVersion": { "$ref": "#/$defs/SemanticVersion" }
+            "studyVersion": { "$ref": "#/$defs/SemanticVersion" },
+            "limitations": { "type": "array", "minItems": 1 }
           }
         }
       ],
@@ -521,7 +578,8 @@
               "uniqueItems": true,
               "items": { "$ref": "#/$defs/StableId" }
             },
-            "calculationDefinitionHash": { "$ref": "#/$defs/ContentHash" }
+            "calculationDefinitionHash": { "$ref": "#/$defs/ContentHash" },
+            "limitations": { "type": "array", "minItems": 1 }
           }
         }
       ],

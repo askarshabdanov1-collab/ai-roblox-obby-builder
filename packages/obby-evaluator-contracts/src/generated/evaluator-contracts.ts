@@ -103,6 +103,10 @@ export type HeuristicEstimate = MetricResultBase & {
   resultKind?: "heuristic-estimate";
   sourceKind?: "heuristic";
   confidence: Confidence;
+  /**
+   * @minItems 1
+   */
+  limitations?: [unknown, ...unknown[]];
   [k: string]: unknown;
 };
 export type LearnedEstimate = MetricResultBase & {
@@ -110,6 +114,10 @@ export type LearnedEstimate = MetricResultBase & {
   sourceKind?: "learned";
   confidence: Confidence;
   model: VersionRef;
+  /**
+   * @minItems 1
+   */
+  limitations?: [unknown, ...unknown[]];
   [k: string]: unknown;
 };
 export type AnalyticsDerivedEstimate = MetricResultBase & {
@@ -117,6 +125,10 @@ export type AnalyticsDerivedEstimate = MetricResultBase & {
   sourceKind?: "analytics-derived";
   confidence: Confidence;
   sourceSnapshotHash: ContentHash;
+  /**
+   * @minItems 1
+   */
+  limitations?: [unknown, ...unknown[]];
   [k: string]: unknown;
 };
 export type HumanJudgment = MetricResultBase & {
@@ -128,6 +140,10 @@ export type HumanJudgment = MetricResultBase & {
    */
   labelPayloadHashes: [ContentHash, ...ContentHash[]];
   studyVersion: SemanticVersion;
+  /**
+   * @minItems 1
+   */
+  limitations?: [unknown, ...unknown[]];
   [k: string]: unknown;
 };
 export type DerivedComposite = MetricResultBase & {
@@ -140,6 +156,10 @@ export type DerivedComposite = MetricResultBase & {
    */
   parentMetricIds: [StableId, ...StableId[]];
   calculationDefinitionHash: ContentHash;
+  /**
+   * @minItems 1
+   */
+  limitations?: [unknown, ...unknown[]];
   [k: string]: unknown;
 };
 export type EvidenceRecordContract = EvidenceRecord & {
@@ -491,17 +511,46 @@ export interface MetricResultBase {
   schemaVersion: SchemaVersion;
   metricId: StableId;
   metricVersion: SemanticVersion;
+  metricDefinitionHash: ContentHash;
+  category:
+    | "playability"
+    | "readability"
+    | "checkpoint"
+    | "hazard"
+    | "composition"
+    | "style"
+    | "performance"
+    | "difficulty"
+    | "onboarding"
+    | "retention-readiness"
+    | "confidence"
+    | "policy";
   resultKind: ResultKind;
   sourceKind: SourceKind;
+  status: "available" | "not-applicable" | "missing-evidence" | "failed";
   value: MetricValue;
+  normalizedScore?: number;
+  severity: "info" | "warning" | "error" | "blocking";
+  blocking: boolean;
+  invariantId?: StableId;
   /**
+   * @minItems 1
    * @maxItems 4096
    */
-  evidenceIds: string[];
+  evidenceIds: [string, ...string[]];
+  /**
+   * @maxItems 64
+   */
+  thresholdsApplied: {
+    thresholdId: StableId;
+    classification: "invariant" | "provisional" | "calibration-required";
+    matched: boolean;
+  }[];
   /**
    * @maxItems 64
    */
   limitations: string[];
+  calculationHash: ContentHash;
   [k: string]: unknown;
 }
 export interface Confidence {

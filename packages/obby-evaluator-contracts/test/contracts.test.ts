@@ -74,9 +74,16 @@ describe("evaluator contracts", () => {
       schemaVersion: "0.1",
       metricId: "playability.route-completeness",
       metricVersion: "1.0.0",
+      metricDefinitionHash: ZERO_HASH,
+      category: "playability",
+      status: "available",
       evidenceIds: ["geometry:scene:sha256:" + "1".repeat(64)],
       limitations: [],
       value: { kind: "number", value: 1, unit: "ratio" },
+      severity: "info",
+      blocking: false,
+      thresholdsApplied: [],
+      calculationHash: ZERO_HASH,
     };
     expect(
       parseEvaluationMetric({
@@ -93,6 +100,7 @@ describe("evaluator contracts", () => {
         resultKind: "heuristic-estimate",
         sourceKind: "learned",
         confidence: { value: 0.5, basis: "coverage", limitations: ["model"] },
+        limitations: ["model uncertainty"],
       }),
     ).toThrow();
     expect(() =>
