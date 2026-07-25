@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -20,6 +22,76 @@ import {
 } from "./fixtures.js";
 
 describe("named evaluator preimages", () => {
+  it("derives every named digest from the exact returned bytes", () => {
+    const cases = [
+      hashMetricDefinition(metricDefinition()),
+      hashMetricCatalog(catalog()),
+      hashScoringProfile(scoringProfile()),
+      hashEvaluationPlanConfiguration(evaluationPlan()),
+      hashEvaluationRequest(evaluationRequest()),
+      hashEvidenceContent({
+        schemaVersion: "0.1",
+        kind: "geometry-fact",
+        manifestHash: ZERO_HASH,
+        subject: { kind: "scene" },
+        producer: { component: "geometry-evaluator", version: "0.1.0" },
+        payload: {
+          kind: "geometry-fact",
+          objectIds: ["platform-a"],
+          factKind: "normalized-object",
+          geometryHash: ZERO_HASH,
+        },
+        parentEvidenceHashes: [],
+        artifactHashes: [],
+        quality: { completeness: "complete", validityCodes: [] },
+        limitations: [],
+        evidenceContentHash: ZERO_HASH,
+      }),
+      hashCalculationBundle({
+        schemaVersion: "0.1",
+        manifestHash: ZERO_HASH,
+        configurationHash: ZERO_HASH,
+        evaluatorVersion: "0.1.0",
+        metricCatalogHash: ZERO_HASH,
+        scoringProfileHash: ZERO_HASH,
+        environmentCompatibilityClass: "static-native-parts-v1",
+        evidence: [],
+        ruleVersions: [],
+        calculationBundleHash: ZERO_HASH,
+      }),
+      hashAvailabilityRecord({
+        schemaVersion: "0.1",
+        subject: {
+          kind: "evidence",
+          stableId: "geometry:scene",
+          contentHash: ZERO_HASH,
+        },
+        availabilityState: "available",
+        reasonCode: "created",
+        reasonDetails: [],
+        authority: {
+          authorityKind: "evaluator",
+          authorityId: "evaluator:local",
+        },
+        effectiveSequence: 0,
+        supersedesAvailabilityRecordHashes: [],
+        policy: { component: "availability", version: "1.0.0" },
+        impactScope: {
+          scopeKind: "subject-only",
+          affectedIdentityHashes: [ZERO_HASH],
+        },
+        availabilityRecordHash: ZERO_HASH,
+      }),
+    ];
+    for (const result of cases) {
+      expect(
+        `sha256:${createHash("sha256")
+          .update(result.canonicalBytes)
+          .digest("hex")}`,
+      ).toBe(result.hash);
+    }
+  });
+
   it("excludes every resulting self hash and exposes canonical bytes", () => {
     const first = hashMetricDefinition(metricDefinition());
     const second = hashMetricDefinition(
@@ -30,6 +102,15 @@ describe("named evaluator preimages", () => {
     expect(new TextDecoder().decode(first.canonicalBytes)).not.toContain(
       "metricDefinitionHash",
     );
+  });
+
+  it("rejects accessor-backed contract inputs before validation or hashing", () => {
+    const input = metricDefinition();
+    Object.defineProperty(input, "metricId", {
+      enumerable: true,
+      get: () => "playability.route-completeness",
+    });
+    expect(() => hashMetricDefinition(input)).toThrow(/accessor/i);
   });
 
   it("orders catalog and profile semantic sets deterministically", () => {

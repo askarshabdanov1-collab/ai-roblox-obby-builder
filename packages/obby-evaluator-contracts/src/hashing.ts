@@ -1,4 +1,9 @@
-import { canonicalBytes, sha256, sortSemanticSet } from "@obby/canonical-json";
+import {
+  EVALUATOR_CANONICAL_JSON_ALGORITHM,
+  evaluatorCanonicalize,
+  sha256Bytes,
+  sortSemanticSet,
+} from "@obby/canonical-json";
 
 import type {
   AvailabilityRecord,
@@ -41,16 +46,15 @@ export class ContentHashMismatchError extends Error {
   }
 }
 
-const CANONICALIZATION_ALGORITHM = "obby-canonical-json-v1";
-
 function namedHash(payload: Record<string, unknown>): NamedHashResult {
   const preimage = {
-    canonicalizationAlgorithm: CANONICALIZATION_ALGORITHM,
+    canonicalizationAlgorithm: EVALUATOR_CANONICAL_JSON_ALGORITHM,
     ...payload,
   };
+  const canonical = evaluatorCanonicalize(preimage);
   return {
-    hash: sha256(preimage),
-    canonicalBytes: canonicalBytes(preimage),
+    hash: sha256Bytes(canonical.canonicalBytes),
+    canonicalBytes: canonical.canonicalBytes,
   };
 }
 
