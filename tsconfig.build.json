@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "declaration": true,
+    "outDir": "dist",
+    "paths": {
+      "@obby/canonical-json": ["./packages/canonical-json/src/index.ts"],
+      "@obby/contracts": ["./packages/contracts/src/index.ts"],
+      "@obby/obby-compiler": ["./packages/obby-compiler/src/index.ts"],
+      "@obby/roblox-emitter": ["./packages/roblox-emitter/src/index.ts"]
+    },
+    "rootDir": ".",
+    "sourceMap": true
+  },
+  "include": ["apps/*/src/**/*.ts", "packages/*/src/**/*.ts"],
+  "exclude": ["**/*.test.ts"]
+}

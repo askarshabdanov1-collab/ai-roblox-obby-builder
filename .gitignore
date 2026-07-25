@@ -2,6 +2,7 @@ node_modules/
 dist/
 build/
 coverage/
+.rokit/
 .env
 .env.*
 !.env.example
@@ -16,6 +17,6 @@ Thumbs.db
 *.rbxmx
 artifacts/
 models/
-generated/
+/generated/
 credentials/
 service-account*.json

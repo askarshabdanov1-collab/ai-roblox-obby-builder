@@ -1,0 +1,9 @@
+{
+  "contract": "PlaceSpec",
+  "mutation": {
+    "operation": "set",
+    "path": "/obstacles/1/id",
+    "value": "JumpPlatform01"
+  },
+  "expectedIssue": "duplicate-obstacle-id"
+}

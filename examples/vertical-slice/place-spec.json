@@ -1,0 +1,148 @@
+{
+  "schemaVersion": "0.2",
+  "specId": "brainrot-tower-vertical-slice",
+  "seed": 424242,
+  "name": "Brainrot Tower Vertical Slice",
+  "genre": "obby",
+  "provenance": {
+    "source": "repository-fixture",
+    "description": "A deterministic native-Part Obby fixture used for Phase 0 validation.",
+    "createdBy": "codex",
+    "containsSecrets": false
+  },
+  "coarseReachability": {
+    "model": "axis-aligned-surfaces-v1",
+    "avatarRig": "R15-default",
+    "walkSpeed": 16,
+    "jumpPower": 50,
+    "maxHorizontalGap": 6,
+    "maxVerticalRise": 5,
+    "maxDownwardDrop": 20
+  },
+  "characterPlacement": {
+    "strategy": "humanoid-root-part-cframe-v1",
+    "orientationPolicy": "face-next-safe-route-object",
+    "verticalOffset": 3
+  },
+  "spawn": {
+    "transform": {
+      "position": { "x": 0, "y": 3, "z": 0 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    },
+    "size": { "x": 12, "y": 1, "z": 12 }
+  },
+  "stages": [
+    {
+      "id": "tower-entry",
+      "order": 1,
+      "name": "Tower Entry",
+      "difficulty": 3,
+      "routeObstacleIds": [
+        "JumpPlatform01",
+        "Checkpoint01",
+        "WedgeClimb01",
+        "FinishPlatform"
+      ]
+    }
+  ],
+  "obstacles": [
+    {
+      "id": "JumpPlatform01",
+      "order": 1,
+      "stageId": "tower-entry",
+      "role": "platform",
+      "shape": "Block",
+      "transform": {
+        "position": { "x": 0, "y": 4, "z": 16 },
+        "rotation": { "x": 0, "y": 0, "z": 0 }
+      },
+      "size": { "x": 10, "y": 2, "z": 10 },
+      "colorSlot": "primary",
+      "material": "SmoothPlastic"
+    },
+    {
+      "id": "Checkpoint01",
+      "order": 2,
+      "stageId": "tower-entry",
+      "role": "checkpoint",
+      "shape": "Block",
+      "transform": {
+        "position": { "x": 0, "y": 7, "z": 31 },
+        "rotation": { "x": 0, "y": 90, "z": 0 }
+      },
+      "size": { "x": 12, "y": 1, "z": 12 },
+      "colorSlot": "reward",
+      "material": "Neon"
+    },
+    {
+      "id": "WedgeClimb01",
+      "order": 3,
+      "stageId": "tower-entry",
+      "role": "platform",
+      "shape": "Wedge",
+      "transform": {
+        "position": { "x": 0, "y": 10, "z": 45 },
+        "rotation": { "x": 0, "y": 0, "z": 0 }
+      },
+      "size": { "x": 12, "y": 4, "z": 10 },
+      "colorSlot": "secondary",
+      "material": "Metal"
+    },
+    {
+      "id": "KillFloor",
+      "order": 4,
+      "stageId": "tower-entry",
+      "role": "kill",
+      "shape": "Block",
+      "transform": {
+        "position": { "x": 0, "y": -2, "z": 30 },
+        "rotation": { "x": 0, "y": 0, "z": 0 }
+      },
+      "size": { "x": 44, "y": 1, "z": 76 },
+      "colorSlot": "hazard",
+      "material": "Neon"
+    },
+    {
+      "id": "FinishPlatform",
+      "order": 5,
+      "stageId": "tower-entry",
+      "role": "finish",
+      "shape": "Block",
+      "transform": {
+        "position": { "x": 0, "y": 13, "z": 60 },
+        "rotation": { "x": 0, "y": 0, "z": 0 }
+      },
+      "size": { "x": 16, "y": 2, "z": 16 },
+      "colorSlot": "reward",
+      "material": "SmoothPlastic"
+    }
+  ],
+  "checkpointPlan": {
+    "mode": "ordered",
+    "checkpointObstacleIds": ["Checkpoint01"]
+  },
+  "finishCriteria": {
+    "type": "touch-finish",
+    "finishObstacleId": "FinishPlatform"
+  },
+  "difficultyProgression": {
+    "start": 3,
+    "end": 3,
+    "curve": "flat"
+  },
+  "budgets": {
+    "maxStages": 3,
+    "maxGameplayObjects": 12,
+    "maxDecorativeObjects": 0,
+    "maxWorldExtent": 128,
+    "maxPartSize": 80
+  },
+  "visualBrief": {
+    "summary": "Colorful low-poly Roblox simulator styling with clear route readability.",
+    "primaryColors": ["#22D3EE", "#D946EF"],
+    "rewardColor": "#FACC15",
+    "hazardColor": "#EF4444",
+    "shapeLanguage": "Large native geometric forms with clear silhouettes.",
+    "materials": ["SmoothPlastic", "Metal", "Neon"]
+  }
+}

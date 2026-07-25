@@ -1,5 +1,5 @@
 {
-  "name": "AIObbyBuilder",
+  "name": "AIObbyBuilderPhase0Smoke",
   "tree": {
     "$className": "DataModel",
     "ReplicatedStorage": {
@@ -8,8 +8,8 @@
       }
     },
     "ServerScriptService": {
-      "ObbyBootstrap": {
-        "$path": "src/ServerScriptService/ObbyBootstrap.server.luau"
+      "Phase0SmokeBootstrap": {
+        "$path": "smoke/Phase0SmokeBootstrap.server.luau"
       }
     },
     "ServerStorage": {

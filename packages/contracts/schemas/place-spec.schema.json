@@ -1,0 +1,320 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-roblox-obby-builder.local/schemas/0.2/place-spec.schema.json",
+  "title": "PlaceSpec",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "specId",
+    "seed",
+    "name",
+    "genre",
+    "provenance",
+    "coarseReachability",
+    "characterPlacement",
+    "spawn",
+    "stages",
+    "obstacles",
+    "checkpointPlan",
+    "finishCriteria",
+    "difficultyProgression",
+    "budgets",
+    "visualBrief"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "0.2" },
+    "specId": { "$ref": "#/$defs/kebabId" },
+    "seed": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+    "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "genre": { "const": "obby" },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "description", "createdBy", "containsSecrets"],
+      "properties": {
+        "source": { "enum": ["user-description", "repository-fixture"] },
+        "description": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "createdBy": { "enum": ["human", "codex"] },
+        "containsSecrets": { "const": false }
+      }
+    },
+    "coarseReachability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model",
+        "avatarRig",
+        "walkSpeed",
+        "jumpPower",
+        "maxHorizontalGap",
+        "maxVerticalRise",
+        "maxDownwardDrop"
+      ],
+      "properties": {
+        "model": { "const": "axis-aligned-surfaces-v1" },
+        "avatarRig": { "const": "R15-default" },
+        "walkSpeed": { "type": "number", "minimum": 1, "maximum": 100 },
+        "jumpPower": { "type": "number", "minimum": 1, "maximum": 200 },
+        "maxHorizontalGap": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 40
+        },
+        "maxVerticalRise": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 20
+        },
+        "maxDownwardDrop": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "characterPlacement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "orientationPolicy", "verticalOffset"],
+      "properties": {
+        "strategy": { "const": "humanoid-root-part-cframe-v1" },
+        "orientationPolicy": {
+          "enum": ["face-next-safe-route-object", "explicit-yaw"]
+        },
+        "verticalOffset": {
+          "type": "number",
+          "minimum": 2,
+          "maximum": 20
+        }
+      }
+    },
+    "spawn": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["transform", "size"],
+      "properties": {
+        "transform": { "$ref": "#/$defs/transform" },
+        "size": { "$ref": "#/$defs/positiveSize" }
+      }
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "order", "name", "difficulty", "routeObstacleIds"],
+        "properties": {
+          "id": { "$ref": "#/$defs/kebabId" },
+          "order": { "type": "integer", "minimum": 1, "maximum": 20 },
+          "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+          "difficulty": { "type": "integer", "minimum": 1, "maximum": 10 },
+          "routeObstacleIds": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 500,
+            "uniqueItems": true,
+            "items": { "$ref": "#/$defs/pascalId" }
+          }
+        }
+      }
+    },
+    "obstacles": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 500,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "order",
+          "stageId",
+          "role",
+          "shape",
+          "transform",
+          "size",
+          "colorSlot",
+          "material"
+        ],
+        "properties": {
+          "id": { "$ref": "#/$defs/pascalId" },
+          "order": { "type": "integer", "minimum": 1, "maximum": 500 },
+          "stageId": { "$ref": "#/$defs/kebabId" },
+          "role": { "enum": ["platform", "checkpoint", "kill", "finish"] },
+          "shape": { "enum": ["Block", "Ball", "Cylinder", "Wedge"] },
+          "transform": { "$ref": "#/$defs/transform" },
+          "size": { "$ref": "#/$defs/positiveSize" },
+          "colorSlot": { "enum": ["primary", "secondary", "reward", "hazard"] },
+          "material": {
+            "enum": [
+              "SmoothPlastic",
+              "Plastic",
+              "Metal",
+              "Neon",
+              "Concrete",
+              "Wood"
+            ]
+          }
+        }
+      }
+    },
+    "checkpointPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "checkpointObstacleIds"],
+      "properties": {
+        "mode": { "const": "ordered" },
+        "checkpointObstacleIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/pascalId" }
+        }
+      }
+    },
+    "finishCriteria": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "finishObstacleId"],
+      "properties": {
+        "type": { "const": "touch-finish" },
+        "finishObstacleId": { "$ref": "#/$defs/pascalId" }
+      }
+    },
+    "difficultyProgression": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end", "curve"],
+      "properties": {
+        "start": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "end": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "curve": { "enum": ["flat", "linear", "stepped"] }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxStages",
+        "maxGameplayObjects",
+        "maxDecorativeObjects",
+        "maxWorldExtent",
+        "maxPartSize"
+      ],
+      "properties": {
+        "maxStages": { "type": "integer", "minimum": 1, "maximum": 20 },
+        "maxGameplayObjects": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 500
+        },
+        "maxDecorativeObjects": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "maxWorldExtent": { "type": "number", "minimum": 32, "maximum": 2048 },
+        "maxPartSize": { "type": "number", "minimum": 1, "maximum": 256 }
+      }
+    },
+    "visualBrief": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary",
+        "primaryColors",
+        "rewardColor",
+        "hazardColor",
+        "shapeLanguage",
+        "materials"
+      ],
+      "properties": {
+        "summary": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "primaryColors": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/hexColor" }
+        },
+        "rewardColor": { "$ref": "#/$defs/hexColor" },
+        "hazardColor": { "$ref": "#/$defs/hexColor" },
+        "shapeLanguage": { "type": "string", "minLength": 1, "maxLength": 300 },
+        "materials": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "SmoothPlastic",
+              "Plastic",
+              "Metal",
+              "Neon",
+              "Concrete",
+              "Wood"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "hexColor": { "type": "string", "pattern": "^#[0-9A-F]{6}$" },
+    "kebabId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "maxLength": 80
+    },
+    "pascalId": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*$",
+      "maxLength": 80
+    },
+    "boundedNumber": { "type": "number", "minimum": -2048, "maximum": 2048 },
+    "rotationNumber": { "type": "number", "minimum": -360, "maximum": 360 },
+    "vector3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "$ref": "#/$defs/boundedNumber" },
+        "y": { "$ref": "#/$defs/boundedNumber" },
+        "z": { "$ref": "#/$defs/boundedNumber" }
+      }
+    },
+    "rotation3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "$ref": "#/$defs/rotationNumber" },
+        "y": { "$ref": "#/$defs/rotationNumber" },
+        "z": { "$ref": "#/$defs/rotationNumber" }
+      }
+    },
+    "positiveSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number", "exclusiveMinimum": 0, "maximum": 256 },
+        "y": { "type": "number", "exclusiveMinimum": 0, "maximum": 256 },
+        "z": { "type": "number", "exclusiveMinimum": 0, "maximum": 256 }
+      }
+    },
+    "transform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["position", "rotation"],
+      "properties": {
+        "position": { "$ref": "#/$defs/vector3" },
+        "rotation": { "$ref": "#/$defs/rotation3" }
+      }
+    }
+  }
+}
