@@ -28,6 +28,9 @@ const geometryInput = {
   objectId: "smoke-platform",
   shape: "Block",
   authority: "native-gameplay",
+  collision: { canCollide: true, canTouch: true, canQuery: true },
+  gameplayOwnership: "native-part",
+  promotionStatus: "not-applicable",
   transform: {
     position: { x: 0, y: 1, z: 0 },
     rotationDegrees: { x: 0, y: 0, z: 0 },
