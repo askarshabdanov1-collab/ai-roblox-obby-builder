@@ -1,4 +1,9 @@
-import { canonicalStringify } from "@obby/canonical-json";
+import {
+  canonicalStringify,
+  EVALUATOR_CANONICAL_JSON_ALGORITHM,
+  evaluatorCanonicalize,
+  sha256Bytes,
+} from "@obby/canonical-json";
 import {
   hashAvailabilityRecord,
   hashCalculationBundle,
@@ -16,10 +21,10 @@ const definitionBase = {
   schemaVersion: "0.1",
   metricVersion: "1.0.0",
   resultKind: "deterministic-fact",
+  implementationStatus: "planned",
+  calculationAvailability: "unavailable-in-e1a",
   applicability: "required",
   zeroObservationBehavior: "missing-evidence",
-  requiredEvidenceKinds: ["route-transition", "geometry-fact"],
-  requiredCapabilities: ["route", "geometry"],
   confidenceMethod: {
     methodId: "exact-input-coverage",
     version: "1.0.0",
@@ -32,10 +37,54 @@ const definitionBase = {
   metricDefinitionHash: ZERO_HASH,
 } as const;
 
+function semanticConfiguration(
+  configurationId: string,
+  rules: Record<string, unknown>,
+) {
+  const configuration = {
+    schemaVersion: "0.1",
+    configurationId,
+    rules,
+  };
+  const canonical = evaluatorCanonicalize({
+    canonicalizationAlgorithm: EVALUATOR_CANONICAL_JSON_ALGORITHM,
+    identityDomain: "SemanticCalculationConfiguration",
+    configuration,
+  });
+  return {
+    ...configuration,
+    configurationHash: sha256Bytes(canonical.canonicalBytes),
+  };
+}
+
+const semanticConfigurations = [
+  semanticConfiguration("route-completeness-v1", {
+    requireSingleGlobalSafeRoute: true,
+    requireReachableFinishReference: true,
+  }),
+  semanticConfiguration("decorative-collision-audit-v1", {
+    candidateOnCanCollide: true,
+    candidateOnCanTouch: true,
+    finalFindingOutsidePhase: true,
+  }),
+];
+
+const configurationHash = (configurationId: string): string => {
+  const configuration = semanticConfigurations.find(
+    (candidate) => candidate.configurationId === configurationId,
+  );
+  if (configuration === undefined) {
+    throw new Error(`missing semantic configuration ${configurationId}`);
+  }
+  return configuration.configurationHash;
+};
+
 const definitionSources = [
   {
     ...definitionBase,
     metricId: "playability.route-completeness",
+    requiredEvidenceKinds: ["route-transition", "geometry-fact"],
+    requiredCapabilities: ["route", "geometry"],
     valueDefinition: {
       kind: "number",
       unit: "ratio",
@@ -45,7 +94,7 @@ const definitionSources = [
     calculation: {
       methodId: "route-completeness",
       version: "1.0.0",
-      configurationHash: ZERO_HASH,
+      configurationHash: configurationHash("route-completeness-v1"),
     },
     invariantGateId: "required-route-topology",
     thresholds: [
@@ -62,6 +111,8 @@ const definitionSources = [
   {
     ...definitionBase,
     metricId: "policy.decorative-collision-violations",
+    requiredEvidenceKinds: ["geometry-fact"],
+    requiredCapabilities: ["geometry"],
     valueDefinition: {
       kind: "integer",
       unit: "objects",
@@ -71,7 +122,7 @@ const definitionSources = [
     calculation: {
       methodId: "decorative-collision-audit",
       version: "1.0.0",
-      configurationHash: ZERO_HASH,
+      configurationHash: configurationHash("decorative-collision-audit-v1"),
     },
     invariantGateId: "decorative-gameplay-collision",
     thresholds: [
@@ -147,12 +198,12 @@ const profileSource = {
     {
       categoryId: "playability",
       metricIds: ["playability.route-completeness"],
-      availability: "available",
+      availability: "planned",
     },
     {
       categoryId: "policy",
       metricIds: ["policy.decorative-collision-violations"],
-      availability: "available",
+      availability: "planned",
     },
   ],
   thresholds: [],
@@ -203,7 +254,7 @@ const plan = {
   createdAt: "2030-01-01T00:00:00Z",
   configurationHash: ZERO_HASH,
 };
-const configurationHash = hashEvaluationPlanConfiguration(plan).hash;
+const planConfigurationHash = hashEvaluationPlanConfiguration(plan).hash;
 
 const request = {
   schemaVersion: "0.1",
@@ -213,7 +264,7 @@ const request = {
   transport: "test-harness",
   retryAttempt: 0,
   scene: plan.scene,
-  configurationHash,
+  configurationHash: planConfigurationHash,
   evaluatorVersionConstraint: ">=0.1.0 <0.2.0",
   profile: plan.profile,
   catalog: plan.catalog,
@@ -259,7 +310,7 @@ const evidence = {
 const calculation = {
   schemaVersion: "0.1",
   manifestHash: ZERO_HASH,
-  configurationHash,
+  configurationHash: planConfigurationHash,
   evaluatorVersion: "0.1.0",
   metricCatalogHash: metricCatalog.metricCatalogHash,
   scoringProfileHash: scoringProfile.scoringProfileHash,
@@ -335,6 +386,8 @@ export function expectedEvaluatorFixtures(): Record<string, string> {
       json(metricCatalog),
     "packages/obby-evaluator-contracts/fixtures/generated/e1-scoring-profile.json":
       json(scoringProfile),
+    "packages/obby-evaluator-contracts/fixtures/generated/e1-semantic-configurations.json":
+      json(semanticConfigurations),
     "packages/obby-evaluator-contracts/fixtures/generated/hash-vectors.json":
       json(
         vectors.map(([preimageName, result]) => ({

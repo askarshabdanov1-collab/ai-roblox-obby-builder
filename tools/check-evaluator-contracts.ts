@@ -16,6 +16,13 @@ const ajv = new Ajv2020({
   strict: true,
   strictNumbers: true,
 });
+ajv.addFormat("strict-rfc3339-utc", {
+  type: "string",
+  validate: (value: string) =>
+    /^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\.[0-9]{3})?Z$/.test(
+      value,
+    ),
+});
 await ajv.validateSchema(schema, true);
 ajv.compile(schema);
 

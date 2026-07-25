@@ -1,0 +1,56 @@
+{
+  "note": "Manually pinned review vector. Canonical UTF-8 preimages are committed in ../generated/hash-vectors.json.",
+  "algorithm": "obby-canonical-json-v1 + SHA-256",
+  "generatedFixtureDigests": {
+    "MetricDefinitionPreimage": "sha256:62c16bb6c3983fd278ee9a09d0c88e0f0efe4bd6799bde87d724cd3d5cb4bdd1",
+    "MetricCatalogPreimage": "sha256:e4c0b9c973c1bb57a2a7011391fd9edbd8a96a0e4335400ebe3899fc0be36552",
+    "ScoringProfilePreimage": "sha256:0f0ff7cb0cad3c028b5b6549e8ea63ca86816fd5363783b072afb5356815f48a",
+    "EvaluationPlanConfigurationPreimage": "sha256:639d06b994dc923e2a9d95ce4817b981899973ded2f668abbf2835c3ddb9419b",
+    "EvaluationRequestPreimage": "sha256:6991870c232593ae1831de3e399d867fc5cf693b37e3c02b72f2dd4d5d1d1f35",
+    "EvidenceContentPreimage": "sha256:1209eb012d1f343990c1968255279bb64525920f299b437a099c8a691ac68caa",
+    "CalculationBundlePreimage": "sha256:64ac4d8eb3d49de85e51c2a2e572333ec2787274248701660654df723f74f7bc",
+    "AvailabilityRecordPreimage": "sha256:5fc098cf0a81d1fbab706941f96249fef99a8928607718da9813cf352c680bcc"
+  },
+  "smallVectors": [
+    {
+      "preimageName": "MetricDefinitionPreimage",
+      "canonicalPayloadUtf8": "{\"canonicalizationAlgorithm\":\"obby-canonical-json-v1\",\"preimageName\":\"MetricDefinitionPreimage\",\"vector\":1}",
+      "hash": "sha256:eb80e45d79abf65fc406f10e2d68aa7bf0b11ce4f1ec6fafce1c0e8e49dfa5c2"
+    },
+    {
+      "preimageName": "MetricCatalogPreimage",
+      "canonicalPayloadUtf8": "{\"canonicalizationAlgorithm\":\"obby-canonical-json-v1\",\"preimageName\":\"MetricCatalogPreimage\",\"vector\":1}",
+      "hash": "sha256:c7dda126b9e1f1c40c2c1b6097d8f513826a34ec286d0b7a2ffcb7dcbce52971"
+    },
+    {
+      "preimageName": "ScoringProfilePreimage",
+      "canonicalPayloadUtf8": "{\"canonicalizationAlgorithm\":\"obby-canonical-json-v1\",\"preimageName\":\"ScoringProfilePreimage\",\"vector\":1}",
+      "hash": "sha256:c2b3f1a5db2319be58730463bfeaa2e6ebbbbb5afb5333f6f8e3dcf0315a8fe8"
+    },
+    {
+      "preimageName": "EvaluationPlanConfigurationPreimage",
+      "canonicalPayloadUtf8": "{\"canonicalizationAlgorithm\":\"obby-canonical-json-v1\",\"preimageName\":\"EvaluationPlanConfigurationPreimage\",\"vector\":1}",
+      "hash": "sha256:e962fe415ac2cfb3a036f85fdb975cb50dee7dec5eec75ded537e4eac636ce04"
+    },
+    {
+      "preimageName": "EvaluationRequestPreimage",
+      "canonicalPayloadUtf8": "{\"canonicalizationAlgorithm\":\"obby-canonical-json-v1\",\"preimageName\":\"EvaluationRequestPreimage\",\"vector\":1}",
+      "hash": "sha256:e88063085b374ff59aae8fa7b6a8156ecf728d4a3a0d65b1cb9c5f582818b4e0"
+    },
+    {
+      "preimageName": "EvidenceContentPreimage",
+      "canonicalPayloadUtf8": "{\"canonicalizationAlgorithm\":\"obby-canonical-json-v1\",\"preimageName\":\"EvidenceContentPreimage\",\"vector\":1}",
+      "hash": "sha256:d5a8b3612c3bc7a1e5b9a57b64c0c7481d3859a238eefea2408889120099155a"
+    },
+    {
+      "preimageName": "CalculationBundlePreimage",
+      "canonicalPayloadUtf8": "{\"canonicalizationAlgorithm\":\"obby-canonical-json-v1\",\"preimageName\":\"CalculationBundlePreimage\",\"vector\":1}",
+      "hash": "sha256:cf9ef86a4729edf3e09c43ade862d8e1c204f1544c6ef7f0b94dc3dbcc40cea3"
+    },
+    {
+      "preimageName": "AvailabilityRecordPreimage",
+      "canonicalPayloadUtf8": "{\"canonicalizationAlgorithm\":\"obby-canonical-json-v1\",\"preimageName\":\"AvailabilityRecordPreimage\",\"vector\":1}",
+      "hash": "sha256:da6520975b1419cf51c30f4c73f56d5a8821a5f407553a013e72cefd4c0809c4"
+    }
+  ]
+}

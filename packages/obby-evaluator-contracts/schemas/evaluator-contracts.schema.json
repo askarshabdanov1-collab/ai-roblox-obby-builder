@@ -45,8 +45,9 @@
     },
     "Timestamp": {
       "type": "string",
-      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?Z$",
-      "maxLength": 40
+      "format": "strict-rfc3339-utc",
+      "pattern": "^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\\.[0-9]{3})?Z$",
+      "maxLength": 24
     },
     "SourceKind": {
       "enum": [
@@ -119,9 +120,9 @@
       "additionalProperties": false,
       "required": ["x", "y", "z"],
       "properties": {
-        "x": { "type": "number", "exclusiveMinimum": 0, "maximum": 100000 },
-        "y": { "type": "number", "exclusiveMinimum": 0, "maximum": 100000 },
-        "z": { "type": "number", "exclusiveMinimum": 0, "maximum": 100000 }
+        "x": { "type": "number", "minimum": 0.000001, "maximum": 100000 },
+        "y": { "type": "number", "minimum": 0.000001, "maximum": 100000 },
+        "z": { "type": "number", "minimum": 0.000001, "maximum": 100000 }
       }
     },
     "Transform": {
@@ -142,6 +143,9 @@
         "objectId",
         "shape",
         "authority",
+        "collision",
+        "gameplayOwnership",
+        "promotionStatus",
         "transform",
         "size"
       ],
@@ -150,13 +154,26 @@
         "objectId": { "$ref": "#/$defs/StableId" },
         "shape": { "enum": ["Block", "Ball", "Cylinder", "Wedge"] },
         "authority": { "enum": ["native-gameplay", "decorative"] },
+        "collision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["canCollide", "canTouch", "canQuery"],
+          "properties": {
+            "canCollide": { "type": "boolean" },
+            "canTouch": { "type": "boolean" },
+            "canQuery": { "type": "boolean" }
+          }
+        },
+        "gameplayOwnership": { "enum": ["native-part", "none"] },
+        "promotionStatus": { "enum": ["not-applicable", "not-promoted"] },
         "transform": { "$ref": "#/$defs/Transform" },
         "size": { "$ref": "#/$defs/PositiveVector3" },
         "safeRouteRef": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["globalIndex"],
+          "required": ["routeId", "globalIndex"],
           "properties": {
+            "routeId": { "$ref": "#/$defs/StableId" },
             "stageId": { "$ref": "#/$defs/StableId" },
             "stageIndex": {
               "type": "integer",
@@ -179,6 +196,7 @@
       "required": [
         "schemaVersion",
         "transitionId",
+        "routeId",
         "fromObjectId",
         "toObjectId",
         "fromGlobalIndex",
@@ -189,9 +207,10 @@
         "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
         "transitionId": {
           "type": "string",
-          "pattern": "^route:[a-z0-9.-]+/[a-z0-9.-]+/[0-9]+/[0-9]+$",
+          "pattern": "^route:[a-z0-9.-]+/[a-z0-9.-]+/[a-z0-9.-]+/[0-9]+/[0-9]+$",
           "maxLength": 320
         },
+        "routeId": { "$ref": "#/$defs/StableId" },
         "fromObjectId": { "$ref": "#/$defs/StableId" },
         "toObjectId": { "$ref": "#/$defs/StableId" },
         "fromGlobalIndex": {
@@ -605,6 +624,8 @@
         "metricId",
         "metricVersion",
         "resultKind",
+        "implementationStatus",
+        "calculationAvailability",
         "valueDefinition",
         "applicability",
         "zeroObservationBehavior",
@@ -626,6 +647,10 @@
         "metricId": { "$ref": "#/$defs/StableId" },
         "metricVersion": { "$ref": "#/$defs/SemanticVersion" },
         "resultKind": { "$ref": "#/$defs/ResultKind" },
+        "implementationStatus": { "enum": ["implemented", "planned"] },
+        "calculationAvailability": {
+          "enum": ["available", "unavailable-in-e1a"]
+        },
         "valueDefinition": { "$ref": "#/$defs/MetricValueDefinition" },
         "applicability": { "enum": ["required", "optional", "conditional"] },
         "zeroObservationBehavior": {
@@ -859,7 +884,7 @@
                 "uniqueItems": true,
                 "items": { "$ref": "#/$defs/StableId" }
               },
-              "availability": { "const": "available" }
+              "availability": { "enum": ["available", "planned"] }
             }
           }
         },

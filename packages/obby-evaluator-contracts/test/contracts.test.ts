@@ -2,7 +2,14 @@ import { describe, expect, it } from "vitest";
 
 import {
   assertEvaluationRequestMatchesPlan,
+  assertValidEvaluatorConfigurationGraph,
   assertValidEvidenceGraph,
+  hashEvaluationPlanConfiguration,
+  hashEvaluationRequest,
+  hashEvidenceContent,
+  hashMetricCatalog,
+  hashMetricDefinition,
+  hashScoringProfile,
   parseAvailabilityRecord,
   parseEvaluationMetric,
   parseEvaluationPlan,
@@ -21,6 +28,71 @@ import {
   ZERO_HASH,
 } from "./fixtures.js";
 
+function configurationGraph() {
+  const definition = metricDefinition();
+  definition.metricDefinitionHash = hashMetricDefinition(definition).hash;
+  const metricCatalog = catalog(definition.metricDefinitionHash as string);
+  metricCatalog.metricCatalogHash = hashMetricCatalog(metricCatalog).hash;
+  const profile = scoringProfile(metricCatalog.metricCatalogHash as string);
+  profile.scoringProfileHash = hashScoringProfile(profile).hash;
+  const plan = evaluationPlan({
+    catalog: {
+      catalogId: metricCatalog.catalogId,
+      catalogVersion: metricCatalog.catalogVersion,
+      metricCatalogHash: metricCatalog.metricCatalogHash,
+    },
+    profile: {
+      profileId: profile.profileId,
+      profileVersion: profile.profileVersion,
+      scoringProfileHash: profile.scoringProfileHash,
+      compatibilityClass: profile.compatibilityClass,
+    },
+  });
+  plan.configurationHash = hashEvaluationPlanConfiguration(plan).hash;
+  const request = evaluationRequest({
+    catalog: plan.catalog,
+    profile: plan.profile,
+    configurationHash: plan.configurationHash,
+  });
+  request.evaluationRequestHash = hashEvaluationRequest(request).hash;
+  return {
+    metricDefinitions: [definition],
+    catalog: metricCatalog,
+    profile,
+    plan,
+    request,
+    evaluatorVersion: "0.1.0",
+    componentVersions: { "obby-evaluator-contracts": "0.1.0" },
+  };
+}
+
+function evidence(
+  overrides: Record<string, unknown> = {},
+): Record<string, unknown> {
+  const record = {
+    schemaVersion: "0.1",
+    evidenceId: "evidence-a",
+    kind: "geometry-fact",
+    manifestHash: ZERO_HASH,
+    subject: { kind: "scene" },
+    producer: { component: "geometry-evaluator", version: "0.1.0" },
+    payload: {
+      kind: "geometry-fact",
+      objectIds: ["platform-a"],
+      factKind: "normalized-object",
+      geometryHash: ZERO_HASH,
+    },
+    parentEvidenceHashes: [],
+    artifactHashes: [],
+    quality: { completeness: "complete", validityCodes: [] },
+    limitations: [],
+    evidenceContentHash: ZERO_HASH,
+    ...overrides,
+  };
+  record.evidenceContentHash = hashEvidenceContent(record).hash;
+  return record;
+}
+
 describe("evaluator contracts", () => {
   it("parses bounded E1a contracts", () => {
     expect(parseMetricDefinition(metricDefinition()).metricId).toBe(
@@ -34,24 +106,123 @@ describe("evaluator contracts", () => {
     expect(
       parseEvaluationRequest(evaluationRequest()).evaluationRequestHash,
     ).toBe(ZERO_HASH);
+    const graph = configurationGraph();
     expect(
-      assertEvaluationRequestMatchesPlan(evaluationRequest(), evaluationPlan())
-        .requestId,
+      assertEvaluationRequestMatchesPlan(graph.request, graph.plan).requestId,
     ).toBe("request-0001");
   });
 
   it("rejects request options that do not match the referenced plan", () => {
+    const graph = configurationGraph();
     expect(() =>
       assertEvaluationRequestMatchesPlan(
-        evaluationRequest({
+        {
+          ...graph.request,
           deterministicRequestOptions: {
             seed: 43,
             partialEvidencePolicy: "reject",
           },
-        }),
-        evaluationPlan(),
+          evaluationRequestHash: hashEvaluationRequest({
+            ...graph.request,
+            deterministicRequestOptions: {
+              seed: 43,
+              partialEvidencePolicy: "reject",
+            },
+          }).hash,
+        },
+        graph.plan,
       ),
     ).toThrow(/deterministicRequestOptions/i);
+  });
+
+  it("resolves and verifies the complete evaluator configuration graph", () => {
+    expect(
+      assertValidEvaluatorConfigurationGraph(configurationGraph()).plan.planId,
+    ).toBe("e1-static-plan");
+  });
+
+  it.each([
+    [
+      "unknown catalog definition",
+      (graph: ReturnType<typeof configurationGraph>) => {
+        const reference = (
+          graph.catalog.metricDefinitions as Record<string, unknown>[]
+        )[0];
+        if (reference === undefined) throw new Error("missing test reference");
+        reference.metricId = "unknown.metric";
+        graph.catalog.metricCatalogHash = hashMetricCatalog(graph.catalog).hash;
+      },
+    ],
+    [
+      "unknown profile metric",
+      (graph: ReturnType<typeof configurationGraph>) => {
+        graph.profile.requiredMetricIds = ["unknown.metric"];
+        graph.profile.categories = [
+          {
+            categoryId: "playability",
+            metricIds: ["unknown.metric"],
+            availability: "available",
+          },
+        ];
+        graph.profile.scoringProfileHash = hashScoringProfile(
+          graph.profile,
+        ).hash;
+      },
+    ],
+    [
+      "missing invariant",
+      (graph: ReturnType<typeof configurationGraph>) => {
+        graph.profile.invariantGateIds = [];
+        graph.profile.scoringProfileHash = hashScoringProfile(
+          graph.profile,
+        ).hash;
+      },
+    ],
+    [
+      "invalid version range",
+      (graph: ReturnType<typeof configurationGraph>) => {
+        graph.catalog.supportedVersions = [
+          {
+            component: "obby-evaluator-contracts",
+            versionRange: "anything-goes",
+          },
+        ];
+        graph.catalog.metricCatalogHash = hashMetricCatalog(graph.catalog).hash;
+      },
+    ],
+  ])("rejects %s across contracts", (_name, mutate) => {
+    const graph = configurationGraph();
+    mutate(graph);
+    expect(() => assertValidEvaluatorConfigurationGraph(graph)).toThrow();
+  });
+
+  it("rejects derived self references and cycles", () => {
+    const graph = configurationGraph();
+    graph.metricDefinitions[0] = metricDefinition({
+      resultKind: "derived-composite",
+      parentMetricIds: ["playability.route-completeness"],
+    });
+    const definition = graph.metricDefinitions[0];
+    const reference = (
+      graph.catalog.metricDefinitions as Record<string, unknown>[]
+    )[0];
+    if (reference === undefined) {
+      throw new Error("missing self-reference test fixture");
+    }
+    definition.metricDefinitionHash = hashMetricDefinition(definition).hash;
+    reference.metricDefinitionHash = definition.metricDefinitionHash;
+    graph.catalog.metricCatalogHash = hashMetricCatalog(graph.catalog).hash;
+    expect(() => assertValidEvaluatorConfigurationGraph(graph)).toThrow(
+      /itself|cycle/i,
+    );
+  });
+
+  it("rejects stale plan and request hashes before binding", () => {
+    const graph = configurationGraph();
+    graph.plan.seed = 43;
+    expect(() =>
+      assertEvaluationRequestMatchesPlan(graph.request, graph.plan),
+    ).toThrow(/configurationHash content hash mismatch/i);
   });
 
   it("rejects unknown versions, discriminants, IDs, and properties", () => {
@@ -126,27 +297,9 @@ describe("evaluator contracts", () => {
     ).toThrow();
     expect(() =>
       assertValidEvidenceGraph([
-        {
-          schemaVersion: "0.1",
-          kind: "geometry-fact",
-          manifestHash: ZERO_HASH,
-          subject: { kind: "scene" },
-          producer: {
-            component: "geometry-evaluator",
-            version: "0.1.0",
-          },
-          payload: {
-            kind: "geometry-fact",
-            objectIds: ["platform-a"],
-            factKind: "normalized-object",
-            geometryHash: ZERO_HASH,
-          },
+        evidence({
           parentEvidenceHashes: [`sha256:${"1".repeat(64)}`],
-          artifactHashes: [],
-          quality: { completeness: "complete", validityCodes: [] },
-          limitations: [],
-          evidenceContentHash: ZERO_HASH,
-        },
+        }),
       ]),
     ).toThrow(/unknown parent evidence/i);
   });
@@ -209,5 +362,54 @@ describe("evaluator contracts", () => {
         effectiveSequence: 1,
       }),
     ).toThrow(/exactly one/i);
+    expect(() =>
+      parseAvailabilityRecord({
+        ...record,
+        effectiveAt: "2030-99-99T99:99:99Z",
+      }),
+    ).toThrow();
+  });
+
+  it("verifies evidence hashes, scope, IDs, parent compatibility, and cycles", () => {
+    const parent = evidence();
+    const child = evidence({
+      evidenceId: "evidence-b",
+      parentEvidenceHashes: [parent.evidenceContentHash],
+    });
+    expect(assertValidEvidenceGraph([child, parent])).toHaveLength(2);
+
+    expect(() =>
+      assertValidEvidenceGraph([
+        { ...parent, evidenceContentHash: `sha256:${"f".repeat(64)}` },
+      ]),
+    ).toThrow(/content hash mismatch/i);
+
+    const otherManifest = evidence({
+      evidenceId: "evidence-c",
+      manifestHash: `sha256:${"1".repeat(64)}`,
+      parentEvidenceHashes: [parent.evidenceContentHash],
+    });
+    expect(() => assertValidEvidenceGraph([parent, otherManifest])).toThrow(
+      /manifest scope/i,
+    );
+
+    const objectParent = evidence({
+      evidenceId: "evidence-object",
+      subject: { kind: "object", objectId: "platform-a" },
+    });
+    const incompatibleChild = evidence({
+      evidenceId: "evidence-scene",
+      parentEvidenceHashes: [objectParent.evidenceContentHash],
+    });
+    expect(() =>
+      assertValidEvidenceGraph([objectParent, incompatibleChild]),
+    ).toThrow(/subject/i);
+
+    expect(() =>
+      assertValidEvidenceGraph([
+        parent,
+        { ...parent, evidenceContentHash: parent.evidenceContentHash },
+      ]),
+    ).toThrow(/duplicate evidence id|duplicate evidence hash/i);
   });
 });

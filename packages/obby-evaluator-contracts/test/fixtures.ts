@@ -8,6 +8,8 @@ export function metricDefinition(
     metricId: "playability.route-completeness",
     metricVersion: "1.0.0",
     resultKind: "deterministic-fact",
+    implementationStatus: "planned",
+    calculationAvailability: "unavailable-in-e1a",
     valueDefinition: {
       kind: "number",
       unit: "ratio",

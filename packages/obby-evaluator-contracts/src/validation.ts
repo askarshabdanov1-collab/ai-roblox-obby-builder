@@ -3,6 +3,7 @@ import {
   type ErrorObject,
   type ValidateFunction,
 } from "ajv/dist/2020.js";
+import { evaluatorCanonicalize } from "@obby/canonical-json";
 
 import schema from "../schemas/evaluator-contracts.schema.json" with { type: "json" };
 import type {
@@ -39,7 +40,25 @@ const ajv = new Ajv2020({
   allowUnionTypes: false,
   strict: true,
   strictNumbers: true,
-  validateFormats: false,
+  validateFormats: true,
+});
+ajv.addFormat("strict-rfc3339-utc", {
+  type: "string",
+  validate(value: string): boolean {
+    if (
+      !/^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\.[0-9]{3})?Z$/.test(
+        value,
+      )
+    ) {
+      return false;
+    }
+    const parsed = new Date(value);
+    if (!Number.isFinite(parsed.getTime())) return false;
+    const normalized = value.includes(".")
+      ? value
+      : value.replace("Z", ".000Z");
+    return parsed.toISOString() === normalized;
+  },
 });
 ajv.addSchema(schema);
 
@@ -175,6 +194,17 @@ function semanticMetricCatalogIssues(value: MetricCatalog): ContractIssue[] {
       ),
     );
   }
+  for (const duplicate of duplicateValues(
+    value.supportedVersions.map((version) => version.component),
+  )) {
+    issues.push(
+      semanticIssue(
+        "duplicate-supported-component",
+        "/supportedVersions",
+        `duplicate supported component ${duplicate}`,
+      ),
+    );
+  }
   return issues;
 }
 
@@ -235,8 +265,26 @@ function semanticEvaluationMetricIssues(
 }
 
 function semanticTransitionIssues(value: TransitionInput): ContractIssue[] {
+  if (value.fromObjectId === value.toObjectId) {
+    return [
+      semanticIssue(
+        "transition-endpoint-identity",
+        "/toObjectId",
+        "transition source and destination must differ",
+      ),
+    ];
+  }
+  if (value.toGlobalIndex <= value.fromGlobalIndex) {
+    return [
+      semanticIssue(
+        "transition-route-order",
+        "/toGlobalIndex",
+        "transition route indexes must be strictly forward",
+      ),
+    ];
+  }
   const expected =
-    `route:${value.fromObjectId}/${value.toObjectId}/` +
+    `route:${value.routeId}/${value.fromObjectId}/${value.toObjectId}/` +
     `${value.fromGlobalIndex}/${value.toGlobalIndex}`;
   return value.transitionId === expected
     ? []
@@ -249,18 +297,91 @@ function semanticTransitionIssues(value: TransitionInput): ContractIssue[] {
       ];
 }
 
+function semanticGeometryObjectIssues(
+  value: GeometryObjectInput,
+): ContractIssue[] {
+  const issues: ContractIssue[] = [];
+  if (
+    value.authority === "native-gameplay" &&
+    (value.gameplayOwnership !== "native-part" ||
+      value.promotionStatus !== "not-applicable")
+  ) {
+    issues.push(
+      semanticIssue(
+        "native-gameplay-authority",
+        "/gameplayOwnership",
+        "native gameplay authority requires native-part ownership and not-applicable promotion",
+      ),
+    );
+  }
+  if (
+    value.authority === "decorative" &&
+    (value.gameplayOwnership !== "none" ||
+      value.promotionStatus !== "not-promoted")
+  ) {
+    issues.push(
+      semanticIssue(
+        "decorative-authority",
+        "/gameplayOwnership",
+        "decorative geometry has no gameplay ownership and cannot be implicitly promoted",
+      ),
+    );
+  }
+  if (
+    value.shape === "Ball" &&
+    (value.size.x !== value.size.y || value.size.y !== value.size.z)
+  ) {
+    issues.push(
+      semanticIssue(
+        "ball-diameter",
+        "/size",
+        "Ball geometry requires equal native diameters on all axes",
+      ),
+    );
+  }
+  if (value.shape === "Cylinder" && value.size.y !== value.size.z) {
+    issues.push(
+      semanticIssue(
+        "cylinder-diameter",
+        "/size",
+        "Cylinder geometry requires equal native Y/Z diameters",
+      ),
+    );
+  }
+  return issues;
+}
+
 function validate<T>(
   name: keyof typeof validators,
   input: unknown,
   semantics: (value: T) => ContractIssue[] = () => [],
 ): ValidationResult<T> {
+  let trusted: unknown;
+  try {
+    trusted = evaluatorCanonicalize(input).snapshot;
+  } catch (caught) {
+    return {
+      ok: false,
+      issues: [
+        {
+          kind: "structural",
+          code: "untrusted-host-object",
+          path: "/",
+          message:
+            caught instanceof Error
+              ? caught.message
+              : "input could not be snapshotted deterministically",
+        },
+      ],
+    };
+  }
   const validateStructure = validators[name] as ValidateFunction<T>;
-  if (!validateStructure(input)) {
+  if (!validateStructure(trusted)) {
     return { ok: false, issues: structuralIssues(validateStructure.errors) };
   }
-  const issues = semantics(input);
+  const issues = semantics(trusted);
   return issues.length === 0
-    ? { ok: true, value: input, issues: [] }
+    ? { ok: true, value: trusted, issues: [] }
     : { ok: false, issues };
 }
 
@@ -301,7 +422,7 @@ export const parseRuntimeObservationEnvelope = (
   input: unknown,
 ): RuntimeObservationEnvelope => parse("RuntimeObservationEnvelope", input);
 export const parseGeometryObjectInput = (input: unknown): GeometryObjectInput =>
-  parse("GeometryObjectInput", input);
+  parse("GeometryObjectInput", input, semanticGeometryObjectIssues);
 export const parseTransitionInput = (input: unknown): TransitionInput =>
   parse("TransitionInput", input, semanticTransitionIssues);
 export const parseCalculationBundlePreimage = (
@@ -325,113 +446,6 @@ export function parseAvailabilityRecord(input: unknown): AvailabilityRecord {
     }
   }
   return parse("AvailabilityRecord", input);
-}
-
-export function assertEvaluationRequestMatchesPlan(
-  requestInput: unknown,
-  planInput: unknown,
-): EvaluationRequest {
-  const request = parseEvaluationRequest(requestInput);
-  const plan = parseEvaluationPlan(planInput);
-  const mismatches: string[] = [];
-  if (request.configurationHash !== plan.configurationHash) {
-    mismatches.push("configurationHash");
-  }
-  if (
-    request.scene.manifestHash !== plan.scene.manifestHash ||
-    request.scene.manifestSchemaVersion !== plan.scene.manifestSchemaVersion
-  ) {
-    mismatches.push("scene");
-  }
-  if (
-    request.profile.profileId !== plan.profile.profileId ||
-    request.profile.profileVersion !== plan.profile.profileVersion ||
-    request.profile.scoringProfileHash !== plan.profile.scoringProfileHash ||
-    request.profile.compatibilityClass !== plan.profile.compatibilityClass
-  ) {
-    mismatches.push("profile");
-  }
-  if (
-    request.catalog.catalogId !== plan.catalog.catalogId ||
-    request.catalog.catalogVersion !== plan.catalog.catalogVersion ||
-    request.catalog.metricCatalogHash !== plan.catalog.metricCatalogHash
-  ) {
-    mismatches.push("catalog");
-  }
-  if (
-    request.deterministicRequestOptions.seed !== plan.seed ||
-    request.deterministicRequestOptions.partialEvidencePolicy !==
-      plan.partialEvidencePolicy ||
-    request.deterministicRequestOptions.comparisonGroupId !==
-      plan.comparisonGroupId
-  ) {
-    mismatches.push("deterministicRequestOptions");
-  }
-  if (mismatches.length > 0) {
-    throw new ContractValidationError("EvaluationRequestPlanBinding", [
-      semanticIssue(
-        "request-plan-mismatch",
-        "/",
-        `request differs from its plan: ${mismatches.join(", ")}`,
-      ),
-    ]);
-  }
-  return request;
-}
-
-export function assertValidEvidenceGraph(
-  inputs: readonly unknown[],
-): EvidenceRecord[] {
-  const records = inputs.map(parseEvidenceRecord);
-  const byHash = new Map<string, EvidenceRecord>();
-  for (const record of records) {
-    if (byHash.has(record.evidenceContentHash)) {
-      throw new ContractValidationError("EvidenceGraph", [
-        semanticIssue(
-          "duplicate-evidence-content-hash",
-          "/",
-          `duplicate evidence hash ${record.evidenceContentHash}`,
-        ),
-      ]);
-    }
-    byHash.set(record.evidenceContentHash, record);
-  }
-
-  for (const record of records) {
-    for (const parentHash of record.parentEvidenceHashes) {
-      if (!byHash.has(parentHash)) {
-        throw new ContractValidationError("EvidenceGraph", [
-          semanticIssue(
-            "unknown-parent-evidence",
-            "/parentEvidenceHashes",
-            `unknown parent evidence reference ${parentHash}`,
-          ),
-        ]);
-      }
-    }
-  }
-
-  const visiting = new Set<string>();
-  const visited = new Set<string>();
-  const visit = (hash: string): void => {
-    if (visiting.has(hash)) {
-      throw new ContractValidationError("EvidenceGraph", [
-        semanticIssue(
-          "evidence-cycle",
-          "/parentEvidenceHashes",
-          `evidence graph contains a cycle at ${hash}`,
-        ),
-      ]);
-    }
-    if (visited.has(hash)) return;
-    visiting.add(hash);
-    const record = byHash.get(hash);
-    for (const parent of record?.parentEvidenceHashes ?? []) visit(parent);
-    visiting.delete(hash);
-    visited.add(hash);
-  };
-  for (const hash of byHash.keys()) visit(hash);
-  return records;
 }
 
 export class ContractValidationError extends Error {

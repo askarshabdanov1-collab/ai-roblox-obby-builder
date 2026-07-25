@@ -70,14 +70,12 @@ export type OpaqueId = string;
 export type EvaluationMetric =
   DeterministicFact | HeuristicEstimate | LearnedEstimate | AnalyticsDerivedEstimate | HumanJudgment | DerivedComposite;
 export type DeterministicFact = MetricResultBase & {
-  resultKind?: "deterministic-fact";
-  sourceKind?: "deterministic";
+  resultKind: "deterministic-fact";
+  sourceKind: "deterministic";
   confidence: Confidence & {
     value?: 1;
-    [k: string]: unknown;
   };
   method: VersionRef;
-  [k: string]: unknown;
 };
 export type SourceKind = "deterministic" | "heuristic" | "learned" | "analytics-derived" | "subjective" | "derived";
 export type MetricValue =
@@ -100,40 +98,37 @@ export type MetricValue =
       value: StableId;
     };
 export type HeuristicEstimate = MetricResultBase & {
-  resultKind?: "heuristic-estimate";
-  sourceKind?: "heuristic";
+  resultKind: "heuristic-estimate";
+  sourceKind: "heuristic";
   confidence: Confidence;
   /**
    * @minItems 1
    */
   limitations?: [unknown, ...unknown[]];
-  [k: string]: unknown;
 };
 export type LearnedEstimate = MetricResultBase & {
-  resultKind?: "learned-estimate";
-  sourceKind?: "learned";
+  resultKind: "learned-estimate";
+  sourceKind: "learned";
   confidence: Confidence;
   model: VersionRef;
   /**
    * @minItems 1
    */
   limitations?: [unknown, ...unknown[]];
-  [k: string]: unknown;
 };
 export type AnalyticsDerivedEstimate = MetricResultBase & {
-  resultKind?: "analytics-derived-estimate";
-  sourceKind?: "analytics-derived";
+  resultKind: "analytics-derived-estimate";
+  sourceKind: "analytics-derived";
   confidence: Confidence;
   sourceSnapshotHash: ContentHash;
   /**
    * @minItems 1
    */
   limitations?: [unknown, ...unknown[]];
-  [k: string]: unknown;
 };
 export type HumanJudgment = MetricResultBase & {
-  resultKind?: "human-judgment";
-  sourceKind?: "subjective";
+  resultKind: "human-judgment";
+  sourceKind: "subjective";
   /**
    * @minItems 1
    * @maxItems 100000
@@ -144,11 +139,10 @@ export type HumanJudgment = MetricResultBase & {
    * @minItems 1
    */
   limitations?: [unknown, ...unknown[]];
-  [k: string]: unknown;
 };
 export type DerivedComposite = MetricResultBase & {
-  resultKind?: "derived-composite";
-  sourceKind?: "derived";
+  resultKind: "derived-composite";
+  sourceKind: "derived";
   confidence: Confidence;
   /**
    * @minItems 1
@@ -160,11 +154,12 @@ export type DerivedComposite = MetricResultBase & {
    * @minItems 1
    */
   limitations?: [unknown, ...unknown[]];
-  [k: string]: unknown;
 };
-export type EvidenceRecordContract = EvidenceRecord & {
-  [k: string]: unknown;
-};
+export type EvidenceRecordContract = Omit<EvidenceRecord, "kind" | "payload"> & (
+  | { kind: "geometry-fact"; payload: GeometryFactPayload }
+  | { kind: "route-transition"; payload: RouteTransitionPayload }
+  | { kind: "runtime-observation"; payload: RuntimeObservationReferencePayload }
+);
 export type EvaluationSubject =
   | {
       kind: "scene";
@@ -184,26 +179,23 @@ export type EvaluationSubject =
       kind: "point";
       point: Vector3;
     };
-export type RuntimeObservationContentContract = RuntimeObservationContent & {
-  [k: string]: unknown;
-};
-export type AvailabilityRecordContract = AvailabilityRecord &
-  (
-    | {
-        effectiveAt: unknown;
-        [k: string]: unknown;
-      }
-    | {
-        effectiveSequence: unknown;
-        [k: string]: unknown;
-      }
-  );
+export type RuntimeObservationContentContract = Omit<RuntimeObservationContent, "kind" | "payload"> & (
+  | { kind: "scene-loaded"; payload: Extract<RuntimeObservationContent["payload"], { kind: "scene-loaded" }> }
+  | { kind: "character-spawned"; payload: Extract<RuntimeObservationContent["payload"], { kind: "character-spawned" }> }
+  | { kind: "transition-attempt"; payload: Extract<RuntimeObservationContent["payload"], { kind: "transition-attempt" }> }
+);
+export type AvailabilityRecordContract = Omit<AvailabilityRecord, "effectiveAt" | "effectiveSequence"> & (
+  | { effectiveAt: Timestamp; effectiveSequence?: never }
+  | { effectiveAt?: never; effectiveSequence: number }
+);
 
 export interface MetricDefinition {
   schemaVersion: SchemaVersion;
   metricId: StableId;
   metricVersion: SemanticVersion;
   resultKind: ResultKind;
+  implementationStatus: "implemented" | "planned";
+  calculationAvailability: "available" | "unavailable-in-e1a";
   valueDefinition: MetricValueDefinition;
   applicability: "required" | "optional" | "conditional";
   zeroObservationBehavior: "not-applicable" | "missing-evidence" | "exact-zero";
@@ -325,7 +317,7 @@ export interface ScoringProfile {
        * @maxItems 256
        */
       metricIds: StableId[];
-      availability: "available";
+      availability: "available" | "planned";
     },
     ...{
       categoryId: "playability" | "checkpoint" | "hazard" | "policy" | "performance";
@@ -333,7 +325,7 @@ export interface ScoringProfile {
        * @maxItems 256
        */
       metricIds: StableId[];
-      availability: "available";
+      availability: "available" | "planned";
     }[]
   ];
   /**
@@ -551,7 +543,6 @@ export interface MetricResultBase {
    */
   limitations: string[];
   calculationHash: ContentHash;
-  [k: string]: unknown;
 }
 export interface Confidence {
   value: number;
@@ -743,9 +734,17 @@ export interface GeometryObjectInput {
   objectId: StableId;
   shape: "Block" | "Ball" | "Cylinder" | "Wedge";
   authority: "native-gameplay" | "decorative";
+  collision: {
+    canCollide: boolean;
+    canTouch: boolean;
+    canQuery: boolean;
+  };
+  gameplayOwnership: "native-part" | "none";
+  promotionStatus: "not-applicable" | "not-promoted";
   transform: Transform;
   size: PositiveVector3;
   safeRouteRef?: {
+    routeId: StableId;
     stageId?: StableId;
     stageIndex?: number;
     globalIndex: number;
@@ -759,6 +758,7 @@ export interface PositiveVector3 {
 export interface TransitionInput {
   schemaVersion: SchemaVersion;
   transitionId: string;
+  routeId: StableId;
   fromObjectId: StableId;
   toObjectId: StableId;
   fromGlobalIndex: number;

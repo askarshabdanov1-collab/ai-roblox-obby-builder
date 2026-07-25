@@ -35,10 +35,27 @@ describe("generated evaluator fixtures", () => {
       await fixture("e1-scoring-profile.json"),
     );
     expect(profile.aggregateScore).toBe(false);
+    expect(
+      profile.categories.every(
+        (category) => category.availability === "planned",
+      ),
+    ).toBe(true);
     expect(profile.categories.map((category) => category.categoryId)).toEqual([
       "playability",
       "policy",
     ]);
+    const policy = definitions
+      .map(verifyMetricDefinitionIdentity)
+      .find(
+        (definition) =>
+          definition.metricId === "policy.decorative-collision-violations",
+      );
+    expect(policy?.requiredCapabilities).toEqual(["geometry"]);
+    expect(policy?.requiredEvidenceKinds).toEqual(["geometry-fact"]);
+    expect(policy?.calculation.configurationHash).not.toBe(
+      `sha256:${"0".repeat(64)}`,
+    );
+    expect(policy?.calculationAvailability).toBe("unavailable-in-e1a");
   });
 
   it("fails closed when a content-addressed fixture is altered", async () => {
@@ -81,6 +98,32 @@ describe("generated evaluator fixtures", () => {
         .update(new TextEncoder().encode(vector.canonicalPayloadUtf8))
         .digest("hex");
       expect(vector.hash).toBe(`sha256:${digest}`);
+    }
+    const manual = JSON.parse(
+      await readFile(
+        new URL("../fixtures/manual/hash-vector-digests.json", import.meta.url),
+        "utf8",
+      ),
+    ) as {
+      generatedFixtureDigests: Record<string, string>;
+      smallVectors: {
+        canonicalPayloadUtf8: string;
+        hash: string;
+        preimageName: string;
+      }[];
+    };
+    expect(
+      Object.fromEntries(
+        vectors.map((vector) => [vector.preimageName, vector.hash]),
+      ),
+    ).toEqual(manual.generatedFixtureDigests);
+    expect(manual.smallVectors).toHaveLength(vectors.length);
+    for (const vector of manual.smallVectors) {
+      expect(
+        `sha256:${createHash("sha256")
+          .update(vector.canonicalPayloadUtf8, "utf8")
+          .digest("hex")}`,
+      ).toBe(vector.hash);
     }
   });
 });
