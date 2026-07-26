@@ -105,6 +105,8 @@ tractable.
 
 **Branch:** `feat/phase-e1b-route-playability-evidence`
 
+**Status:** implemented on the Phase E1b branch; pending independent review and merge.
+
 ### Exact scope
 
 - Build the declared global safe-route/stage graph only from committed route metadata.

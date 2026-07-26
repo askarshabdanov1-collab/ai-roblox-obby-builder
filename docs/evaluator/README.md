@@ -2,11 +2,13 @@
 
 ## Status and scope
 
-Phase E0 remains the authoritative reviewed design history. Phase E1a now implements only its
-versioned evaluator contracts, canonical identities, E1 catalog/profile fixtures, and deterministic
-native-Part geometry/transition inputs. See [the E1a completion record](phase-e1a-completion.md).
-There is still no route verdict engine, scoring/report workflow, CLI, external model dependency,
-Studio plugin, MCP server, scraping, training, analytics collection, or desktop application.
+Phase E0 remains the authoritative reviewed design history. Phase E1a implements versioned
+contracts, canonical identities, E1 catalog/profile fixtures, and deterministic native-Part
+geometry/transition inputs. Phase E1b adds declared route topology and model-relative coarse
+playability evidence. See the [E1a completion record](phase-e1a-completion.md) and
+[E1b implementation record](phase-e1b-implementation.md). There is still no scoring/report
+workflow, CLI, external model dependency, Studio plugin, MCP server, scraping, training, analytics
+collection, or desktop application.
 The aggregate configuration-graph validator is the sole public request/plan binding boundary.
 
 The evaluator is intended to assess:
@@ -54,6 +56,7 @@ retention. Popularity indicators are contextual metadata, never ground-truth qua
 - [MCP, local API, and repository structure](api-and-repository.md)
 - [Phase E1 rule-based implementation plan](phase-e1-plan.md)
 - [Phase E1a implementation completion record](phase-e1a-completion.md)
+- [Phase E1b implementation record](phase-e1b-implementation.md)
 - [Independent-audit remediation matrix](audit-remediation.md)
 
 ## Phase boundaries
