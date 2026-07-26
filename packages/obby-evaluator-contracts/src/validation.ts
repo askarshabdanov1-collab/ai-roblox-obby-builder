@@ -9,6 +9,7 @@ import schema from "../schemas/evaluator-contracts.schema.json" with { type: "js
 import type {
   AvailabilityRecord,
   CalculationBundlePreimage,
+  ControllerProfile,
   EvaluationMetric,
   EvaluationPlan,
   EvaluationRequest,
@@ -72,6 +73,7 @@ const validators = {
   AvailabilityRecord: validator<AvailabilityRecord>(
     "AvailabilityRecordContract",
   ),
+  ControllerProfile: validator<ControllerProfile>("ControllerProfile"),
   CalculationBundlePreimage: validator<CalculationBundlePreimage>(
     "CalculationBundlePreimage",
   ),
@@ -456,6 +458,8 @@ export const parseTransitionInput = (input: unknown): TransitionInput =>
 export const parseCalculationBundlePreimage = (
   input: unknown,
 ): CalculationBundlePreimage => parse("CalculationBundlePreimage", input);
+export const parseControllerProfile = (input: unknown): ControllerProfile =>
+  parse("ControllerProfile", input);
 
 export function parseAvailabilityRecord(input: unknown): AvailabilityRecord {
   return parse("AvailabilityRecord", input, semanticAvailabilityRecordIssues);

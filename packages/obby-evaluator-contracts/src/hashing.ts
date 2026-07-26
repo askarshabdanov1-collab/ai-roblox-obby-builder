@@ -8,6 +8,7 @@ import {
 import type {
   AvailabilityRecord,
   CalculationBundlePreimage,
+  ControllerProfile,
   EvidenceRecord,
   EvaluationPlan,
   EvaluationRequest,
@@ -18,6 +19,7 @@ import type {
 import {
   parseAvailabilityRecord,
   parseCalculationBundlePreimage,
+  parseControllerProfile,
   parseEvaluationPlan,
   parseEvaluationRequest,
   parseEvidenceRecord,
@@ -189,13 +191,35 @@ export function hashEvaluationRequest(input: unknown): NamedHashResult {
 }
 
 function evidencePayload(evidence: EvidenceRecord): Record<string, unknown> {
+  const payload = { ...evidence.payload };
+  const reproduction =
+    "reproduction" in evidence.payload
+      ? {
+          ...evidence.payload.reproduction,
+          inputHashes: strings(evidence.payload.reproduction.inputHashes),
+        }
+      : undefined;
   if (evidence.payload.kind === "geometry-fact") {
     return {
-      ...evidence.payload,
+      ...payload,
       objectIds: strings(evidence.payload.objectIds),
+      ...(reproduction === undefined ? {} : { reproduction }),
     };
   }
-  return { ...evidence.payload };
+  if (evidence.payload.kind === "skip-candidate") {
+    return {
+      ...payload,
+      candidateKinds: strings(evidence.payload.candidateKinds),
+      skippedStageIndexes: evidence.payload.skippedStageIndexes.toSorted(
+        (left, right) => left - right,
+      ),
+      reproduction,
+    };
+  }
+  return {
+    ...payload,
+    ...(reproduction === undefined ? {} : { reproduction }),
+  };
 }
 
 export function hashEvidenceContent(input: unknown): NamedHashResult {
@@ -257,6 +281,16 @@ export function hashAvailabilityRecord(input: unknown): NamedHashResult {
     supersedesAvailabilityRecordHashes: strings(
       payload.supersedesAvailabilityRecordHashes,
     ),
+  });
+}
+
+export function hashControllerProfile(input: unknown): NamedHashResult {
+  const profile = parseControllerProfile(input);
+  const payload = omitFields(profile, ["controllerProfileHash"]);
+  return namedHash({
+    ...payload,
+    limitations: strings(payload.limitations),
+    supportedSurfaceKinds: strings(payload.supportedSurfaceKinds),
   });
 }
 
@@ -356,6 +390,18 @@ export function verifyAvailabilityRecordIdentity(
     "availabilityRecordHash",
     hashAvailabilityRecord(value).hash,
     value.availabilityRecordHash,
+  );
+  return value;
+}
+
+export function verifyControllerProfileIdentity(
+  input: unknown,
+): ControllerProfile {
+  const value = parseControllerProfile(input);
+  assertHash(
+    "controllerProfileHash",
+    hashControllerProfile(value).hash,
+    value.controllerProfileHash,
   );
   return value;
 }

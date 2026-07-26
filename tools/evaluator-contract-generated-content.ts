@@ -1,4 +1,5 @@
 import { compileFromFile } from "json-schema-to-typescript";
+import { format } from "prettier";
 
 export const evaluatorContractSchemaPath =
   "packages/obby-evaluator-contracts/schemas/evaluator-contracts.schema.json";
@@ -21,7 +22,16 @@ export function postprocessEvaluatorContractTypes(source: string): string {
       /export type EvidenceRecordContract = EvidenceRecord & \{\};/,
       `export type EvidenceRecordContract = Omit<EvidenceRecord, "kind" | "payload"> & (
   | { kind: "geometry-fact"; payload: GeometryFactPayload }
+  | { kind: "route-graph"; payload: RouteGraphPayload }
   | { kind: "route-transition"; payload: RouteTransitionPayload }
+  | { kind: "coarse-transition-state"; payload: CoarseTransitionStatePayload }
+  | { kind: "route-playability-summary"; payload: RoutePlayabilitySummaryPayload }
+  | { kind: "transition-evidence-conflict"; payload: TransitionEvidenceConflictPayload }
+  | { kind: "checkpoint-topology"; payload: CheckpointTopologyPayload }
+  | { kind: "finish-topology"; payload: FinishTopologyPayload }
+  | { kind: "hazard-relationship"; payload: HazardRelationshipPayload }
+  | { kind: "skip-candidate"; payload: SkipCandidatePayload }
+  | { kind: "softlock-candidate"; payload: SoftlockCandidatePayload }
   | { kind: "runtime-observation"; payload: RuntimeObservationReferencePayload }
 );`,
     )
@@ -50,6 +60,9 @@ export async function expectedEvaluatorContractTypes(): Promise<
     typeOptions,
   );
   return {
-    [evaluatorContractTypePath]: postprocessEvaluatorContractTypes(compiled),
+    [evaluatorContractTypePath]: await format(
+      postprocessEvaluatorContractTypes(compiled),
+      { parser: "typescript" },
+    ),
   };
 }

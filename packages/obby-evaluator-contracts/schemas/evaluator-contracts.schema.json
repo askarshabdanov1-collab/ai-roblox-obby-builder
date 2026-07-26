@@ -14,6 +14,7 @@
     { "$ref": "#/$defs/RuntimeObservationContentContract" },
     { "$ref": "#/$defs/RuntimeObservationEnvelope" },
     { "$ref": "#/$defs/AvailabilityRecordContract" },
+    { "$ref": "#/$defs/ControllerProfile" },
     { "$ref": "#/$defs/Finding" },
     { "$ref": "#/$defs/GeometryObjectInput" },
     { "$ref": "#/$defs/TransitionInput" },
@@ -38,6 +39,16 @@
       "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$",
       "minLength": 1,
       "maxLength": 128
+    },
+    "ObjectId": {
+      "type": "string",
+      "pattern": "^(?:[A-Za-z][A-Za-z0-9]{0,63}|[a-z0-9]+(?:[.-][a-z0-9]+)*)$",
+      "maxLength": 128
+    },
+    "RouteTransitionId": {
+      "type": "string",
+      "pattern": "^route:[a-z0-9.-]+/(?:[A-Za-z][A-Za-z0-9]{0,63}|[a-z0-9]+(?:[.-][a-z0-9]+)*)/(?:[A-Za-z][A-Za-z0-9]{0,63}|[a-z0-9]+(?:[.-][a-z0-9]+)*)/[0-9]+/[0-9]+$",
+      "maxLength": 320
     },
     "OpaqueId": {
       "type": "string",
@@ -85,7 +96,16 @@
     "EvidenceKind": {
       "enum": [
         "geometry-fact",
+        "route-graph",
         "route-transition",
+        "coarse-transition-state",
+        "route-playability-summary",
+        "transition-evidence-conflict",
+        "checkpoint-topology",
+        "finish-topology",
+        "hazard-relationship",
+        "skip-candidate",
+        "softlock-candidate",
         "runtime-observation",
         "screenshot",
         "image-feature",
@@ -151,7 +171,7 @@
       ],
       "properties": {
         "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
-        "objectId": { "$ref": "#/$defs/StableId" },
+        "objectId": { "$ref": "#/$defs/ObjectId" },
         "shape": { "enum": ["Block", "Ball", "Cylinder", "Wedge"] },
         "authority": { "enum": ["native-gameplay", "decorative"] },
         "collision": {
@@ -205,14 +225,10 @@
       ],
       "properties": {
         "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
-        "transitionId": {
-          "type": "string",
-          "pattern": "^route:[a-z0-9.-]+/[a-z0-9.-]+/[a-z0-9.-]+/[0-9]+/[0-9]+$",
-          "maxLength": 320
-        },
+        "transitionId": { "$ref": "#/$defs/RouteTransitionId" },
         "routeId": { "$ref": "#/$defs/StableId" },
-        "fromObjectId": { "$ref": "#/$defs/StableId" },
-        "toObjectId": { "$ref": "#/$defs/StableId" },
+        "fromObjectId": { "$ref": "#/$defs/ObjectId" },
+        "toObjectId": { "$ref": "#/$defs/ObjectId" },
         "fromGlobalIndex": {
           "type": "integer",
           "minimum": 0,
@@ -220,6 +236,125 @@
         },
         "toGlobalIndex": { "type": "integer", "minimum": 0, "maximum": 100000 },
         "controllerProfileRef": { "$ref": "#/$defs/StableId" }
+      }
+    },
+    "ProfileConstantClassification": {
+      "enum": ["invariant", "provisional", "calibration-required"]
+    },
+    "ProfileDistanceConstant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "unit", "classification"],
+      "properties": {
+        "value": { "type": "number", "minimum": 0, "maximum": 100000 },
+        "unit": { "const": "studs" },
+        "classification": {
+          "$ref": "#/$defs/ProfileConstantClassification"
+        }
+      }
+    },
+    "ControllerProfile": {
+      "title": "ControllerProfile",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "profileId",
+        "profileVersion",
+        "modelId",
+        "maximumHorizontalGap",
+        "maximumRise",
+        "maximumDownwardDrop",
+        "avatarDimensions",
+        "requiredLandingMargin",
+        "supportedSurfaceKinds",
+        "tolerancePolicy",
+        "limitations",
+        "controllerProfileHash"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "profileId": { "$ref": "#/$defs/StableId" },
+        "profileVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "modelId": { "const": "e1-coarse-surface-transition-v1" },
+        "maximumHorizontalGap": {
+          "$ref": "#/$defs/ProfileDistanceConstant"
+        },
+        "maximumRise": { "$ref": "#/$defs/ProfileDistanceConstant" },
+        "maximumDownwardDrop": {
+          "$ref": "#/$defs/ProfileDistanceConstant"
+        },
+        "avatarDimensions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["width", "height", "depth", "unit", "classification"],
+          "properties": {
+            "width": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1000
+            },
+            "height": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1000
+            },
+            "depth": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 1000
+            },
+            "unit": { "const": "studs" },
+            "classification": {
+              "$ref": "#/$defs/ProfileConstantClassification"
+            }
+          }
+        },
+        "requiredLandingMargin": {
+          "$ref": "#/$defs/ProfileDistanceConstant"
+        },
+        "supportedSurfaceKinds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "planar-face",
+              "circular-endcap",
+              "wedge-slope",
+              "curved-surface"
+            ]
+          }
+        },
+        "tolerancePolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "comparisonToleranceStuds",
+            "boundaryRule",
+            "classification"
+          ],
+          "properties": {
+            "comparisonToleranceStuds": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.001
+            },
+            "boundaryRule": { "const": "inclusive-with-tolerance" },
+            "classification": {
+              "$ref": "#/$defs/ProfileConstantClassification"
+            }
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+        },
+        "controllerProfileHash": { "$ref": "#/$defs/ContentHash" }
       }
     },
     "MetricValue": {
@@ -337,7 +472,7 @@
           "required": ["kind", "objectId"],
           "properties": {
             "kind": { "const": "object" },
-            "objectId": { "$ref": "#/$defs/StableId" }
+            "objectId": { "$ref": "#/$defs/ObjectId" }
           }
         },
         {
@@ -352,8 +487,8 @@
           ],
           "properties": {
             "kind": { "const": "transition" },
-            "fromObjectId": { "$ref": "#/$defs/StableId" },
-            "toObjectId": { "$ref": "#/$defs/StableId" },
+            "fromObjectId": { "$ref": "#/$defs/ObjectId" },
+            "toObjectId": { "$ref": "#/$defs/ObjectId" },
             "fromGlobalIndex": {
               "type": "integer",
               "minimum": 0,
@@ -1282,7 +1417,7 @@
           "minItems": 1,
           "maxItems": 2048,
           "uniqueItems": true,
-          "items": { "$ref": "#/$defs/StableId" }
+          "items": { "$ref": "#/$defs/ObjectId" }
         },
         "factKind": {
           "enum": [
@@ -1292,7 +1427,8 @@
             "transition-input"
           ]
         },
-        "geometryHash": { "$ref": "#/$defs/ContentHash" }
+        "geometryHash": { "$ref": "#/$defs/ContentHash" },
+        "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
       }
     },
     "RouteTransitionPayload": {
@@ -1303,14 +1439,442 @@
         "transitionId",
         "fromObjectId",
         "toObjectId",
-        "normalizationHash"
+        "fromGlobalIndex",
+        "toGlobalIndex",
+        "sourceGeometryHash",
+        "destinationGeometryHash",
+        "normalizationHash",
+        "reproduction"
       ],
       "properties": {
         "kind": { "const": "route-transition" },
-        "transitionId": { "$ref": "#/$defs/OpaqueId" },
-        "fromObjectId": { "$ref": "#/$defs/StableId" },
-        "toObjectId": { "$ref": "#/$defs/StableId" },
-        "normalizationHash": { "$ref": "#/$defs/ContentHash" }
+        "transitionId": { "$ref": "#/$defs/RouteTransitionId" },
+        "fromObjectId": { "$ref": "#/$defs/ObjectId" },
+        "toObjectId": { "$ref": "#/$defs/ObjectId" },
+        "fromGlobalIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "toGlobalIndex": { "type": "integer", "minimum": 1, "maximum": 100000 },
+        "sourceGeometryHash": { "$ref": "#/$defs/ContentHash" },
+        "destinationGeometryHash": { "$ref": "#/$defs/ContentHash" },
+        "normalizationHash": { "$ref": "#/$defs/ContentHash" },
+        "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
+      }
+    },
+    "EvidenceReproduction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["methodId", "inputHashes"],
+      "properties": {
+        "methodId": { "$ref": "#/$defs/StableId" },
+        "inputHashes": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ContentHash" }
+        }
+      }
+    },
+    "RouteGraphPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "routeId",
+        "stageIds",
+        "orderedNodeIds",
+        "orderedTransitionIds",
+        "spawnObjectId",
+        "checkpointObjectIds",
+        "finishObjectId",
+        "structuralState",
+        "reproduction"
+      ],
+      "properties": {
+        "kind": { "const": "route-graph" },
+        "routeId": { "$ref": "#/$defs/StableId" },
+        "stageIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "orderedNodeIds": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 10000,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ObjectId" }
+        },
+        "orderedTransitionIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10000,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/RouteTransitionId" }
+        },
+        "spawnObjectId": { "$ref": "#/$defs/ObjectId" },
+        "checkpointObjectIds": {
+          "type": "array",
+          "maxItems": 1000,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ObjectId" }
+        },
+        "finishObjectId": { "$ref": "#/$defs/ObjectId" },
+        "structuralState": { "enum": ["connected", "disconnected"] },
+        "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
+      }
+    },
+    "CoarseTransitionStatePayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "metricId",
+        "resultId",
+        "transitionId",
+        "fromObjectId",
+        "toObjectId",
+        "controllerProfileId",
+        "controllerProfileVersion",
+        "controllerProfileHash",
+        "state",
+        "horizontalGapStuds",
+        "verticalRiseStuds",
+        "downwardDropStuds",
+        "sourceSurfaceKind",
+        "destinationSurfaceKind",
+        "approximationMethod",
+        "geometryToleranceStuds",
+        "confidenceBasis",
+        "reproduction"
+      ],
+      "properties": {
+        "kind": { "const": "coarse-transition-state" },
+        "metricId": { "const": "playability.coarse-transition-state" },
+        "resultId": { "$ref": "#/$defs/StableId" },
+        "transitionId": { "$ref": "#/$defs/RouteTransitionId" },
+        "fromObjectId": { "$ref": "#/$defs/ObjectId" },
+        "toObjectId": { "$ref": "#/$defs/ObjectId" },
+        "controllerProfileId": { "$ref": "#/$defs/StableId" },
+        "controllerProfileVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "controllerProfileHash": { "$ref": "#/$defs/ContentHash" },
+        "state": {
+          "enum": [
+            "feasible-under-model",
+            "infeasible-under-model",
+            "indeterminate"
+          ]
+        },
+        "horizontalGapStuds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "verticalRiseStuds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "downwardDropStuds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "sourceSurfaceKind": { "$ref": "#/$defs/StableId" },
+        "destinationSurfaceKind": { "$ref": "#/$defs/StableId" },
+        "approximationMethod": { "$ref": "#/$defs/StableId" },
+        "geometryToleranceStuds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.001
+        },
+        "confidenceBasis": {
+          "const": "deterministic-model-rule-bounded-inputs"
+        },
+        "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
+      }
+    },
+    "RoutePlayabilitySummaryPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "routeId",
+        "transitionCount",
+        "feasibleUnderModelCount",
+        "coarseInfeasibleTransitionCount",
+        "coarseIndeterminateTransitionCount",
+        "excessiveDropTransitionCount",
+        "clearanceEstimateState",
+        "reproduction"
+      ],
+      "properties": {
+        "kind": { "const": "route-playability-summary" },
+        "routeId": { "$ref": "#/$defs/StableId" },
+        "transitionCount": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "feasibleUnderModelCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "coarseInfeasibleTransitionCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "coarseIndeterminateTransitionCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "excessiveDropTransitionCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "clearanceEstimateState": {
+          "const": "indeterminate-no-overhead-route-metadata"
+        },
+        "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
+      }
+    },
+    "TransitionEvidenceConflictPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "transitionId",
+        "coarseEvidenceHash",
+        "runtimeEvidenceHash",
+        "conflictState",
+        "reproduction"
+      ],
+      "properties": {
+        "kind": { "const": "transition-evidence-conflict" },
+        "transitionId": { "$ref": "#/$defs/RouteTransitionId" },
+        "coarseEvidenceHash": { "$ref": "#/$defs/ContentHash" },
+        "runtimeEvidenceHash": { "$ref": "#/$defs/ContentHash" },
+        "conflictState": {
+          "enum": [
+            "agree",
+            "runtime-success-vs-coarse-infeasible",
+            "runtime-failure-vs-coarse-feasible",
+            "insufficient-runtime",
+            "incompatible"
+          ]
+        },
+        "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
+      }
+    },
+    "CheckpointTopologyPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "checkpointObjectId",
+        "routeId",
+        "stageId",
+        "stageIndex",
+        "routeIndex",
+        "checkpointOrder",
+        "spawnReachable",
+        "finishReachableAfterCheckpoint",
+        "gameplayAuthoritative",
+        "progressionDirection",
+        "progressionStateScope",
+        "runtimeIsolationState",
+        "reproduction"
+      ],
+      "properties": {
+        "kind": { "const": "checkpoint-topology" },
+        "checkpointObjectId": { "$ref": "#/$defs/ObjectId" },
+        "routeId": { "$ref": "#/$defs/StableId" },
+        "stageId": { "$ref": "#/$defs/StableId" },
+        "stageIndex": { "type": "integer", "minimum": 1, "maximum": 100000 },
+        "routeIndex": { "type": "integer", "minimum": 1, "maximum": 100000 },
+        "checkpointOrder": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "spawnReachable": { "type": "boolean" },
+        "finishReachableAfterCheckpoint": { "type": "boolean" },
+        "gameplayAuthoritative": { "type": "boolean" },
+        "progressionDirection": {
+          "enum": ["forward", "backward", "indeterminate"]
+        },
+        "progressionStateScope": { "const": "per-player" },
+        "runtimeIsolationState": { "const": "not-evaluated" },
+        "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
+      }
+    },
+    "FinishTopologyPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "finishObjectId",
+        "routeId",
+        "routeIndex",
+        "requiredFinishCount",
+        "onRequiredRoute",
+        "afterAllCheckpoints",
+        "structurallyReachable",
+        "coarsePathState",
+        "gameplayAuthoritative",
+        "reproduction"
+      ],
+      "properties": {
+        "kind": { "const": "finish-topology" },
+        "finishObjectId": { "$ref": "#/$defs/ObjectId" },
+        "routeId": { "$ref": "#/$defs/StableId" },
+        "routeIndex": { "type": "integer", "minimum": 1, "maximum": 100000 },
+        "requiredFinishCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "onRequiredRoute": { "type": "boolean" },
+        "afterAllCheckpoints": { "type": "boolean" },
+        "structurallyReachable": { "type": "boolean" },
+        "coarsePathState": {
+          "enum": [
+            "feasible-under-model",
+            "contains-infeasible-under-model",
+            "indeterminate"
+          ]
+        },
+        "gameplayAuthoritative": { "type": "boolean" },
+        "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
+      }
+    },
+    "HazardRelationshipPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "hazardObjectId",
+        "relationship",
+        "assessment",
+        "geometryMethod",
+        "hazardGameplayAuthoritative",
+        "reproduction"
+      ],
+      "properties": {
+        "kind": { "const": "hazard-relationship" },
+        "hazardObjectId": { "$ref": "#/$defs/ObjectId" },
+        "routeObjectId": { "$ref": "#/$defs/ObjectId" },
+        "relationship": {
+          "enum": [
+            "landing-surface-overlap",
+            "landing-surface-fully-consumed",
+            "route-envelope-overlap",
+            "kill-floor-bounds",
+            "structural-enclosure"
+          ]
+        },
+        "assessment": {
+          "enum": ["confirmed", "candidate", "not-detected", "indeterminate"]
+        },
+        "geometryMethod": { "$ref": "#/$defs/StableId" },
+        "hazardGameplayAuthoritative": { "type": "boolean" },
+        "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
+      }
+    },
+    "SkipCandidatePayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "candidateId",
+        "fromObjectId",
+        "toObjectId",
+        "fromRouteIndex",
+        "toRouteIndex",
+        "candidateKinds",
+        "skippedStageIndexes",
+        "modelState",
+        "geometryMethod",
+        "reproduction"
+      ],
+      "properties": {
+        "kind": { "const": "skip-candidate" },
+        "candidateId": { "$ref": "#/$defs/StableId" },
+        "fromObjectId": { "$ref": "#/$defs/ObjectId" },
+        "toObjectId": { "$ref": "#/$defs/ObjectId" },
+        "fromRouteIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "toRouteIndex": { "type": "integer", "minimum": 2, "maximum": 100000 },
+        "candidateKinds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "non-adjacent-route-edge",
+              "checkpoint-bypass",
+              "spawn-to-late-stage",
+              "checkpoint-to-finish",
+              "required-stage-skip"
+            ]
+          }
+        },
+        "skippedStageIndexes": {
+          "type": "array",
+          "maxItems": 1000,
+          "uniqueItems": true,
+          "items": { "type": "integer", "minimum": 1, "maximum": 100000 }
+        },
+        "modelState": { "const": "candidate" },
+        "geometryMethod": { "$ref": "#/$defs/StableId" },
+        "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
+      }
+    },
+    "SoftlockCandidatePayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "candidateId",
+        "subjectObjectId",
+        "candidateKind",
+        "state",
+        "reproduction"
+      ],
+      "properties": {
+        "kind": { "const": "softlock-candidate" },
+        "candidateId": { "$ref": "#/$defs/StableId" },
+        "subjectObjectId": { "$ref": "#/$defs/ObjectId" },
+        "candidateKind": {
+          "enum": [
+            "checkpoint-without-outgoing-path",
+            "branch-without-required-return",
+            "route-object-without-outgoing-transition",
+            "enclosed-region-without-exit",
+            "missing-one-way-continuation",
+            "isolated-progression-object"
+          ]
+        },
+        "state": {
+          "enum": [
+            "structural-softlock-candidate",
+            "model-relative-softlock-candidate",
+            "indeterminate"
+          ]
+        },
+        "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
       }
     },
     "RuntimeObservationReferencePayload": {
@@ -1389,7 +1953,20 @@
         "executionId": { "$ref": "#/$defs/OpaqueId" },
         "capturedAt": { "$ref": "#/$defs/Timestamp" },
         "kind": {
-          "enum": ["geometry-fact", "route-transition", "runtime-observation"]
+          "enum": [
+            "geometry-fact",
+            "route-graph",
+            "route-transition",
+            "coarse-transition-state",
+            "route-playability-summary",
+            "transition-evidence-conflict",
+            "checkpoint-topology",
+            "finish-topology",
+            "hazard-relationship",
+            "skip-candidate",
+            "softlock-candidate",
+            "runtime-observation"
+          ]
         },
         "manifestHash": { "$ref": "#/$defs/ContentHash" },
         "subject": { "$ref": "#/$defs/EvaluationSubject" },
@@ -1397,7 +1974,16 @@
         "payload": {
           "oneOf": [
             { "$ref": "#/$defs/GeometryFactPayload" },
+            { "$ref": "#/$defs/RouteGraphPayload" },
             { "$ref": "#/$defs/RouteTransitionPayload" },
+            { "$ref": "#/$defs/CoarseTransitionStatePayload" },
+            { "$ref": "#/$defs/RoutePlayabilitySummaryPayload" },
+            { "$ref": "#/$defs/TransitionEvidenceConflictPayload" },
+            { "$ref": "#/$defs/CheckpointTopologyPayload" },
+            { "$ref": "#/$defs/FinishTopologyPayload" },
+            { "$ref": "#/$defs/HazardRelationshipPayload" },
+            { "$ref": "#/$defs/SkipCandidatePayload" },
+            { "$ref": "#/$defs/SoftlockCandidatePayload" },
             { "$ref": "#/$defs/RuntimeObservationReferencePayload" }
           ]
         },
@@ -1456,10 +2042,101 @@
         },
         {
           "type": "object",
+          "if": { "properties": { "kind": { "const": "route-graph" } } },
+          "then": {
+            "properties": { "payload": { "$ref": "#/$defs/RouteGraphPayload" } }
+          }
+        },
+        {
+          "type": "object",
           "if": { "properties": { "kind": { "const": "route-transition" } } },
           "then": {
             "properties": {
               "payload": { "$ref": "#/$defs/RouteTransitionPayload" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "if": {
+            "properties": { "kind": { "const": "coarse-transition-state" } }
+          },
+          "then": {
+            "properties": {
+              "payload": { "$ref": "#/$defs/CoarseTransitionStatePayload" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "if": {
+            "properties": { "kind": { "const": "route-playability-summary" } }
+          },
+          "then": {
+            "properties": {
+              "payload": { "$ref": "#/$defs/RoutePlayabilitySummaryPayload" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "if": {
+            "properties": {
+              "kind": { "const": "transition-evidence-conflict" }
+            }
+          },
+          "then": {
+            "properties": {
+              "payload": { "$ref": "#/$defs/TransitionEvidenceConflictPayload" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "if": {
+            "properties": { "kind": { "const": "checkpoint-topology" } }
+          },
+          "then": {
+            "properties": {
+              "payload": { "$ref": "#/$defs/CheckpointTopologyPayload" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "if": { "properties": { "kind": { "const": "finish-topology" } } },
+          "then": {
+            "properties": {
+              "payload": { "$ref": "#/$defs/FinishTopologyPayload" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "if": {
+            "properties": { "kind": { "const": "hazard-relationship" } }
+          },
+          "then": {
+            "properties": {
+              "payload": { "$ref": "#/$defs/HazardRelationshipPayload" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "if": { "properties": { "kind": { "const": "skip-candidate" } } },
+          "then": {
+            "properties": {
+              "payload": { "$ref": "#/$defs/SkipCandidatePayload" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "if": { "properties": { "kind": { "const": "softlock-candidate" } } },
+          "then": {
+            "properties": {
+              "payload": { "$ref": "#/$defs/SoftlockCandidatePayload" }
             }
           }
         },
