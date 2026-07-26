@@ -145,7 +145,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:d67eba6d878d60cca018650684ad118b399feed43f860c5d09d8b147c29d0ead",
+      "evidenceContentHash": "sha256:95228d49d6e4a4e29fffe933a9852e9bfb6d1b8c997c90c5c5e87ce925be9db5",
       "evidenceId": "e1b:route-transition:0",
       "kind": "route-transition",
       "limitations": [
@@ -161,6 +161,10 @@
         "fromGlobalIndex": 0,
         "fromObjectId": "Spawn",
         "kind": "route-transition",
+        "measurementSourceEvidenceHashes": [
+          "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
+          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+        ],
         "normalizationHash": "sha256:93ca3e793de773db2da4346fcb91857ef71078daa5d26a09af997e1b83211147",
         "reproduction": {
           "inputHashes": [
@@ -194,7 +198,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:bec3e20e421ac0ad7c733dc3c911655cce4be9497cb53a395fac8e1175229d6d",
+      "evidenceContentHash": "sha256:ced3c3cacea1118fee504e044a1ad39354040f2f7b39528d8635627c14874c8c",
       "evidenceId": "e1b:route-transition:1",
       "kind": "route-transition",
       "limitations": [
@@ -210,6 +214,10 @@
         "fromGlobalIndex": 1,
         "fromObjectId": "JumpPlatform01",
         "kind": "route-transition",
+        "measurementSourceEvidenceHashes": [
+          "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
+          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+        ],
         "normalizationHash": "sha256:1f9776e53734cfcae0c0522f92bc38a29a3761b07f9f3fb205416881b2ac1615",
         "reproduction": {
           "inputHashes": [
@@ -243,7 +251,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:a946c0183fc6c4fd55c0680590c5a59e54368ff260d89e423b50f6852389a66c",
+      "evidenceContentHash": "sha256:9f52a6eb5d55da06b7c6c8343fc069ebbb4195c4c1614d93ea58b92457626333",
       "evidenceId": "e1b:route-transition:2",
       "kind": "route-transition",
       "limitations": [
@@ -259,6 +267,10 @@
         "fromGlobalIndex": 2,
         "fromObjectId": "Checkpoint01",
         "kind": "route-transition",
+        "measurementSourceEvidenceHashes": [
+          "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
+          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+        ],
         "normalizationHash": "sha256:e7babe4e922092409266f457c1e272ac204c93f3be1a6782b4e1fe9e9acf6d59",
         "reproduction": {
           "inputHashes": [
@@ -292,7 +304,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:9bccc75a26dc6458c210fd294111d1ef9b0b08e9ff44505ca018485bb2e04bbc",
+      "evidenceContentHash": "sha256:02b37683d111b6f09abc2c6525a8de72fae98cfccc91459739b062513241ee9d",
       "evidenceId": "e1b:route-transition:3",
       "kind": "route-transition",
       "limitations": [
@@ -308,6 +320,10 @@
         "fromGlobalIndex": 3,
         "fromObjectId": "WedgeClimb01",
         "kind": "route-transition",
+        "measurementSourceEvidenceHashes": [
+          "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
+          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+        ],
         "normalizationHash": "sha256:ce3a3dcbca9c4692a2b576217bff666e2d20440d9a4538b0758cf54c124d99cc",
         "reproduction": {
           "inputHashes": [
@@ -341,7 +357,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:0f80b909781c85289ddb371185ac4d5396eacc5d3f25d50b573c321a20b52aba",
+      "evidenceContentHash": "sha256:3baceba171a5cbde5e15e639c0c1c466eb6c6dc5ca7abc920a79475f3b1fe5e0",
       "evidenceId": "e1b:coarse-transition:0",
       "kind": "coarse-transition-state",
       "limitations": [
@@ -352,7 +368,7 @@
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
-        "sha256:d67eba6d878d60cca018650684ad118b399feed43f860c5d09d8b147c29d0ead"
+        "sha256:95228d49d6e4a4e29fffe933a9852e9bfb6d1b8c997c90c5c5e87ce925be9db5"
       ],
       "payload": {
         "approximationMethod": "world-aabb-horizontal-separation",
@@ -366,7 +382,7 @@
         "geometryToleranceStuds": 1e-9,
         "horizontalGapStuds": 5,
         "inputEvidenceHashes": [
-          "sha256:d67eba6d878d60cca018650684ad118b399feed43f860c5d09d8b147c29d0ead"
+          "sha256:95228d49d6e4a4e29fffe933a9852e9bfb6d1b8c997c90c5c5e87ce925be9db5"
         ],
         "kind": "coarse-transition-state",
         "landingRegion": {
@@ -385,7 +401,7 @@
         "reasonCodes": [],
         "reproduction": {
           "inputHashes": [
-            "sha256:d67eba6d878d60cca018650684ad118b399feed43f860c5d09d8b147c29d0ead"
+            "sha256:95228d49d6e4a4e29fffe933a9852e9bfb6d1b8c997c90c5c5e87ce925be9db5"
           ],
           "methodId": "coarse-transition-v2"
         },
@@ -415,7 +431,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:ccbd36aabf59d64b4bcc53ef8deda76056fa12fb8d6ef9583e47ae4ffd2874f4",
+      "evidenceContentHash": "sha256:da39d99494b35f1f3c3da7c4a3a817db915cbb9dad3757fdd382db3740a7f10c",
       "evidenceId": "e1b:coarse-transition:1",
       "kind": "coarse-transition-state",
       "limitations": [
@@ -426,7 +442,7 @@
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
-        "sha256:bec3e20e421ac0ad7c733dc3c911655cce4be9497cb53a395fac8e1175229d6d"
+        "sha256:ced3c3cacea1118fee504e044a1ad39354040f2f7b39528d8635627c14874c8c"
       ],
       "payload": {
         "approximationMethod": "world-aabb-horizontal-separation",
@@ -440,7 +456,7 @@
         "geometryToleranceStuds": 1e-9,
         "horizontalGapStuds": 4,
         "inputEvidenceHashes": [
-          "sha256:bec3e20e421ac0ad7c733dc3c911655cce4be9497cb53a395fac8e1175229d6d"
+          "sha256:ced3c3cacea1118fee504e044a1ad39354040f2f7b39528d8635627c14874c8c"
         ],
         "kind": "coarse-transition-state",
         "landingRegion": {
@@ -459,7 +475,7 @@
         "reasonCodes": [],
         "reproduction": {
           "inputHashes": [
-            "sha256:bec3e20e421ac0ad7c733dc3c911655cce4be9497cb53a395fac8e1175229d6d"
+            "sha256:ced3c3cacea1118fee504e044a1ad39354040f2f7b39528d8635627c14874c8c"
           ],
           "methodId": "coarse-transition-v2"
         },
@@ -489,7 +505,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:5a25e1b228e55e6d9c0db6f8dc971617062a7eba2102326384ebfa875f4e1a6b",
+      "evidenceContentHash": "sha256:7b89a715480697006ec207fcd683bc449b4d844be123adb7bd7987bfd76199b0",
       "evidenceId": "e1b:coarse-transition:2",
       "kind": "coarse-transition-state",
       "limitations": [
@@ -500,7 +516,7 @@
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
-        "sha256:a946c0183fc6c4fd55c0680590c5a59e54368ff260d89e423b50f6852389a66c"
+        "sha256:9f52a6eb5d55da06b7c6c8343fc069ebbb4195c4c1614d93ea58b92457626333"
       ],
       "payload": {
         "approximationMethod": "world-aabb-horizontal-separation",
@@ -514,7 +530,7 @@
         "geometryToleranceStuds": 1e-9,
         "horizontalGapStuds": 3,
         "inputEvidenceHashes": [
-          "sha256:a946c0183fc6c4fd55c0680590c5a59e54368ff260d89e423b50f6852389a66c"
+          "sha256:9f52a6eb5d55da06b7c6c8343fc069ebbb4195c4c1614d93ea58b92457626333"
         ],
         "kind": "coarse-transition-state",
         "landingRegion": {
@@ -533,7 +549,7 @@
         "reasonCodes": [],
         "reproduction": {
           "inputHashes": [
-            "sha256:a946c0183fc6c4fd55c0680590c5a59e54368ff260d89e423b50f6852389a66c"
+            "sha256:9f52a6eb5d55da06b7c6c8343fc069ebbb4195c4c1614d93ea58b92457626333"
           ],
           "methodId": "coarse-transition-v2"
         },
@@ -563,7 +579,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:975d22488b28d04bb75be5c4d6135d9b3bcd25aacc622975bb4667330b25345c",
+      "evidenceContentHash": "sha256:63d17c90df9e0264377b980610c85b3643d57074e32f80981ef17ee4a8a1735b",
       "evidenceId": "e1b:coarse-transition:3",
       "kind": "coarse-transition-state",
       "limitations": [
@@ -574,7 +590,7 @@
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
-        "sha256:9bccc75a26dc6458c210fd294111d1ef9b0b08e9ff44505ca018485bb2e04bbc"
+        "sha256:02b37683d111b6f09abc2c6525a8de72fae98cfccc91459739b062513241ee9d"
       ],
       "payload": {
         "approximationMethod": "world-aabb-horizontal-separation",
@@ -588,7 +604,7 @@
         "geometryToleranceStuds": 1e-9,
         "horizontalGapStuds": 2,
         "inputEvidenceHashes": [
-          "sha256:9bccc75a26dc6458c210fd294111d1ef9b0b08e9ff44505ca018485bb2e04bbc"
+          "sha256:02b37683d111b6f09abc2c6525a8de72fae98cfccc91459739b062513241ee9d"
         ],
         "kind": "coarse-transition-state",
         "landingRegion": {
@@ -607,7 +623,7 @@
         "reasonCodes": [],
         "reproduction": {
           "inputHashes": [
-            "sha256:9bccc75a26dc6458c210fd294111d1ef9b0b08e9ff44505ca018485bb2e04bbc"
+            "sha256:02b37683d111b6f09abc2c6525a8de72fae98cfccc91459739b062513241ee9d"
           ],
           "methodId": "coarse-transition-v2"
         },
@@ -637,7 +653,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:ceac67be63d2a86cd33237add2f3c20a2f220a81bff5b3c2837ab8ead098a4c1",
+      "evidenceContentHash": "sha256:3a8bad73d9e267d48518b23138cdcf4c6bcbe6abba8af3edd98b911e922ee0fb",
       "evidenceId": "e1b:route-playability-summary",
       "kind": "route-playability-summary",
       "limitations": [
@@ -646,11 +662,11 @@
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
-        "sha256:0f80b909781c85289ddb371185ac4d5396eacc5d3f25d50b573c321a20b52aba",
+        "sha256:3baceba171a5cbde5e15e639c0c1c466eb6c6dc5ca7abc920a79475f3b1fe5e0",
         "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-        "sha256:5a25e1b228e55e6d9c0db6f8dc971617062a7eba2102326384ebfa875f4e1a6b",
-        "sha256:975d22488b28d04bb75be5c4d6135d9b3bcd25aacc622975bb4667330b25345c",
-        "sha256:ccbd36aabf59d64b4bcc53ef8deda76056fa12fb8d6ef9583e47ae4ffd2874f4"
+        "sha256:63d17c90df9e0264377b980610c85b3643d57074e32f80981ef17ee4a8a1735b",
+        "sha256:7b89a715480697006ec207fcd683bc449b4d844be123adb7bd7987bfd76199b0",
+        "sha256:da39d99494b35f1f3c3da7c4a3a817db915cbb9dad3757fdd382db3740a7f10c"
       ],
       "payload": {
         "clearanceEstimateState": "indeterminate-no-overhead-route-metadata",
@@ -661,12 +677,12 @@
         "kind": "route-playability-summary",
         "reproduction": {
           "inputHashes": [
-            "sha256:0f80b909781c85289ddb371185ac4d5396eacc5d3f25d50b573c321a20b52aba",
             "sha256:3472ccfc4683b16d6052c265abd2e1e39e4caf56db66425715370ffa48e4ccdd",
+            "sha256:3baceba171a5cbde5e15e639c0c1c466eb6c6dc5ca7abc920a79475f3b1fe5e0",
             "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-            "sha256:5a25e1b228e55e6d9c0db6f8dc971617062a7eba2102326384ebfa875f4e1a6b",
-            "sha256:975d22488b28d04bb75be5c4d6135d9b3bcd25aacc622975bb4667330b25345c",
-            "sha256:ccbd36aabf59d64b4bcc53ef8deda76056fa12fb8d6ef9583e47ae4ffd2874f4"
+            "sha256:63d17c90df9e0264377b980610c85b3643d57074e32f80981ef17ee4a8a1735b",
+            "sha256:7b89a715480697006ec207fcd683bc449b4d844be123adb7bd7987bfd76199b0",
+            "sha256:da39d99494b35f1f3c3da7c4a3a817db915cbb9dad3757fdd382db3740a7f10c"
           ],
           "methodId": "route-playability-summary-v1"
         },
@@ -735,7 +751,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:223085a02ea9c6c807c81f3724941aef1e99739e315787b1bfbf8e90c673d7a0",
+      "evidenceContentHash": "sha256:b0cae7cff3146f1620cb680cc69246ae2758ce40dc623af168f6a7ba3be7ba8d",
       "evidenceId": "e1b:finish",
       "kind": "finish-topology",
       "limitations": [
@@ -743,11 +759,11 @@
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
-        "sha256:0f80b909781c85289ddb371185ac4d5396eacc5d3f25d50b573c321a20b52aba",
+        "sha256:3baceba171a5cbde5e15e639c0c1c466eb6c6dc5ca7abc920a79475f3b1fe5e0",
         "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-        "sha256:5a25e1b228e55e6d9c0db6f8dc971617062a7eba2102326384ebfa875f4e1a6b",
-        "sha256:975d22488b28d04bb75be5c4d6135d9b3bcd25aacc622975bb4667330b25345c",
-        "sha256:ccbd36aabf59d64b4bcc53ef8deda76056fa12fb8d6ef9583e47ae4ffd2874f4"
+        "sha256:63d17c90df9e0264377b980610c85b3643d57074e32f80981ef17ee4a8a1735b",
+        "sha256:7b89a715480697006ec207fcd683bc449b4d844be123adb7bd7987bfd76199b0",
+        "sha256:da39d99494b35f1f3c3da7c4a3a817db915cbb9dad3757fdd382db3740a7f10c"
       ],
       "payload": {
         "afterAllCheckpoints": true,
@@ -758,11 +774,11 @@
         "onRequiredRoute": true,
         "reproduction": {
           "inputHashes": [
-            "sha256:0f80b909781c85289ddb371185ac4d5396eacc5d3f25d50b573c321a20b52aba",
+            "sha256:3baceba171a5cbde5e15e639c0c1c466eb6c6dc5ca7abc920a79475f3b1fe5e0",
             "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-            "sha256:5a25e1b228e55e6d9c0db6f8dc971617062a7eba2102326384ebfa875f4e1a6b",
-            "sha256:975d22488b28d04bb75be5c4d6135d9b3bcd25aacc622975bb4667330b25345c",
-            "sha256:ccbd36aabf59d64b4bcc53ef8deda76056fa12fb8d6ef9583e47ae4ffd2874f4"
+            "sha256:63d17c90df9e0264377b980610c85b3643d57074e32f80981ef17ee4a8a1735b",
+            "sha256:7b89a715480697006ec207fcd683bc449b4d844be123adb7bd7987bfd76199b0",
+            "sha256:da39d99494b35f1f3c3da7c4a3a817db915cbb9dad3757fdd382db3740a7f10c"
           ],
           "methodId": "finish-topology-v1"
         },
@@ -1027,7 +1043,7 @@
       "destinationObjectId": "JumpPlatform01",
       "fromGlobalIndex": 0,
       "inputEvidenceHashes": [
-        "sha256:d67eba6d878d60cca018650684ad118b399feed43f860c5d09d8b147c29d0ead"
+        "sha256:95228d49d6e4a4e29fffe933a9852e9bfb6d1b8c997c90c5c5e87ce925be9db5"
       ],
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
@@ -1039,7 +1055,7 @@
       "reasonCodes": [],
       "reproduction": {
         "inputEvidenceHashes": [
-          "sha256:d67eba6d878d60cca018650684ad118b399feed43f860c5d09d8b147c29d0ead"
+          "sha256:95228d49d6e4a4e29fffe933a9852e9bfb6d1b8c997c90c5c5e87ce925be9db5"
         ],
         "methodId": "coarse-transition-classifier",
         "methodVersion": "2.0.0",
@@ -1121,7 +1137,7 @@
       "destinationObjectId": "Checkpoint01",
       "fromGlobalIndex": 1,
       "inputEvidenceHashes": [
-        "sha256:bec3e20e421ac0ad7c733dc3c911655cce4be9497cb53a395fac8e1175229d6d"
+        "sha256:ced3c3cacea1118fee504e044a1ad39354040f2f7b39528d8635627c14874c8c"
       ],
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
@@ -1133,7 +1149,7 @@
       "reasonCodes": [],
       "reproduction": {
         "inputEvidenceHashes": [
-          "sha256:bec3e20e421ac0ad7c733dc3c911655cce4be9497cb53a395fac8e1175229d6d"
+          "sha256:ced3c3cacea1118fee504e044a1ad39354040f2f7b39528d8635627c14874c8c"
         ],
         "methodId": "coarse-transition-classifier",
         "methodVersion": "2.0.0",
@@ -1215,7 +1231,7 @@
       "destinationObjectId": "WedgeClimb01",
       "fromGlobalIndex": 2,
       "inputEvidenceHashes": [
-        "sha256:a946c0183fc6c4fd55c0680590c5a59e54368ff260d89e423b50f6852389a66c"
+        "sha256:9f52a6eb5d55da06b7c6c8343fc069ebbb4195c4c1614d93ea58b92457626333"
       ],
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
@@ -1227,7 +1243,7 @@
       "reasonCodes": [],
       "reproduction": {
         "inputEvidenceHashes": [
-          "sha256:a946c0183fc6c4fd55c0680590c5a59e54368ff260d89e423b50f6852389a66c"
+          "sha256:9f52a6eb5d55da06b7c6c8343fc069ebbb4195c4c1614d93ea58b92457626333"
         ],
         "methodId": "coarse-transition-classifier",
         "methodVersion": "2.0.0",
@@ -1309,7 +1325,7 @@
       "destinationObjectId": "FinishPlatform",
       "fromGlobalIndex": 3,
       "inputEvidenceHashes": [
-        "sha256:9bccc75a26dc6458c210fd294111d1ef9b0b08e9ff44505ca018485bb2e04bbc"
+        "sha256:02b37683d111b6f09abc2c6525a8de72fae98cfccc91459739b062513241ee9d"
       ],
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
@@ -1321,7 +1337,7 @@
       "reasonCodes": [],
       "reproduction": {
         "inputEvidenceHashes": [
-          "sha256:9bccc75a26dc6458c210fd294111d1ef9b0b08e9ff44505ca018485bb2e04bbc"
+          "sha256:02b37683d111b6f09abc2c6525a8de72fae98cfccc91459739b062513241ee9d"
         ],
         "methodId": "coarse-transition-classifier",
         "methodVersion": "2.0.0",

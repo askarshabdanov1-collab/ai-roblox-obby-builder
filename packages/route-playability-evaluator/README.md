@@ -23,16 +23,24 @@ semantics, and versioned normalized reproduction inputs. Required measurements a
 explicitly tagged `available` or `unavailable` variants; unavailable evidence yields
 `indeterminate`, while missing tags, mixed variants, extra fields, and malformed evidence fail with
 a typed deterministic error. Every available gap/rise/drop measurement requires canonical,
-deduplicated `evidenceHashes`. Full evaluation binds those hashes to its emitted geometry and route
-records. Standalone classification has no evidence graph, so callers must explicitly use an empty
-measurement-evidence array; it returns an empty `inputEvidenceHashes` and records normalized input
+deduplicated `evidenceHashes`. The selected route-transition payload content-addresses its permitted
+sources in `measurementSourceEvidenceHashes`. Those sources must be direct parents for the expected
+manifest, use a scene subject, and have kind `geometry-fact` or `route-graph`; the route source must
+name the selected route. Evidence-backed measurement hashes must be a non-empty subset of that
+declared set. Standalone classification is deliberately evidence-free, so every available
+`evidenceHashes` and unavailable `missingEvidenceHashes` list, including an unavailable landing
+region, must be empty. It returns an empty `inputEvidenceHashes` and records normalized input
 identity separately as `normalizedInputHash`.
 
 Evidence-backed classification accepts a complete evidence collection and an explicit expected
 manifest hash. It validates the entire graph before classification, requires exactly one matching
-route-transition record with resolved geometry and route parents, ignores unrelated records in the
-validated collection, and returns only the selected transition record hash. Wrong-subject,
-wrong-manifest, unresolved, cyclic, stale, duplicate, or ambiguous evidence fails closed.
+route-transition record, resolves and checks every declared measurement source and supplied
+measurement hash, ignores unrelated records in the validated collection without changing any
+result bytes, and returns only the selected transition record hash in `inputEvidenceHashes`.
+Wrong-subject, wrong-manifest, wrong-kind, unrelated-parent, unresolved, cyclic, stale, duplicate,
+or ambiguous evidence fails closed. Public E1b entry points validate and canonically copy every
+caller-supplied hash list; malformed hashes produce typed validation errors and caller arrays are
+never mutated.
 
 For Block top faces and Wedge slopes, landing fit uses the two exact intrinsic planar edge spans.
 Sorted avatar width/depth requirements are `avatarSpan + 2 * requiredLandingMargin`; each span fits

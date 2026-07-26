@@ -111,18 +111,23 @@ profile change changes the hash.
 The E1b coarse transition result is the authoritative public classification contract: transition
 and endpoint identity, controller profile ID/version/hash, input evidence hashes, model-relative
 state, stable reason codes, deterministic non-probabilistic confidence semantics, limitations, and
-versioned normalized reproduction inputs. `inputEvidenceHashes` contains only verified emitted
-evidence parents. The profile hash remains in `controllerProfileHash`, and normalized input identity
+versioned normalized reproduction inputs. `inputEvidenceHashes` contains only the selected,
+verified route-transition evidence hash. The profile hash remains in `controllerProfileHash`, and normalized input identity
 uses `normalizedInputHash`. Gap/rise/drop measurements are closed, explicitly tagged `available` or
 `unavailable` variants. Available measurements require canonically ordered, duplicate-free
-`evidenceHashes`; full evaluation resolves them to emitted geometry and route records. Standalone
-classification has no evidence graph, so its available measurements explicitly carry empty
-`evidenceHashes` and its result carries an empty `inputEvidenceHashes`. Evidence-backed
-classification validates the supplied complete graph under an expected manifest, selects exactly
-one matching route-transition record with required geometry/route parents, ignores unrelated valid
-records, and emits only that selected hash. Missing required measurements and unavailable landing
-regions produce `indeterminate`; missing tags, mixed variants, extra fields, malformed hashes, graph
-integrity failures, wrong subjects/manifests, and ambiguous matches are typed validation errors. For exact planar Block/Wedge landing regions,
+`evidenceHashes`. A route-transition payload records the permitted, content-addressed source set in
+`measurementSourceEvidenceHashes`. Each permitted source is a direct parent on the expected
+manifest, has a scene subject, and is either `geometry-fact` or the selected route's `route-graph`;
+every evidence-backed available measurement must cite a non-empty subset of that set. Standalone
+classification has no evidence graph, so all available `evidenceHashes` and unavailable
+`missingEvidenceHashes` lists, including an unavailable landing region, must be empty, and its
+result carries an empty `inputEvidenceHashes`. Evidence-backed classification validates the
+supplied complete graph under an expected manifest, selects exactly one matching route-transition
+record, resolves all declared and supplied measurement evidence, ignores unrelated valid records
+without changing serialized result bytes, and emits only that selected transition hash. Missing
+required measurements and unavailable landing regions produce `indeterminate`; missing tags,
+mixed variants, extra fields, malformed hashes, graph integrity failures, wrong kinds,
+unrelated parents, wrong subjects/manifests, and ambiguous matches are typed validation errors. For exact planar Block/Wedge landing regions,
 intrinsic edge spans must satisfy
 `available + max(profileTolerance, geometryTolerance) >= avatarSpan + 2 * landingMargin` on both
 sorted axes. Circular and curved landing regions are indeterminate.

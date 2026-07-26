@@ -216,6 +216,15 @@ function evidencePayload(evidence: EvidenceRecord): Record<string, unknown> {
       reproduction,
     };
   }
+  if (evidence.payload.kind === "route-transition") {
+    return {
+      ...payload,
+      measurementSourceEvidenceHashes: strings(
+        evidence.payload.measurementSourceEvidenceHashes,
+      ),
+      reproduction,
+    };
+  }
   if (evidence.payload.kind === "coarse-transition-state") {
     return {
       ...payload,

@@ -75,6 +75,7 @@ const availableWithoutValue: TransitionMeasurementEvidence = {
   method: "world-aabb-horizontal-separation",
   approximationKind: "conservative-lower-bound",
   toleranceStuds: 1e-9,
+  evidenceHashes: [],
   limitations: ["fixture"],
   applicability: "broad-phase-only",
 };

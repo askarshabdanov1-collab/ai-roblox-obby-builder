@@ -11,6 +11,7 @@ import {
   CoarseTransitionValidationError,
   createDefaultControllerProfile,
   evaluateRoutePlayability,
+  unavailableLandingRegion,
   type CoarseTransitionInput,
 } from "../src/index.js";
 import {
@@ -45,10 +46,50 @@ function firstClassificationAt(x: number, y: number, z: number) {
 }
 
 function baseTransition(): CoarseTransitionInput {
-  return requiredFixture(
-    evaluationAt(0, 4, 16).transitions[0],
+  const transition = structuredClone(
+    requiredFixture(
+      evaluationAt(0, 4, 16).transitions[0],
+      "first normalized transition",
+    ),
+  );
+  for (const field of [
+    "horizontalSeparation",
+    "verticalRise",
+    "downwardDrop",
+  ] as const) {
+    const measurement = transition[field];
+    if (measurement.status === "available") measurement.evidenceHashes = [];
+    else measurement.missingEvidenceHashes = [];
+  }
+  return transition;
+}
+
+function evidenceBackedTransition(
+  evaluated: ReturnType<typeof evaluationAt>,
+): CoarseTransitionInput {
+  return structuredClone(
+    requiredFixture(
+      evaluated.transitions[0],
+      "first evidence-backed transition",
+    ),
+  );
+}
+
+function selectedTransitionEvidence(
+  evaluated: ReturnType<typeof evaluationAt>,
+): Extract<EvidenceRecordContract, { kind: "route-transition" }> {
+  const selected = requiredFixture(
+    evaluated.evidence.find(
+      (record) =>
+        record.kind === "route-transition" &&
+        record.payload.transitionId === evaluated.transitions[0]?.transitionId,
+    ),
     "first normalized transition",
   );
+  if (selected.kind !== "route-transition") {
+    throw new Error("fixture route-transition evidence is missing");
+  }
+  return selected;
 }
 
 function classificationEvidence(
@@ -66,12 +107,46 @@ function expectedManifestHash(
     .manifestHash as `sha256:${string}`;
 }
 
+function evidenceBindingFixture() {
+  const evaluated = evaluationAt(0, 4, 16);
+  const evidenceRecords = classificationEvidence(evaluated);
+  const transition = evidenceBackedTransition(evaluated);
+  const transitionRecord = selectedTransitionEvidence(evaluated);
+  const geometryRecord = requiredFixture(
+    evidenceRecords.find((record) => record.kind === "geometry-fact"),
+    "geometry evidence",
+  );
+  const routeRecord = requiredFixture(
+    evidenceRecords.find((record) => record.kind === "route-graph"),
+    "route evidence",
+  );
+  return {
+    evaluated,
+    evidenceRecords,
+    transition,
+    transitionRecord,
+    geometryRecord,
+    routeRecord,
+    manifestHash: expectedManifestHash(evaluated),
+  };
+}
+
 function rehashEvidence(
   record: EvidenceRecordContract,
 ): EvidenceRecordContract {
   const clone = structuredClone(record);
   clone.evidenceContentHash = hashEvidenceContent(clone).hash;
   return clone;
+}
+
+function issuesFrom(action: () => unknown) {
+  try {
+    action();
+    throw new Error("expected coarse-transition rejection");
+  } catch (caught) {
+    expect(caught).toBeInstanceOf(CoarseTransitionValidationError);
+    return (caught as CoarseTransitionValidationError).issues;
+  }
 }
 
 function unavailable(
@@ -286,31 +361,6 @@ describe("coarse model-relative transition classification", () => {
     },
   );
 
-  it("canonicalizes duplicate and shuffled available measurement evidence hashes", () => {
-    const base = baseTransition();
-    if (base.horizontalSeparation.status !== "available") {
-      throw new Error("fixture available measurement is missing");
-    }
-    const hashes = base.horizontalSeparation.evidenceHashes;
-    expect(hashes.length).toBeGreaterThan(0);
-    const result = classifyCoarseTransition(
-      {
-        ...base,
-        horizontalSeparation: {
-          ...base.horizontalSeparation,
-          evidenceHashes: [...hashes].reverse().flatMap((hash) => [hash, hash]),
-        },
-      },
-      createDefaultControllerProfile(),
-    );
-    expect(
-      result.reproduction.normalizedInputs.horizontalSeparation,
-    ).toMatchObject({
-      status: "available",
-      evidenceHashes: [...new Set(hashes)].toSorted(),
-    });
-  });
-
   it("accepts the documented empty evidence list for standalone available measurements", () => {
     const base = baseTransition();
     if (base.horizontalSeparation.status !== "available") {
@@ -330,6 +380,111 @@ describe("coarse model-relative transition classification", () => {
     expect(
       result.reproduction.normalizedInputs.horizontalSeparation,
     ).toMatchObject({ status: "available", evidenceHashes: [] });
+  });
+
+  it("rejects a standalone available measurement with an emitted evidence hash", () => {
+    const transition = baseTransition();
+    if (transition.horizontalSeparation.status !== "available") {
+      throw new Error("fixture available measurement is missing");
+    }
+    transition.horizontalSeparation.evidenceHashes = [
+      requiredFixture(
+        evaluationAt(0, 4, 16).evidence[0],
+        "standalone evidence fixture",
+      ).evidenceContentHash as `sha256:${string}`,
+    ];
+    expect(
+      issuesFrom(() =>
+        classifyCoarseTransition(transition, createDefaultControllerProfile()),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "standalone-evidence-not-allowed",
+        path: "/horizontalSeparation/evidenceHashes",
+      }),
+    ]);
+  });
+
+  it("rejects a standalone available measurement with a nonexistent evidence hash", () => {
+    const transition = baseTransition();
+    if (transition.verticalRise.status !== "available") {
+      throw new Error("fixture available measurement is missing");
+    }
+    transition.verticalRise.evidenceHashes = [`sha256:${"f".repeat(64)}`];
+    expect(
+      issuesFrom(() =>
+        classifyCoarseTransition(transition, createDefaultControllerProfile()),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "standalone-evidence-not-allowed",
+        path: "/verticalRise/evidenceHashes",
+      }),
+    ]);
+  });
+
+  it("rejects a standalone unavailable measurement with missing-evidence hashes", () => {
+    const transition = baseTransition();
+    transition.downwardDrop = {
+      ...unavailable("missing-downward-drop"),
+      missingEvidenceHashes: [`sha256:${"a".repeat(64)}`],
+    };
+    expect(
+      issuesFrom(() =>
+        classifyCoarseTransition(transition, createDefaultControllerProfile()),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "standalone-evidence-not-allowed",
+        path: "/downwardDrop/missingEvidenceHashes",
+      }),
+    ]);
+  });
+
+  it("keeps every standalone measurement evidence list empty in normalized output", () => {
+    const result = classifyCoarseTransition(
+      {
+        ...baseTransition(),
+        downwardDrop: unavailable("missing-downward-drop"),
+      },
+      createDefaultControllerProfile(),
+    );
+    expect(result.inputEvidenceHashes).toEqual([]);
+    for (const measurement of [
+      result.reproduction.normalizedInputs.horizontalSeparation,
+      result.reproduction.normalizedInputs.verticalRise,
+      result.reproduction.normalizedInputs.downwardDrop,
+    ]) {
+      expect(
+        measurement.status === "available"
+          ? measurement.evidenceHashes
+          : measurement.missingEvidenceHashes,
+      ).toEqual([]);
+    }
+  });
+
+  it("validates and canonically normalizes unavailableLandingRegion hashes without mutating callers", () => {
+    const high = `sha256:${"f".repeat(64)}` as const;
+    const low = `sha256:${"0".repeat(63)}1` as const;
+    const caller = [high, low, high];
+    const snapshot = [...caller];
+    expect(unavailableLandingRegion(["fixture"], caller)).toMatchObject({
+      missingEvidenceHashes: [low, high],
+    });
+    expect(caller).toEqual(snapshot);
+    expect(
+      issuesFrom(() =>
+        unavailableLandingRegion(
+          ["fixture"],
+          ["not-a-content-hash" as `sha256:${string}`],
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "content-hashes",
+        path: "/missingEvidenceHashes",
+      }),
+    ]);
   });
 
   it("binds full-evaluation measurements to emitted geometry and route evidence", () => {
@@ -512,8 +667,335 @@ describe("coarse model-relative transition classification", () => {
     );
   });
 
+  it("rejects nonexistent measurement evidence in an otherwise valid complete graph", () => {
+    const fixture = evidenceBindingFixture();
+    if (fixture.transition.horizontalSeparation.status !== "available") {
+      throw new Error("fixture available measurement is missing");
+    }
+    fixture.transition.horizontalSeparation.evidenceHashes = [
+      `sha256:${"f".repeat(64)}`,
+    ];
+    expect(
+      issuesFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          fixture.transition,
+          createDefaultControllerProfile(),
+          {
+            evidenceRecords: fixture.evidenceRecords,
+            expectedManifestHash: fixture.manifestHash,
+          },
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "measurement-evidence-not-found",
+        path: "/horizontalSeparation/evidenceHashes/0",
+      }),
+    ]);
+  });
+
+  it("rejects unrelated same-manifest geometry as measurement evidence", () => {
+    const fixture = evidenceBindingFixture();
+    const unrelated = rehashEvidence({
+      ...fixture.geometryRecord,
+      evidenceId: "e1b:geometry:unrelated-measurement",
+      limitations: [
+        ...fixture.geometryRecord.limitations,
+        "Unrelated measurement fixture.",
+      ],
+    });
+    if (fixture.transition.horizontalSeparation.status !== "available") {
+      throw new Error("fixture available measurement is missing");
+    }
+    fixture.transition.horizontalSeparation.evidenceHashes = [
+      unrelated.evidenceContentHash as `sha256:${string}`,
+    ];
+    expect(
+      issuesFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          fixture.transition,
+          createDefaultControllerProfile(),
+          {
+            evidenceRecords: [...fixture.evidenceRecords, unrelated],
+            expectedManifestHash: fixture.manifestHash,
+          },
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "measurement-evidence-unrelated",
+        path: "/horizontalSeparation/evidenceHashes/0",
+      }),
+    ]);
+  });
+
+  it("rejects wrong-manifest measurement evidence", () => {
+    const fixture = evidenceBindingFixture();
+    const wrongManifest = rehashEvidence({
+      ...fixture.geometryRecord,
+      evidenceId: "e1b:geometry:wrong-manifest",
+      manifestHash: `sha256:${"a".repeat(64)}`,
+    });
+    if (fixture.transition.verticalRise.status !== "available") {
+      throw new Error("fixture available measurement is missing");
+    }
+    fixture.transition.verticalRise.evidenceHashes = [
+      wrongManifest.evidenceContentHash as `sha256:${string}`,
+    ];
+    expect(
+      issuesFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          fixture.transition,
+          createDefaultControllerProfile(),
+          {
+            evidenceRecords: [...fixture.evidenceRecords, wrongManifest],
+            expectedManifestHash: fixture.manifestHash,
+          },
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "measurement-evidence-wrong-manifest",
+        path: "/verticalRise/evidenceHashes/0",
+      }),
+    ]);
+  });
+
+  it("rejects wrong-subject measurement evidence", () => {
+    const fixture = evidenceBindingFixture();
+    const wrongSubject = rehashEvidence({
+      ...fixture.geometryRecord,
+      evidenceId: "e1b:geometry:wrong-subject",
+      subject: { kind: "object", objectId: "FinishPlatform" },
+    });
+    if (fixture.transition.downwardDrop.status !== "available") {
+      throw new Error("fixture available measurement is missing");
+    }
+    fixture.transition.downwardDrop.evidenceHashes = [
+      wrongSubject.evidenceContentHash as `sha256:${string}`,
+    ];
+    expect(
+      issuesFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          fixture.transition,
+          createDefaultControllerProfile(),
+          {
+            evidenceRecords: [...fixture.evidenceRecords, wrongSubject],
+            expectedManifestHash: fixture.manifestHash,
+          },
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "measurement-evidence-wrong-subject",
+        path: "/downwardDrop/evidenceHashes/0",
+      }),
+    ]);
+  });
+
+  it("rejects a non-source evidence kind used as measurement evidence", () => {
+    const fixture = evidenceBindingFixture();
+    const wrongKind = requiredFixture(
+      fixture.evaluated.evidence.find(
+        (record) => record.kind === "coarse-transition-state",
+      ),
+      "coarse transition evidence",
+    );
+    if (fixture.transition.horizontalSeparation.status !== "available") {
+      throw new Error("fixture available measurement is missing");
+    }
+    fixture.transition.horizontalSeparation.evidenceHashes = [
+      wrongKind.evidenceContentHash as `sha256:${string}`,
+    ];
+    expect(
+      issuesFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          fixture.transition,
+          createDefaultControllerProfile(),
+          {
+            evidenceRecords: fixture.evaluated.evidence,
+            expectedManifestHash: fixture.manifestHash,
+          },
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "measurement-evidence-kind-not-allowed",
+        path: "/horizontalSeparation/evidenceHashes/0",
+      }),
+    ]);
+  });
+
+  it("accepts only declared direct-parent measurement evidence and normalizes it without mutation", () => {
+    const fixture = evidenceBindingFixture();
+    if (fixture.transition.horizontalSeparation.status !== "available") {
+      throw new Error("fixture available measurement is missing");
+    }
+    const legitimate = [
+      fixture.routeRecord.evidenceContentHash,
+      fixture.geometryRecord.evidenceContentHash,
+      fixture.routeRecord.evidenceContentHash,
+    ] as `sha256:${string}`[];
+    fixture.transition.horizontalSeparation.evidenceHashes = legitimate;
+    const snapshot = [...legitimate];
+    const result = classifyCoarseTransitionWithEvidence(
+      fixture.transition,
+      createDefaultControllerProfile(),
+      {
+        evidenceRecords: fixture.evidenceRecords,
+        expectedManifestHash: fixture.manifestHash,
+      },
+    );
+    expect(legitimate).toEqual(snapshot);
+    expect(
+      result.reproduction.normalizedInputs.horizontalSeparation,
+    ).toMatchObject({
+      status: "available",
+      evidenceHashes: [...new Set(legitimate)].toSorted(),
+    });
+    expect(fixture.transitionRecord.payload).toHaveProperty(
+      "measurementSourceEvidenceHashes",
+      [...new Set(legitimate)].toSorted(),
+    );
+  });
+
+  it("content-addresses the declared measurement-source set independent of caller order", () => {
+    const fixture = evidenceBindingFixture();
+    const reversed = structuredClone(fixture.transitionRecord);
+    reversed.payload.measurementSourceEvidenceHashes = [
+      ...reversed.payload.measurementSourceEvidenceHashes,
+    ].reverse() as [`sha256:${string}`, ...`sha256:${string}`[]];
+
+    const baselineHash = hashEvidenceContent(fixture.transitionRecord);
+    const reversedHash = hashEvidenceContent(reversed);
+    expect(reversedHash.hash).toBe(baselineHash.hash);
+    expect(reversedHash.canonicalBytes).toEqual(baselineHash.canonicalBytes);
+  });
+
+  it("rejects invalid parent subject scope before transition matching", () => {
+    const fixture = evidenceBindingFixture();
+    const wrongScopeGeometry = rehashEvidence({
+      ...fixture.geometryRecord,
+      evidenceId: "e1b:geometry:invalid-parent-scope",
+      subject: { kind: "object", objectId: "FinishPlatform" },
+    });
+    const invalidTransition = rehashEvidence({
+      ...fixture.transitionRecord,
+      parentEvidenceHashes: fixture.transitionRecord.parentEvidenceHashes.map(
+        (hash) =>
+          hash === fixture.geometryRecord.evidenceContentHash
+            ? wrongScopeGeometry.evidenceContentHash
+            : hash,
+      ),
+    });
+    expect(
+      issuesFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          fixture.transition,
+          createDefaultControllerProfile(),
+          {
+            evidenceRecords: [
+              wrongScopeGeometry,
+              fixture.routeRecord,
+              invalidTransition,
+            ],
+            expectedManifestHash: fixture.manifestHash,
+          },
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "input-evidence-graph",
+        path: "/inputEvidenceRecords",
+      }),
+    ]);
+  });
+
+  it.each([
+    [
+      "source route index",
+      (input: CoarseTransitionInput): void => {
+        input.fromGlobalIndex += 1;
+      },
+    ],
+    [
+      "destination route index",
+      (input: CoarseTransitionInput): void => {
+        input.toGlobalIndex += 1;
+      },
+    ],
+    [
+      "source endpoint",
+      (input: CoarseTransitionInput): void => {
+        input.fromObjectId = "Checkpoint01";
+      },
+    ],
+    [
+      "destination endpoint",
+      (input: CoarseTransitionInput): void => {
+        input.toObjectId = "FinishPlatform";
+      },
+    ],
+    [
+      "transition ID",
+      (input: CoarseTransitionInput): void => {
+        input.transitionId += ".wrong";
+      },
+    ],
+  ] as const)("rejects independently wrong %s", (_name, mutate) => {
+    const fixture = evidenceBindingFixture();
+    mutate(fixture.transition);
+    expect(
+      issuesFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          fixture.transition,
+          createDefaultControllerProfile(),
+          {
+            evidenceRecords: fixture.evidenceRecords,
+            expectedManifestHash: fixture.manifestHash,
+          },
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "transition-evidence-required",
+        path: "/inputEvidenceRecords",
+      }),
+    ]);
+  });
+
+  it("keeps unrelated valid graph evidence byte-inert in the final classification", () => {
+    const fixture = evidenceBindingFixture();
+    const unrelated = rehashEvidence({
+      ...fixture.geometryRecord,
+      evidenceId: "e1b:geometry:byte-inert",
+      limitations: [
+        ...fixture.geometryRecord.limitations,
+        "Byte-inert unrelated fixture.",
+      ],
+    });
+    const baseline = classifyCoarseTransitionWithEvidence(
+      fixture.transition,
+      createDefaultControllerProfile(),
+      {
+        evidenceRecords: fixture.evidenceRecords,
+        expectedManifestHash: fixture.manifestHash,
+      },
+    );
+    const extended = classifyCoarseTransitionWithEvidence(
+      fixture.transition,
+      createDefaultControllerProfile(),
+      {
+        evidenceRecords: [unrelated, ...fixture.evidenceRecords].reverse(),
+        expectedManifestHash: fixture.manifestHash,
+      },
+    );
+    expect(JSON.stringify(extended)).toBe(JSON.stringify(baseline));
+  });
+
   it("validates a complete graph, ignores unrelated geometry, and emits only the exact transition evidence hash", () => {
     const evaluated = evaluationAt(0, 4, 16);
+    const transition = evidenceBackedTransition(evaluated);
     const evidenceRecords = classificationEvidence(evaluated);
     const manifestHash = expectedManifestHash(evaluated);
     const transitionRecord = requiredFixture(
@@ -534,7 +1016,7 @@ describe("coarse model-relative transition classification", () => {
       unrelatedGeometryRecord,
     ];
     const first = classifyCoarseTransitionWithEvidence(
-      baseTransition(),
+      transition,
       createDefaultControllerProfile(),
       {
         evidenceRecords: completeGraphWithUnrelated,
@@ -542,7 +1024,7 @@ describe("coarse model-relative transition classification", () => {
       },
     );
     const shuffled = classifyCoarseTransitionWithEvidence(
-      baseTransition(),
+      transition,
       createDefaultControllerProfile(),
       {
         evidenceRecords: [...completeGraphWithUnrelated].reverse(),
@@ -566,6 +1048,7 @@ describe("coarse model-relative transition classification", () => {
 
   it("rejects missing, stale, wrong-subject, wrong-manifest, invalid, and ambiguous transition evidence", () => {
     const evaluated = evaluationAt(0, 4, 16);
+    const transition = evidenceBackedTransition(evaluated);
     const evidenceRecords = classificationEvidence(evaluated);
     const manifestHash = expectedManifestHash(evaluated);
     const transitionRecords = evidenceRecords.filter(
@@ -591,7 +1074,7 @@ describe("coarse model-relative transition classification", () => {
     expect(
       issueFrom(() =>
         classifyCoarseTransitionWithEvidence(
-          baseTransition(),
+          transition,
           createDefaultControllerProfile(),
           { evidenceRecords: [], expectedManifestHash: manifestHash },
         ),
@@ -605,7 +1088,7 @@ describe("coarse model-relative transition classification", () => {
     expect(
       issueFrom(() =>
         classifyCoarseTransitionWithEvidence(
-          baseTransition(),
+          transition,
           createDefaultControllerProfile(),
           {
             evidenceRecords: [
@@ -632,7 +1115,7 @@ describe("coarse model-relative transition classification", () => {
     expect(
       issueFrom(() =>
         classifyCoarseTransitionWithEvidence(
-          baseTransition(),
+          transition,
           createDefaultControllerProfile(),
           {
             evidenceRecords: [...geometryAndRoute, unrelatedTransitionRecord],
@@ -649,7 +1132,7 @@ describe("coarse model-relative transition classification", () => {
     expect(
       issueFrom(() =>
         classifyCoarseTransitionWithEvidence(
-          baseTransition(),
+          transition,
           createDefaultControllerProfile(),
           {
             evidenceRecords: [transitionRecord],
@@ -666,7 +1149,7 @@ describe("coarse model-relative transition classification", () => {
     expect(
       issueFrom(() =>
         classifyCoarseTransitionWithEvidence(
-          baseTransition(),
+          transition,
           createDefaultControllerProfile(),
           {
             evidenceRecords,
@@ -688,7 +1171,7 @@ describe("coarse model-relative transition classification", () => {
     expect(
       issueFrom(() =>
         classifyCoarseTransitionWithEvidence(
-          baseTransition(),
+          transition,
           createDefaultControllerProfile(),
           {
             evidenceRecords: [...geometryAndRoute, wrongSubject],
@@ -710,7 +1193,7 @@ describe("coarse model-relative transition classification", () => {
     expect(
       issueFrom(() =>
         classifyCoarseTransitionWithEvidence(
-          baseTransition(),
+          transition,
           createDefaultControllerProfile(),
           {
             evidenceRecords: [

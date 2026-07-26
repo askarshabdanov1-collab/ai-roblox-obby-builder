@@ -782,6 +782,11 @@ export interface RouteTransitionPayload {
   toGlobalIndex: number;
   sourceGeometryHash: ContentHash;
   destinationGeometryHash: ContentHash;
+  /**
+   * @minItems 1
+   * @maxItems 64
+   */
+  measurementSourceEvidenceHashes: [ContentHash, ...ContentHash[]];
   normalizationHash: ContentHash;
   reproduction: EvidenceReproduction;
 }

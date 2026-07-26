@@ -65,19 +65,26 @@ and inputs, and `evidenceContentHash`. Scene-level evidence may aggregate same-m
 subjects; other parent/child subjects must match or use a scene parent. Integrity validation checks
 identities, manifest scope, unique IDs/hashes, parent resolution, and acyclicity.
 
-`inputEvidenceHashes` contains only verified evidence records emitted in that returned graph. The
+`inputEvidenceHashes` contains only the selected verified route-transition record emitted in that returned graph. The
 controller profile has its dedicated hash field; normalized reproduction data has
 `normalizedInputHash`. Every available gap/rise/drop measurement requires canonically sorted,
-deduplicated `evidenceHashes`; full evaluation resolves them to its emitted geometry and route
-records. Standalone classification has no evidence graph, so its available measurements explicitly
-use empty evidence arrays and its result returns an empty evidence-hash list.
+deduplicated `evidenceHashes`. The selected route-transition payload declares the content-addressed
+permitted set in `measurementSourceEvidenceHashes`. Each source must be its direct parent on the
+expected manifest, be scene-scoped, and have kind `geometry-fact` or `route-graph`; the route source
+must name the selected route. Every evidence-backed available measurement must cite a non-empty
+subset of this set. Standalone classification has no evidence graph, so every available
+`evidenceHashes` and unavailable `missingEvidenceHashes` list, including an unavailable landing
+region, is empty-only and its result returns an empty evidence-hash list.
 
 Evidence-backed classification receives a complete evidence collection plus the expected manifest
 hash and validates the graph before applying model rules. It requires exactly one route-transition
-record matching manifest, subject, indexes, endpoints, and transition ID, with resolved geometry and
-route parents. Unrelated records in an otherwise valid complete graph are ignored rather than
-leaked into `inputEvidenceHashes`. Empty, stale, unresolved, cyclic, wrong-subject, wrong-manifest,
-duplicate-conflicting, or ambiguous evidence fails closed.
+record matching manifest, subject, indexes, endpoints, and transition ID. It resolves every
+declared measurement source and caller-supplied measurement hash, checks the permitted relationship,
+kind, subject, route, and manifest, and normalizes valid caller arrays without mutation. Unrelated
+records in an otherwise valid complete graph are byte-inert rather than leaked into reproduction
+inputs or `inputEvidenceHashes`. Empty required measurement evidence, stale, unresolved, cyclic,
+wrong-kind, unrelated-parent, wrong-subject, wrong-manifest, duplicate-conflicting, or ambiguous
+evidence fails closed.
 
 Checkpoint evidence verifies order, route/stage membership, structural reachability, forward
 progression, finish continuation, native authority, and records `progressionStateScope` as the Phase
@@ -179,6 +186,15 @@ are non-mutating.
 | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Available measurements lacked evidence IDs  | `evidenceHashes` is required, content-hash validated, canonically deduplicated/sorted, populated from emitted geometry/route evidence during full evaluation, and explicitly empty only for standalone use. |
 | Evidence-backed classification leaked input | The public helper now validates a complete graph under an expected manifest, selects one exact transition with required parents, ignores unrelated valid records, and rejects invalid or ambiguous graphs.  |
+
+### Final evidence-binding remediation
+
+| Blocker group                               | Correction                                                                                                                                                                                                                                             |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Measurement hashes were only format-checked | Route-transition evidence now content-addresses `measurementSourceEvidenceHashes`; evidence-backed classification accepts only non-empty measurement subsets resolving to declared direct scene-scoped `geometry-fact`/selected `route-graph` parents. |
+| Standalone accepted unverified hashes       | Standalone available and unavailable measurement hashes, including unavailable landing evidence, are empty-only and fail with typed deterministic validation errors otherwise.                                                                         |
+| Public helper bypassed hash validation      | `unavailableLandingRegion` now validates and canonically copies its hash list through the shared validator; the public classifier validates its complete graph and all embedded hash lists before classification.                                      |
+| Unrelated graph evidence affected trust     | Regression coverage proves unrelated valid graph records are byte-inert, while nonexistent, wrong-manifest, wrong-subject, wrong-kind, unrelated-parent, bad-scope, and cyclic evidence fail closed.                                                   |
 
 ## Deferred
 

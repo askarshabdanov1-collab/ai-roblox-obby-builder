@@ -574,6 +574,9 @@ export function evaluateRoutePlayability(
         toGlobalIndex: transition.toGlobalIndex,
         sourceGeometryHash,
         destinationGeometryHash,
+        measurementSourceEvidenceHashes: [
+          ...transitionMeasurementEvidenceHashes,
+        ] as [string, ...string[]],
         normalizationHash: contentHash("normalized-transition-v1", transition),
         reproduction: reproduction("normalize-route-transition-v1", [
           sourceGeometryHash,

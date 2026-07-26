@@ -123,10 +123,17 @@ function hashes(value: unknown, path: string): readonly `sha256:${string}`[] {
   );
 }
 
-function evidenceHashes(
+type VerifiedEvidenceBinding = {
+  inputEvidenceHashes: readonly `sha256:${string}`[];
+  evidenceByHash: ReadonlyMap<string, EvidenceRecordContract>;
+  measurementSourceHashes: ReadonlySet<string>;
+  expectedManifestHash: `sha256:${string}`;
+};
+
+function evidenceBinding(
   context: EvidenceBackedClassificationContext,
   transition: CoarseTransitionInput,
-): readonly `sha256:${string}`[] {
+): VerifiedEvidenceBinding {
   if (
     typeof context.expectedManifestHash !== "string" ||
     !/^sha256:[0-9a-f]{64}$/.test(context.expectedManifestHash)
@@ -196,19 +203,66 @@ function evidenceHashes(
       "must contain one matching route-transition record",
     );
   }
+  if (selected.kind !== "route-transition") {
+    return validationFailure(
+      "transition-evidence-required",
+      "/inputEvidenceRecords",
+      "matching evidence must be a route-transition record",
+    );
+  }
   const byHash = new Map(
     verified.map((candidate) => [candidate.evidenceContentHash, candidate]),
   );
-  const parents = selected.parentEvidenceHashes.map((hash) => byHash.get(hash));
-  const hasGeometryParent = parents.some(
-    (parent) =>
-      parent?.kind === "geometry-fact" &&
-      parent.manifestHash === context.expectedManifestHash,
+  const parentHashes = new Set(selected.parentEvidenceHashes);
+  const measurementSourceHashes = hashes(
+    selected.payload.measurementSourceEvidenceHashes,
+    "/inputEvidenceRecords/measurementSourceEvidenceHashes",
   );
-  const hasRouteParent = parents.some(
+  const measurementSources = measurementSourceHashes.map((hash) => {
+    if (!parentHashes.has(hash)) {
+      return validationFailure(
+        "transition-evidence-measurement-sources",
+        "/inputEvidenceRecords/measurementSourceEvidenceHashes",
+        "every declared measurement source must be a direct transition parent",
+      );
+    }
+    const source = byHash.get(hash);
+    if (source === undefined) {
+      return validationFailure(
+        "transition-evidence-measurement-sources",
+        "/inputEvidenceRecords/measurementSourceEvidenceHashes",
+        "every declared measurement source must resolve in the evidence graph",
+      );
+    }
+    if (source.manifestHash !== context.expectedManifestHash) {
+      return validationFailure(
+        "transition-evidence-measurement-sources",
+        "/inputEvidenceRecords/measurementSourceEvidenceHashes",
+        "every declared measurement source must belong to the expected manifest",
+      );
+    }
+    if (source.kind !== "geometry-fact" && source.kind !== "route-graph") {
+      return validationFailure(
+        "transition-evidence-measurement-sources",
+        "/inputEvidenceRecords/measurementSourceEvidenceHashes",
+        "measurement sources must be geometry-fact or route-graph evidence",
+      );
+    }
+    if (source.subject.kind !== "scene") {
+      return validationFailure(
+        "transition-evidence-measurement-sources",
+        "/inputEvidenceRecords/measurementSourceEvidenceHashes",
+        "measurement sources must use scene scope",
+      );
+    }
+    return source;
+  });
+  const hasGeometryParent = measurementSources.some(
+    (parent) => parent.kind === "geometry-fact",
+  );
+  const hasRouteParent = measurementSources.some(
     (parent) =>
-      parent?.kind === "route-graph" &&
-      parent.manifestHash === context.expectedManifestHash &&
+      parent.kind === "route-graph" &&
       parent.payload.routeId === transition.routeId,
   );
   if (!hasGeometryParent || !hasRouteParent) {
@@ -218,10 +272,15 @@ function evidenceHashes(
       "matching route-transition evidence must resolve geometry-fact and route-graph parents",
     );
   }
-  return hashes(
-    [selected.evidenceContentHash],
-    "/inputEvidenceRecords/evidenceContentHashes",
-  );
+  return {
+    inputEvidenceHashes: hashes(
+      [selected.evidenceContentHash],
+      "/inputEvidenceRecords/evidenceContentHashes",
+    ),
+    evidenceByHash: byHash,
+    measurementSourceHashes: new Set(measurementSourceHashes),
+    expectedManifestHash: context.expectedManifestHash,
+  };
 }
 
 function measurement(
@@ -347,6 +406,106 @@ function measurement(
   };
 }
 
+function measurementHashList(
+  value: TransitionMeasurementEvidence,
+): readonly `sha256:${string}`[] {
+  return value.status === "available"
+    ? value.evidenceHashes
+    : value.missingEvidenceHashes;
+}
+
+function measurementHashField(
+  value: TransitionMeasurementEvidence,
+): "evidenceHashes" | "missingEvidenceHashes" {
+  return value.status === "available"
+    ? "evidenceHashes"
+    : "missingEvidenceHashes";
+}
+
+function validateStandaloneMeasurementEvidence(
+  measurements: Readonly<
+    Record<MeasurementField, TransitionMeasurementEvidence>
+  >,
+): void {
+  for (const field of [
+    "horizontalSeparation",
+    "verticalRise",
+    "downwardDrop",
+  ] as const) {
+    const candidate = measurements[field];
+    if (measurementHashList(candidate).length > 0) {
+      const hashField = measurementHashField(candidate);
+      validationFailure(
+        "standalone-evidence-not-allowed",
+        `/${field}/${hashField}`,
+        "standalone classification requires an empty evidence hash list",
+      );
+    }
+  }
+}
+
+function validateBoundMeasurementEvidence(
+  measurements: Readonly<
+    Record<MeasurementField, TransitionMeasurementEvidence>
+  >,
+  binding: VerifiedEvidenceBinding,
+): void {
+  for (const field of [
+    "horizontalSeparation",
+    "verticalRise",
+    "downwardDrop",
+  ] as const) {
+    const measurementValue = measurements[field];
+    if (measurementValue.status !== "available") continue;
+    if (measurementValue.evidenceHashes.length === 0) {
+      validationFailure(
+        "measurement-evidence-required",
+        `/${field}/evidenceHashes`,
+        "evidence-backed available measurements require evidence hashes",
+      );
+    }
+    for (const [index, hash] of measurementValue.evidenceHashes.entries()) {
+      const path = `/${field}/evidenceHashes/${index}`;
+      const source = binding.evidenceByHash.get(hash);
+      if (source === undefined) {
+        validationFailure(
+          "measurement-evidence-not-found",
+          path,
+          "must resolve in the validated evidence graph",
+        );
+      }
+      if (source.manifestHash !== binding.expectedManifestHash) {
+        validationFailure(
+          "measurement-evidence-wrong-manifest",
+          path,
+          "must belong to the expected manifest",
+        );
+      }
+      if (source.kind !== "geometry-fact" && source.kind !== "route-graph") {
+        validationFailure(
+          "measurement-evidence-kind-not-allowed",
+          path,
+          "must reference geometry-fact or route-graph evidence",
+        );
+      }
+      if (source.subject.kind !== "scene") {
+        validationFailure(
+          "measurement-evidence-wrong-subject",
+          path,
+          "must reference scene-scoped measurement evidence",
+        );
+      }
+      if (!binding.measurementSourceHashes.has(hash)) {
+        validationFailure(
+          "measurement-evidence-unrelated",
+          path,
+          "must be declared by the selected route-transition evidence",
+        );
+      }
+    }
+  }
+}
+
 function distance(
   left: { x: number; y: number; z: number },
   right: { x: number; y: number; z: number },
@@ -367,8 +526,9 @@ export function unavailableLandingRegion(
   return {
     status: "unavailable",
     reasonCode: "insufficient-landing-evidence",
-    missingEvidenceHashes: [...new Set(missingEvidenceHashes)].toSorted(
-      compareUnicodeScalars,
+    missingEvidenceHashes: hashes(
+      missingEvidenceHashes,
+      "/missingEvidenceHashes",
     ),
     limitations:
       stableLimitations.length > 0
@@ -491,10 +651,11 @@ function classifyWithVerifiedProfile(
   evidenceContext?: EvidenceBackedClassificationContext,
 ): CoarseTransitionResult {
   const transition = record(input, "/") as unknown as CoarseTransitionInput;
-  const inputEvidenceHashes: readonly `sha256:${string}`[] =
+  const binding =
     evidenceContext === undefined
-      ? []
-      : evidenceHashes(evidenceContext, transition);
+      ? undefined
+      : evidenceBinding(evidenceContext, transition);
+  const inputEvidenceHashes = binding?.inputEvidenceHashes ?? [];
   const horizontalSeparation = measurement(
     transition.horizontalSeparation,
     "horizontalSeparation",
@@ -507,6 +668,26 @@ function classifyWithVerifiedProfile(
     transition.landingRegion,
     transition.destinationSurface,
   );
+  const measurements = {
+    horizontalSeparation,
+    verticalRise,
+    downwardDrop,
+  };
+  if (binding === undefined) {
+    validateStandaloneMeasurementEvidence(measurements);
+    if (
+      destinationLanding.status === "unavailable" &&
+      destinationLanding.missingEvidenceHashes.length > 0
+    ) {
+      validationFailure(
+        "standalone-evidence-not-allowed",
+        "/landingRegion/missingEvidenceHashes",
+        "standalone classification requires an empty evidence hash list",
+      );
+    }
+  } else {
+    validateBoundMeasurementEvidence(measurements, binding);
+  }
   const supported = new Set(profile.supportedSurfaceKinds);
   const reasonCodes: CoarseTransitionReasonCode[] = [];
   const allLimitations = [
