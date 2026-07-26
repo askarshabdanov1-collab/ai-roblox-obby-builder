@@ -5,7 +5,13 @@
     "paths": {
       "@obby/canonical-json": ["./packages/canonical-json/src/index.ts"],
       "@obby/contracts": ["./packages/contracts/src/index.ts"],
+      "@obby/geometry-evaluator": [
+        "./packages/geometry-evaluator/src/index.ts"
+      ],
       "@obby/obby-compiler": ["./packages/obby-compiler/src/index.ts"],
+      "@obby/obby-evaluator-contracts": [
+        "./packages/obby-evaluator-contracts/src/index.ts"
+      ],
       "@obby/roblox-emitter": ["./packages/roblox-emitter/src/index.ts"]
     },
     "types": ["node", "vitest/globals"]

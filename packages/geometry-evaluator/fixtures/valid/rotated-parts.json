@@ -1,0 +1,22 @@
+{
+  "objects": [
+    {
+      "schemaVersion": "0.1",
+      "objectId": "rotated-block",
+      "shape": "Block",
+      "authority": "native-gameplay",
+      "collision": { "canCollide": true, "canTouch": true, "canQuery": true },
+      "gameplayOwnership": "native-part",
+      "promotionStatus": "not-applicable",
+      "transform": {
+        "position": { "x": 0, "y": 4, "z": 0 },
+        "rotationDegrees": { "x": 0, "y": 90, "z": 0 }
+      },
+      "size": { "x": 10, "y": 2, "z": 8 }
+    }
+  ],
+  "expected": {
+    "minimum": { "x": -4, "y": 3, "z": -5 },
+    "maximum": { "x": 4, "y": 5, "z": 5 }
+  }
+}

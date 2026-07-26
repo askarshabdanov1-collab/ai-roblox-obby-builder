@@ -1,0 +1,6 @@
+{
+  "serializer": "phase0-canonical-json-0.2.0",
+  "inputDescription": "Object with 100000 and a decomposed Unicode value",
+  "canonicalText": "{\"exponential\":100000,\"unicode\":\"é\"}",
+  "sha256": "sha256:15fcfb6014b17c414fdf8350fe69aa8b93067596593af237e18495afb222bdc4"
+}

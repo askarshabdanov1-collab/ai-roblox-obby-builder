@@ -1,0 +1,1806 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-roblox-obby-builder.local/schemas/evaluator-contracts.schema.json",
+  "title": "EvaluatorContract",
+  "oneOf": [
+    { "$ref": "#/$defs/MetricDefinition" },
+    { "$ref": "#/$defs/MetricCatalog" },
+    { "$ref": "#/$defs/ScoringProfile" },
+    { "$ref": "#/$defs/EvaluationPlan" },
+    { "$ref": "#/$defs/EvaluationRequest" },
+    { "$ref": "#/$defs/EvaluationRun" },
+    { "$ref": "#/$defs/EvaluationMetric" },
+    { "$ref": "#/$defs/EvidenceRecordContract" },
+    { "$ref": "#/$defs/RuntimeObservationContentContract" },
+    { "$ref": "#/$defs/RuntimeObservationEnvelope" },
+    { "$ref": "#/$defs/AvailabilityRecordContract" },
+    { "$ref": "#/$defs/Finding" },
+    { "$ref": "#/$defs/GeometryObjectInput" },
+    { "$ref": "#/$defs/TransitionInput" },
+    { "$ref": "#/$defs/CalculationBundlePreimage" }
+  ],
+  "$defs": {
+    "SchemaVersion": {
+      "type": "string",
+      "const": "0.1"
+    },
+    "ContentHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "SemanticVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?(?:\\+[0-9A-Za-z.-]+)?$",
+      "maxLength": 96
+    },
+    "StableId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "OpaqueId": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+    },
+    "Timestamp": {
+      "type": "string",
+      "format": "strict-rfc3339-utc",
+      "pattern": "^[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])T(?:[01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9](?:\\.[0-9]{3})?Z$",
+      "maxLength": 24
+    },
+    "SourceKind": {
+      "enum": [
+        "deterministic",
+        "heuristic",
+        "learned",
+        "analytics-derived",
+        "subjective",
+        "derived"
+      ]
+    },
+    "ResultKind": {
+      "enum": [
+        "deterministic-fact",
+        "heuristic-estimate",
+        "learned-estimate",
+        "analytics-derived-estimate",
+        "human-judgment",
+        "derived-composite"
+      ]
+    },
+    "Capability": {
+      "enum": [
+        "geometry",
+        "route",
+        "coarse-jump",
+        "runtime-controller-trials",
+        "runtime",
+        "screenshots",
+        "visual",
+        "reference",
+        "analytics"
+      ]
+    },
+    "EvidenceKind": {
+      "enum": [
+        "geometry-fact",
+        "route-transition",
+        "runtime-observation",
+        "screenshot",
+        "image-feature",
+        "performance-sample",
+        "reference-comparison",
+        "analytics-aggregate",
+        "human-label"
+      ]
+    },
+    "VersionRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["component", "version"],
+      "properties": {
+        "component": { "$ref": "#/$defs/StableId" },
+        "version": { "$ref": "#/$defs/SemanticVersion" },
+        "buildHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "Vector3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number", "minimum": -1000000, "maximum": 1000000 },
+        "y": { "type": "number", "minimum": -1000000, "maximum": 1000000 },
+        "z": { "type": "number", "minimum": -1000000, "maximum": 1000000 }
+      }
+    },
+    "PositiveVector3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number", "minimum": 0.000001, "maximum": 100000 },
+        "y": { "type": "number", "minimum": 0.000001, "maximum": 100000 },
+        "z": { "type": "number", "minimum": 0.000001, "maximum": 100000 }
+      }
+    },
+    "Transform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["position", "rotationDegrees"],
+      "properties": {
+        "position": { "$ref": "#/$defs/Vector3" },
+        "rotationDegrees": { "$ref": "#/$defs/Vector3" }
+      }
+    },
+    "GeometryObjectInput": {
+      "title": "GeometryObjectInput",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "objectId",
+        "shape",
+        "authority",
+        "collision",
+        "gameplayOwnership",
+        "promotionStatus",
+        "transform",
+        "size"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "objectId": { "$ref": "#/$defs/StableId" },
+        "shape": { "enum": ["Block", "Ball", "Cylinder", "Wedge"] },
+        "authority": { "enum": ["native-gameplay", "decorative"] },
+        "collision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["canCollide", "canTouch", "canQuery"],
+          "properties": {
+            "canCollide": { "type": "boolean" },
+            "canTouch": { "type": "boolean" },
+            "canQuery": { "type": "boolean" }
+          }
+        },
+        "gameplayOwnership": { "enum": ["native-part", "none"] },
+        "promotionStatus": { "enum": ["not-applicable", "not-promoted"] },
+        "transform": { "$ref": "#/$defs/Transform" },
+        "size": { "$ref": "#/$defs/PositiveVector3" },
+        "safeRouteRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["routeId", "globalIndex"],
+          "properties": {
+            "routeId": { "$ref": "#/$defs/StableId" },
+            "stageId": { "$ref": "#/$defs/StableId" },
+            "stageIndex": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000
+            },
+            "globalIndex": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000
+            }
+          }
+        }
+      }
+    },
+    "TransitionInput": {
+      "title": "TransitionInput",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "transitionId",
+        "routeId",
+        "fromObjectId",
+        "toObjectId",
+        "fromGlobalIndex",
+        "toGlobalIndex",
+        "controllerProfileRef"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "transitionId": {
+          "type": "string",
+          "pattern": "^route:[a-z0-9.-]+/[a-z0-9.-]+/[a-z0-9.-]+/[0-9]+/[0-9]+$",
+          "maxLength": 320
+        },
+        "routeId": { "$ref": "#/$defs/StableId" },
+        "fromObjectId": { "$ref": "#/$defs/StableId" },
+        "toObjectId": { "$ref": "#/$defs/StableId" },
+        "fromGlobalIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "toGlobalIndex": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "controllerProfileRef": { "$ref": "#/$defs/StableId" }
+      }
+    },
+    "MetricValue": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value", "unit"],
+          "properties": {
+            "kind": { "const": "number" },
+            "value": { "type": "number" },
+            "unit": { "$ref": "#/$defs/StableId" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value", "unit"],
+          "properties": {
+            "kind": { "const": "integer" },
+            "value": { "type": "integer" },
+            "unit": { "$ref": "#/$defs/StableId" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": { "const": "boolean" },
+            "value": { "type": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "value"],
+          "properties": {
+            "kind": { "const": "state" },
+            "value": { "$ref": "#/$defs/StableId" }
+          }
+        }
+      ]
+    },
+    "MetricValueDefinition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "unit", "minimum", "maximum"],
+          "properties": {
+            "kind": { "enum": ["number", "integer"] },
+            "unit": { "$ref": "#/$defs/StableId" },
+            "minimum": { "type": "number" },
+            "maximum": { "type": "number" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {
+            "kind": { "const": "boolean" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "allowedValues"],
+          "properties": {
+            "kind": { "const": "state" },
+            "allowedValues": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 32,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/StableId" }
+            }
+          }
+        }
+      ]
+    },
+    "Confidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value", "basis", "limitations"],
+      "properties": {
+        "value": { "type": "number", "minimum": 0, "maximum": 1 },
+        "basis": { "$ref": "#/$defs/StableId" },
+        "limitations": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+        },
+        "sampleCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        }
+      }
+    },
+    "EvaluationSubject": {
+      "title": "EvaluationSubject",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": { "kind": { "const": "scene" } }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "objectId"],
+          "properties": {
+            "kind": { "const": "object" },
+            "objectId": { "$ref": "#/$defs/StableId" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "fromObjectId",
+            "toObjectId",
+            "fromGlobalIndex",
+            "toGlobalIndex"
+          ],
+          "properties": {
+            "kind": { "const": "transition" },
+            "fromObjectId": { "$ref": "#/$defs/StableId" },
+            "toObjectId": { "$ref": "#/$defs/StableId" },
+            "fromGlobalIndex": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000
+            },
+            "toGlobalIndex": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "point"],
+          "properties": {
+            "kind": { "const": "point" },
+            "point": { "$ref": "#/$defs/Vector3" }
+          }
+        }
+      ]
+    },
+    "MetricResultBase": {
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "metricId",
+        "metricVersion",
+        "metricDefinitionHash",
+        "category",
+        "resultKind",
+        "sourceKind",
+        "status",
+        "value",
+        "severity",
+        "blocking",
+        "evidenceIds",
+        "thresholdsApplied",
+        "limitations",
+        "calculationHash"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "metricId": { "$ref": "#/$defs/StableId" },
+        "metricVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "metricDefinitionHash": { "$ref": "#/$defs/ContentHash" },
+        "category": {
+          "enum": [
+            "playability",
+            "readability",
+            "checkpoint",
+            "hazard",
+            "composition",
+            "style",
+            "performance",
+            "difficulty",
+            "onboarding",
+            "retention-readiness",
+            "confidence",
+            "policy"
+          ]
+        },
+        "resultKind": { "$ref": "#/$defs/ResultKind" },
+        "sourceKind": { "$ref": "#/$defs/SourceKind" },
+        "status": {
+          "enum": ["available", "not-applicable", "missing-evidence", "failed"]
+        },
+        "value": { "$ref": "#/$defs/MetricValue" },
+        "normalizedScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "severity": { "enum": ["info", "warning", "error", "blocking"] },
+        "blocking": { "type": "boolean" },
+        "invariantId": { "$ref": "#/$defs/StableId" },
+        "evidenceIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^(geometry|transition|runtime):[A-Za-z0-9._:/-]+:sha256:[0-9a-f]{64}$",
+            "maxLength": 320
+          }
+        },
+        "thresholdsApplied": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["thresholdId", "classification", "matched"],
+            "properties": {
+              "thresholdId": { "$ref": "#/$defs/StableId" },
+              "classification": {
+                "enum": ["invariant", "provisional", "calibration-required"]
+              },
+              "matched": { "type": "boolean" }
+            }
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+        },
+        "calculationHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "DeterministicFact": {
+      "title": "DeterministicFact",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/MetricResultBase" },
+        {
+          "type": "object",
+          "required": ["confidence", "method"],
+          "properties": {
+            "resultKind": { "const": "deterministic-fact" },
+            "sourceKind": { "const": "deterministic" },
+            "confidence": {
+              "allOf": [
+                { "$ref": "#/$defs/Confidence" },
+                {
+                  "type": "object",
+                  "properties": { "value": { "const": 1 } }
+                }
+              ]
+            },
+            "method": { "$ref": "#/$defs/VersionRef" }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "HeuristicEstimate": {
+      "title": "HeuristicEstimate",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/MetricResultBase" },
+        {
+          "type": "object",
+          "required": ["confidence"],
+          "properties": {
+            "resultKind": { "const": "heuristic-estimate" },
+            "sourceKind": { "const": "heuristic" },
+            "confidence": { "$ref": "#/$defs/Confidence" },
+            "limitations": { "type": "array", "minItems": 1 }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "LearnedEstimate": {
+      "title": "LearnedEstimate",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/MetricResultBase" },
+        {
+          "type": "object",
+          "required": ["confidence", "model"],
+          "properties": {
+            "resultKind": { "const": "learned-estimate" },
+            "sourceKind": { "const": "learned" },
+            "confidence": { "$ref": "#/$defs/Confidence" },
+            "model": { "$ref": "#/$defs/VersionRef" },
+            "limitations": { "type": "array", "minItems": 1 }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "AnalyticsDerivedEstimate": {
+      "title": "AnalyticsDerivedEstimate",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/MetricResultBase" },
+        {
+          "type": "object",
+          "required": ["confidence", "sourceSnapshotHash"],
+          "properties": {
+            "resultKind": { "const": "analytics-derived-estimate" },
+            "sourceKind": { "const": "analytics-derived" },
+            "confidence": { "$ref": "#/$defs/Confidence" },
+            "sourceSnapshotHash": { "$ref": "#/$defs/ContentHash" },
+            "limitations": { "type": "array", "minItems": 1 }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "HumanJudgment": {
+      "title": "HumanJudgment",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/MetricResultBase" },
+        {
+          "type": "object",
+          "required": ["labelPayloadHashes", "studyVersion"],
+          "properties": {
+            "resultKind": { "const": "human-judgment" },
+            "sourceKind": { "const": "subjective" },
+            "labelPayloadHashes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 100000,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/ContentHash" }
+            },
+            "studyVersion": { "$ref": "#/$defs/SemanticVersion" },
+            "limitations": { "type": "array", "minItems": 1 }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "DerivedComposite": {
+      "title": "DerivedComposite",
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/MetricResultBase" },
+        {
+          "type": "object",
+          "required": [
+            "confidence",
+            "parentMetricIds",
+            "calculationDefinitionHash"
+          ],
+          "properties": {
+            "resultKind": { "const": "derived-composite" },
+            "sourceKind": { "const": "derived" },
+            "confidence": { "$ref": "#/$defs/Confidence" },
+            "parentMetricIds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 64,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/StableId" }
+            },
+            "calculationDefinitionHash": { "$ref": "#/$defs/ContentHash" },
+            "limitations": { "type": "array", "minItems": 1 }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "EvaluationMetric": {
+      "title": "EvaluationMetric",
+      "oneOf": [
+        { "$ref": "#/$defs/DeterministicFact" },
+        { "$ref": "#/$defs/HeuristicEstimate" },
+        { "$ref": "#/$defs/LearnedEstimate" },
+        { "$ref": "#/$defs/AnalyticsDerivedEstimate" },
+        { "$ref": "#/$defs/HumanJudgment" },
+        { "$ref": "#/$defs/DerivedComposite" }
+      ]
+    },
+    "MetricDefinition": {
+      "title": "MetricDefinition",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "metricId",
+        "metricVersion",
+        "resultKind",
+        "implementationStatus",
+        "calculationAvailability",
+        "valueDefinition",
+        "applicability",
+        "zeroObservationBehavior",
+        "requiredEvidenceKinds",
+        "requiredCapabilities",
+        "calculation",
+        "confidenceMethod",
+        "blockingEligibility",
+        "thresholds",
+        "normalizationRule",
+        "limitationsTemplate",
+        "comparisonCompatibilityClass",
+        "calibrationStatus",
+        "parentMetricIds",
+        "metricDefinitionHash"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "metricId": { "$ref": "#/$defs/StableId" },
+        "metricVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "resultKind": { "$ref": "#/$defs/ResultKind" },
+        "implementationStatus": { "enum": ["implemented", "planned"] },
+        "calculationAvailability": {
+          "enum": ["available", "unavailable-in-e1a"]
+        },
+        "valueDefinition": { "$ref": "#/$defs/MetricValueDefinition" },
+        "applicability": { "enum": ["required", "optional", "conditional"] },
+        "zeroObservationBehavior": {
+          "enum": ["not-applicable", "missing-evidence", "exact-zero"]
+        },
+        "requiredEvidenceKinds": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/EvidenceKind" }
+        },
+        "requiredCapabilities": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Capability" }
+        },
+        "calculation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["methodId", "version", "configurationHash"],
+          "properties": {
+            "methodId": { "$ref": "#/$defs/StableId" },
+            "version": { "$ref": "#/$defs/SemanticVersion" },
+            "configurationHash": { "$ref": "#/$defs/ContentHash" }
+          }
+        },
+        "confidenceMethod": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["methodId", "version"],
+          "properties": {
+            "methodId": { "$ref": "#/$defs/StableId" },
+            "version": { "$ref": "#/$defs/SemanticVersion" }
+          }
+        },
+        "invariantGateId": { "$ref": "#/$defs/StableId" },
+        "blockingEligibility": { "enum": ["none", "profile", "invariant"] },
+        "thresholds": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "thresholdId",
+              "thresholdKind",
+              "classification",
+              "operator",
+              "value"
+            ],
+            "properties": {
+              "thresholdId": { "$ref": "#/$defs/StableId" },
+              "thresholdKind": { "enum": ["invariant", "profile", "advisory"] },
+              "classification": {
+                "enum": ["invariant", "provisional", "calibration-required"]
+              },
+              "operator": { "enum": ["eq", "ne", "lt", "lte", "gt", "gte"] },
+              "value": {
+                "oneOf": [
+                  { "type": "boolean" },
+                  { "type": "number" },
+                  { "type": "string", "maxLength": 128 }
+                ]
+              }
+            }
+          }
+        },
+        "normalizationRule": { "$ref": "#/$defs/StableId" },
+        "limitationsTemplate": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+        },
+        "comparisonCompatibilityClass": { "$ref": "#/$defs/StableId" },
+        "calibrationStatus": {
+          "enum": ["invariant", "provisional", "calibration-required"]
+        },
+        "parentMetricIds": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "metricDefinitionHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "MetricCatalog": {
+      "title": "MetricCatalog",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "catalogId",
+        "catalogVersion",
+        "metricDefinitions",
+        "invariantGates",
+        "supportedVersions",
+        "metricCatalogHash"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "catalogId": { "$ref": "#/$defs/StableId" },
+        "catalogVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "metricDefinitions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 256,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["metricId", "metricVersion", "metricDefinitionHash"],
+            "properties": {
+              "metricId": { "$ref": "#/$defs/StableId" },
+              "metricVersion": { "$ref": "#/$defs/SemanticVersion" },
+              "metricDefinitionHash": { "$ref": "#/$defs/ContentHash" }
+            }
+          }
+        },
+        "invariantGates": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "invariantId",
+              "blocking",
+              "outcomeEffect",
+              "requiredEvidenceKinds"
+            ],
+            "properties": {
+              "invariantId": { "$ref": "#/$defs/StableId" },
+              "blocking": { "const": true },
+              "outcomeEffect": { "const": "fail" },
+              "requiredEvidenceKinds": {
+                "type": "array",
+                "maxItems": 16,
+                "uniqueItems": true,
+                "items": { "$ref": "#/$defs/EvidenceKind" }
+              }
+            }
+          }
+        },
+        "supportedVersions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["component", "versionRange"],
+            "properties": {
+              "component": { "$ref": "#/$defs/StableId" },
+              "versionRange": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 96
+              }
+            }
+          }
+        },
+        "metricCatalogHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "ScoringProfile": {
+      "title": "ScoringProfile",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "profileId",
+        "profileVersion",
+        "metricCatalogHash",
+        "requiredMetricIds",
+        "optionalMetricIds",
+        "invariantGateIds",
+        "categories",
+        "thresholds",
+        "evidenceCompleteness",
+        "missingCategoryPolicy",
+        "aggregateScore",
+        "calibrationStatus",
+        "compatibilityClass",
+        "scoringProfileHash"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "profileId": { "$ref": "#/$defs/StableId" },
+        "profileVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "metricCatalogHash": { "$ref": "#/$defs/ContentHash" },
+        "requiredMetricIds": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "optionalMetricIds": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "invariantGateIds": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "categories": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["categoryId", "metricIds", "availability"],
+            "properties": {
+              "categoryId": {
+                "enum": [
+                  "playability",
+                  "checkpoint",
+                  "hazard",
+                  "policy",
+                  "performance"
+                ]
+              },
+              "metricIds": {
+                "type": "array",
+                "maxItems": 256,
+                "uniqueItems": true,
+                "items": { "$ref": "#/$defs/StableId" }
+              },
+              "availability": { "enum": ["available", "planned"] }
+            }
+          }
+        },
+        "thresholds": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "thresholdId",
+              "metricId",
+              "classification",
+              "operator",
+              "value"
+            ],
+            "properties": {
+              "thresholdId": { "$ref": "#/$defs/StableId" },
+              "metricId": { "$ref": "#/$defs/StableId" },
+              "classification": {
+                "enum": ["provisional", "calibration-required"]
+              },
+              "operator": { "enum": ["eq", "ne", "lt", "lte", "gt", "gte"] },
+              "value": {
+                "oneOf": [
+                  { "type": "boolean" },
+                  { "type": "number" },
+                  { "type": "string", "maxLength": 128 }
+                ]
+              }
+            }
+          }
+        },
+        "evidenceCompleteness": { "const": "require-all-required" },
+        "missingCategoryPolicy": { "const": "unavailable-no-renormalization" },
+        "aggregateScore": { "const": false },
+        "calibrationStatus": { "const": "provisional" },
+        "compatibilityClass": { "$ref": "#/$defs/StableId" },
+        "scoringProfileHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "SceneIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["manifestHash", "manifestSchemaVersion"],
+      "properties": {
+        "manifestHash": { "$ref": "#/$defs/ContentHash" },
+        "manifestSchemaVersion": { "$ref": "#/$defs/SemanticVersion" }
+      }
+    },
+    "ProfileIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profileId",
+        "profileVersion",
+        "scoringProfileHash",
+        "compatibilityClass"
+      ],
+      "properties": {
+        "profileId": { "$ref": "#/$defs/StableId" },
+        "profileVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "scoringProfileHash": { "$ref": "#/$defs/ContentHash" },
+        "compatibilityClass": { "$ref": "#/$defs/StableId" }
+      }
+    },
+    "CatalogIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["catalogId", "catalogVersion", "metricCatalogHash"],
+      "properties": {
+        "catalogId": { "$ref": "#/$defs/StableId" },
+        "catalogVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "metricCatalogHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "EvaluationPlan": {
+      "title": "EvaluationPlan",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "planId",
+        "scene",
+        "profile",
+        "catalog",
+        "requiredCapabilities",
+        "views",
+        "avatarProfiles",
+        "deviceProfiles",
+        "metricInclude",
+        "metricExclude",
+        "budgets",
+        "partialEvidencePolicy",
+        "seed",
+        "createdAt",
+        "configurationHash"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "planId": { "$ref": "#/$defs/StableId" },
+        "scene": { "$ref": "#/$defs/SceneIdentity" },
+        "profile": { "$ref": "#/$defs/ProfileIdentity" },
+        "catalog": { "$ref": "#/$defs/CatalogIdentity" },
+        "requiredCapabilities": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Capability" }
+        },
+        "views": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "avatarProfiles": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "deviceProfiles": {
+          "type": "array",
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "metricInclude": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "metricExclude": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "budgets": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxObjects",
+            "maxEvidenceRecords",
+            "maxBytes",
+            "maxDepth"
+          ],
+          "properties": {
+            "maxObjects": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100000
+            },
+            "maxEvidenceRecords": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            },
+            "maxBytes": {
+              "type": "integer",
+              "minimum": 1024,
+              "maximum": 1073741824
+            },
+            "maxDepth": { "type": "integer", "minimum": 1, "maximum": 128 }
+          }
+        },
+        "partialEvidencePolicy": {
+          "enum": ["reject", "finalize-with-missing"]
+        },
+        "comparisonGroupId": { "$ref": "#/$defs/StableId" },
+        "seed": {
+          "type": "integer",
+          "minimum": -2147483648,
+          "maximum": 2147483647
+        },
+        "createdAt": { "$ref": "#/$defs/Timestamp" },
+        "configurationHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "EvaluationRequest": {
+      "title": "EvaluationRequest",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "scene",
+        "configurationHash",
+        "evaluatorVersionConstraint",
+        "profile",
+        "catalog",
+        "requestedEvidenceRequirements",
+        "deterministicRequestOptions",
+        "requestedOutputs",
+        "evaluationRequestHash"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "requestId": { "$ref": "#/$defs/OpaqueId" },
+        "submittedAt": { "$ref": "#/$defs/Timestamp" },
+        "callerId": { "$ref": "#/$defs/OpaqueId" },
+        "transport": { "enum": ["local-api", "test-harness", "library"] },
+        "retryAttempt": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "scene": { "$ref": "#/$defs/SceneIdentity" },
+        "configurationHash": { "$ref": "#/$defs/ContentHash" },
+        "evaluatorVersionConstraint": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 96
+        },
+        "profile": { "$ref": "#/$defs/ProfileIdentity" },
+        "catalog": { "$ref": "#/$defs/CatalogIdentity" },
+        "requestedEvidenceRequirements": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requiredCapabilityIds",
+            "evidenceKindIds",
+            "coverageProfileIds"
+          ],
+          "properties": {
+            "requiredCapabilityIds": {
+              "type": "array",
+              "maxItems": 16,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/Capability" }
+            },
+            "evidenceKindIds": {
+              "type": "array",
+              "maxItems": 16,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/EvidenceKind" }
+            },
+            "coverageProfileIds": {
+              "type": "array",
+              "maxItems": 32,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/StableId" }
+            }
+          }
+        },
+        "deterministicRequestOptions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["seed", "partialEvidencePolicy"],
+          "properties": {
+            "seed": {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+            },
+            "partialEvidencePolicy": {
+              "enum": ["reject", "finalize-with-missing"]
+            },
+            "comparisonGroupId": { "$ref": "#/$defs/StableId" }
+          }
+        },
+        "requestedOutputs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["outputKind"],
+            "properties": {
+              "outputKind": {
+                "enum": [
+                  "report-payload",
+                  "rendered-report",
+                  "evidence-index",
+                  "explanation"
+                ]
+              },
+              "outputFormat": { "enum": ["json", "markdown", "html"] },
+              "renderProfileId": { "$ref": "#/$defs/StableId" }
+            }
+          }
+        },
+        "evaluationRequestHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "EvaluationRun": {
+      "title": "EvaluationRun",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "executionId",
+        "planId",
+        "manifestHash",
+        "configurationHash",
+        "evaluatorVersion",
+        "metricCatalogHash",
+        "scoringProfileHash",
+        "status",
+        "stageStates",
+        "startedAt",
+        "sessionIds",
+        "capabilityResults",
+        "environment"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "executionId": { "$ref": "#/$defs/OpaqueId" },
+        "planId": { "$ref": "#/$defs/StableId" },
+        "manifestHash": { "$ref": "#/$defs/ContentHash" },
+        "configurationHash": { "$ref": "#/$defs/ContentHash" },
+        "evaluatorVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "metricCatalogHash": { "$ref": "#/$defs/ContentHash" },
+        "scoringProfileHash": { "$ref": "#/$defs/ContentHash" },
+        "status": {
+          "enum": [
+            "queued",
+            "validating",
+            "analyzing",
+            "finalized",
+            "rejected",
+            "cancelled",
+            "failed"
+          ]
+        },
+        "stageStates": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["stageId", "attempt", "status"],
+            "properties": {
+              "stageId": { "$ref": "#/$defs/StableId" },
+              "attempt": { "type": "integer", "minimum": 0, "maximum": 100 },
+              "status": {
+                "enum": ["queued", "running", "complete", "failed", "cancelled"]
+              },
+              "startedAt": { "$ref": "#/$defs/Timestamp" },
+              "finishedAt": { "$ref": "#/$defs/Timestamp" },
+              "errorCode": { "$ref": "#/$defs/StableId" }
+            }
+          }
+        },
+        "startedAt": { "$ref": "#/$defs/Timestamp" },
+        "finishedAt": { "$ref": "#/$defs/Timestamp" },
+        "supersedesExecutionId": { "$ref": "#/$defs/OpaqueId" },
+        "sessionIds": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/OpaqueId" }
+        },
+        "capabilityResults": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["capability", "status", "evidenceIds"],
+            "properties": {
+              "capability": { "$ref": "#/$defs/Capability" },
+              "status": {
+                "enum": ["complete", "partial", "missing", "failed"]
+              },
+              "evidenceIds": {
+                "type": "array",
+                "maxItems": 4096,
+                "uniqueItems": true,
+                "items": { "$ref": "#/$defs/OpaqueId" }
+              }
+            }
+          }
+        },
+        "environment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["compatibilityClass"],
+          "properties": {
+            "compatibilityClass": { "$ref": "#/$defs/StableId" },
+            "os": { "$ref": "#/$defs/StableId" },
+            "architecture": { "$ref": "#/$defs/StableId" }
+          }
+        },
+        "calculationBundleHash": { "$ref": "#/$defs/ContentHash" },
+        "reportPayloadHash": { "$ref": "#/$defs/ContentHash" },
+        "executionEnvelopeHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "GeometryFactPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "objectIds", "factKind", "geometryHash"],
+      "properties": {
+        "kind": { "const": "geometry-fact" },
+        "objectIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2048,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "factKind": {
+          "enum": [
+            "normalized-object",
+            "axis-aligned-bounds",
+            "top-surface",
+            "transition-input"
+          ]
+        },
+        "geometryHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "RouteTransitionPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "transitionId",
+        "fromObjectId",
+        "toObjectId",
+        "normalizationHash"
+      ],
+      "properties": {
+        "kind": { "const": "route-transition" },
+        "transitionId": { "$ref": "#/$defs/OpaqueId" },
+        "fromObjectId": { "$ref": "#/$defs/StableId" },
+        "toObjectId": { "$ref": "#/$defs/StableId" },
+        "normalizationHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "RuntimeObservationReferencePayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "runtimeObservationContentHash"],
+      "properties": {
+        "kind": { "const": "runtime-observation" },
+        "runtimeObservationContentHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "RuntimeObservationContentContract": {
+      "allOf": [
+        { "$ref": "#/$defs/RuntimeObservationContent" },
+        {
+          "type": "object",
+          "if": { "properties": { "kind": { "const": "scene-loaded" } } },
+          "then": {
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": ["kind"],
+                "properties": { "kind": { "const": "scene-loaded" } }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "if": { "properties": { "kind": { "const": "character-spawned" } } },
+          "then": {
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": ["kind"],
+                "properties": { "kind": { "const": "character-spawned" } }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "if": { "properties": { "kind": { "const": "transition-attempt" } } },
+          "then": {
+            "properties": {
+              "payload": {
+                "type": "object",
+                "required": ["kind"],
+                "properties": { "kind": { "const": "transition-attempt" } }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "EvidenceRecord": {
+      "title": "EvidenceRecord",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "manifestHash",
+        "subject",
+        "producer",
+        "payload",
+        "parentEvidenceHashes",
+        "artifactHashes",
+        "quality",
+        "limitations",
+        "evidenceContentHash"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "evidenceId": { "$ref": "#/$defs/OpaqueId" },
+        "executionId": { "$ref": "#/$defs/OpaqueId" },
+        "capturedAt": { "$ref": "#/$defs/Timestamp" },
+        "kind": {
+          "enum": ["geometry-fact", "route-transition", "runtime-observation"]
+        },
+        "manifestHash": { "$ref": "#/$defs/ContentHash" },
+        "subject": { "$ref": "#/$defs/EvaluationSubject" },
+        "producer": { "$ref": "#/$defs/VersionRef" },
+        "payload": {
+          "oneOf": [
+            { "$ref": "#/$defs/GeometryFactPayload" },
+            { "$ref": "#/$defs/RouteTransitionPayload" },
+            { "$ref": "#/$defs/RuntimeObservationReferencePayload" }
+          ]
+        },
+        "parentEvidenceHashes": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ContentHash" }
+        },
+        "artifactHashes": {
+          "type": "array",
+          "maxItems": 256,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "contentHash"],
+            "properties": {
+              "role": { "$ref": "#/$defs/StableId" },
+              "contentHash": { "$ref": "#/$defs/ContentHash" }
+            }
+          }
+        },
+        "quality": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["completeness", "validityCodes"],
+          "properties": {
+            "completeness": { "enum": ["complete", "partial", "missing"] },
+            "validityCodes": {
+              "type": "array",
+              "maxItems": 64,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/StableId" }
+            }
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+        },
+        "evidenceContentHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "EvidenceRecordContract": {
+      "allOf": [
+        { "$ref": "#/$defs/EvidenceRecord" },
+        {
+          "type": "object",
+          "if": { "properties": { "kind": { "const": "geometry-fact" } } },
+          "then": {
+            "properties": {
+              "payload": { "$ref": "#/$defs/GeometryFactPayload" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "if": { "properties": { "kind": { "const": "route-transition" } } },
+          "then": {
+            "properties": {
+              "payload": { "$ref": "#/$defs/RouteTransitionPayload" }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "if": {
+            "properties": { "kind": { "const": "runtime-observation" } }
+          },
+          "then": {
+            "properties": {
+              "payload": {
+                "$ref": "#/$defs/RuntimeObservationReferencePayload"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "RuntimeObservationContent": {
+      "title": "RuntimeObservationContent",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "kind",
+        "manifestHash",
+        "subject",
+        "sequence",
+        "monotonicOffsetMs",
+        "collector",
+        "payload",
+        "runtimeObservationContentHash"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "kind": {
+          "enum": ["scene-loaded", "character-spawned", "transition-attempt"]
+        },
+        "manifestHash": { "$ref": "#/$defs/ContentHash" },
+        "subject": { "$ref": "#/$defs/EvaluationSubject" },
+        "playerSlot": { "$ref": "#/$defs/StableId" },
+        "controllerProfileRef": { "$ref": "#/$defs/StableId" },
+        "sequence": { "type": "integer", "minimum": 0, "maximum": 1000000000 },
+        "monotonicOffsetMs": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 86400000
+        },
+        "collector": { "$ref": "#/$defs/VersionRef" },
+        "payload": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "ready"],
+              "properties": {
+                "kind": { "const": "scene-loaded" },
+                "ready": { "type": "boolean" }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "rootTransform"],
+              "properties": {
+                "kind": { "const": "character-spawned" },
+                "rootTransform": { "$ref": "#/$defs/Transform" }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["kind", "transitionId", "result"],
+              "properties": {
+                "kind": { "const": "transition-attempt" },
+                "transitionId": { "$ref": "#/$defs/OpaqueId" },
+                "result": { "enum": ["success", "failure", "aborted"] }
+              }
+            }
+          ]
+        },
+        "runtimeObservationContentHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "RuntimeObservationEnvelope": {
+      "title": "RuntimeObservationEnvelope",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "runtimeObservationContentHash",
+        "observationId",
+        "executionId",
+        "sessionId",
+        "generationToken",
+        "observedAt",
+        "collectorSequence",
+        "runtimeObservationEnvelopeHash"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "runtimeObservationContentHash": { "$ref": "#/$defs/ContentHash" },
+        "observationId": { "$ref": "#/$defs/OpaqueId" },
+        "executionId": { "$ref": "#/$defs/OpaqueId" },
+        "sessionId": { "$ref": "#/$defs/OpaqueId" },
+        "generationToken": { "$ref": "#/$defs/OpaqueId" },
+        "observedAt": { "$ref": "#/$defs/Timestamp" },
+        "collectorSequence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "runtimeObservationEnvelopeHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "AvailabilitySubject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "stableId", "contentHash"],
+      "properties": {
+        "kind": { "enum": ["evidence", "artifact", "reference"] },
+        "stableId": { "$ref": "#/$defs/OpaqueId" },
+        "contentHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "AvailabilityRecord": {
+      "title": "AvailabilityRecord",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "subject",
+        "availabilityState",
+        "reasonCode",
+        "reasonDetails",
+        "authority",
+        "supersedesAvailabilityRecordHashes",
+        "policy",
+        "impactScope",
+        "availabilityRecordHash"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "subject": { "$ref": "#/$defs/AvailabilitySubject" },
+        "availabilityState": { "enum": ["available", "restricted", "deleted"] },
+        "reasonCode": { "$ref": "#/$defs/StableId" },
+        "reasonDetails": {
+          "type": "array",
+          "maxItems": 32,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "value"],
+            "properties": {
+              "code": { "$ref": "#/$defs/StableId" },
+              "value": { "type": "string", "minLength": 1, "maxLength": 256 }
+            }
+          }
+        },
+        "authority": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["authorityKind", "authorityId"],
+          "properties": {
+            "authorityKind": { "$ref": "#/$defs/StableId" },
+            "authorityId": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*:[a-z0-9-]+$",
+              "maxLength": 160
+            }
+          }
+        },
+        "effectiveAt": { "$ref": "#/$defs/Timestamp" },
+        "effectiveSequence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000000
+        },
+        "supersedesAvailabilityRecordHashes": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ContentHash" }
+        },
+        "policy": { "$ref": "#/$defs/VersionRef" },
+        "successor": { "$ref": "#/$defs/AvailabilitySubject" },
+        "impactScope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["scopeKind", "affectedIdentityHashes"],
+          "properties": {
+            "scopeKind": {
+              "enum": [
+                "subject-only",
+                "subject-and-derived",
+                "reference-snapshot",
+                "dataset-release"
+              ]
+            },
+            "affectedIdentityHashes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 4096,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/ContentHash" }
+            }
+          }
+        },
+        "availabilityRecordHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "AvailabilityRecordContract": {
+      "allOf": [
+        { "$ref": "#/$defs/AvailabilityRecord" },
+        {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["effectiveAt"],
+              "properties": { "effectiveAt": true },
+              "not": {
+                "type": "object",
+                "required": ["effectiveSequence"],
+                "properties": { "effectiveSequence": true }
+              }
+            },
+            {
+              "type": "object",
+              "required": ["effectiveSequence"],
+              "properties": { "effectiveSequence": true },
+              "not": {
+                "type": "object",
+                "required": ["effectiveAt"],
+                "properties": { "effectiveAt": true }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "Finding": {
+      "title": "Finding",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "findingId",
+        "ruleId",
+        "ruleVersion",
+        "metricIds",
+        "title",
+        "summary",
+        "severity",
+        "blocking",
+        "sourceKind",
+        "subjects",
+        "evidenceIds",
+        "limitations"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "findingId": { "$ref": "#/$defs/StableId" },
+        "executionId": { "$ref": "#/$defs/OpaqueId" },
+        "ruleId": { "$ref": "#/$defs/StableId" },
+        "ruleVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "metricIds": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "title": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 1024 },
+        "severity": { "enum": ["info", "warning", "error", "blocking"] },
+        "blocking": { "type": "boolean" },
+        "invariantId": { "$ref": "#/$defs/StableId" },
+        "sourceKind": { "$ref": "#/$defs/SourceKind" },
+        "subjects": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/EvaluationSubject" }
+        },
+        "evidenceIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/OpaqueId" }
+        },
+        "limitations": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+        }
+      }
+    },
+    "CalculationBundlePreimage": {
+      "title": "CalculationBundlePreimage",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "manifestHash",
+        "configurationHash",
+        "evaluatorVersion",
+        "metricCatalogHash",
+        "scoringProfileHash",
+        "environmentCompatibilityClass",
+        "evidence",
+        "ruleVersions"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "manifestHash": { "$ref": "#/$defs/ContentHash" },
+        "configurationHash": { "$ref": "#/$defs/ContentHash" },
+        "evaluatorVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "metricCatalogHash": { "$ref": "#/$defs/ContentHash" },
+        "scoringProfileHash": { "$ref": "#/$defs/ContentHash" },
+        "environmentCompatibilityClass": { "$ref": "#/$defs/StableId" },
+        "evidence": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "subjectKey", "evidenceContentHash"],
+            "properties": {
+              "kind": { "$ref": "#/$defs/EvidenceKind" },
+              "subjectKey": { "$ref": "#/$defs/OpaqueId" },
+              "evidenceContentHash": { "$ref": "#/$defs/ContentHash" }
+            }
+          }
+        },
+        "ruleVersions": {
+          "type": "array",
+          "maxItems": 128,
+          "items": { "$ref": "#/$defs/VersionRef" }
+        },
+        "calculationBundleHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    }
+  }
+}

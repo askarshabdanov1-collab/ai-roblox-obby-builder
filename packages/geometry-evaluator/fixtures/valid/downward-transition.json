@@ -1,0 +1,45 @@
+{
+  "objects": [
+    {
+      "schemaVersion": "0.1",
+      "objectId": "platform-a",
+      "shape": "Block",
+      "authority": "native-gameplay",
+      "collision": { "canCollide": true, "canTouch": true, "canQuery": true },
+      "gameplayOwnership": "native-part",
+      "promotionStatus": "not-applicable",
+      "safeRouteRef": { "routeId": "global-safe-route", "globalIndex": 0 },
+      "transform": {
+        "position": { "x": 0, "y": 6, "z": 0 },
+        "rotationDegrees": { "x": 0, "y": 0, "z": 0 }
+      },
+      "size": { "x": 10, "y": 2, "z": 10 }
+    },
+    {
+      "schemaVersion": "0.1",
+      "objectId": "platform-b",
+      "shape": "Block",
+      "authority": "native-gameplay",
+      "collision": { "canCollide": true, "canTouch": true, "canQuery": true },
+      "gameplayOwnership": "native-part",
+      "promotionStatus": "not-applicable",
+      "safeRouteRef": { "routeId": "global-safe-route", "globalIndex": 1 },
+      "transform": {
+        "position": { "x": 10, "y": 1, "z": 0 },
+        "rotationDegrees": { "x": 0, "y": 0, "z": 0 }
+      },
+      "size": { "x": 10, "y": 2, "z": 10 }
+    }
+  ],
+  "transition": {
+    "schemaVersion": "0.1",
+    "transitionId": "route:global-safe-route/platform-a/platform-b/0/1",
+    "routeId": "global-safe-route",
+    "fromObjectId": "platform-a",
+    "toObjectId": "platform-b",
+    "fromGlobalIndex": 0,
+    "toGlobalIndex": 1,
+    "controllerProfileRef": "roblox-default-r15"
+  },
+  "expected": { "horizontalGap": 0, "verticalRise": 0, "downwardDrop": 5 }
+}

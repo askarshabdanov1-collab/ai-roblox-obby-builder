@@ -4,5 +4,7 @@ dist/
 node_modules/
 examples/vertical-slice/scene-manifest.json
 packages/contracts/src/generated/
+packages/obby-evaluator-contracts/fixtures/generated/
+packages/obby-evaluator-contracts/src/generated/
 roblox/generated/
 roblox.yml

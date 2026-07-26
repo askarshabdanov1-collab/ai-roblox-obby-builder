@@ -1,0 +1,16 @@
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname } from "node:path";
+
+import { expectedEvaluatorContractTypes } from "./evaluator-contract-generated-content.js";
+import { expectedEvaluatorFixtures } from "./evaluator-fixture-content.js";
+
+const artifacts = {
+  ...(await expectedEvaluatorContractTypes()),
+  ...expectedEvaluatorFixtures(),
+};
+
+for (const [path, content] of Object.entries(artifacts)) {
+  await mkdir(dirname(path), { recursive: true });
+  await writeFile(path, content, "utf8");
+  console.log(`generated ${path}`);
+}
