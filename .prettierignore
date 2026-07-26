@@ -6,5 +6,6 @@ examples/vertical-slice/scene-manifest.json
 packages/contracts/src/generated/
 packages/obby-evaluator-contracts/fixtures/generated/
 packages/obby-evaluator-contracts/src/generated/
+packages/route-playability-evaluator/fixtures/generated/
 roblox/generated/
 roblox.yml

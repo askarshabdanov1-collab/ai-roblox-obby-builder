@@ -12,6 +12,9 @@
       "@obby/obby-evaluator-contracts": [
         "./packages/obby-evaluator-contracts/src/index.ts"
       ],
+      "@obby/route-playability-evaluator": [
+        "./packages/route-playability-evaluator/src/index.ts"
+      ],
       "@obby/roblox-emitter": ["./packages/roblox-emitter/src/index.ts"]
     },
     "types": ["node", "vitest/globals"]

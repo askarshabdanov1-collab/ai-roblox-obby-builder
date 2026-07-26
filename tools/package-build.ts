@@ -12,6 +12,10 @@ const outputs = [
     "packages/obby-evaluator-contracts/dist",
   ],
   ["dist/packages/roblox-emitter/src", "packages/roblox-emitter/dist"],
+  [
+    "dist/packages/route-playability-evaluator/src",
+    "packages/route-playability-evaluator/dist",
+  ],
   ["dist/apps/orchestrator/src", "apps/orchestrator/dist"],
 ] as const;
 

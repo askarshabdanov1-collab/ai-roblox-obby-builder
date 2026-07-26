@@ -5,6 +5,10 @@ import { validatePlaceSpec, validateSceneManifest } from "@obby/contracts";
 import { normalizeGeometryObject } from "@obby/geometry-evaluator";
 import { compilePlaceSpec } from "@obby/obby-compiler";
 import { parseGeometryObjectInput } from "@obby/obby-evaluator-contracts";
+import {
+  createDefaultControllerProfile,
+  evaluateRoutePlayability,
+} from "@obby/route-playability-evaluator";
 import { emitManifestModule } from "@obby/roblox-emitter";
 
 const spec = JSON.parse(
@@ -40,5 +44,11 @@ const geometryInput = {
 parseGeometryObjectInput(geometryInput);
 if (normalizeGeometryObject(geometryInput).topSurface.maximumY !== 2)
   throw new Error("built geometry evaluator returned invalid bounds");
+const routeResult = evaluateRoutePlayability({
+  manifest,
+  controllerProfile: createDefaultControllerProfile(),
+});
+if (routeResult.routeGraph.finishObjectId !== "FinishPlatform")
+  throw new Error("built route evaluator returned invalid topology");
 
-console.log("plain Node imported all Phase 0 and Phase E1a packages");
+console.log("plain Node imported all Phase 0, E1a, and E1b packages");
