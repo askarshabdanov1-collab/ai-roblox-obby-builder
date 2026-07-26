@@ -233,12 +233,25 @@ describe("evaluator contracts", () => {
     );
   });
 
-  it("rejects stale plan and request hashes before binding", () => {
+  it("rejects a stale configurationHash after a semantic plan mutation", () => {
     const graph = configurationGraph();
     graph.plan.seed = 43;
     expect(() => assertValidEvaluatorConfigurationGraph(graph)).toThrow(
       /configurationHash content hash mismatch/i,
     );
+  });
+
+  it("rejects a stale evaluationRequestHash and accepts its recomputed hash", () => {
+    const graph = configurationGraph();
+    graph.request.requestedOutputs = [{ outputKind: "evidence-index" }];
+    expect(() => assertValidEvaluatorConfigurationGraph(graph)).toThrow(
+      /evaluationRequestHash content hash mismatch/i,
+    );
+
+    graph.request.evaluationRequestHash = hashEvaluationRequest(
+      graph.request,
+    ).hash;
+    expect(() => assertValidEvaluatorConfigurationGraph(graph)).not.toThrow();
   });
 
   it("rejects stale catalog and profile objects through the aggregate boundary", () => {
@@ -264,7 +277,7 @@ describe("evaluator contracts", () => {
     );
   });
 
-  it("keeps every positive fixture free of all-zero identities", () => {
+  it("keeps shared positive configuration fixtures free of all-zero identities", () => {
     const allZeroHash = `sha256:${"0".repeat(64)}`;
     expect(JSON.stringify(positiveEvaluatorFixtures())).not.toContain(
       allZeroHash,

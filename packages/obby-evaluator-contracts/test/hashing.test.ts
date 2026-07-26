@@ -21,73 +21,162 @@ import {
   TEST_IDENTITIES,
 } from "./fixtures.js";
 
+function namedHashDomainCases() {
+  const definition = metricDefinition();
+  const metricCatalog = catalog(definition.metricDefinitionHash as string);
+  const profile = scoringProfile(metricCatalog.metricCatalogHash as string);
+  const plan = evaluationPlan({
+    catalog: {
+      catalogId: metricCatalog.catalogId,
+      catalogVersion: metricCatalog.catalogVersion,
+      metricCatalogHash: metricCatalog.metricCatalogHash,
+    },
+    profile: {
+      profileId: profile.profileId,
+      profileVersion: profile.profileVersion,
+      scoringProfileHash: profile.scoringProfileHash,
+      compatibilityClass: profile.compatibilityClass,
+    },
+  });
+  const request = evaluationRequest({
+    catalog: plan.catalog,
+    profile: plan.profile,
+    configurationHash: plan.configurationHash,
+  });
+  const evidence: Record<string, unknown> = {
+    schemaVersion: "0.1",
+    kind: "geometry-fact",
+    manifestHash: TEST_IDENTITIES.manifestHash,
+    subject: { kind: "scene" },
+    producer: {
+      component: "geometry-evaluator",
+      version: "0.1.0",
+      buildHash: TEST_IDENTITIES.producerBuildHash,
+    },
+    payload: {
+      kind: "geometry-fact",
+      objectIds: ["platform-a"],
+      factKind: "normalized-object",
+      geometryHash: TEST_IDENTITIES.geometryHash,
+    },
+    parentEvidenceHashes: [],
+    artifactHashes: [],
+    quality: { completeness: "complete", validityCodes: [] },
+    limitations: [],
+    evidenceContentHash: TEST_IDENTITIES.geometryHash,
+  };
+  evidence.evidenceContentHash = hashEvidenceContent(evidence).hash;
+  const calculation: Record<string, unknown> = {
+    schemaVersion: "0.1",
+    manifestHash: TEST_IDENTITIES.manifestHash,
+    configurationHash: plan.configurationHash,
+    evaluatorVersion: "0.1.0",
+    metricCatalogHash: metricCatalog.metricCatalogHash,
+    scoringProfileHash: profile.scoringProfileHash,
+    environmentCompatibilityClass: "static-native-parts-v1",
+    evidence: [
+      {
+        kind: "geometry-fact",
+        subjectKey: "scene",
+        evidenceContentHash: evidence.evidenceContentHash,
+      },
+    ],
+    ruleVersions: [
+      {
+        component: "geometry-evaluator",
+        version: "0.1.0",
+        buildHash: TEST_IDENTITIES.ruleBuildHash,
+      },
+    ],
+    calculationBundleHash: TEST_IDENTITIES.calculationBundleHash,
+  };
+  calculation.calculationBundleHash = hashCalculationBundle(calculation).hash;
+  const availability: Record<string, unknown> = {
+    schemaVersion: "0.1",
+    subject: {
+      kind: "evidence",
+      stableId: "geometry:scene",
+      contentHash: evidence.evidenceContentHash,
+    },
+    availabilityState: "available",
+    reasonCode: "created",
+    reasonDetails: [],
+    authority: {
+      authorityKind: "evaluator",
+      authorityId: "evaluator:local",
+    },
+    effectiveSequence: 0,
+    supersedesAvailabilityRecordHashes: [],
+    policy: {
+      component: "availability",
+      version: "1.0.0",
+      buildHash: TEST_IDENTITIES.ruleBuildHash,
+    },
+    impactScope: {
+      scopeKind: "subject-only",
+      affectedIdentityHashes: [evidence.evidenceContentHash],
+    },
+    availabilityRecordHash: TEST_IDENTITIES.ruleBuildHash,
+  };
+  availability.availabilityRecordHash =
+    hashAvailabilityRecord(availability).hash;
+
+  return [
+    {
+      preimageName: "MetricDefinitionPreimage",
+      resultField: "metricDefinitionHash",
+      input: definition,
+      hash: hashMetricDefinition,
+    },
+    {
+      preimageName: "MetricCatalogPreimage",
+      resultField: "metricCatalogHash",
+      input: metricCatalog,
+      hash: hashMetricCatalog,
+    },
+    {
+      preimageName: "ScoringProfilePreimage",
+      resultField: "scoringProfileHash",
+      input: profile,
+      hash: hashScoringProfile,
+    },
+    {
+      preimageName: "EvaluationPlanConfigurationPreimage",
+      resultField: "configurationHash",
+      input: plan,
+      hash: hashEvaluationPlanConfiguration,
+    },
+    {
+      preimageName: "EvaluationRequestPreimage",
+      resultField: "evaluationRequestHash",
+      input: request,
+      hash: hashEvaluationRequest,
+    },
+    {
+      preimageName: "EvidenceContentPreimage",
+      resultField: "evidenceContentHash",
+      input: evidence,
+      hash: hashEvidenceContent,
+    },
+    {
+      preimageName: "CalculationBundlePreimage",
+      resultField: "calculationBundleHash",
+      input: calculation,
+      hash: hashCalculationBundle,
+    },
+    {
+      preimageName: "AvailabilityRecordPreimage",
+      resultField: "availabilityRecordHash",
+      input: availability,
+      hash: hashAvailabilityRecord,
+    },
+  ];
+}
+
 describe("named evaluator preimages", () => {
   it("derives every named digest from the exact returned bytes", () => {
-    const definition = metricDefinition();
-    const metricCatalog = catalog(definition.metricDefinitionHash as string);
-    const cases = [
-      hashMetricDefinition(definition),
-      hashMetricCatalog(metricCatalog),
-      hashScoringProfile(
-        scoringProfile(metricCatalog.metricCatalogHash as string),
-      ),
-      hashEvaluationPlanConfiguration(evaluationPlan()),
-      hashEvaluationRequest(evaluationRequest()),
-      hashEvidenceContent({
-        schemaVersion: "0.1",
-        kind: "geometry-fact",
-        manifestHash: TEST_IDENTITIES.manifestHash,
-        subject: { kind: "scene" },
-        producer: { component: "geometry-evaluator", version: "0.1.0" },
-        payload: {
-          kind: "geometry-fact",
-          objectIds: ["platform-a"],
-          factKind: "normalized-object",
-          geometryHash: TEST_IDENTITIES.geometryHash,
-        },
-        parentEvidenceHashes: [],
-        artifactHashes: [],
-        quality: { completeness: "complete", validityCodes: [] },
-        limitations: [],
-        evidenceContentHash: TEST_IDENTITIES.geometryHash,
-      }),
-      hashCalculationBundle({
-        schemaVersion: "0.1",
-        manifestHash: TEST_IDENTITIES.manifestHash,
-        configurationHash: TEST_IDENTITIES.calculationConfigurationHash,
-        evaluatorVersion: "0.1.0",
-        metricCatalogHash: metricCatalog.metricCatalogHash,
-        scoringProfileHash: TEST_IDENTITIES.calculationConfigurationHash,
-        environmentCompatibilityClass: "static-native-parts-v1",
-        evidence: [],
-        ruleVersions: [],
-        calculationBundleHash: TEST_IDENTITIES.calculationBundleHash,
-      }),
-      hashAvailabilityRecord({
-        schemaVersion: "0.1",
-        subject: {
-          kind: "evidence",
-          stableId: "geometry:scene",
-          contentHash: TEST_IDENTITIES.availabilitySubjectHash,
-        },
-        availabilityState: "available",
-        reasonCode: "created",
-        reasonDetails: [],
-        authority: {
-          authorityKind: "evaluator",
-          authorityId: "evaluator:local",
-        },
-        effectiveSequence: 0,
-        supersedesAvailabilityRecordHashes: [],
-        policy: { component: "availability", version: "1.0.0" },
-        impactScope: {
-          scopeKind: "subject-only",
-          affectedIdentityHashes: [TEST_IDENTITIES.availabilitySubjectHash],
-        },
-        availabilityRecordHash: TEST_IDENTITIES.ruleBuildHash,
-      }),
-    ];
-    for (const result of cases) {
+    for (const domain of namedHashDomainCases()) {
+      const result = domain.hash(domain.input);
       expect(
         `sha256:${createHash("sha256")
           .update(result.canonicalBytes)
@@ -96,17 +185,20 @@ describe("named evaluator preimages", () => {
     }
   });
 
-  it("excludes every resulting self hash and exposes canonical bytes", () => {
-    const first = hashMetricDefinition(metricDefinition());
-    const alternate = metricDefinition();
-    alternate.metricDefinitionHash = `sha256:${"f".repeat(64)}`;
-    const second = hashMetricDefinition(alternate);
-    expect(first).toEqual(second);
-    expect(first.hash).toMatch(/^sha256:[0-9a-f]{64}$/);
-    expect(new TextDecoder().decode(first.canonicalBytes)).not.toContain(
-      "metricDefinitionHash",
-    );
-  });
+  it.each(namedHashDomainCases())(
+    "$preimageName excludes its $resultField result field",
+    ({ resultField, input, hash }) => {
+      const first = hash(input);
+      const alternate = structuredClone(input);
+      alternate[resultField] = `sha256:${"f".repeat(64)}`;
+      const second = hash(alternate);
+      expect(second).toEqual(first);
+      expect(first.hash).toMatch(/^sha256:[0-9a-f]{64}$/);
+      expect(new TextDecoder().decode(first.canonicalBytes)).not.toContain(
+        `"${resultField}"`,
+      );
+    },
+  );
 
   it("rejects accessor-backed contract inputs before validation or hashing", () => {
     const input = metricDefinition();
