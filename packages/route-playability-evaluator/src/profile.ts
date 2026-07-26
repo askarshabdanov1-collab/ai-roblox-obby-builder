@@ -28,7 +28,6 @@ export function createDefaultControllerProfile(): ControllerProfile {
     },
     avatarDimensions: {
       width: 4,
-      height: 5,
       depth: 2,
       unit: "studs",
       classification: "provisional",

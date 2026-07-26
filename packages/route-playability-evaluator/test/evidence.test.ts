@@ -297,7 +297,7 @@ describe("E1b evidence and findings", () => {
     },
   );
 
-  it("deduplicates hazard relationships by deterministic evidence identity", () => {
+  it("emits structurally unique hazard identities for each relationship and subject", () => {
     const result = evaluateRoutePlayability({
       manifest: manifestFixture(),
       controllerProfile: createDefaultControllerProfile(),

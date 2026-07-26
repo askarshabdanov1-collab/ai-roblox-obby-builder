@@ -286,14 +286,9 @@
         "avatarDimensions": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["width", "height", "depth", "unit", "classification"],
+          "required": ["width", "depth", "unit", "classification"],
           "properties": {
             "width": {
-              "type": "number",
-              "exclusiveMinimum": 0,
-              "maximum": 1000
-            },
-            "height": {
               "type": "number",
               "exclusiveMinimum": 0,
               "maximum": 1000
@@ -1611,6 +1606,7 @@
         "controllerProfileVersion",
         "controllerProfileHash",
         "inputEvidenceHashes",
+        "normalizedInputHash",
         "state",
         "reasonCodes",
         "horizontalGapStuds",
@@ -1636,11 +1632,12 @@
         "controllerProfileHash": { "$ref": "#/$defs/ContentHash" },
         "inputEvidenceHashes": {
           "type": "array",
-          "minItems": 2,
+          "minItems": 1,
           "maxItems": 64,
           "uniqueItems": true,
           "items": { "$ref": "#/$defs/ContentHash" }
         },
+        "normalizedInputHash": { "$ref": "#/$defs/ContentHash" },
         "state": {
           "enum": [
             "feasible-under-model",

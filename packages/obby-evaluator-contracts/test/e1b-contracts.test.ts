@@ -34,7 +34,6 @@ const controllerProfile = () => {
     },
     avatarDimensions: {
       width: 4,
-      height: 5,
       depth: 2,
       unit: "studs",
       classification: "provisional",
@@ -87,6 +86,9 @@ describe("E1b evaluator contracts", () => {
     expect(parseControllerProfile(profile).controllerProfileHash).toBe(
       hashControllerProfile(profile).hash,
     );
+    expect(
+      new TextDecoder().decode(hashControllerProfile(profile).canonicalBytes),
+    ).not.toContain('"height"');
     const changed = structuredClone(profile);
     (changed.maximumRise as Record<string, unknown>).value = 5.1;
     expect(hashControllerProfile(changed).hash).not.toBe(
@@ -99,6 +101,15 @@ describe("E1b evaluator contracts", () => {
     expect(hashControllerProfile(alternateOwnHash).canonicalBytes).toEqual(
       hashControllerProfile(profile).canonicalBytes,
     );
+  });
+
+  it("rejects avatar height because E1b only content-addresses the supported landing footprint", () => {
+    const profile = controllerProfile();
+    profile.avatarDimensions = {
+      ...(profile.avatarDimensions as Record<string, unknown>),
+      height: 5,
+    };
+    expect(() => parseControllerProfile(profile)).toThrow(/avatarDimensions/);
   });
 
   it("rejects a stale controller profile hash after a semantic limit change", () => {
@@ -169,10 +180,8 @@ describe("E1b evaluator contracts", () => {
         controllerProfileId: "e1-r15-provisional",
         controllerProfileVersion: "1.0.0",
         controllerProfileHash: TEST_IDENTITIES.geometryHash,
-        inputEvidenceHashes: [
-          TEST_IDENTITIES.geometryHash,
-          TEST_IDENTITIES.manifestHash,
-        ],
+        inputEvidenceHashes: [TEST_IDENTITIES.geometryHash],
+        normalizedInputHash: TEST_IDENTITIES.manifestHash,
         state: "feasible-under-model",
         reasonCodes: [],
         horizontalGapStuds: 1,

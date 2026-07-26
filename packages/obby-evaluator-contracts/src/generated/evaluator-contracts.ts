@@ -796,10 +796,11 @@ export interface CoarseTransitionStatePayload {
   controllerProfileVersion: SemanticVersion;
   controllerProfileHash: ContentHash;
   /**
-   * @minItems 2
+   * @minItems 1
    * @maxItems 64
    */
-  inputEvidenceHashes: [ContentHash, ContentHash, ...ContentHash[]];
+  inputEvidenceHashes: [ContentHash, ...ContentHash[]];
+  normalizedInputHash: ContentHash;
   state: "feasible-under-model" | "infeasible-under-model" | "indeterminate";
   /**
    * @maxItems 16
@@ -1032,7 +1033,6 @@ export interface ControllerProfile {
   maximumDownwardDrop: ProfileDistanceConstant;
   avatarDimensions: {
     width: number;
-    height: number;
     depth: number;
     unit: "studs";
     classification: ProfileConstantClassification;

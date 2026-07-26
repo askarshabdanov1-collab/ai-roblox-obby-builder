@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   classifyCoarseTransition,
+  classifyCoarseTransitionWithEvidence,
   CoarseTransitionValidationError,
   createDefaultControllerProfile,
   evaluateRoutePlayability,
@@ -140,18 +141,90 @@ describe("coarse model-relative transition classification", () => {
     },
   );
 
-  it("distinguishes malformed missing measurement fields from explicit unavailability", () => {
-    const malformed = {
-      ...baseTransition(),
-      horizontalSeparation: undefined,
-    };
-    expect(() =>
-      classifyCoarseTransition(
-        malformed as unknown as CoarseTransitionInput,
-        createDefaultControllerProfile(),
-      ),
-    ).toThrow(CoarseTransitionValidationError);
-  });
+  it.each([
+    ["missing status", { value: 1 }, "status", "/horizontalSeparation/status"],
+    [
+      "unknown status",
+      { status: "future" },
+      "status",
+      "/horizontalSeparation/status",
+    ],
+    [
+      "unavailable without reason",
+      { status: "unavailable", missingEvidenceHashes: [], limitations: [] },
+      "reason-code",
+      "/horizontalSeparation/reasonCode",
+    ],
+    [
+      "unavailable without limitations",
+      {
+        status: "unavailable",
+        reasonCode: "missing-horizontal-separation",
+        missingEvidenceHashes: [],
+      },
+      "limitations",
+      "/horizontalSeparation/limitations",
+    ],
+    [
+      "available without value",
+      {
+        status: "available",
+        method: "world-aabb-horizontal-separation",
+        approximationKind: "conservative-lower-bound",
+        toleranceStuds: 1e-9,
+        limitations: [],
+        applicability: "broad-phase-only",
+      },
+      "measurement-value",
+      "/horizontalSeparation/value",
+    ],
+    [
+      "mixed unavailable fields",
+      {
+        ...unavailable("missing-horizontal-separation"),
+        value: 1,
+      },
+      "additional-property",
+      "/horizontalSeparation/value",
+    ],
+    [
+      "malformed unavailable evidence hash",
+      {
+        ...unavailable("missing-horizontal-separation"),
+        missingEvidenceHashes: ["sha256:not-a-hash"],
+      },
+      "content-hashes",
+      "/horizontalSeparation/missingEvidenceHashes",
+    ],
+    [
+      "extra available field",
+      {
+        ...baseTransition().horizontalSeparation,
+        unexpected: true,
+      },
+      "additional-property",
+      "/horizontalSeparation/unexpected",
+    ],
+  ])(
+    "rejects malformed measurement input: %s",
+    (_name, measurement, code, path) => {
+      try {
+        classifyCoarseTransition(
+          {
+            ...baseTransition(),
+            horizontalSeparation: measurement,
+          } as unknown as CoarseTransitionInput,
+          createDefaultControllerProfile(),
+        );
+        throw new Error("expected malformed measurement rejection");
+      } catch (caught) {
+        expect(caught).toBeInstanceOf(CoarseTransitionValidationError);
+        expect((caught as CoarseTransitionValidationError).issues).toEqual([
+          expect.objectContaining({ code, path }),
+        ]);
+      }
+    },
+  );
 
   it("returns indeterminate for an unsupported measurement method", () => {
     const base = baseTransition();
@@ -259,7 +332,14 @@ describe("coarse model-relative transition classification", () => {
   });
 
   it("exposes one complete public classification identity and reproduction contract", () => {
-    const result = firstClassificationAt(0, 4, 16);
+    const evaluation = evaluationAt(0, 4, 16);
+    const result = requiredFixture(
+      evaluation.transitionStates[0],
+      "first transition state",
+    );
+    const emittedHashes = new Set(
+      evaluation.evidence.map((record) => record.evidenceContentHash),
+    );
     expect(result.transitionId.length).toBeGreaterThan(0);
     expect(result.sourceObjectId).toBe("Spawn");
     expect(result.destinationObjectId).toBe("JumpPlatform01");
@@ -271,10 +351,103 @@ describe("coarse model-relative transition classification", () => {
     );
     expect(result.reproduction.methodId).toBe("coarse-transition-classifier");
     expect(result.reproduction.methodVersion).toBe("2.0.0");
-    expect(result.inputEvidenceHashes).toHaveLength(2);
+    expect(result.inputEvidenceHashes).toHaveLength(1);
+    expect(result.inputEvidenceHashes).not.toContain(
+      result.controllerProfileHash,
+    );
+    expect(result.inputEvidenceHashes).not.toContain(
+      result.reproduction.normalizedInputHash,
+    );
+    expect(
+      result.inputEvidenceHashes.every((hash) => emittedHashes.has(hash)),
+    ).toBe(true);
     expect(result.reproduction.inputEvidenceHashes).toEqual(
       result.inputEvidenceHashes,
     );
+  });
+
+  it("keeps standalone classification evidence-free with a dedicated normalized input identity", () => {
+    const result = classifyCoarseTransition(
+      baseTransition(),
+      createDefaultControllerProfile(),
+    );
+    expect(result.inputEvidenceHashes).toEqual([]);
+    expect(result.reproduction.inputEvidenceHashes).toEqual([]);
+    expect(result.reproduction.normalizedInputHash).toMatch(
+      /^sha256:[0-9a-f]{64}$/,
+    );
+  });
+
+  it("rejects missing or stale evidence references before evidence-backed classification", () => {
+    const evaluated = evaluationAt(0, 4, 16);
+    const transitionRecord = requiredFixture(
+      evaluated.evidence.find((record) => record.kind === "route-transition"),
+      "route transition evidence",
+    );
+    const issueFrom = (action: () => unknown) => {
+      try {
+        action();
+        throw new Error("expected evidence-reference rejection");
+      } catch (caught) {
+        expect(caught).toBeInstanceOf(CoarseTransitionValidationError);
+        return (caught as CoarseTransitionValidationError).issues;
+      }
+    };
+    expect(
+      issueFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          baseTransition(),
+          createDefaultControllerProfile(),
+          [],
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "input-evidence-required",
+        path: "/inputEvidenceRecords",
+      }),
+    ]);
+    expect(
+      issueFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          baseTransition(),
+          createDefaultControllerProfile(),
+          [
+            {
+              ...transitionRecord,
+              evidenceContentHash: `sha256:${"f".repeat(64)}`,
+            },
+          ],
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "input-evidence-identity",
+        path: "/inputEvidenceRecords/0/evidenceContentHash",
+      }),
+    ]);
+    const unrelatedTransitionRecord = requiredFixture(
+      evaluated.evidence.find(
+        (record) =>
+          record.kind === "route-transition" &&
+          record.evidenceContentHash !== transitionRecord.evidenceContentHash,
+      ),
+      "unrelated route transition evidence",
+    );
+    expect(
+      issueFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          baseTransition(),
+          createDefaultControllerProfile(),
+          [unrelatedTransitionRecord],
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "transition-evidence-required",
+        path: "/inputEvidenceRecords",
+      }),
+    ]);
   });
 
   it("preserves wedge broad-phase metadata in normalized reproduction inputs", () => {

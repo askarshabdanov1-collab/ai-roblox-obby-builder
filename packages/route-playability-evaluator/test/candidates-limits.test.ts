@@ -217,7 +217,7 @@ describe("route candidates and deterministic limits", () => {
     expect(largeMarginCandidates).toHaveLength(0);
   });
 
-  it("emits one deterministic record per unique skip candidate pair", () => {
+  it("merges multiple skip discovery rules into one canonical candidate per semantic pair", () => {
     const manifest = manifestFixture();
     const finish = requiredFixture(
       manifest.layers.gameplay.objects.find(
@@ -235,10 +235,24 @@ describe("route candidates and deterministic limits", () => {
       manifest: structuredClone(manifest),
       controllerProfile: createDefaultControllerProfile(),
     });
-    const candidateIds = first.evidence
-      .filter((record) => record.kind === "skip-candidate")
-      .map((record) => record.payload.candidateId);
-    expect(new Set(candidateIds).size).toBe(candidateIds.length);
+    const matching = first.evidence.filter(
+      (record) =>
+        record.kind === "skip-candidate" &&
+        record.payload.fromObjectId === "Spawn" &&
+        record.payload.toObjectId === "FinishPlatform",
+    );
+    expect(matching).toHaveLength(1);
+    if (matching[0]?.kind !== "skip-candidate") {
+      throw new Error("fixture merged skip candidate is missing");
+    }
+    expect(matching[0].payload.candidateKinds).toEqual(
+      expect.arrayContaining([
+        "non-adjacent-route-edge",
+        "spawn-to-late-stage",
+        "checkpoint-bypass",
+      ]),
+    );
+    expect(matching[0].payload.candidateKinds.length).toBeGreaterThan(1);
     expect(second.evidence).toEqual(first.evidence);
   });
 

@@ -4,8 +4,10 @@ import {
   sha256,
 } from "@obby/canonical-json";
 import {
+  verifyEvidenceContentIdentity,
   verifyControllerProfileIdentity,
   type ControllerProfile,
+  type EvidenceRecordContract,
 } from "@obby/obby-evaluator-contracts";
 import type {
   ConservativeMeasurement,
@@ -69,6 +71,24 @@ function record(value: unknown, path: string): Record<string, unknown> {
   return value as Record<string, unknown>;
 }
 
+function exactKeys(
+  value: Record<string, unknown>,
+  allowed: readonly string[],
+  path: string,
+): void {
+  const allowedSet = new Set(allowed);
+  const extra = Object.keys(value)
+    .filter((key) => !allowedSet.has(key))
+    .toSorted(compareUnicodeScalars)[0];
+  if (extra !== undefined) {
+    validationFailure(
+      "additional-property",
+      `${path}/${extra}`,
+      "is not allowed for this measurement variant",
+    );
+  }
+}
+
 function limitations(value: unknown, path: string): readonly string[] {
   if (
     !Array.isArray(value) ||
@@ -102,6 +122,50 @@ function hashes(value: unknown, path: string): readonly `sha256:${string}`[] {
   );
 }
 
+function evidenceHashes(
+  records: readonly EvidenceRecordContract[],
+  transition: CoarseTransitionInput,
+): readonly `sha256:${string}`[] {
+  if (!Array.isArray(records) || records.length === 0) {
+    return validationFailure(
+      "input-evidence-required",
+      "/inputEvidenceRecords",
+      "evidence-backed classification requires at least one evidence record",
+    );
+  }
+  const verified = records.map((candidate, index) => {
+    try {
+      return verifyEvidenceContentIdentity(candidate);
+    } catch {
+      return validationFailure(
+        "input-evidence-identity",
+        `/inputEvidenceRecords/${index}/evidenceContentHash`,
+        "must match the immutable evidence content",
+      );
+    }
+  });
+  if (
+    !verified.some(
+      (candidate) =>
+        candidate.kind === "route-transition" &&
+        candidate.payload.kind === "route-transition" &&
+        candidate.payload.transitionId === transition.transitionId &&
+        candidate.payload.fromObjectId === transition.fromObjectId &&
+        candidate.payload.toObjectId === transition.toObjectId,
+    )
+  ) {
+    return validationFailure(
+      "transition-evidence-required",
+      "/inputEvidenceRecords",
+      "must contain matching route-transition evidence",
+    );
+  }
+  return hashes(
+    verified.map((candidate) => candidate.evidenceContentHash),
+    "/inputEvidenceRecords/evidenceContentHashes",
+  );
+}
+
 function measurement(
   value: unknown,
   field: MeasurementField,
@@ -109,6 +173,11 @@ function measurement(
   const path = `/${field}`;
   const candidate = record(value, path);
   if (candidate.status === "unavailable") {
+    exactKeys(
+      candidate,
+      ["status", "reasonCode", "missingEvidenceHashes", "limitations"],
+      path,
+    );
     if (
       candidate.reasonCode !== MISSING_REASON[field] &&
       candidate.reasonCode !== "unsupported-surface-measurement"
@@ -136,13 +205,26 @@ function measurement(
           : [`Required ${field} evidence is unavailable.`],
     } as UnavailableTransitionMeasurement;
   }
-  if (candidate.status !== undefined && candidate.status !== "available") {
+  if (candidate.status !== "available") {
     return validationFailure(
       "status",
       `${path}/status`,
       "must be available or unavailable",
     );
   }
+  exactKeys(
+    candidate,
+    [
+      "status",
+      "value",
+      "method",
+      "approximationKind",
+      "toleranceStuds",
+      "limitations",
+      "applicability",
+    ],
+    path,
+  );
   if (
     typeof candidate.value !== "number" ||
     !Number.isFinite(candidate.value) ||
@@ -342,7 +424,7 @@ export function coarseSurfaceKind(
 function classifyWithVerifiedProfile(
   input: CoarseTransitionInput,
   profile: ControllerProfile,
-  context?: { inputEvidenceHashes?: readonly `sha256:${string}`[] },
+  inputEvidenceRecords?: readonly EvidenceRecordContract[],
 ): CoarseTransitionResult {
   const transition = record(input, "/") as unknown as CoarseTransitionInput;
   const horizontalSeparation = measurement(
@@ -447,22 +529,16 @@ function classifyWithVerifiedProfile(
     sourceSurfaceKind: sourceKind,
     destinationSurfaceKind: destinationKind,
   };
-  const defaultInputHash = sha256({
+  const normalizedInputHash = sha256({
     domain: "coarse-transition-normalized-input-v2",
     transitionId: transition.transitionId,
     normalizedInputs,
   });
   const profileHash = profile.controllerProfileHash as `sha256:${string}`;
-  const contextualHashes =
-    context?.inputEvidenceHashes === undefined
-      ? [defaultInputHash]
-      : hashes(context.inputEvidenceHashes, "/context/inputEvidenceHashes");
-  const inputEvidenceHashes: readonly `sha256:${string}`[] = [
-    ...contextualHashes,
-    profileHash,
-  ]
-    .filter((value, index, values) => values.indexOf(value) === index)
-    .toSorted(compareUnicodeScalars);
+  const inputEvidenceHashes: readonly `sha256:${string}`[] =
+    inputEvidenceRecords === undefined
+      ? []
+      : evidenceHashes(inputEvidenceRecords, transition);
 
   return {
     resultId: `coarse.${transition.routeId}.${transition.fromGlobalIndex}.${transition.toGlobalIndex}`,
@@ -486,6 +562,7 @@ function classifyWithVerifiedProfile(
       methodId: "coarse-transition-classifier",
       methodVersion: "2.0.0",
       inputEvidenceHashes,
+      normalizedInputHash,
       normalizedInputs,
     },
   };
@@ -493,9 +570,10 @@ function classifyWithVerifiedProfile(
 
 export type CoarseTransitionClassifier = Readonly<{
   profile: ControllerProfile;
-  classify: (
+  classify: (input: CoarseTransitionInput) => CoarseTransitionResult;
+  classifyWithEvidence: (
     input: CoarseTransitionInput,
-    context?: { inputEvidenceHashes?: readonly `sha256:${string}`[] },
+    inputEvidenceRecords: readonly EvidenceRecordContract[],
   ) => CoarseTransitionResult;
 }>;
 
@@ -505,20 +583,29 @@ export function createCoarseTransitionClassifier(
   const profile = verifyControllerProfileIdentity(inputProfile);
   return Object.freeze({
     profile,
-    classify: (
+    classify: (input: CoarseTransitionInput) =>
+      classifyWithVerifiedProfile(input, profile),
+    classifyWithEvidence: (
       input: CoarseTransitionInput,
-      context?: { inputEvidenceHashes?: readonly `sha256:${string}`[] },
-    ) => classifyWithVerifiedProfile(input, profile, context),
+      inputEvidenceRecords: readonly EvidenceRecordContract[],
+    ) => classifyWithVerifiedProfile(input, profile, inputEvidenceRecords),
   });
 }
 
 export function classifyCoarseTransition(
   input: CoarseTransitionInput,
   inputProfile: ControllerProfile,
-  context?: { inputEvidenceHashes?: readonly `sha256:${string}`[] },
 ): CoarseTransitionResult {
-  return createCoarseTransitionClassifier(inputProfile).classify(
+  return createCoarseTransitionClassifier(inputProfile).classify(input);
+}
+
+export function classifyCoarseTransitionWithEvidence(
+  input: CoarseTransitionInput,
+  inputProfile: ControllerProfile,
+  inputEvidenceRecords: readonly EvidenceRecordContract[],
+): CoarseTransitionResult {
+  return createCoarseTransitionClassifier(inputProfile).classifyWithEvidence(
     input,
-    context,
+    inputEvidenceRecords,
   );
 }

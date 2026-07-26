@@ -102,9 +102,9 @@ export type CoarseTransitionInput = Omit<
   NormalizedTransitionInput,
   "horizontalSeparation" | "verticalRise" | "downwardDrop"
 > & {
-  horizontalSeparation: ConservativeMeasurement | TransitionMeasurementEvidence;
-  verticalRise: ConservativeMeasurement | TransitionMeasurementEvidence;
-  downwardDrop: ConservativeMeasurement | TransitionMeasurementEvidence;
+  horizontalSeparation: TransitionMeasurementEvidence;
+  verticalRise: TransitionMeasurementEvidence;
+  downwardDrop: TransitionMeasurementEvidence;
   landingRegion?: LandingRegionEvidence;
 };
 
@@ -130,6 +130,7 @@ export type CoarseTransitionResult = {
     methodId: "coarse-transition-classifier";
     methodVersion: "2.0.0";
     inputEvidenceHashes: readonly `sha256:${string}`[];
+    normalizedInputHash: `sha256:${string}`;
     normalizedInputs: {
       horizontalSeparation: TransitionMeasurementEvidence;
       verticalRise: TransitionMeasurementEvidence;
@@ -160,7 +161,7 @@ export type RouteEvaluationLimits = {
 export type RoutePlayabilityEvaluation = {
   routeGraph: RouteGraph;
   geometryById: ReadonlyMap<string, NormalizedGeometryObject>;
-  transitions: readonly NormalizedTransitionInput[];
+  transitions: readonly CoarseTransitionInput[];
   transitionStates: readonly CoarseTransitionResult[];
   evidence: readonly EvidenceRecordContract[];
   findings: readonly Finding[];

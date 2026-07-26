@@ -18,15 +18,19 @@ universal impossibility. Unsupported curved surface combinations are indetermina
 trials remain separate empirical evidence and cannot overwrite static components.
 
 The public transition result carries endpoint and transition identity, profile ID/version/hash,
-input evidence hashes, stable reason codes, deterministic non-probabilistic confidence semantics,
-and versioned normalized reproduction inputs. Required measurements are explicitly `available` or
-`unavailable`; unavailable evidence yields `indeterminate`, while malformed evidence fails with a
-typed deterministic error.
+evidence-only input hashes, stable reason codes, deterministic non-probabilistic confidence
+semantics, and versioned normalized reproduction inputs. Required measurements are closed,
+explicitly tagged `available` or `unavailable` variants; unavailable evidence yields
+`indeterminate`, while missing tags, mixed variants, extra fields, and malformed evidence fail with
+a typed deterministic error. Evidence-backed classification accepts content-valid matching
+route-transition records. Standalone classification has no evidence graph, returns an empty
+`inputEvidenceHashes`, and records normalized input identity separately as `normalizedInputHash`.
 
 For Block top faces and Wedge slopes, landing fit uses the two exact intrinsic planar edge spans.
 Sorted avatar width/depth requirements are `avatarSpan + 2 * requiredLandingMargin`; each span fits
 when `available + max(profileTolerance, geometryTolerance) >= required`. Circular, curved, or absent
-landing regions are indeterminate.
+landing regions are indeterminate. Height is deliberately absent from the profile and its hash
+because E1b has no authoritative overhead envelope; vertical-clearance evaluation is deferred.
 
 The package emits discriminated route graph, route transition, coarse state, route summary,
 checkpoint, finish, hazard relationship, and skip candidate evidence. The
@@ -37,7 +41,10 @@ state to the Phase 0 `per-player` scope but explicitly reports runtime isolation
 broad-phase candidates; KillFloor consistency is derived from gameplay-authoritative bounds rather
 than an object name.
 Skip evidence records whether a non-adjacent candidate is a checkpoint bypass, spawn-to-late-route
-edge, checkpoint-to-finish edge, or required-stage skip.
+edge, checkpoint-to-finish edge, or required-stage skip. Independent rule contributions for the
+same source/target key merge into one candidate with canonically ordered kinds. Hazard records are
+already structurally unique by hazard, route subject, and relationship kind; no unsupported hazard
+deduplication claim is made.
 
 Static softlock evidence is unavailable in E1b. Phase 0 has one structurally valid linear required
 route and no authoritative optional-branch, enclosure, recovery, or one-way-mechanic metadata.

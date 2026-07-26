@@ -30,18 +30,20 @@ contain `infeasible-under-model` or `indeterminate` transitions.
 `controllerProfileHash` is SHA-256 over `ControllerProfilePreimage` under
 `obby-canonical-json-v1`. The preimage excludes its own hash, timestamps, execution/session IDs,
 host/environment data, and storage metadata. Supported-surface and limitation sets are sorted.
-Changing a limit, avatar dimension, surface set, tolerance, model/version, or classification changes
-the hash.
+Changing a limit, avatar landing-footprint dimension, surface set, tolerance, model/version, or
+classification changes the hash. The footprint contains width and depth only. Height is excluded:
+Phase 0/E1a has no authoritative overhead route envelope, so vertical-clearance evaluation remains
+`indeterminate-no-overhead-route-metadata` rather than inventing movement physics.
 
 The `e1-r15-provisional@1.0.0` profile uses the Phase 0 engineering defaults of six studs horizontal
-gap, five studs rise, and twenty studs downward drop. These and avatar dimensions are provisional,
+gap, five studs rise, and twenty studs downward drop. These and avatar footprint dimensions are provisional,
 not live engine facts. Landing margin is calibration-required; inclusive comparison/tolerance is
 invariant. No value claims exact Roblox physics.
 
 ## Coarse transition semantics
 
 Each adjacent required transition binds route indexes, normalized endpoint geometry, controller
-profile, input evidence hashes, horizontal AABB separation, surface-envelope rise/drop, surface
+profile, evidence-only input hashes, horizontal AABB separation, surface-envelope rise/drop, surface
 categories, approximation, tolerance, limitations, result ID, and metric ID. States are limited to:
 
 - `feasible-under-model` for supported surfaces within every inclusive profile limit;
@@ -63,6 +65,12 @@ and inputs, and `evidenceContentHash`. Scene-level evidence may aggregate same-m
 subjects; other parent/child subjects must match or use a scene parent. Integrity validation checks
 identities, manifest scope, unique IDs/hashes, parent resolution, and acyclicity.
 
+`inputEvidenceHashes` contains only verified evidence records emitted in that returned graph. The
+controller profile has its dedicated hash field; normalized reproduction data has
+`normalizedInputHash`. Standalone classification has no evidence graph and therefore returns an
+empty evidence-hash list. Evidence-backed classification requires matching, content-valid
+route-transition evidence and rejects empty or stale references deterministically.
+
 Checkpoint evidence verifies order, route/stage membership, structural reachability, forward
 progression, finish continuation, native authority, and records `progressionStateScope` as the Phase
 0 `per-player` contract. Runtime isolation is `not-evaluated`; no Studio observations means missing
@@ -80,7 +88,10 @@ candidates, never confirmed native-shape collision or containment. KillFloor con
 gameplay-authoritative placement and bounds rather than a literal object ID. Conservative
 non-adjacent reach produces typed checkpoint bypass, spawn-to-late-route, checkpoint-to-finish, and
 required-stage skip candidates. Candidate findings are non-blocking and cannot become confirmed
-runtime failures.
+runtime failures. Each applicable skip rule contributes independently to a canonical source/target
+key; contributions merge into one candidate with sorted `candidateKinds`. Hazard relationships are
+structurally unique by hazard, route subject, and relationship kind, so E1b has no hazard
+deduplication layer and makes no such claim.
 
 Static softlock evidence is intentionally unavailable in E1b. Phase 0 provides one required linear
 route but no authoritative optional branches, enclosure regions, recovery actions, or one-way
@@ -92,8 +103,9 @@ The public coarse transition result is the authoritative classification represen
 transition and endpoint identity, controller profile ID/version/hash, input evidence hashes, stable
 reason codes, deterministic non-probabilistic confidence semantics, limitations, and versioned
 normalized reproduction inputs. Required measurements are explicitly available or unavailable.
-Unavailable measurement or landing evidence yields `indeterminate`; malformed evidence produces a
-typed deterministic validation error.
+Available and unavailable variants are closed and require an explicit `status`; untagged, mixed,
+extra-field, and otherwise malformed payloads produce a typed deterministic validation error.
+Well-formed unavailable measurement or landing evidence yields `indeterminate`.
 
 Landing margin uses exact intrinsic planar edge spans for Block top faces and Wedge slopes. Sorted
 avatar width/depth requirements are `avatarSpan + 2 * requiredLandingMargin`; each available span
@@ -131,14 +143,23 @@ are non-mutating.
 
 ## Independent-audit remediation
 
-| Blocker                                                | Correction                                                                                                                                                                                 |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| B1 — landing margin was identity-only                  | Exact intrinsic planar spans now apply avatar dimensions and twice the configured margin in required-route and shared skip classification.                                                 |
-| B2 — missing measurements caused incidental exceptions | Tagged available/unavailable measurement and landing evidence produces stable indeterminate reasons; malformed payloads raise `CoarseTransitionValidationError`.                           |
-| B3 — public transition results were incomplete         | `CoarseTransitionResult` now carries endpoint/transition/profile identity, evidence hashes, reason codes, confidence semantics, limitations, and versioned normalized reproduction inputs. |
-| B4 — broad-phase KillFloor containment was confirmed   | E1b permits only candidate/not-detected/indeterminate hazard assessments and records conservative method, approximation, tolerance, and limitations.                                       |
-| B5 — semantic ordering used host locale                | E1b uses the shared Unicode-scalar comparator for identities, diagnostics, evidence inputs, and findings.                                                                                  |
-| B6 — static softlock support was unreachable           | The unreachable static evidence payload/detector was removed; required-route dead ends are topology errors and unsupported softlock classes are explicitly deferred.                       |
+| Blocker                                                | Correction                                                                                                                                                                                    |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B1 — landing margin was identity-only                  | Exact intrinsic planar spans now apply avatar width/depth and twice the configured margin in required-route and shared skip classification; unsupported avatar height was removed.            |
+| B2 — missing measurements caused incidental exceptions | Closed, explicitly tagged available/unavailable measurement and landing evidence produces stable indeterminate reasons; malformed payloads raise `CoarseTransitionValidationError`.           |
+| B3 — public transition results were incomplete         | `CoarseTransitionResult` carries endpoint/transition/profile identity, evidence-only input hashes, a separate normalized-input hash, reason codes, confidence, limitations, and reproduction. |
+| B4 — broad-phase KillFloor containment was confirmed   | E1b permits only candidate/not-detected/indeterminate hazard assessments and records conservative method, approximation, tolerance, and limitations.                                          |
+| B5 — semantic ordering used host locale                | E1b uses the shared Unicode-scalar comparator for identities, diagnostics, evidence inputs, and findings.                                                                                     |
+| B6 — static softlock support was unreachable           | The unreachable static evidence payload/detector was removed; required-route dead ends are topology errors and unsupported softlock classes are explicitly deferred.                          |
+
+### Final focused remediation
+
+| Blocker group                       | Final correction                                                                                                                                                                        |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unused avatar height                | Height was removed from the closed profile, generated declaration, fixture, and hash preimage; unsupported overhead clearance remains explicitly unavailable.                           |
+| Untagged measurement compatibility  | Public inputs and compiled declarations accept only closed `available`/`unavailable` variants; compile-negative and runtime tests cover missing tags, mixed fields, extras, and hashes. |
+| Non-evidence input hashes           | Full evaluation supplies verified route-transition records; standalone results use an empty list and a dedicated `normalizedInputHash`; emitted hashes are resolved before return.      |
+| Misstated duplicate/malformed tests | Skip-rule contributions are genuinely aggregated by canonical pair. Hazard identities are structurally unique, so the false deduplication claim was removed and the invariant tested.   |
 
 ## Deferred
 

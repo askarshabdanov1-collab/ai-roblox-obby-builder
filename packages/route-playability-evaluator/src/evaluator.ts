@@ -34,6 +34,8 @@ import {
   WorkBudget,
 } from "./limits.js";
 import type {
+  AvailableTransitionMeasurement,
+  CoarseTransitionInput,
   RouteGraph,
   RoutePlayabilityEvaluation,
   RoutePlayabilityInput,
@@ -176,6 +178,23 @@ function axisGap(
   return Math.max(0, rightMinimum - leftMaximum, leftMinimum - rightMaximum);
 }
 
+function availableMeasurement(
+  measurement: ConservativeMeasurement,
+): AvailableTransitionMeasurement {
+  return { status: "available", ...measurement };
+}
+
+function taggedTransition(
+  transition: ReturnType<typeof normalizeTransitionInputs>[number],
+): CoarseTransitionInput {
+  return {
+    ...transition,
+    horizontalSeparation: availableMeasurement(transition.horizontalSeparation),
+    verticalRise: availableMeasurement(transition.verticalRise),
+    downwardDrop: availableMeasurement(transition.downwardDrop),
+  };
+}
+
 function directCandidateFits(
   source: NormalizedGeometryObject,
   destination: NormalizedGeometryObject,
@@ -213,7 +232,8 @@ function directCandidateFits(
     method: ConservativeMeasurement["method"],
     approximationKind: ConservativeMeasurement["approximationKind"],
     limitation: string,
-  ): ConservativeMeasurement => ({
+  ): AvailableTransitionMeasurement => ({
+    status: "available",
     value,
     method,
     approximationKind,
@@ -264,6 +284,18 @@ type SkipCandidateKind =
   | "spawn-to-late-stage"
   | "checkpoint-to-finish"
   | "required-stage-skip";
+
+type SkipCandidateContribution = {
+  candidateKey: string;
+  fromIndex: number;
+  toIndex: number;
+  fromObjectId: string;
+  toObjectId: string;
+  fromRouteIndex: number;
+  toRouteIndex: number;
+  candidateKind: SkipCandidateKind;
+  skippedStageIndexes: readonly number[];
+};
 
 function finishEvidence(draft: EvidenceDraft): EvidenceRecordContract {
   const provisional = {
@@ -397,7 +429,7 @@ export function evaluateRoutePlayability(
       controllerProfileRef: profile.profileId,
     })),
     geometryById,
-  );
+  ).map(taggedTransition);
   const evidence: EvidenceRecordContract[] = [];
   const pushEvidence = (record: EvidenceRecordContract): void => {
     if (evidence.length + 1 > limits.maxEvidenceRecords) {
@@ -540,11 +572,7 @@ export function evaluateRoutePlayability(
       transitionEvidence[index],
       transition.transitionId,
     );
-    return classifier.classify(transition, {
-      inputEvidenceHashes: [
-        transitionRecord.evidenceContentHash as `sha256:${string}`,
-      ],
-    });
+    return classifier.classifyWithEvidence(transition, [transitionRecord]);
   });
 
   const coarseEvidence = transitionStates.map((result, index) => {
@@ -589,9 +617,9 @@ export function evaluateRoutePlayability(
         controllerProfileHash: result.controllerProfileHash,
         inputEvidenceHashes: [...result.inputEvidenceHashes] as [
           string,
-          string,
           ...string[],
         ],
+        normalizedInputHash: result.reproduction.normalizedInputHash,
         state: result.state,
         reasonCodes: [...result.reasonCodes],
         horizontalGapStuds: normalized.horizontalSeparation.value,
@@ -612,8 +640,8 @@ export function evaluateRoutePlayability(
         destinationSurfaceKind: coarseSurfaceKind(
           transition.destinationSurface,
         ),
-        approximationMethod: transition.horizontalSeparation.method,
-        geometryToleranceStuds: transition.horizontalSeparation.toleranceStuds,
+        approximationMethod: normalized.horizontalSeparation.method,
+        geometryToleranceStuds: normalized.horizontalSeparation.toleranceStuds,
         confidenceBasis: result.confidenceBasis,
         reproduction: reproduction(
           "coarse-transition-v2",
@@ -656,9 +684,10 @@ export function evaluateRoutePlayability(
       ).length,
       excessiveDropTransitionCount: transitions.filter(
         (transition) =>
+          transition.downwardDrop.status === "available" &&
           transition.downwardDrop.value >
-          profile.maximumDownwardDrop.value +
-            profile.tolerancePolicy.comparisonToleranceStuds,
+            profile.maximumDownwardDrop.value +
+              profile.tolerancePolicy.comparisonToleranceStuds,
       ).length,
       clearanceEstimateState: "indeterminate-no-overhead-route-metadata",
       reproduction: reproduction("route-playability-summary-v1", [
@@ -890,6 +919,7 @@ export function evaluateRoutePlayability(
   }
 
   const skipRecords: EvidenceRecordContract[] = [];
+  const skipContributions: SkipCandidateContribution[] = [];
   for (let fromIndex = 0; fromIndex < routeGraph.nodes.length; fromIndex += 1) {
     const intermediateStageIndexes = new Set<number>();
     let bypassesCheckpoint = false;
@@ -942,42 +972,90 @@ export function evaluateRoutePlayability(
         ...(skippedStageIndexes.length > 0
           ? (["required-stage-skip"] as const)
           : []),
-      ].toSorted(compareUnicodeScalars) as [
-        SkipCandidateKind,
-        ...SkipCandidateKind[],
-      ];
-      const record = finishEvidence({
-        ...baseEvidence(
-          `e1b:skip:${fromIndex}:${toIndex}`,
-          "skip-candidate",
-          manifest.manifestHash,
-          { kind: "scene" },
-          [geometryRecord.evidenceContentHash, routeRecord.evidenceContentHash],
-          [
-            "Broad-phase reach is only a conservative skip candidate; execution is not proven.",
-          ],
-        ),
-        kind: "skip-candidate",
-        payload: {
-          kind: "skip-candidate",
-          candidateId: `skip.${routeGraph.routeId}.${fromIndex}.${toIndex}`,
+      ].toSorted(compareUnicodeScalars) as SkipCandidateKind[];
+      const candidateKey = `${fromIndex}:${toIndex}`;
+      for (const candidateKind of candidateKinds) {
+        skipContributions.push({
+          candidateKey,
+          fromIndex,
+          toIndex,
           fromObjectId: sourceNode.objectId,
           toObjectId: destinationNode.objectId,
           fromRouteIndex: sourceNode.routeIndex,
           toRouteIndex: destinationNode.routeIndex,
-          candidateKinds,
+          candidateKind,
           skippedStageIndexes,
-          modelState: "candidate",
-          geometryMethod: "world-aabb-broad-phase",
-          reproduction: reproduction("skip-candidate-v1", [
-            geometryHash,
-            profile.controllerProfileHash,
-          ]),
-        },
-      });
-      pushEvidence(record);
-      skipRecords.push(record);
+        });
+      }
     }
+  }
+  const skipCandidates = new Map<
+    string,
+    Omit<SkipCandidateContribution, "candidateKind"> & {
+      candidateKinds: Set<SkipCandidateKind>;
+    }
+  >();
+  for (const contribution of skipContributions.toSorted(
+    (left, right) =>
+      left.fromIndex - right.fromIndex ||
+      left.toIndex - right.toIndex ||
+      compareUnicodeScalars(left.candidateKind, right.candidateKind),
+  )) {
+    const existing = skipCandidates.get(contribution.candidateKey);
+    if (existing !== undefined) {
+      existing.candidateKinds.add(contribution.candidateKind);
+      continue;
+    }
+    skipCandidates.set(contribution.candidateKey, {
+      candidateKey: contribution.candidateKey,
+      fromIndex: contribution.fromIndex,
+      toIndex: contribution.toIndex,
+      fromObjectId: contribution.fromObjectId,
+      toObjectId: contribution.toObjectId,
+      fromRouteIndex: contribution.fromRouteIndex,
+      toRouteIndex: contribution.toRouteIndex,
+      skippedStageIndexes: contribution.skippedStageIndexes,
+      candidateKinds: new Set([contribution.candidateKind]),
+    });
+  }
+  for (const candidate of [...skipCandidates.values()].toSorted(
+    (left, right) =>
+      left.fromIndex - right.fromIndex || left.toIndex - right.toIndex,
+  )) {
+    const candidateKinds = [...candidate.candidateKinds].toSorted(
+      compareUnicodeScalars,
+    ) as [SkipCandidateKind, ...SkipCandidateKind[]];
+    const record = finishEvidence({
+      ...baseEvidence(
+        `e1b:skip:${candidate.fromIndex}:${candidate.toIndex}`,
+        "skip-candidate",
+        manifest.manifestHash,
+        { kind: "scene" },
+        [geometryRecord.evidenceContentHash, routeRecord.evidenceContentHash],
+        [
+          "Broad-phase reach is only a conservative skip candidate; execution is not proven.",
+        ],
+      ),
+      kind: "skip-candidate",
+      payload: {
+        kind: "skip-candidate",
+        candidateId: `skip.${routeGraph.routeId}.${candidate.fromIndex}.${candidate.toIndex}`,
+        fromObjectId: candidate.fromObjectId,
+        toObjectId: candidate.toObjectId,
+        fromRouteIndex: candidate.fromRouteIndex,
+        toRouteIndex: candidate.toRouteIndex,
+        candidateKinds,
+        skippedStageIndexes: [...candidate.skippedStageIndexes],
+        modelState: "candidate",
+        geometryMethod: "world-aabb-broad-phase",
+        reproduction: reproduction("skip-candidate-v1", [
+          geometryHash,
+          profile.controllerProfileHash,
+        ]),
+      },
+    });
+    pushEvidence(record);
+    skipRecords.push(record);
   }
 
   const findings: Finding[] = [];
@@ -1083,6 +1161,22 @@ export function evaluateRoutePlayability(
       `${b.ruleId}\u0000${b.findingId}`,
     ),
   );
+  const emittedEvidenceHashes = new Set(
+    evidence.map((record) => record.evidenceContentHash),
+  );
+  for (const result of transitionStates) {
+    for (const inputEvidenceHash of result.inputEvidenceHashes) {
+      if (!emittedEvidenceHashes.has(inputEvidenceHash)) {
+        throw new RouteEvaluationError("classification-evidence-reference", [
+          {
+            code: "classification-evidence-reference",
+            subject: result.transitionId,
+            message: `input evidence hash ${inputEvidenceHash} was not emitted`,
+          },
+        ]);
+      }
+    }
+  }
   assertValidEvidenceGraph(evidence);
   return {
     routeGraph,
