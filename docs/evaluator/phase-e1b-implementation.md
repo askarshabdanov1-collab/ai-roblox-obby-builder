@@ -67,9 +67,17 @@ identities, manifest scope, unique IDs/hashes, parent resolution, and acyclicity
 
 `inputEvidenceHashes` contains only verified evidence records emitted in that returned graph. The
 controller profile has its dedicated hash field; normalized reproduction data has
-`normalizedInputHash`. Standalone classification has no evidence graph and therefore returns an
-empty evidence-hash list. Evidence-backed classification requires matching, content-valid
-route-transition evidence and rejects empty or stale references deterministically.
+`normalizedInputHash`. Every available gap/rise/drop measurement requires canonically sorted,
+deduplicated `evidenceHashes`; full evaluation resolves them to its emitted geometry and route
+records. Standalone classification has no evidence graph, so its available measurements explicitly
+use empty evidence arrays and its result returns an empty evidence-hash list.
+
+Evidence-backed classification receives a complete evidence collection plus the expected manifest
+hash and validates the graph before applying model rules. It requires exactly one route-transition
+record matching manifest, subject, indexes, endpoints, and transition ID, with resolved geometry and
+route parents. Unrelated records in an otherwise valid complete graph are ignored rather than
+leaked into `inputEvidenceHashes`. Empty, stale, unresolved, cyclic, wrong-subject, wrong-manifest,
+duplicate-conflicting, or ambiguous evidence fails closed.
 
 Checkpoint evidence verifies order, route/stage membership, structural reachability, forward
 progression, finish continuation, native authority, and records `progressionStateScope` as the Phase
@@ -103,9 +111,13 @@ The public coarse transition result is the authoritative classification represen
 transition and endpoint identity, controller profile ID/version/hash, input evidence hashes, stable
 reason codes, deterministic non-probabilistic confidence semantics, limitations, and versioned
 normalized reproduction inputs. Required measurements are explicitly available or unavailable.
-Available and unavailable variants are closed and require an explicit `status`; untagged, mixed,
-extra-field, and otherwise malformed payloads produce a typed deterministic validation error.
-Well-formed unavailable measurement or landing evidence yields `indeterminate`.
+Available and unavailable variants are closed and require an explicit `status`. Available
+measurements require value, method, approximation, tolerance, evidence hashes, limitations, and
+applicability. Unavailable measurements require reason, missing-evidence hashes, and limitations.
+Untagged, mixed, extra-field, duplicate-invalid, and otherwise malformed payloads produce a typed
+deterministic validation error. Duplicate valid evidence hashes are canonically deduplicated and
+Unicode-scalar sorted. Well-formed unavailable measurement or landing evidence yields
+`indeterminate`.
 
 Landing margin uses exact intrinsic planar edge spans for Block top faces and Wedge slopes. Sorted
 avatar width/depth requirements are `avatarSpan + 2 * requiredLandingMargin`; each available span
@@ -160,6 +172,13 @@ are non-mutating.
 | Untagged measurement compatibility  | Public inputs and compiled declarations accept only closed `available`/`unavailable` variants; compile-negative and runtime tests cover missing tags, mixed fields, extras, and hashes. |
 | Non-evidence input hashes           | Full evaluation supplies verified route-transition records; standalone results use an empty list and a dedicated `normalizedInputHash`; emitted hashes are resolved before return.      |
 | Misstated duplicate/malformed tests | Skip-rule contributions are genuinely aggregated by canonical pair. Hazard identities are structurally unique, so the false deduplication claim was removed and the invariant tested.   |
+
+### Final merge-readiness remediation
+
+| Blocker group                               | Correction                                                                                                                                                                                                  |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Available measurements lacked evidence IDs  | `evidenceHashes` is required, content-hash validated, canonically deduplicated/sorted, populated from emitted geometry/route evidence during full evaluation, and explicitly empty only for standalone use. |
+| Evidence-backed classification leaked input | The public helper now validates a complete graph under an expected manifest, selects one exact transition with required parents, ignores unrelated valid records, and rejects invalid or ambiguous graphs.  |
 
 ## Deferred
 

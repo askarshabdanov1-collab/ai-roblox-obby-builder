@@ -1,4 +1,8 @@
-import { hashControllerProfile } from "@obby/obby-evaluator-contracts";
+import {
+  hashControllerProfile,
+  hashEvidenceContent,
+  type EvidenceRecordContract,
+} from "@obby/obby-evaluator-contracts";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -45,6 +49,29 @@ function baseTransition(): CoarseTransitionInput {
     evaluationAt(0, 4, 16).transitions[0],
     "first normalized transition",
   );
+}
+
+function classificationEvidence(
+  evaluated: ReturnType<typeof evaluationAt>,
+): EvidenceRecordContract[] {
+  return evaluated.evidence.filter((record) =>
+    ["geometry-fact", "route-graph", "route-transition"].includes(record.kind),
+  );
+}
+
+function expectedManifestHash(
+  evaluated: ReturnType<typeof evaluationAt>,
+): `sha256:${string}` {
+  return requiredFixture(evaluated.evidence[0], "evaluation evidence")
+    .manifestHash as `sha256:${string}`;
+}
+
+function rehashEvidence(
+  record: EvidenceRecordContract,
+): EvidenceRecordContract {
+  const clone = structuredClone(record);
+  clone.evidenceContentHash = hashEvidenceContent(clone).hash;
+  return clone;
 }
 
 function unavailable(
@@ -172,11 +199,44 @@ describe("coarse model-relative transition classification", () => {
         method: "world-aabb-horizontal-separation",
         approximationKind: "conservative-lower-bound",
         toleranceStuds: 1e-9,
+        evidenceHashes: [],
         limitations: [],
         applicability: "broad-phase-only",
       },
       "measurement-value",
       "/horizontalSeparation/value",
+    ],
+    [
+      "available without evidence hashes",
+      (() => {
+        const candidate = baseTransition().horizontalSeparation;
+        if (candidate.status !== "available") {
+          throw new Error("fixture available measurement is missing");
+        }
+        const measurement = { ...candidate } as Record<string, unknown>;
+        delete measurement.evidenceHashes;
+        return measurement;
+      })(),
+      "content-hashes",
+      "/horizontalSeparation/evidenceHashes",
+    ],
+    [
+      "malformed available evidence hash",
+      {
+        ...baseTransition().horizontalSeparation,
+        evidenceHashes: ["sha256:not-a-hash"],
+      },
+      "content-hashes",
+      "/horizontalSeparation/evidenceHashes",
+    ],
+    [
+      "mixed available evidence fields",
+      {
+        ...baseTransition().horizontalSeparation,
+        missingEvidenceHashes: [],
+      },
+      "additional-property",
+      "/horizontalSeparation/missingEvidenceHashes",
     ],
     [
       "mixed unavailable fields",
@@ -225,6 +285,80 @@ describe("coarse model-relative transition classification", () => {
       }
     },
   );
+
+  it("canonicalizes duplicate and shuffled available measurement evidence hashes", () => {
+    const base = baseTransition();
+    if (base.horizontalSeparation.status !== "available") {
+      throw new Error("fixture available measurement is missing");
+    }
+    const hashes = base.horizontalSeparation.evidenceHashes;
+    expect(hashes.length).toBeGreaterThan(0);
+    const result = classifyCoarseTransition(
+      {
+        ...base,
+        horizontalSeparation: {
+          ...base.horizontalSeparation,
+          evidenceHashes: [...hashes].reverse().flatMap((hash) => [hash, hash]),
+        },
+      },
+      createDefaultControllerProfile(),
+    );
+    expect(
+      result.reproduction.normalizedInputs.horizontalSeparation,
+    ).toMatchObject({
+      status: "available",
+      evidenceHashes: [...new Set(hashes)].toSorted(),
+    });
+  });
+
+  it("accepts the documented empty evidence list for standalone available measurements", () => {
+    const base = baseTransition();
+    if (base.horizontalSeparation.status !== "available") {
+      throw new Error("fixture available measurement is missing");
+    }
+    const result = classifyCoarseTransition(
+      {
+        ...base,
+        horizontalSeparation: {
+          ...base.horizontalSeparation,
+          evidenceHashes: [],
+        },
+      },
+      createDefaultControllerProfile(),
+    );
+    expect(result.inputEvidenceHashes).toEqual([]);
+    expect(
+      result.reproduction.normalizedInputs.horizontalSeparation,
+    ).toMatchObject({ status: "available", evidenceHashes: [] });
+  });
+
+  it("binds full-evaluation measurements to emitted geometry and route evidence", () => {
+    const evaluated = evaluationAt(0, 4, 16);
+    const emitted = new Map(
+      evaluated.evidence.map((record) => [
+        record.evidenceContentHash,
+        record.kind,
+      ]),
+    );
+    for (const transition of evaluated.transitions) {
+      for (const measurement of [
+        transition.horizontalSeparation,
+        transition.verticalRise,
+        transition.downwardDrop,
+      ]) {
+        expect(measurement.status).toBe("available");
+        if (measurement.status !== "available") continue;
+        expect(measurement.evidenceHashes).toEqual(
+          [...new Set(measurement.evidenceHashes)].toSorted(),
+        );
+        expect(
+          measurement.evidenceHashes
+            .map((hash) => emitted.get(hash))
+            .toSorted(),
+        ).toEqual(["geometry-fact", "route-graph"]);
+      }
+    }
+  });
 
   it("returns indeterminate for an unsupported measurement method", () => {
     const base = baseTransition();
@@ -378,11 +512,72 @@ describe("coarse model-relative transition classification", () => {
     );
   });
 
-  it("rejects missing or stale evidence references before evidence-backed classification", () => {
+  it("validates a complete graph, ignores unrelated geometry, and emits only the exact transition evidence hash", () => {
     const evaluated = evaluationAt(0, 4, 16);
+    const evidenceRecords = classificationEvidence(evaluated);
+    const manifestHash = expectedManifestHash(evaluated);
     const transitionRecord = requiredFixture(
       evaluated.evidence.find((record) => record.kind === "route-transition"),
       "route transition evidence",
+    );
+    const geometryRecord = requiredFixture(
+      evidenceRecords.find((record) => record.kind === "geometry-fact"),
+      "geometry evidence",
+    );
+    const unrelatedGeometryRecord = rehashEvidence({
+      ...geometryRecord,
+      evidenceId: "e1b:geometry:unrelated-fixture",
+      limitations: [...geometryRecord.limitations, "Unrelated fixture."],
+    });
+    const completeGraphWithUnrelated = [
+      ...evidenceRecords,
+      unrelatedGeometryRecord,
+    ];
+    const first = classifyCoarseTransitionWithEvidence(
+      baseTransition(),
+      createDefaultControllerProfile(),
+      {
+        evidenceRecords: completeGraphWithUnrelated,
+        expectedManifestHash: manifestHash,
+      },
+    );
+    const shuffled = classifyCoarseTransitionWithEvidence(
+      baseTransition(),
+      createDefaultControllerProfile(),
+      {
+        evidenceRecords: [...completeGraphWithUnrelated].reverse(),
+        expectedManifestHash: manifestHash,
+      },
+    );
+    expect(first.inputEvidenceHashes).toEqual([
+      transitionRecord.evidenceContentHash,
+    ]);
+    expect(first.inputEvidenceHashes).not.toContain(
+      unrelatedGeometryRecord.evidenceContentHash,
+    );
+    expect(shuffled).toEqual(first);
+    expect(first.inputEvidenceHashes).not.toContain(
+      first.controllerProfileHash,
+    );
+    expect(first.inputEvidenceHashes).not.toContain(
+      first.reproduction.normalizedInputHash,
+    );
+  });
+
+  it("rejects missing, stale, wrong-subject, wrong-manifest, invalid, and ambiguous transition evidence", () => {
+    const evaluated = evaluationAt(0, 4, 16);
+    const evidenceRecords = classificationEvidence(evaluated);
+    const manifestHash = expectedManifestHash(evaluated);
+    const transitionRecords = evidenceRecords.filter(
+      (record) => record.kind === "route-transition",
+    );
+    const transitionRecord = requiredFixture(
+      transitionRecords[0],
+      "route transition evidence",
+    );
+    const geometryAndRoute = evidenceRecords.filter(
+      (record) =>
+        record.kind === "geometry-fact" || record.kind === "route-graph",
     );
     const issueFrom = (action: () => unknown) => {
       try {
@@ -398,7 +593,7 @@ describe("coarse model-relative transition classification", () => {
         classifyCoarseTransitionWithEvidence(
           baseTransition(),
           createDefaultControllerProfile(),
-          [],
+          { evidenceRecords: [], expectedManifestHash: manifestHash },
         ),
       ),
     ).toEqual([
@@ -412,26 +607,26 @@ describe("coarse model-relative transition classification", () => {
         classifyCoarseTransitionWithEvidence(
           baseTransition(),
           createDefaultControllerProfile(),
-          [
-            {
-              ...transitionRecord,
-              evidenceContentHash: `sha256:${"f".repeat(64)}`,
-            },
-          ],
+          {
+            evidenceRecords: [
+              ...geometryAndRoute,
+              {
+                ...transitionRecord,
+                evidenceContentHash: `sha256:${"f".repeat(64)}`,
+              },
+            ],
+            expectedManifestHash: manifestHash,
+          },
         ),
       ),
     ).toEqual([
       expect.objectContaining({
-        code: "input-evidence-identity",
-        path: "/inputEvidenceRecords/0/evidenceContentHash",
+        code: "input-evidence-graph",
+        path: "/inputEvidenceRecords",
       }),
     ]);
     const unrelatedTransitionRecord = requiredFixture(
-      evaluated.evidence.find(
-        (record) =>
-          record.kind === "route-transition" &&
-          record.evidenceContentHash !== transitionRecord.evidenceContentHash,
-      ),
+      transitionRecords[1],
       "unrelated route transition evidence",
     );
     expect(
@@ -439,12 +634,97 @@ describe("coarse model-relative transition classification", () => {
         classifyCoarseTransitionWithEvidence(
           baseTransition(),
           createDefaultControllerProfile(),
-          [unrelatedTransitionRecord],
+          {
+            evidenceRecords: [...geometryAndRoute, unrelatedTransitionRecord],
+            expectedManifestHash: manifestHash,
+          },
         ),
       ),
     ).toEqual([
       expect.objectContaining({
         code: "transition-evidence-required",
+        path: "/inputEvidenceRecords",
+      }),
+    ]);
+    expect(
+      issueFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          baseTransition(),
+          createDefaultControllerProfile(),
+          {
+            evidenceRecords: [transitionRecord],
+            expectedManifestHash: manifestHash,
+          },
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "input-evidence-graph",
+        path: "/inputEvidenceRecords",
+      }),
+    ]);
+    expect(
+      issueFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          baseTransition(),
+          createDefaultControllerProfile(),
+          {
+            evidenceRecords,
+            expectedManifestHash: `sha256:${"a".repeat(64)}`,
+          },
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "transition-evidence-required",
+        path: "/inputEvidenceRecords",
+      }),
+    ]);
+    const wrongSubject = rehashEvidence({
+      ...transitionRecord,
+      evidenceId: "e1b:route-transition:wrong-subject",
+      subject: unrelatedTransitionRecord.subject,
+    });
+    expect(
+      issueFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          baseTransition(),
+          createDefaultControllerProfile(),
+          {
+            evidenceRecords: [...geometryAndRoute, wrongSubject],
+            expectedManifestHash: manifestHash,
+          },
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "transition-evidence-required",
+        path: "/inputEvidenceRecords",
+      }),
+    ]);
+    const conflicting = rehashEvidence({
+      ...transitionRecord,
+      evidenceId: "e1b:route-transition:conflicting",
+      limitations: [...transitionRecord.limitations, "Conflicting fixture."],
+    });
+    expect(
+      issueFrom(() =>
+        classifyCoarseTransitionWithEvidence(
+          baseTransition(),
+          createDefaultControllerProfile(),
+          {
+            evidenceRecords: [
+              ...geometryAndRoute,
+              transitionRecord,
+              conflicting,
+            ],
+            expectedManifestHash: manifestHash,
+          },
+        ),
+      ),
+    ).toEqual([
+      expect.objectContaining({
+        code: "ambiguous-transition-evidence",
         path: "/inputEvidenceRecords",
       }),
     ]);

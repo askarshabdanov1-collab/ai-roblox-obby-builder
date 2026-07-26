@@ -22,9 +22,17 @@ evidence-only input hashes, stable reason codes, deterministic non-probabilistic
 semantics, and versioned normalized reproduction inputs. Required measurements are closed,
 explicitly tagged `available` or `unavailable` variants; unavailable evidence yields
 `indeterminate`, while missing tags, mixed variants, extra fields, and malformed evidence fail with
-a typed deterministic error. Evidence-backed classification accepts content-valid matching
-route-transition records. Standalone classification has no evidence graph, returns an empty
-`inputEvidenceHashes`, and records normalized input identity separately as `normalizedInputHash`.
+a typed deterministic error. Every available gap/rise/drop measurement requires canonical,
+deduplicated `evidenceHashes`. Full evaluation binds those hashes to its emitted geometry and route
+records. Standalone classification has no evidence graph, so callers must explicitly use an empty
+measurement-evidence array; it returns an empty `inputEvidenceHashes` and records normalized input
+identity separately as `normalizedInputHash`.
+
+Evidence-backed classification accepts a complete evidence collection and an explicit expected
+manifest hash. It validates the entire graph before classification, requires exactly one matching
+route-transition record with resolved geometry and route parents, ignores unrelated records in the
+validated collection, and returns only the selected transition record hash. Wrong-subject,
+wrong-manifest, unresolved, cyclic, stale, duplicate, or ambiguous evidence fails closed.
 
 For Block top faces and Wedge slopes, landing fit uses the two exact intrinsic planar edge spans.
 Sorted avatar width/depth requirements are `avatarSpan + 2 * requiredLandingMargin`; each span fits

@@ -60,6 +60,7 @@ export type CoarseTransitionReasonCode =
 
 export type AvailableTransitionMeasurement = ConservativeMeasurement & {
   status: "available";
+  evidenceHashes: readonly `sha256:${string}`[];
 };
 
 export type UnavailableTransitionMeasurement = {
@@ -77,6 +78,11 @@ export type UnavailableTransitionMeasurement = {
 
 export type TransitionMeasurementEvidence =
   AvailableTransitionMeasurement | UnavailableTransitionMeasurement;
+
+export type EvidenceBackedClassificationContext = {
+  expectedManifestHash: `sha256:${string}`;
+  evidenceRecords: readonly EvidenceRecordContract[];
+};
 
 export type AvailableLandingRegionEvidence = {
   status: "available";

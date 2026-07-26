@@ -113,10 +113,16 @@ and endpoint identity, controller profile ID/version/hash, input evidence hashes
 state, stable reason codes, deterministic non-probabilistic confidence semantics, limitations, and
 versioned normalized reproduction inputs. `inputEvidenceHashes` contains only verified emitted
 evidence parents. The profile hash remains in `controllerProfileHash`, and normalized input identity
-uses `normalizedInputHash`. Standalone classification emits an empty evidence-hash list. Gap/rise/drop
-measurements are closed, explicitly tagged `available` or `unavailable` variants. Missing required
-measurements and unavailable landing regions produce `indeterminate`; missing tags, mixed variants,
-extra fields, or malformed evidence are typed validation errors. For exact planar Block/Wedge landing regions,
+uses `normalizedInputHash`. Gap/rise/drop measurements are closed, explicitly tagged `available` or
+`unavailable` variants. Available measurements require canonically ordered, duplicate-free
+`evidenceHashes`; full evaluation resolves them to emitted geometry and route records. Standalone
+classification has no evidence graph, so its available measurements explicitly carry empty
+`evidenceHashes` and its result carries an empty `inputEvidenceHashes`. Evidence-backed
+classification validates the supplied complete graph under an expected manifest, selects exactly
+one matching route-transition record with required geometry/route parents, ignores unrelated valid
+records, and emits only that selected hash. Missing required measurements and unavailable landing
+regions produce `indeterminate`; missing tags, mixed variants, extra fields, malformed hashes, graph
+integrity failures, wrong subjects/manifests, and ambiguous matches are typed validation errors. For exact planar Block/Wedge landing regions,
 intrinsic edge spans must satisfy
 `available + max(profileTolerance, geometryTolerance) >= avatarSpan + 2 * landingMargin` on both
 sorted axes. Circular and curved landing regions are indeterminate.

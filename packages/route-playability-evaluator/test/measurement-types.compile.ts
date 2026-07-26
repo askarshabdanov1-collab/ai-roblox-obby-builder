@@ -6,6 +6,7 @@ const available = {
   method: "world-aabb-horizontal-separation" as const,
   approximationKind: "conservative-lower-bound" as const,
   toleranceStuds: 1e-9,
+  evidenceHashes: [],
   limitations: ["fixture"],
   applicability: "broad-phase-only" as const,
 };
@@ -32,6 +33,18 @@ const missingStatus: TransitionMeasurementEvidence = {
   applicability: "broad-phase-only",
 };
 void missingStatus;
+
+// @ts-expect-error Available measurements require supporting-evidence identities.
+const availableWithoutEvidenceHashes: TransitionMeasurementEvidence = {
+  status: "available",
+  value: 1,
+  method: "world-aabb-horizontal-separation",
+  approximationKind: "conservative-lower-bound",
+  toleranceStuds: 1e-9,
+  limitations: ["fixture"],
+  applicability: "broad-phase-only",
+};
+void availableWithoutEvidenceHashes;
 
 const unknownStatus: TransitionMeasurementEvidence = {
   ...available,
@@ -80,6 +93,20 @@ const malformedEvidenceHash: TransitionMeasurementEvidence = {
   missingEvidenceHashes: ["not-a-content-hash"],
 };
 void malformedEvidenceHash;
+
+const malformedAvailableEvidenceHash: TransitionMeasurementEvidence = {
+  ...available,
+  // @ts-expect-error Available-evidence identities must be SHA-256 content hashes.
+  evidenceHashes: ["not-a-content-hash"],
+};
+void malformedAvailableEvidenceHash;
+
+const mixedEvidenceFields: TransitionMeasurementEvidence = {
+  ...available,
+  // @ts-expect-error Available measurements cannot contain unavailable evidence fields.
+  missingEvidenceHashes: [],
+};
+void mixedEvidenceFields;
 
 const availableWithExtraField: TransitionMeasurementEvidence = {
   ...available,

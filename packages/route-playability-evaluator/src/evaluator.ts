@@ -180,18 +180,29 @@ function axisGap(
 
 function availableMeasurement(
   measurement: ConservativeMeasurement,
+  evidenceHashes: readonly `sha256:${string}`[] = [],
 ): AvailableTransitionMeasurement {
-  return { status: "available", ...measurement };
+  return {
+    status: "available",
+    ...measurement,
+    evidenceHashes: [...new Set(evidenceHashes)].toSorted(
+      compareUnicodeScalars,
+    ),
+  };
 }
 
 function taggedTransition(
   transition: ReturnType<typeof normalizeTransitionInputs>[number],
+  evidenceHashes: readonly `sha256:${string}`[] = [],
 ): CoarseTransitionInput {
   return {
     ...transition,
-    horizontalSeparation: availableMeasurement(transition.horizontalSeparation),
-    verticalRise: availableMeasurement(transition.verticalRise),
-    downwardDrop: availableMeasurement(transition.downwardDrop),
+    horizontalSeparation: availableMeasurement(
+      transition.horizontalSeparation,
+      evidenceHashes,
+    ),
+    verticalRise: availableMeasurement(transition.verticalRise, evidenceHashes),
+    downwardDrop: availableMeasurement(transition.downwardDrop, evidenceHashes),
   };
 }
 
@@ -238,6 +249,7 @@ function directCandidateFits(
     method,
     approximationKind,
     toleranceStuds: 1e-9,
+    evidenceHashes: [],
     limitations: [limitation],
     applicability: "broad-phase-only",
   });
@@ -417,7 +429,7 @@ export function evaluateRoutePlayability(
   const geometryById = normalizeGeometryObjects(
     geometryInputs(manifest, routeGraph),
   );
-  const transitions = normalizeTransitionInputs(
+  const normalizedTransitions = normalizeTransitionInputs(
     routeGraph.edges.map((edge) => ({
       schemaVersion: "0.1",
       transitionId: edge.transitionId,
@@ -429,7 +441,7 @@ export function evaluateRoutePlayability(
       controllerProfileRef: profile.profileId,
     })),
     geometryById,
-  ).map(taggedTransition);
+  );
   const evidence: EvidenceRecordContract[] = [];
   const pushEvidence = (record: EvidenceRecordContract): void => {
     if (evidence.length + 1 > limits.maxEvidenceRecords) {
@@ -510,6 +522,14 @@ export function evaluateRoutePlayability(
   });
   pushEvidence(routeRecord);
 
+  const transitionMeasurementEvidenceHashes: readonly `sha256:${string}`[] = [
+    geometryRecord.evidenceContentHash as `sha256:${string}`,
+    routeRecord.evidenceContentHash as `sha256:${string}`,
+  ].toSorted(compareUnicodeScalars);
+  const transitions = normalizedTransitions.map((transition) =>
+    taggedTransition(transition, transitionMeasurementEvidenceHashes),
+  );
+
   const transitionEvidence = transitions.map((transition, index) => {
     const source = requiredValue(
       geometryById.get(transition.fromObjectId),
@@ -566,13 +586,12 @@ export function evaluateRoutePlayability(
     return record;
   });
 
-  const transitionStates = transitions.map((transition, index) => {
+  const transitionStates = transitions.map((transition) => {
     work.use();
-    const transitionRecord = requiredValue(
-      transitionEvidence[index],
-      transition.transitionId,
-    );
-    return classifier.classifyWithEvidence(transition, [transitionRecord]);
+    return classifier.classifyWithEvidence(transition, {
+      evidenceRecords: evidence,
+      expectedManifestHash: manifest.manifestHash as `sha256:${string}`,
+    });
   });
 
   const coarseEvidence = transitionStates.map((result, index) => {
