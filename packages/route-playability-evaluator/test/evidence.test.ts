@@ -191,7 +191,7 @@ describe("E1b evidence and findings", () => {
       ),
     ).toEqual(
       expect.arrayContaining([
-        "kill-floor-bounds:confirmed",
+        "kill-floor-bounds:candidate",
         "structural-enclosure:indeterminate",
       ]),
     );
@@ -219,7 +219,94 @@ describe("E1b evidence and findings", () => {
     if (relationship?.kind !== "hazard-relationship") {
       throw new Error("fixture kill-floor evidence is missing");
     }
-    expect(relationship.payload.assessment).toBe("confirmed");
+    expect(relationship.payload.assessment).toBe("candidate");
+    expect(relationship.payload).toMatchObject({
+      geometryMethod: "world-aabb-broad-phase",
+      approximationKind: "conservative-bounds",
+      geometryToleranceStuds: 1e-9,
+    });
+    expect(
+      result.findings.some(
+        (finding) => finding.ruleId === "hazard.kill-floor-bounds-candidate",
+      ),
+    ).toBe(true);
+  });
+
+  it("keeps rotated KillFloor AABB containment candidate-only", () => {
+    const manifest = manifestFixture();
+    const hazard = requiredFixture(
+      manifest.layers.gameplay.objects.find((object) => object.role === "kill"),
+      "hazard",
+    );
+    hazard.transform.rotation.y = 45;
+    rehashManifest(manifest);
+    const result = evaluateRoutePlayability({
+      manifest,
+      controllerProfile: createDefaultControllerProfile(),
+    });
+    const bounds = result.evidence.find(
+      (record) =>
+        record.kind === "hazard-relationship" &&
+        record.payload.relationship === "kill-floor-bounds",
+    );
+    expect(bounds?.payload).toEqual(
+      expect.objectContaining({
+        assessment: "candidate",
+        geometryMethod: "world-aabb-broad-phase",
+      }),
+    );
+    expect(
+      result.evidence.some(
+        (record) =>
+          record.kind === "hazard-relationship" &&
+          record.payload.geometryMethod.includes("broad-phase") &&
+          (record.payload.assessment as string) === "confirmed",
+      ),
+    ).toBe(false);
+  });
+
+  it.each([
+    ["outside", { x: 35, y: -2, z: 60 }, { x: 10, y: 1, z: 10 }],
+    ["partial", { x: 12, y: -2, z: 30 }, { x: 16, y: 1, z: 60 }],
+  ] as const)(
+    "does not detect %s KillFloor bounds as route containment",
+    (_name, position, size) => {
+      const manifest = manifestFixture();
+      const hazard = requiredFixture(
+        manifest.layers.gameplay.objects.find(
+          (object) => object.role === "kill",
+        ),
+        "hazard",
+      );
+      hazard.transform.position = { ...position };
+      hazard.size = { ...size };
+      rehashManifest(manifest);
+      const result = evaluateRoutePlayability({
+        manifest,
+        controllerProfile: createDefaultControllerProfile(),
+      });
+      const bounds = result.evidence.find(
+        (record) =>
+          record.kind === "hazard-relationship" &&
+          record.payload.relationship === "kill-floor-bounds",
+      );
+      if (bounds?.kind !== "hazard-relationship") {
+        throw new Error("fixture KillFloor bounds evidence is missing");
+      }
+      expect(bounds.payload.assessment).toBe("not-detected");
+    },
+  );
+
+  it("deduplicates hazard relationships by deterministic evidence identity", () => {
+    const result = evaluateRoutePlayability({
+      manifest: manifestFixture(),
+      controllerProfile: createDefaultControllerProfile(),
+    });
+    const relationships = result.evidence.filter(
+      (record) => record.kind === "hazard-relationship",
+    );
+    const identities = relationships.map((record) => record.evidenceId);
+    expect(new Set(identities).size).toBe(identities.length);
   });
 
   it("produces byte-equivalent semantic outputs for shuffled manifest arrays", () => {

@@ -1,3 +1,4 @@
+import { compareUnicodeScalars } from "@obby/canonical-json";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -15,6 +16,17 @@ import {
 } from "./fixtures.js";
 
 describe("declared route graph", () => {
+  it("uses canonical Unicode-scalar ordering for semantic diagnostics", () => {
+    const identities = ["я", "é", "e\u0301", "😀", "z", "a"];
+    expect(identities.toSorted(compareUnicodeScalars)).toEqual([
+      "a",
+      "e\u0301",
+      "z",
+      "é",
+      "я",
+      "😀",
+    ]);
+  });
   it("connects spawn through every declared safe-route object to finish", () => {
     const graph = buildRouteGraph(manifestFixture());
     expect(graph.nodes.map((node) => node.objectId)).toEqual([
@@ -263,5 +275,38 @@ describe("declared route graph", () => {
       );
       expect((caught as RouteEvaluationError).issues.length).toBeGreaterThan(0);
     }
+  });
+
+  it("orders equivalent invalid declarations deterministically after input shuffling", () => {
+    const invalid = manifestFixture();
+    const first = requiredFixture(
+      invalid.navigation.routeEntries[0],
+      "first route entry",
+    );
+    const second = requiredFixture(
+      invalid.navigation.routeEntries[1],
+      "second route entry",
+    );
+    [first.routeOrder, second.routeOrder] = [
+      second.routeOrder,
+      first.routeOrder,
+    ];
+    second.stageId = "unknown-stage";
+    rehashManifest(invalid);
+    const shuffled = structuredClone(invalid);
+    shuffled.layers.gameplay.objects.reverse();
+    shuffled.navigation.stages.reverse();
+    shuffled.navigation.routeEntries.reverse();
+    rehashManifest(shuffled);
+    const issues = (manifest: typeof invalid) => {
+      try {
+        buildRouteGraph(manifest);
+        throw new Error("expected invalid declaration rejection");
+      } catch (caught) {
+        if (!(caught instanceof RouteEvaluationError)) throw caught;
+        return caught.issues;
+      }
+    };
+    expect(issues(shuffled)).toEqual(issues(invalid));
   });
 });

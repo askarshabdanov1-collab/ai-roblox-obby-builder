@@ -342,11 +342,12 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:f926729e4ed69bb2279286404ae80ac7dba5a057bc70d8f997fcdb8ff8470a17",
+      "evidenceContentHash": "sha256:64664a3e83704454824b9dc8cba29c8289d5ba7ba05113c25a26f629f2e4838f",
       "evidenceId": "e1b:coarse-transition:0",
       "kind": "coarse-transition-state",
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
+        "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
         "Surface envelope maxima are not a character landing or feasibility test.",
         "World AABB overlap does not prove native primitive surface contact."
       ],
@@ -365,14 +366,30 @@
         "fromObjectId": "Spawn",
         "geometryToleranceStuds": 1e-9,
         "horizontalGapStuds": 5,
+        "inputEvidenceHashes": [
+          "sha256:1970c6601570ab892bb801f85b1faff8be0b9c8ff528e9ee7bef9b8251acaea1",
+          "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
+        ],
         "kind": "coarse-transition-state",
+        "landingRegion": {
+          "approximationKind": "exact-native-primitive",
+          "limitations": [
+            "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing."
+          ],
+          "method": "exact-planar-intrinsic-edge-spans-v1",
+          "spanAStuds": 10,
+          "spanBStuds": 10,
+          "status": "available",
+          "toleranceStuds": 1e-9
+        },
         "metricId": "playability.coarse-transition-state",
+        "reasonCodes": [],
         "reproduction": {
           "inputHashes": [
             "sha256:1970c6601570ab892bb801f85b1faff8be0b9c8ff528e9ee7bef9b8251acaea1",
             "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
           ],
-          "methodId": "coarse-transition-v1"
+          "methodId": "coarse-transition-v2"
         },
         "resultId": "coarse.brainrot-tower-vertical-slice-scene.0.1",
         "sourceSurfaceKind": "planar-face",
@@ -400,11 +417,12 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:e1266dfd09b8aaf20414f6a9c4a9e7c5a866fcd5b7bcea5438381a7c8a0fcc84",
+      "evidenceContentHash": "sha256:ac3622267d294ec27d3ac8b2de5822c049c1021ce23c25495b44d24d0d278f33",
       "evidenceId": "e1b:coarse-transition:1",
       "kind": "coarse-transition-state",
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
+        "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
         "Surface envelope maxima are not a character landing or feasibility test.",
         "World AABB overlap does not prove native primitive surface contact."
       ],
@@ -423,14 +441,30 @@
         "fromObjectId": "JumpPlatform01",
         "geometryToleranceStuds": 1e-9,
         "horizontalGapStuds": 4,
+        "inputEvidenceHashes": [
+          "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7",
+          "sha256:e0fd0c78cfc0ab15eea20caf8c5a5bda63aad4c686867975a945033ec144971b"
+        ],
         "kind": "coarse-transition-state",
+        "landingRegion": {
+          "approximationKind": "exact-native-primitive",
+          "limitations": [
+            "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing."
+          ],
+          "method": "exact-planar-intrinsic-edge-spans-v1",
+          "spanAStuds": 12,
+          "spanBStuds": 12,
+          "status": "available",
+          "toleranceStuds": 1e-9
+        },
         "metricId": "playability.coarse-transition-state",
+        "reasonCodes": [],
         "reproduction": {
           "inputHashes": [
             "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7",
             "sha256:e0fd0c78cfc0ab15eea20caf8c5a5bda63aad4c686867975a945033ec144971b"
           ],
-          "methodId": "coarse-transition-v1"
+          "methodId": "coarse-transition-v2"
         },
         "resultId": "coarse.brainrot-tower-vertical-slice-scene.1.2",
         "sourceSurfaceKind": "planar-face",
@@ -458,11 +492,12 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:bf913739b1044fb07b0e78246054ad9a0eec719a7312d8a19c9e6e0fa496addf",
+      "evidenceContentHash": "sha256:d827b1382c32ba2db51711815b9b5513614c90c4319b42737953ff7f0517fa81",
       "evidenceId": "e1b:coarse-transition:2",
       "kind": "coarse-transition-state",
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
+        "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
         "Surface envelope maxima are not a character landing or feasibility test.",
         "World AABB overlap does not prove native primitive surface contact."
       ],
@@ -481,14 +516,30 @@
         "fromObjectId": "Checkpoint01",
         "geometryToleranceStuds": 1e-9,
         "horizontalGapStuds": 3,
+        "inputEvidenceHashes": [
+          "sha256:157fe68611f8508de8cc015a2b76c1746320cf6fbad6547d49080a4a785787be",
+          "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
+        ],
         "kind": "coarse-transition-state",
+        "landingRegion": {
+          "approximationKind": "exact-native-primitive",
+          "limitations": [
+            "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing."
+          ],
+          "method": "exact-planar-intrinsic-edge-spans-v1",
+          "spanAStuds": 10.770329614269,
+          "spanBStuds": 12,
+          "status": "available",
+          "toleranceStuds": 1e-9
+        },
         "metricId": "playability.coarse-transition-state",
+        "reasonCodes": [],
         "reproduction": {
           "inputHashes": [
             "sha256:157fe68611f8508de8cc015a2b76c1746320cf6fbad6547d49080a4a785787be",
             "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
           ],
-          "methodId": "coarse-transition-v1"
+          "methodId": "coarse-transition-v2"
         },
         "resultId": "coarse.brainrot-tower-vertical-slice-scene.2.3",
         "sourceSurfaceKind": "planar-face",
@@ -516,11 +567,12 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:c9658f8860a3fbb79baa5a412db241de58c36c721cc76943481320be4d358e0e",
+      "evidenceContentHash": "sha256:5493579681f19e28a0988b5da47d128f5cc27cc7a1a65a2f762e4d1ce6628118",
       "evidenceId": "e1b:coarse-transition:3",
       "kind": "coarse-transition-state",
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
+        "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
         "Surface envelope maxima are not a character landing or feasibility test.",
         "World AABB overlap does not prove native primitive surface contact."
       ],
@@ -539,14 +591,30 @@
         "fromObjectId": "WedgeClimb01",
         "geometryToleranceStuds": 1e-9,
         "horizontalGapStuds": 2,
+        "inputEvidenceHashes": [
+          "sha256:7834171b7259c4aedddf798f32a64c704f43255a6d53d67f684cfb67b6df5386",
+          "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
+        ],
         "kind": "coarse-transition-state",
+        "landingRegion": {
+          "approximationKind": "exact-native-primitive",
+          "limitations": [
+            "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing."
+          ],
+          "method": "exact-planar-intrinsic-edge-spans-v1",
+          "spanAStuds": 16,
+          "spanBStuds": 16,
+          "status": "available",
+          "toleranceStuds": 1e-9
+        },
         "metricId": "playability.coarse-transition-state",
+        "reasonCodes": [],
         "reproduction": {
           "inputHashes": [
             "sha256:7834171b7259c4aedddf798f32a64c704f43255a6d53d67f684cfb67b6df5386",
             "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
           ],
-          "methodId": "coarse-transition-v1"
+          "methodId": "coarse-transition-v2"
         },
         "resultId": "coarse.brainrot-tower-vertical-slice-scene.3.4",
         "sourceSurfaceKind": "wedge-slope",
@@ -574,7 +642,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:51c70828a3cd4cd8059c554f22618683489a4f33b7e1b8cfaaebc6c25c51f0ae",
+      "evidenceContentHash": "sha256:4664125976c8c6c9a16e118cfda2b75ad888a9061bb5406c190600d1ac1754b6",
       "evidenceId": "e1b:route-playability-summary",
       "kind": "route-playability-summary",
       "limitations": [
@@ -584,10 +652,10 @@
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
         "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-        "sha256:bf913739b1044fb07b0e78246054ad9a0eec719a7312d8a19c9e6e0fa496addf",
-        "sha256:c9658f8860a3fbb79baa5a412db241de58c36c721cc76943481320be4d358e0e",
-        "sha256:e1266dfd09b8aaf20414f6a9c4a9e7c5a866fcd5b7bcea5438381a7c8a0fcc84",
-        "sha256:f926729e4ed69bb2279286404ae80ac7dba5a057bc70d8f997fcdb8ff8470a17"
+        "sha256:5493579681f19e28a0988b5da47d128f5cc27cc7a1a65a2f762e4d1ce6628118",
+        "sha256:64664a3e83704454824b9dc8cba29c8289d5ba7ba05113c25a26f629f2e4838f",
+        "sha256:ac3622267d294ec27d3ac8b2de5822c049c1021ce23c25495b44d24d0d278f33",
+        "sha256:d827b1382c32ba2db51711815b9b5513614c90c4319b42737953ff7f0517fa81"
       ],
       "payload": {
         "clearanceEstimateState": "indeterminate-no-overhead-route-metadata",
@@ -599,11 +667,11 @@
         "reproduction": {
           "inputHashes": [
             "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-            "sha256:bf913739b1044fb07b0e78246054ad9a0eec719a7312d8a19c9e6e0fa496addf",
-            "sha256:c9658f8860a3fbb79baa5a412db241de58c36c721cc76943481320be4d358e0e",
-            "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7",
-            "sha256:e1266dfd09b8aaf20414f6a9c4a9e7c5a866fcd5b7bcea5438381a7c8a0fcc84",
-            "sha256:f926729e4ed69bb2279286404ae80ac7dba5a057bc70d8f997fcdb8ff8470a17"
+            "sha256:5493579681f19e28a0988b5da47d128f5cc27cc7a1a65a2f762e4d1ce6628118",
+            "sha256:64664a3e83704454824b9dc8cba29c8289d5ba7ba05113c25a26f629f2e4838f",
+            "sha256:ac3622267d294ec27d3ac8b2de5822c049c1021ce23c25495b44d24d0d278f33",
+            "sha256:d827b1382c32ba2db51711815b9b5513614c90c4319b42737953ff7f0517fa81",
+            "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
           ],
           "methodId": "route-playability-summary-v1"
         },
@@ -672,7 +740,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:b8aeeab769611a8c4151721cdc055b8d9b4b36a9362092b2ebe9f9f04c2aa016",
+      "evidenceContentHash": "sha256:6624af564391026484f8a79cfe37fed8930bf72af8e54ab7481d4c97b44735c2",
       "evidenceId": "e1b:finish",
       "kind": "finish-topology",
       "limitations": [
@@ -681,10 +749,10 @@
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
         "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-        "sha256:bf913739b1044fb07b0e78246054ad9a0eec719a7312d8a19c9e6e0fa496addf",
-        "sha256:c9658f8860a3fbb79baa5a412db241de58c36c721cc76943481320be4d358e0e",
-        "sha256:e1266dfd09b8aaf20414f6a9c4a9e7c5a866fcd5b7bcea5438381a7c8a0fcc84",
-        "sha256:f926729e4ed69bb2279286404ae80ac7dba5a057bc70d8f997fcdb8ff8470a17"
+        "sha256:5493579681f19e28a0988b5da47d128f5cc27cc7a1a65a2f762e4d1ce6628118",
+        "sha256:64664a3e83704454824b9dc8cba29c8289d5ba7ba05113c25a26f629f2e4838f",
+        "sha256:ac3622267d294ec27d3ac8b2de5822c049c1021ce23c25495b44d24d0d278f33",
+        "sha256:d827b1382c32ba2db51711815b9b5513614c90c4319b42737953ff7f0517fa81"
       ],
       "payload": {
         "afterAllCheckpoints": true,
@@ -696,10 +764,10 @@
         "reproduction": {
           "inputHashes": [
             "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-            "sha256:bf913739b1044fb07b0e78246054ad9a0eec719a7312d8a19c9e6e0fa496addf",
-            "sha256:c9658f8860a3fbb79baa5a412db241de58c36c721cc76943481320be4d358e0e",
-            "sha256:e1266dfd09b8aaf20414f6a9c4a9e7c5a866fcd5b7bcea5438381a7c8a0fcc84",
-            "sha256:f926729e4ed69bb2279286404ae80ac7dba5a057bc70d8f997fcdb8ff8470a17"
+            "sha256:5493579681f19e28a0988b5da47d128f5cc27cc7a1a65a2f762e4d1ce6628118",
+            "sha256:64664a3e83704454824b9dc8cba29c8289d5ba7ba05113c25a26f629f2e4838f",
+            "sha256:ac3622267d294ec27d3ac8b2de5822c049c1021ce23c25495b44d24d0d278f33",
+            "sha256:d827b1382c32ba2db51711815b9b5513614c90c4319b42737953ff7f0517fa81"
           ],
           "methodId": "finish-topology-v1"
         },
@@ -723,11 +791,12 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:548cc8b758eea1e52371bd90e581e4a2568337029f8af7f62fdd565e62b3157a",
+      "evidenceContentHash": "sha256:4b25c54114fee8b21f0e27c593c5105b9b19f701851bf506e8aae7d7a1560871",
       "evidenceId": "e1b:hazard:KillFloor:bounds",
       "kind": "hazard-relationship",
       "limitations": [
-        "Static bounds do not evaluate dynamic hazard behavior."
+        "Static bounds do not evaluate dynamic hazard behavior.",
+        "World AABB containment is a conservative candidate, not confirmed native-shape containment."
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
@@ -735,8 +804,10 @@
         "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
       ],
       "payload": {
-        "assessment": "confirmed",
+        "approximationKind": "conservative-bounds",
+        "assessment": "candidate",
         "geometryMethod": "world-aabb-broad-phase",
+        "geometryToleranceStuds": 1e-9,
         "hazardGameplayAuthoritative": true,
         "hazardObjectId": "KillFloor",
         "kind": "hazard-relationship",
@@ -763,7 +834,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:bb972a2396f0406b1d207cc60adb19365a6a1f48888c8bb18b500aa8eba7de78",
+      "evidenceContentHash": "sha256:89ebff961285d546aff48ec5368228f22cf1cb8a92dcd5083194889f20b78ec7",
       "evidenceId": "e1b:hazard:KillFloor:enclosure",
       "kind": "hazard-relationship",
       "limitations": [
@@ -775,8 +846,10 @@
         "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
       ],
       "payload": {
+        "approximationKind": "conservative-bounds",
         "assessment": "indeterminate",
         "geometryMethod": "world-aabb-broad-phase",
+        "geometryToleranceStuds": 1e-9,
         "hazardGameplayAuthoritative": true,
         "hazardObjectId": "KillFloor",
         "kind": "hazard-relationship",
@@ -808,7 +881,7 @@
       "evidenceIds": [
         "e1b:checkpoint:1"
       ],
-      "findingId": "finding.checkpoint.runtime-isolation-missing.0",
+      "findingId": "finding.checkpoint.runtime-isolation-missing.1",
       "limitations": [
         "Multiplayer and replaced-scene isolation require future Studio evidence."
       ],
@@ -825,6 +898,30 @@
       ],
       "summary": "E1b has zero runtime checkpoint/respawn observations, so isolation remains missing-evidence rather than pass.",
       "title": "Checkpoint runtime isolation is missing evidence"
+    },
+    {
+      "blocking": false,
+      "evidenceIds": [
+        "e1b:hazard:KillFloor:bounds"
+      ],
+      "findingId": "finding.hazard.kill-floor-bounds-candidate.0",
+      "limitations": [
+        "Static bounds do not evaluate dynamic hazard behavior.",
+        "World AABB containment is a conservative candidate, not confirmed native-shape containment."
+      ],
+      "metricIds": [],
+      "ruleId": "hazard.kill-floor-bounds-candidate",
+      "ruleVersion": "1.0.0",
+      "schemaVersion": "0.1",
+      "severity": "warning",
+      "sourceKind": "heuristic",
+      "subjects": [
+        {
+          "kind": "scene"
+        }
+      ],
+      "summary": "Conservative world-AABB bounds indicate a candidate KillFloor relationship; native-shape containment is not confirmed.",
+      "title": "KillFloor bounds candidate"
     }
   ],
   "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
@@ -928,919 +1025,335 @@
   "transitionStates": [
     {
       "confidenceBasis": "deterministic-model-rule-bounded-inputs",
+      "confidenceSemantics": "deterministic-rule-result-not-probability",
+      "controllerProfileHash": "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7",
+      "controllerProfileId": "e1-r15-provisional",
+      "controllerProfileVersion": "1.0.0",
+      "destinationObjectId": "JumpPlatform01",
+      "fromGlobalIndex": 0,
+      "inputEvidenceHashes": [
+        "sha256:1970c6601570ab892bb801f85b1faff8be0b9c8ff528e9ee7bef9b8251acaea1",
+        "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
+      ],
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
+        "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
         "Surface envelope maxima are not a character landing or feasibility test.",
         "World AABB overlap does not prove native primitive surface contact."
       ],
       "metricId": "playability.coarse-transition-state",
+      "reasonCodes": [],
+      "reproduction": {
+        "inputEvidenceHashes": [
+          "sha256:1970c6601570ab892bb801f85b1faff8be0b9c8ff528e9ee7bef9b8251acaea1",
+          "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
+        ],
+        "methodId": "coarse-transition-classifier",
+        "methodVersion": "2.0.0",
+        "normalizedInputs": {
+          "destinationSurfaceKind": "planar-face",
+          "downwardDrop": {
+            "applicability": "broad-phase-only",
+            "approximationKind": "conservative-bounds-delta",
+            "limitations": [
+              "Surface envelope maxima are not a character landing or feasibility test."
+            ],
+            "method": "surface-envelope-height-delta",
+            "status": "available",
+            "toleranceStuds": 1e-9,
+            "value": 0
+          },
+          "horizontalSeparation": {
+            "applicability": "broad-phase-only",
+            "approximationKind": "conservative-lower-bound",
+            "limitations": [
+              "World AABB overlap does not prove native primitive surface contact."
+            ],
+            "method": "world-aabb-horizontal-separation",
+            "status": "available",
+            "toleranceStuds": 1e-9,
+            "value": 5
+          },
+          "landingRegion": {
+            "approximationKind": "exact-native-primitive",
+            "limitations": [
+              "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing."
+            ],
+            "method": "exact-planar-intrinsic-edge-spans-v1",
+            "spanAStuds": 10,
+            "spanBStuds": 10,
+            "status": "available",
+            "toleranceStuds": 1e-9
+          },
+          "sourceSurfaceKind": "planar-face",
+          "verticalRise": {
+            "applicability": "broad-phase-only",
+            "approximationKind": "conservative-bounds-delta",
+            "limitations": [
+              "Surface envelope maxima are not a character landing or feasibility test."
+            ],
+            "method": "surface-envelope-height-delta",
+            "status": "available",
+            "toleranceStuds": 1e-9,
+            "value": 1.5
+          }
+        }
+      },
       "resultId": "coarse.brainrot-tower-vertical-slice-scene.0.1",
+      "routeId": "brainrot-tower-vertical-slice-scene",
+      "sourceObjectId": "Spawn",
       "state": "feasible-under-model",
-      "transition": {
-        "controllerProfileRef": "e1-r15-provisional",
-        "destinationSurface": {
-          "approximationKind": "exact-native-primitive",
-          "bounds": {
-            "maximum": {
-              "x": 5,
-              "y": 5,
-              "z": 21
-            },
-            "minimum": {
-              "x": -5,
-              "y": 5,
-              "z": 11
-            }
-          },
-          "corners": [
-            {
-              "x": -5,
-              "y": 5,
-              "z": 11
-            },
-            {
-              "x": 5,
-              "y": 5,
-              "z": 11
-            },
-            {
-              "x": 5,
-              "y": 5,
-              "z": 21
-            },
-            {
-              "x": -5,
-              "y": 5,
-              "z": 21
-            }
-          ],
-          "face": "local-positive-y",
-          "kind": "planar-face",
-          "maximumY": 5,
-          "normal": {
-            "x": 0,
-            "y": 1,
-            "z": 0
-          },
-          "plane": {
-            "normal": {
-              "x": 0,
-              "y": 1,
-              "z": 0
-            },
-            "point": {
-              "x": -5,
-              "y": 5,
-              "z": 11
-            }
-          },
-          "shape": "Block"
-        },
-        "downwardDrop": {
-          "applicability": "broad-phase-only",
-          "approximationKind": "conservative-bounds-delta",
-          "limitations": [
-            "Surface envelope maxima are not a character landing or feasibility test."
-          ],
-          "method": "surface-envelope-height-delta",
-          "toleranceStuds": 1e-9,
-          "value": 0
-        },
-        "fromGlobalIndex": 0,
-        "fromObjectId": "Spawn",
-        "horizontalSeparation": {
-          "applicability": "broad-phase-only",
-          "approximationKind": "conservative-lower-bound",
-          "limitations": [
-            "World AABB overlap does not prove native primitive surface contact."
-          ],
-          "method": "world-aabb-horizontal-separation",
-          "toleranceStuds": 1e-9,
-          "value": 5
-        },
-        "routeId": "brainrot-tower-vertical-slice-scene",
-        "schemaVersion": "0.1",
-        "sourceSurface": {
-          "approximationKind": "exact-native-primitive",
-          "bounds": {
-            "maximum": {
-              "x": 6,
-              "y": 3.5,
-              "z": 6
-            },
-            "minimum": {
-              "x": -6,
-              "y": 3.5,
-              "z": -6
-            }
-          },
-          "corners": [
-            {
-              "x": -6,
-              "y": 3.5,
-              "z": -6
-            },
-            {
-              "x": 6,
-              "y": 3.5,
-              "z": -6
-            },
-            {
-              "x": 6,
-              "y": 3.5,
-              "z": 6
-            },
-            {
-              "x": -6,
-              "y": 3.5,
-              "z": 6
-            }
-          ],
-          "face": "local-positive-y",
-          "kind": "planar-face",
-          "maximumY": 3.5,
-          "normal": {
-            "x": 0,
-            "y": 1,
-            "z": 0
-          },
-          "plane": {
-            "normal": {
-              "x": 0,
-              "y": 1,
-              "z": 0
-            },
-            "point": {
-              "x": -6,
-              "y": 3.5,
-              "z": -6
-            }
-          },
-          "shape": "Block"
-        },
-        "toGlobalIndex": 1,
-        "toObjectId": "JumpPlatform01",
-        "transitionId": "route:brainrot-tower-vertical-slice-scene/Spawn/JumpPlatform01/0/1",
-        "units": "studs",
-        "verticalRise": {
-          "applicability": "broad-phase-only",
-          "approximationKind": "conservative-bounds-delta",
-          "limitations": [
-            "Surface envelope maxima are not a character landing or feasibility test."
-          ],
-          "method": "surface-envelope-height-delta",
-          "toleranceStuds": 1e-9,
-          "value": 1.5
-        }
-      }
+      "toGlobalIndex": 1,
+      "transitionId": "route:brainrot-tower-vertical-slice-scene/Spawn/JumpPlatform01/0/1"
     },
     {
       "confidenceBasis": "deterministic-model-rule-bounded-inputs",
+      "confidenceSemantics": "deterministic-rule-result-not-probability",
+      "controllerProfileHash": "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7",
+      "controllerProfileId": "e1-r15-provisional",
+      "controllerProfileVersion": "1.0.0",
+      "destinationObjectId": "Checkpoint01",
+      "fromGlobalIndex": 1,
+      "inputEvidenceHashes": [
+        "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7",
+        "sha256:e0fd0c78cfc0ab15eea20caf8c5a5bda63aad4c686867975a945033ec144971b"
+      ],
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
+        "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
         "Surface envelope maxima are not a character landing or feasibility test.",
         "World AABB overlap does not prove native primitive surface contact."
       ],
       "metricId": "playability.coarse-transition-state",
+      "reasonCodes": [],
+      "reproduction": {
+        "inputEvidenceHashes": [
+          "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7",
+          "sha256:e0fd0c78cfc0ab15eea20caf8c5a5bda63aad4c686867975a945033ec144971b"
+        ],
+        "methodId": "coarse-transition-classifier",
+        "methodVersion": "2.0.0",
+        "normalizedInputs": {
+          "destinationSurfaceKind": "planar-face",
+          "downwardDrop": {
+            "applicability": "broad-phase-only",
+            "approximationKind": "conservative-bounds-delta",
+            "limitations": [
+              "Surface envelope maxima are not a character landing or feasibility test."
+            ],
+            "method": "surface-envelope-height-delta",
+            "status": "available",
+            "toleranceStuds": 1e-9,
+            "value": 0
+          },
+          "horizontalSeparation": {
+            "applicability": "broad-phase-only",
+            "approximationKind": "conservative-lower-bound",
+            "limitations": [
+              "World AABB overlap does not prove native primitive surface contact."
+            ],
+            "method": "world-aabb-horizontal-separation",
+            "status": "available",
+            "toleranceStuds": 1e-9,
+            "value": 4
+          },
+          "landingRegion": {
+            "approximationKind": "exact-native-primitive",
+            "limitations": [
+              "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing."
+            ],
+            "method": "exact-planar-intrinsic-edge-spans-v1",
+            "spanAStuds": 12,
+            "spanBStuds": 12,
+            "status": "available",
+            "toleranceStuds": 1e-9
+          },
+          "sourceSurfaceKind": "planar-face",
+          "verticalRise": {
+            "applicability": "broad-phase-only",
+            "approximationKind": "conservative-bounds-delta",
+            "limitations": [
+              "Surface envelope maxima are not a character landing or feasibility test."
+            ],
+            "method": "surface-envelope-height-delta",
+            "status": "available",
+            "toleranceStuds": 1e-9,
+            "value": 2.5
+          }
+        }
+      },
       "resultId": "coarse.brainrot-tower-vertical-slice-scene.1.2",
+      "routeId": "brainrot-tower-vertical-slice-scene",
+      "sourceObjectId": "JumpPlatform01",
       "state": "feasible-under-model",
-      "transition": {
-        "controllerProfileRef": "e1-r15-provisional",
-        "destinationSurface": {
-          "approximationKind": "exact-native-primitive",
-          "bounds": {
-            "maximum": {
-              "x": 6,
-              "y": 7.5,
-              "z": 37
-            },
-            "minimum": {
-              "x": -6,
-              "y": 7.5,
-              "z": 25
-            }
-          },
-          "corners": [
-            {
-              "x": -6,
-              "y": 7.5,
-              "z": 37
-            },
-            {
-              "x": -6,
-              "y": 7.5,
-              "z": 25
-            },
-            {
-              "x": 6,
-              "y": 7.5,
-              "z": 25
-            },
-            {
-              "x": 6,
-              "y": 7.5,
-              "z": 37
-            }
-          ],
-          "face": "local-positive-y",
-          "kind": "planar-face",
-          "maximumY": 7.5,
-          "normal": {
-            "x": 0,
-            "y": 1,
-            "z": 0
-          },
-          "plane": {
-            "normal": {
-              "x": 0,
-              "y": 1,
-              "z": 0
-            },
-            "point": {
-              "x": -6,
-              "y": 7.5,
-              "z": 37
-            }
-          },
-          "shape": "Block"
-        },
-        "downwardDrop": {
-          "applicability": "broad-phase-only",
-          "approximationKind": "conservative-bounds-delta",
-          "limitations": [
-            "Surface envelope maxima are not a character landing or feasibility test."
-          ],
-          "method": "surface-envelope-height-delta",
-          "toleranceStuds": 1e-9,
-          "value": 0
-        },
-        "fromGlobalIndex": 1,
-        "fromObjectId": "JumpPlatform01",
-        "horizontalSeparation": {
-          "applicability": "broad-phase-only",
-          "approximationKind": "conservative-lower-bound",
-          "limitations": [
-            "World AABB overlap does not prove native primitive surface contact."
-          ],
-          "method": "world-aabb-horizontal-separation",
-          "toleranceStuds": 1e-9,
-          "value": 4
-        },
-        "routeId": "brainrot-tower-vertical-slice-scene",
-        "schemaVersion": "0.1",
-        "sourceSurface": {
-          "approximationKind": "exact-native-primitive",
-          "bounds": {
-            "maximum": {
-              "x": 5,
-              "y": 5,
-              "z": 21
-            },
-            "minimum": {
-              "x": -5,
-              "y": 5,
-              "z": 11
-            }
-          },
-          "corners": [
-            {
-              "x": -5,
-              "y": 5,
-              "z": 11
-            },
-            {
-              "x": 5,
-              "y": 5,
-              "z": 11
-            },
-            {
-              "x": 5,
-              "y": 5,
-              "z": 21
-            },
-            {
-              "x": -5,
-              "y": 5,
-              "z": 21
-            }
-          ],
-          "face": "local-positive-y",
-          "kind": "planar-face",
-          "maximumY": 5,
-          "normal": {
-            "x": 0,
-            "y": 1,
-            "z": 0
-          },
-          "plane": {
-            "normal": {
-              "x": 0,
-              "y": 1,
-              "z": 0
-            },
-            "point": {
-              "x": -5,
-              "y": 5,
-              "z": 11
-            }
-          },
-          "shape": "Block"
-        },
-        "toGlobalIndex": 2,
-        "toObjectId": "Checkpoint01",
-        "transitionId": "route:brainrot-tower-vertical-slice-scene/JumpPlatform01/Checkpoint01/1/2",
-        "units": "studs",
-        "verticalRise": {
-          "applicability": "broad-phase-only",
-          "approximationKind": "conservative-bounds-delta",
-          "limitations": [
-            "Surface envelope maxima are not a character landing or feasibility test."
-          ],
-          "method": "surface-envelope-height-delta",
-          "toleranceStuds": 1e-9,
-          "value": 2.5
-        }
-      }
+      "toGlobalIndex": 2,
+      "transitionId": "route:brainrot-tower-vertical-slice-scene/JumpPlatform01/Checkpoint01/1/2"
     },
     {
       "confidenceBasis": "deterministic-model-rule-bounded-inputs",
+      "confidenceSemantics": "deterministic-rule-result-not-probability",
+      "controllerProfileHash": "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7",
+      "controllerProfileId": "e1-r15-provisional",
+      "controllerProfileVersion": "1.0.0",
+      "destinationObjectId": "WedgeClimb01",
+      "fromGlobalIndex": 2,
+      "inputEvidenceHashes": [
+        "sha256:157fe68611f8508de8cc015a2b76c1746320cf6fbad6547d49080a4a785787be",
+        "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
+      ],
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
+        "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
         "Surface envelope maxima are not a character landing or feasibility test.",
         "World AABB overlap does not prove native primitive surface contact."
       ],
       "metricId": "playability.coarse-transition-state",
+      "reasonCodes": [],
+      "reproduction": {
+        "inputEvidenceHashes": [
+          "sha256:157fe68611f8508de8cc015a2b76c1746320cf6fbad6547d49080a4a785787be",
+          "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
+        ],
+        "methodId": "coarse-transition-classifier",
+        "methodVersion": "2.0.0",
+        "normalizedInputs": {
+          "destinationSurfaceKind": "wedge-slope",
+          "downwardDrop": {
+            "applicability": "broad-phase-only",
+            "approximationKind": "conservative-bounds-delta",
+            "limitations": [
+              "Surface envelope maxima are not a character landing or feasibility test."
+            ],
+            "method": "surface-envelope-height-delta",
+            "status": "available",
+            "toleranceStuds": 1e-9,
+            "value": 0
+          },
+          "horizontalSeparation": {
+            "applicability": "broad-phase-only",
+            "approximationKind": "conservative-lower-bound",
+            "limitations": [
+              "World AABB overlap does not prove native primitive surface contact."
+            ],
+            "method": "world-aabb-horizontal-separation",
+            "status": "available",
+            "toleranceStuds": 1e-9,
+            "value": 3
+          },
+          "landingRegion": {
+            "approximationKind": "exact-native-primitive",
+            "limitations": [
+              "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing."
+            ],
+            "method": "exact-planar-intrinsic-edge-spans-v1",
+            "spanAStuds": 10.770329614269,
+            "spanBStuds": 12,
+            "status": "available",
+            "toleranceStuds": 1e-9
+          },
+          "sourceSurfaceKind": "planar-face",
+          "verticalRise": {
+            "applicability": "broad-phase-only",
+            "approximationKind": "conservative-bounds-delta",
+            "limitations": [
+              "Surface envelope maxima are not a character landing or feasibility test."
+            ],
+            "method": "surface-envelope-height-delta",
+            "status": "available",
+            "toleranceStuds": 1e-9,
+            "value": 4.5
+          }
+        }
+      },
       "resultId": "coarse.brainrot-tower-vertical-slice-scene.2.3",
+      "routeId": "brainrot-tower-vertical-slice-scene",
+      "sourceObjectId": "Checkpoint01",
       "state": "feasible-under-model",
-      "transition": {
-        "controllerProfileRef": "e1-r15-provisional",
-        "destinationSurface": {
-          "approximationKind": "exact-native-primitive",
-          "faceOrientation": "rises-toward-local-positive-z",
-          "kind": "wedge-surfaces",
-          "maximumY": 12,
-          "nonSlopedFaces": [
-            {
-              "approximationKind": "exact-native-primitive",
-              "bounds": {
-                "maximum": {
-                  "x": 6,
-                  "y": 8,
-                  "z": 50
-                },
-                "minimum": {
-                  "x": -6,
-                  "y": 8,
-                  "z": 40
-                }
-              },
-              "corners": [
-                {
-                  "x": -6,
-                  "y": 8,
-                  "z": 40
-                },
-                {
-                  "x": 6,
-                  "y": 8,
-                  "z": 40
-                },
-                {
-                  "x": 6,
-                  "y": 8,
-                  "z": 50
-                },
-                {
-                  "x": -6,
-                  "y": 8,
-                  "z": 50
-                }
-              ],
-              "face": "local-negative-y",
-              "kind": "planar-face",
-              "maximumY": 8,
-              "normal": {
-                "x": 0,
-                "y": -1,
-                "z": 0
-              },
-              "plane": {
-                "normal": {
-                  "x": 0,
-                  "y": -1,
-                  "z": 0
-                },
-                "point": {
-                  "x": -6,
-                  "y": 8,
-                  "z": 40
-                }
-              }
-            },
-            {
-              "approximationKind": "exact-native-primitive",
-              "bounds": {
-                "maximum": {
-                  "x": 6,
-                  "y": 12,
-                  "z": 50
-                },
-                "minimum": {
-                  "x": -6,
-                  "y": 8,
-                  "z": 50
-                }
-              },
-              "corners": [
-                {
-                  "x": -6,
-                  "y": 8,
-                  "z": 50
-                },
-                {
-                  "x": 6,
-                  "y": 8,
-                  "z": 50
-                },
-                {
-                  "x": 6,
-                  "y": 12,
-                  "z": 50
-                },
-                {
-                  "x": -6,
-                  "y": 12,
-                  "z": 50
-                }
-              ],
-              "face": "local-positive-z",
-              "kind": "planar-face",
-              "maximumY": 12,
-              "normal": {
-                "x": 0,
-                "y": 0,
-                "z": 1
-              },
-              "plane": {
-                "normal": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
-                },
-                "point": {
-                  "x": -6,
-                  "y": 8,
-                  "z": 50
-                }
-              }
-            }
-          ],
-          "shape": "Wedge",
-          "slopedFace": {
-            "approximationKind": "exact-native-primitive",
-            "bounds": {
-              "maximum": {
-                "x": 6,
-                "y": 12,
-                "z": 50
-              },
-              "minimum": {
-                "x": -6,
-                "y": 8,
-                "z": 40
-              }
-            },
-            "corners": [
-              {
-                "x": -6,
-                "y": 8,
-                "z": 40
-              },
-              {
-                "x": -6,
-                "y": 12,
-                "z": 50
-              },
-              {
-                "x": 6,
-                "y": 12,
-                "z": 50
-              },
-              {
-                "x": 6,
-                "y": 8,
-                "z": 40
-              }
-            ],
-            "face": "local-slope-rising-positive-z",
-            "kind": "planar-face",
-            "maximumY": 12,
-            "normal": {
-              "x": 0,
-              "y": 0.928476690885,
-              "z": -0.371390676354
-            },
-            "plane": {
-              "normal": {
-                "x": 0,
-                "y": 0.928476690885,
-                "z": -0.371390676354
-              },
-              "point": {
-                "x": -6,
-                "y": 8,
-                "z": 40
-              }
-            }
-          }
-        },
-        "downwardDrop": {
-          "applicability": "broad-phase-only",
-          "approximationKind": "conservative-bounds-delta",
-          "limitations": [
-            "Surface envelope maxima are not a character landing or feasibility test."
-          ],
-          "method": "surface-envelope-height-delta",
-          "toleranceStuds": 1e-9,
-          "value": 0
-        },
-        "fromGlobalIndex": 2,
-        "fromObjectId": "Checkpoint01",
-        "horizontalSeparation": {
-          "applicability": "broad-phase-only",
-          "approximationKind": "conservative-lower-bound",
-          "limitations": [
-            "World AABB overlap does not prove native primitive surface contact."
-          ],
-          "method": "world-aabb-horizontal-separation",
-          "toleranceStuds": 1e-9,
-          "value": 3
-        },
-        "routeId": "brainrot-tower-vertical-slice-scene",
-        "schemaVersion": "0.1",
-        "sourceSurface": {
-          "approximationKind": "exact-native-primitive",
-          "bounds": {
-            "maximum": {
-              "x": 6,
-              "y": 7.5,
-              "z": 37
-            },
-            "minimum": {
-              "x": -6,
-              "y": 7.5,
-              "z": 25
-            }
-          },
-          "corners": [
-            {
-              "x": -6,
-              "y": 7.5,
-              "z": 37
-            },
-            {
-              "x": -6,
-              "y": 7.5,
-              "z": 25
-            },
-            {
-              "x": 6,
-              "y": 7.5,
-              "z": 25
-            },
-            {
-              "x": 6,
-              "y": 7.5,
-              "z": 37
-            }
-          ],
-          "face": "local-positive-y",
-          "kind": "planar-face",
-          "maximumY": 7.5,
-          "normal": {
-            "x": 0,
-            "y": 1,
-            "z": 0
-          },
-          "plane": {
-            "normal": {
-              "x": 0,
-              "y": 1,
-              "z": 0
-            },
-            "point": {
-              "x": -6,
-              "y": 7.5,
-              "z": 37
-            }
-          },
-          "shape": "Block"
-        },
-        "toGlobalIndex": 3,
-        "toObjectId": "WedgeClimb01",
-        "transitionId": "route:brainrot-tower-vertical-slice-scene/Checkpoint01/WedgeClimb01/2/3",
-        "units": "studs",
-        "verticalRise": {
-          "applicability": "broad-phase-only",
-          "approximationKind": "conservative-bounds-delta",
-          "limitations": [
-            "Surface envelope maxima are not a character landing or feasibility test."
-          ],
-          "method": "surface-envelope-height-delta",
-          "toleranceStuds": 1e-9,
-          "value": 4.5
-        }
-      }
+      "toGlobalIndex": 3,
+      "transitionId": "route:brainrot-tower-vertical-slice-scene/Checkpoint01/WedgeClimb01/2/3"
     },
     {
       "confidenceBasis": "deterministic-model-rule-bounded-inputs",
+      "confidenceSemantics": "deterministic-rule-result-not-probability",
+      "controllerProfileHash": "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7",
+      "controllerProfileId": "e1-r15-provisional",
+      "controllerProfileVersion": "1.0.0",
+      "destinationObjectId": "FinishPlatform",
+      "fromGlobalIndex": 3,
+      "inputEvidenceHashes": [
+        "sha256:7834171b7259c4aedddf798f32a64c704f43255a6d53d67f684cfb67b6df5386",
+        "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
+      ],
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
+        "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
         "Surface envelope maxima are not a character landing or feasibility test.",
         "World AABB overlap does not prove native primitive surface contact."
       ],
       "metricId": "playability.coarse-transition-state",
-      "resultId": "coarse.brainrot-tower-vertical-slice-scene.3.4",
-      "state": "feasible-under-model",
-      "transition": {
-        "controllerProfileRef": "e1-r15-provisional",
-        "destinationSurface": {
-          "approximationKind": "exact-native-primitive",
-          "bounds": {
-            "maximum": {
-              "x": 8,
-              "y": 14,
-              "z": 68
-            },
-            "minimum": {
-              "x": -8,
-              "y": 14,
-              "z": 52
-            }
-          },
-          "corners": [
-            {
-              "x": -8,
-              "y": 14,
-              "z": 52
-            },
-            {
-              "x": 8,
-              "y": 14,
-              "z": 52
-            },
-            {
-              "x": 8,
-              "y": 14,
-              "z": 68
-            },
-            {
-              "x": -8,
-              "y": 14,
-              "z": 68
-            }
-          ],
-          "face": "local-positive-y",
-          "kind": "planar-face",
-          "maximumY": 14,
-          "normal": {
-            "x": 0,
-            "y": 1,
-            "z": 0
-          },
-          "plane": {
-            "normal": {
-              "x": 0,
-              "y": 1,
-              "z": 0
-            },
-            "point": {
-              "x": -8,
-              "y": 14,
-              "z": 52
-            }
-          },
-          "shape": "Block"
-        },
-        "downwardDrop": {
-          "applicability": "broad-phase-only",
-          "approximationKind": "conservative-bounds-delta",
-          "limitations": [
-            "Surface envelope maxima are not a character landing or feasibility test."
-          ],
-          "method": "surface-envelope-height-delta",
-          "toleranceStuds": 1e-9,
-          "value": 0
-        },
-        "fromGlobalIndex": 3,
-        "fromObjectId": "WedgeClimb01",
-        "horizontalSeparation": {
-          "applicability": "broad-phase-only",
-          "approximationKind": "conservative-lower-bound",
-          "limitations": [
-            "World AABB overlap does not prove native primitive surface contact."
-          ],
-          "method": "world-aabb-horizontal-separation",
-          "toleranceStuds": 1e-9,
-          "value": 2
-        },
-        "routeId": "brainrot-tower-vertical-slice-scene",
-        "schemaVersion": "0.1",
-        "sourceSurface": {
-          "approximationKind": "exact-native-primitive",
-          "faceOrientation": "rises-toward-local-positive-z",
-          "kind": "wedge-surfaces",
-          "maximumY": 12,
-          "nonSlopedFaces": [
-            {
-              "approximationKind": "exact-native-primitive",
-              "bounds": {
-                "maximum": {
-                  "x": 6,
-                  "y": 8,
-                  "z": 50
-                },
-                "minimum": {
-                  "x": -6,
-                  "y": 8,
-                  "z": 40
-                }
-              },
-              "corners": [
-                {
-                  "x": -6,
-                  "y": 8,
-                  "z": 40
-                },
-                {
-                  "x": 6,
-                  "y": 8,
-                  "z": 40
-                },
-                {
-                  "x": 6,
-                  "y": 8,
-                  "z": 50
-                },
-                {
-                  "x": -6,
-                  "y": 8,
-                  "z": 50
-                }
-              ],
-              "face": "local-negative-y",
-              "kind": "planar-face",
-              "maximumY": 8,
-              "normal": {
-                "x": 0,
-                "y": -1,
-                "z": 0
-              },
-              "plane": {
-                "normal": {
-                  "x": 0,
-                  "y": -1,
-                  "z": 0
-                },
-                "point": {
-                  "x": -6,
-                  "y": 8,
-                  "z": 40
-                }
-              }
-            },
-            {
-              "approximationKind": "exact-native-primitive",
-              "bounds": {
-                "maximum": {
-                  "x": 6,
-                  "y": 12,
-                  "z": 50
-                },
-                "minimum": {
-                  "x": -6,
-                  "y": 8,
-                  "z": 50
-                }
-              },
-              "corners": [
-                {
-                  "x": -6,
-                  "y": 8,
-                  "z": 50
-                },
-                {
-                  "x": 6,
-                  "y": 8,
-                  "z": 50
-                },
-                {
-                  "x": 6,
-                  "y": 12,
-                  "z": 50
-                },
-                {
-                  "x": -6,
-                  "y": 12,
-                  "z": 50
-                }
-              ],
-              "face": "local-positive-z",
-              "kind": "planar-face",
-              "maximumY": 12,
-              "normal": {
-                "x": 0,
-                "y": 0,
-                "z": 1
-              },
-              "plane": {
-                "normal": {
-                  "x": 0,
-                  "y": 0,
-                  "z": 1
-                },
-                "point": {
-                  "x": -6,
-                  "y": 8,
-                  "z": 50
-                }
-              }
-            }
-          ],
-          "shape": "Wedge",
-          "slopedFace": {
-            "approximationKind": "exact-native-primitive",
-            "bounds": {
-              "maximum": {
-                "x": 6,
-                "y": 12,
-                "z": 50
-              },
-              "minimum": {
-                "x": -6,
-                "y": 8,
-                "z": 40
-              }
-            },
-            "corners": [
-              {
-                "x": -6,
-                "y": 8,
-                "z": 40
-              },
-              {
-                "x": -6,
-                "y": 12,
-                "z": 50
-              },
-              {
-                "x": 6,
-                "y": 12,
-                "z": 50
-              },
-              {
-                "x": 6,
-                "y": 8,
-                "z": 40
-              }
+      "reasonCodes": [],
+      "reproduction": {
+        "inputEvidenceHashes": [
+          "sha256:7834171b7259c4aedddf798f32a64c704f43255a6d53d67f684cfb67b6df5386",
+          "sha256:de6eb21104dd7084c33bef29dd5a1f00e5df6f12d8bb1d42aa8321b04e766dc7"
+        ],
+        "methodId": "coarse-transition-classifier",
+        "methodVersion": "2.0.0",
+        "normalizedInputs": {
+          "destinationSurfaceKind": "planar-face",
+          "downwardDrop": {
+            "applicability": "broad-phase-only",
+            "approximationKind": "conservative-bounds-delta",
+            "limitations": [
+              "Surface envelope maxima are not a character landing or feasibility test."
             ],
-            "face": "local-slope-rising-positive-z",
-            "kind": "planar-face",
-            "maximumY": 12,
-            "normal": {
-              "x": 0,
-              "y": 0.928476690885,
-              "z": -0.371390676354
-            },
-            "plane": {
-              "normal": {
-                "x": 0,
-                "y": 0.928476690885,
-                "z": -0.371390676354
-              },
-              "point": {
-                "x": -6,
-                "y": 8,
-                "z": 40
-              }
-            }
+            "method": "surface-envelope-height-delta",
+            "status": "available",
+            "toleranceStuds": 1e-9,
+            "value": 0
+          },
+          "horizontalSeparation": {
+            "applicability": "broad-phase-only",
+            "approximationKind": "conservative-lower-bound",
+            "limitations": [
+              "World AABB overlap does not prove native primitive surface contact."
+            ],
+            "method": "world-aabb-horizontal-separation",
+            "status": "available",
+            "toleranceStuds": 1e-9,
+            "value": 2
+          },
+          "landingRegion": {
+            "approximationKind": "exact-native-primitive",
+            "limitations": [
+              "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing."
+            ],
+            "method": "exact-planar-intrinsic-edge-spans-v1",
+            "spanAStuds": 16,
+            "spanBStuds": 16,
+            "status": "available",
+            "toleranceStuds": 1e-9
+          },
+          "sourceSurfaceKind": "wedge-slope",
+          "verticalRise": {
+            "applicability": "broad-phase-only",
+            "approximationKind": "conservative-bounds-delta",
+            "limitations": [
+              "Surface envelope maxima are not a character landing or feasibility test."
+            ],
+            "method": "surface-envelope-height-delta",
+            "status": "available",
+            "toleranceStuds": 1e-9,
+            "value": 2
           }
-        },
-        "toGlobalIndex": 4,
-        "toObjectId": "FinishPlatform",
-        "transitionId": "route:brainrot-tower-vertical-slice-scene/WedgeClimb01/FinishPlatform/3/4",
-        "units": "studs",
-        "verticalRise": {
-          "applicability": "broad-phase-only",
-          "approximationKind": "conservative-bounds-delta",
-          "limitations": [
-            "Surface envelope maxima are not a character landing or feasibility test."
-          ],
-          "method": "surface-envelope-height-delta",
-          "toleranceStuds": 1e-9,
-          "value": 2
         }
-      }
+      },
+      "resultId": "coarse.brainrot-tower-vertical-slice-scene.3.4",
+      "routeId": "brainrot-tower-vertical-slice-scene",
+      "sourceObjectId": "WedgeClimb01",
+      "state": "feasible-under-model",
+      "toGlobalIndex": 4,
+      "transitionId": "route:brainrot-tower-vertical-slice-scene/WedgeClimb01/FinishPlatform/3/4"
     }
   ],
   "transitions": [

@@ -1,9 +1,12 @@
+import { hashControllerProfile } from "@obby/obby-evaluator-contracts";
 import { describe, expect, it } from "vitest";
 
 import {
   classifyCoarseTransition,
+  CoarseTransitionValidationError,
   createDefaultControllerProfile,
   evaluateRoutePlayability,
+  type CoarseTransitionInput,
 } from "../src/index.js";
 import {
   manifestFixture,
@@ -11,7 +14,7 @@ import {
   requiredFixture,
 } from "./fixtures.js";
 
-function firstClassificationAt(x: number, y: number, z: number) {
+function evaluationAt(x: number, y: number, z: number) {
   const manifest = manifestFixture();
   const first = requiredFixture(
     manifest.layers.gameplay.objects.find(
@@ -23,11 +26,38 @@ function firstClassificationAt(x: number, y: number, z: number) {
   manifest.worldBounds.minimum = { x: -100, y: -100, z: -100 };
   manifest.worldBounds.maximum = { x: 100, y: 100, z: 100 };
   rehashManifest(manifest);
-  const result = evaluateRoutePlayability({
+  return evaluateRoutePlayability({
     manifest,
     controllerProfile: createDefaultControllerProfile(),
   });
-  return requiredFixture(result.transitionStates[0], "first transition state");
+}
+
+function firstClassificationAt(x: number, y: number, z: number) {
+  return requiredFixture(
+    evaluationAt(x, y, z).transitionStates[0],
+    "first transition state",
+  );
+}
+
+function baseTransition(): CoarseTransitionInput {
+  return requiredFixture(
+    evaluationAt(0, 4, 16).transitions[0],
+    "first normalized transition",
+  );
+}
+
+function unavailable(
+  reasonCode:
+    | "missing-horizontal-separation"
+    | "missing-vertical-rise"
+    | "missing-downward-drop",
+) {
+  return {
+    status: "unavailable" as const,
+    reasonCode,
+    missingEvidenceHashes: [],
+    limitations: [`${reasonCode} fixture evidence is unavailable.`],
+  };
 }
 
 describe("coarse model-relative transition classification", () => {
@@ -41,59 +71,171 @@ describe("coarse model-relative transition classification", () => {
     expect(firstClassificationAt(x, y, z).state).toBe("feasible-under-model");
   });
 
-  it("uses inclusive limits and rejects epsilon outside the horizontal limit", () => {
-    const profile = createDefaultControllerProfile();
-    const base = firstClassificationAt(0, 4, 16).transition;
-    expect(
-      classifyCoarseTransition(
-        {
-          ...base,
-          horizontalSeparation: {
-            ...base.horizontalSeparation,
-            value: profile.maximumHorizontalGap.value,
-          },
-        },
-        profile,
-      ).state,
-    ).toBe("feasible-under-model");
-    expect(
-      classifyCoarseTransition(
-        {
-          ...base,
-          horizontalSeparation: {
-            ...base.horizontalSeparation,
-            value:
-              profile.maximumHorizontalGap.value +
-              profile.tolerancePolicy.comparisonToleranceStuds * 2,
-          },
-        },
-        profile,
-      ).state,
-    ).toBe("infeasible-under-model");
-  });
+  it.each([
+    ["horizontalSeparation", "maximumHorizontalGap"],
+    ["verticalRise", "maximumRise"],
+    ["downwardDrop", "maximumDownwardDrop"],
+  ] as const)(
+    "applies inclusive exact, inside-tolerance, and outside-tolerance boundaries for %s",
+    (field, profileField) => {
+      const profile = createDefaultControllerProfile();
+      const base = baseTransition();
+      const maximum = profile[profileField].value;
+      const tolerance = profile.tolerancePolicy.comparisonToleranceStuds;
+      const classify = (value: number) =>
+        classifyCoarseTransition(
+          { ...base, [field]: { ...base[field], value } },
+          profile,
+        );
+      expect(classify(maximum).state).toBe("feasible-under-model");
+      expect(classify(maximum + tolerance / 2).state).toBe(
+        "feasible-under-model",
+      );
+      expect(classify(maximum + tolerance * 2).state).toBe(
+        "infeasible-under-model",
+      );
+    },
+  );
 
   it.each([
-    ["horizontalSeparation", 7],
-    ["verticalRise", 6],
-    ["downwardDrop", 21],
+    ["horizontalSeparation", 7, "horizontal-gap-exceeds-profile"],
+    ["verticalRise", 6, "vertical-rise-exceeds-profile"],
+    ["downwardDrop", 21, "downward-drop-exceeds-profile"],
   ] as const)(
     "classifies excessive %s relative to the profile",
-    (field, value) => {
+    (field, value, reason) => {
       const profile = createDefaultControllerProfile();
-      const base = firstClassificationAt(0, 4, 16).transition;
+      const base = baseTransition();
       const result = classifyCoarseTransition(
         { ...base, [field]: { ...base[field], value } },
         profile,
       );
       expect(result.state).toBe("infeasible-under-model");
+      expect(result.reasonCodes).toContain(reason);
       expect(result.limitations.join(" ")).toContain("model");
       expect(result.limitations.join(" ")).not.toContain("impossible");
     },
   );
 
-  it("returns indeterminate for unsupported curved-to-curved surfaces", () => {
+  it.each([
+    ["horizontalSeparation", "missing-horizontal-separation"],
+    ["verticalRise", "missing-vertical-rise"],
+    ["downwardDrop", "missing-downward-drop"],
+  ] as const)(
+    "returns deterministic indeterminate evidence when %s is explicitly unavailable",
+    (field, reason) => {
+      const base = baseTransition();
+      const first = classifyCoarseTransition(
+        { ...base, [field]: unavailable(reason) },
+        createDefaultControllerProfile(),
+      );
+      const second = classifyCoarseTransition(
+        { ...base, [field]: unavailable(reason) },
+        createDefaultControllerProfile(),
+      );
+      expect(first.state).toBe("indeterminate");
+      expect(first.reasonCodes).toContain(reason);
+      expect(first.reproduction).toEqual(second.reproduction);
+      expect(first.limitations).toEqual(second.limitations);
+    },
+  );
+
+  it("distinguishes malformed missing measurement fields from explicit unavailability", () => {
+    const malformed = {
+      ...baseTransition(),
+      horizontalSeparation: undefined,
+    };
+    expect(() =>
+      classifyCoarseTransition(
+        malformed as unknown as CoarseTransitionInput,
+        createDefaultControllerProfile(),
+      ),
+    ).toThrow(CoarseTransitionValidationError);
+  });
+
+  it("returns indeterminate for an unsupported measurement method", () => {
+    const base = baseTransition();
+    const result = classifyCoarseTransition(
+      {
+        ...base,
+        horizontalSeparation: {
+          ...base.horizontalSeparation,
+          method: "future-unsupported-method",
+        } as never,
+      },
+      createDefaultControllerProfile(),
+    );
+    expect(result.state).toBe("indeterminate");
+    expect(result.reasonCodes).toContain("unsupported-surface-measurement");
+  });
+
+  it("returns indeterminate when landing-region evidence is unavailable", () => {
+    const result = classifyCoarseTransition(
+      {
+        ...baseTransition(),
+        landingRegion: {
+          status: "unavailable",
+          reasonCode: "insufficient-landing-evidence",
+          missingEvidenceHashes: [],
+          limitations: ["Destination landing region evidence is unavailable."],
+        },
+      },
+      createDefaultControllerProfile(),
+    );
+    expect(result.state).toBe("indeterminate");
+    expect(result.reasonCodes).toContain("insufficient-landing-evidence");
+  });
+
+  it("makes landing margin content-addressed and behaviorally meaningful", () => {
+    const base = baseTransition();
+    const defaultProfile = createDefaultControllerProfile();
+    const largeMarginProfile = structuredClone(defaultProfile);
+    largeMarginProfile.requiredLandingMargin.value = 100;
+    largeMarginProfile.controllerProfileHash =
+      hashControllerProfile(largeMarginProfile).hash;
+    const defaultResult = classifyCoarseTransition(base, defaultProfile);
+    const largeResult = classifyCoarseTransition(base, largeMarginProfile);
+    expect(defaultProfile.controllerProfileHash).not.toBe(
+      largeMarginProfile.controllerProfileHash,
+    );
+    expect(defaultResult.state).toBe("feasible-under-model");
+    expect(largeResult.state).toBe("infeasible-under-model");
+    expect(largeResult.reasonCodes).toContain("landing-region-too-small");
+  });
+
+  it("applies exact, inside-tolerance, and outside-tolerance landing-span boundaries", () => {
     const profile = createDefaultControllerProfile();
-    const base = firstClassificationAt(0, 4, 16).transition;
+    const base = baseTransition();
+    const tolerance = profile.tolerancePolicy.comparisonToleranceStuds;
+    const landing = (spanAStuds: number) => ({
+      status: "available" as const,
+      method: "exact-planar-intrinsic-edge-spans-v1" as const,
+      approximationKind: "exact-native-primitive" as const,
+      spanAStuds,
+      spanBStuds: 6,
+      toleranceStuds: tolerance,
+      limitations: ["Exact fixture landing region."],
+    });
+    expect(
+      classifyCoarseTransition({ ...base, landingRegion: landing(4) }, profile)
+        .state,
+    ).toBe("feasible-under-model");
+    expect(
+      classifyCoarseTransition(
+        { ...base, landingRegion: landing(4 - tolerance / 2) },
+        profile,
+      ).state,
+    ).toBe("feasible-under-model");
+    expect(
+      classifyCoarseTransition(
+        { ...base, landingRegion: landing(4 - tolerance * 2) },
+        profile,
+      ).state,
+    ).toBe("infeasible-under-model");
+  });
+
+  it("returns indeterminate for unsupported curved-to-curved surfaces and landing", () => {
+    const base = baseTransition();
     const curved = {
       kind: "spherical-surface" as const,
       shape: "Ball" as const,
@@ -103,45 +245,60 @@ describe("coarse model-relative transition classification", () => {
       maximumY: 2,
       approximationKind: "exact-native-primitive" as const,
     };
-    expect(
-      classifyCoarseTransition(
-        { ...base, sourceSurface: curved, destinationSurface: curved },
-        profile,
-      ).state,
-    ).toBe("indeterminate");
+    const result = classifyCoarseTransition(
+      { ...base, sourceSurface: curved, destinationSurface: curved },
+      createDefaultControllerProfile(),
+    );
+    expect(result.state).toBe("indeterminate");
+    expect(result.reasonCodes).toEqual(
+      expect.arrayContaining([
+        "unsupported-surface-measurement",
+        "insufficient-landing-evidence",
+      ]),
+    );
   });
 
-  it("classifies a vertical-only supported transition from explicit measurements", () => {
-    const profile = createDefaultControllerProfile();
-    const base = firstClassificationAt(0, 4, 16).transition;
-    expect(
-      classifyCoarseTransition(
-        {
-          ...base,
-          horizontalSeparation: { ...base.horizontalSeparation, value: 0 },
-          verticalRise: { ...base.verticalRise, value: 2 },
-          downwardDrop: { ...base.downwardDrop, value: 0 },
-        },
-        profile,
-      ).state,
-    ).toBe("feasible-under-model");
+  it("exposes one complete public classification identity and reproduction contract", () => {
+    const result = firstClassificationAt(0, 4, 16);
+    expect(result.transitionId.length).toBeGreaterThan(0);
+    expect(result.sourceObjectId).toBe("Spawn");
+    expect(result.destinationObjectId).toBe("JumpPlatform01");
+    expect(result.controllerProfileId).toBe("e1-r15-provisional");
+    expect(result.controllerProfileVersion).toBe("1.0.0");
+    expect(result.controllerProfileHash).toMatch(/^sha256:[0-9a-f]{64}$/);
+    expect(result.confidenceSemantics).toBe(
+      "deterministic-rule-result-not-probability",
+    );
+    expect(result.reproduction.methodId).toBe("coarse-transition-classifier");
+    expect(result.reproduction.methodVersion).toBe("2.0.0");
+    expect(result.inputEvidenceHashes).toHaveLength(2);
+    expect(result.reproduction.inputEvidenceHashes).toEqual(
+      result.inputEvidenceHashes,
+    );
   });
 
-  it("classifies the reference wedge transitions only through supported approximation metadata", () => {
+  it("preserves wedge broad-phase metadata in normalized reproduction inputs", () => {
     const result = evaluateRoutePlayability({
       manifest: manifestFixture(),
       controllerProfile: createDefaultControllerProfile(),
     });
-    const wedge = result.transitionStates.find(
-      (item) =>
-        item.transition.sourceSurface.kind === "wedge-surfaces" ||
-        item.transition.destinationSurface.kind === "wedge-surfaces",
+    const wedgeIndex = result.transitions.findIndex(
+      (transition) =>
+        transition.sourceSurface.kind === "wedge-surfaces" ||
+        transition.destinationSurface.kind === "wedge-surfaces",
+    );
+    const wedge = requiredFixture(
+      result.transitionStates[wedgeIndex],
+      "wedge classification",
     );
     expect(["feasible-under-model", "infeasible-under-model"]).toContain(
-      wedge?.state,
+      wedge.state,
     );
-    expect(wedge?.transition.horizontalSeparation.applicability).toBe(
-      "broad-phase-only",
-    );
+    expect(
+      wedge.reproduction.normalizedInputs.horizontalSeparation.status,
+    ).toBe("available");
+    expect(
+      wedge.reproduction.normalizedInputs.horizontalSeparation,
+    ).toHaveProperty("applicability", "broad-phase-only");
   });
 });

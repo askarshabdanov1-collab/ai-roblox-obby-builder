@@ -1,3 +1,4 @@
+import { compareUnicodeScalars } from "@obby/canonical-json";
 import {
   computeManifestHash,
   validateSceneManifest,
@@ -28,17 +29,18 @@ function requiredGraphValue<T>(value: T | undefined, subject: string): T {
 function normalizedManifestSnapshot(manifest: SceneManifest): SceneManifest {
   const normalized = structuredClone(manifest);
   normalized.layers.gameplay.objects.sort(
-    (a, b) => a.order - b.order || a.id.localeCompare(b.id),
+    (a, b) => a.order - b.order || compareUnicodeScalars(a.id, b.id),
   );
   normalized.layers.decorative.objects.sort(
-    (a, b) => a.order - b.order || a.id.localeCompare(b.id),
+    (a, b) => a.order - b.order || compareUnicodeScalars(a.id, b.id),
   );
   normalized.navigation.stages.sort(
-    (a, b) => a.order - b.order || a.id.localeCompare(b.id),
+    (a, b) => a.order - b.order || compareUnicodeScalars(a.id, b.id),
   );
   normalized.navigation.routeEntries.sort(
     (a, b) =>
-      a.routeOrder - b.routeOrder || a.objectId.localeCompare(b.objectId),
+      a.routeOrder - b.routeOrder ||
+      compareUnicodeScalars(a.objectId, b.objectId),
   );
   return normalized;
 }
@@ -60,7 +62,7 @@ function duplicateStrings(values: readonly string[]): string[] {
     if (seen.has(value)) repeated.add(value);
     seen.add(value);
   }
-  return [...repeated].toSorted();
+  return [...repeated].toSorted(compareUnicodeScalars);
 }
 
 function declarationIssues(manifest: SceneManifest): RouteEvaluationIssue[] {
@@ -117,7 +119,9 @@ function declarationIssues(manifest: SceneManifest): RouteEvaluationIssue[] {
       message: "required route object IDs must be unique",
     });
   }
-  for (const objectId of manifest.navigation.safeRouteObjectIds.toSorted()) {
+  for (const objectId of manifest.navigation.safeRouteObjectIds.toSorted(
+    compareUnicodeScalars,
+  )) {
     const routeObject = gameplay.get(objectId);
     if (routeObject === undefined) {
       const decorative = manifest.layers.decorative.objects.some(
@@ -163,7 +167,8 @@ function declarationIssues(manifest: SceneManifest): RouteEvaluationIssue[] {
   }
   const entries = manifest.navigation.routeEntries.toSorted(
     (a, b) =>
-      a.routeOrder - b.routeOrder || a.objectId.localeCompare(b.objectId),
+      a.routeOrder - b.routeOrder ||
+      compareUnicodeScalars(a.objectId, b.objectId),
   );
   const checkpointStageIds = entries
     .filter((entry) => gameplay.get(entry.objectId)?.role === "checkpoint")
@@ -213,7 +218,7 @@ function declarationIssues(manifest: SceneManifest): RouteEvaluationIssue[] {
     });
     if (entries.length < manifest.navigation.safeRouteObjectIds.length) {
       issues.push({
-        code: "structural-softlock-candidate",
+        code: "required-route-dead-end",
         subject: entries.at(-1)?.objectId ?? "spawn",
         message: "the required route declaration ends before the finish",
       });
@@ -259,7 +264,8 @@ function declarationIssues(manifest: SceneManifest): RouteEvaluationIssue[] {
     }
   }
   return issues.toSorted((a, b) =>
-    `${a.code}\u0000${a.subject}\u0000${a.message}`.localeCompare(
+    compareUnicodeScalars(
+      `${a.code}\u0000${a.subject}\u0000${a.message}`,
       `${b.code}\u0000${b.subject}\u0000${b.message}`,
     ),
   );
@@ -284,7 +290,8 @@ export function validateAndNormalizeManifest(input: unknown): SceneManifest {
           message: candidate.message,
         }))
         .toSorted((left, right) =>
-          `${left.code}\u0000${left.subject}\u0000${left.message}`.localeCompare(
+          compareUnicodeScalars(
+            `${left.code}\u0000${left.subject}\u0000${left.message}`,
             `${right.code}\u0000${right.subject}\u0000${right.message}`,
           ),
         ),
@@ -403,7 +410,7 @@ export function buildRouteGraph(
     hazardObjectIds: manifest.layers.gameplay.objects
       .filter((object) => object.role === "kill")
       .map((object) => object.id)
-      .toSorted(),
+      .toSorted(compareUnicodeScalars),
     sideBranches: [],
   };
 }

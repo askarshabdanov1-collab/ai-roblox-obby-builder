@@ -50,7 +50,7 @@ describe("E1b fixture registry", () => {
         "spawn-to-late-stage-skip-candidate",
         "checkpoint-to-finish-skip-candidate",
         "required-stage-skip-candidate",
-        "dead-end-softlock-candidate",
+        "required-route-dead-end",
         "shuffled-semantic-manifest",
       ]),
     );
@@ -61,5 +61,23 @@ describe("E1b fixture registry", () => {
     expect(fixture.baseManifestHash).toMatch(/^sha256:[0-9a-f]{64}$/);
     expect(fixture.baseManifestHash).not.toBe(`sha256:${"0".repeat(64)}`);
     expect(JSON.stringify(fixture.validCases)).not.toContain("ZERO_HASH");
+  });
+
+  it("contains no host-locale semantic ordering", () => {
+    for (const source of [
+      "classification.ts",
+      "evaluator.ts",
+      "graph.ts",
+      "limits.ts",
+      "profile.ts",
+      "types.ts",
+    ]) {
+      const content = readFileSync(
+        new URL(`../src/${source}`, import.meta.url),
+        "utf8",
+      );
+      expect(content).not.toContain("localeCompare");
+      expect(content).not.toContain("Intl.Collator");
+    }
   });
 });

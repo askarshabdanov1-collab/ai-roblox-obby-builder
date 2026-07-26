@@ -1,9 +1,8 @@
+import { hashControllerProfile } from "@obby/obby-evaluator-contracts";
 import { describe, expect, it } from "vitest";
 
 import {
-  buildRouteGraph,
   createDefaultControllerProfile,
-  detectStructuralSoftlockCandidates,
   evaluateRoutePlayability,
   RouteEvaluationError,
 } from "../src/index.js";
@@ -153,7 +152,7 @@ describe("route candidates and deterministic limits", () => {
     expect(skip.payload.skippedStageIndexes).toEqual([2]);
   });
 
-  it("reports a required dead end as a structural softlock issue", () => {
+  it("rejects a required-route dead end without exposing unsupported softlock evidence", () => {
     const manifest = manifestFixture();
     manifest.navigation.routeEntries.pop();
     rehashManifest(manifest);
@@ -174,31 +173,73 @@ describe("route candidates and deterministic limits", () => {
       ).toEqual(
         expect.arrayContaining([
           "disconnected-required-route",
-          "structural-softlock-candidate",
+          "required-route-dead-end",
         ]),
       );
     }
   });
 
-  it("detects a checkpoint with no outgoing required path as a structural candidate", () => {
-    const graph = buildRouteGraph(manifestFixture());
-    const checkpoint = requiredFixture(
-      graph.nodes.find((node) => node.role === "checkpoint"),
-      "checkpoint node",
+  it("does not expose static softlock evidence without authoritative branch or enclosure metadata", () => {
+    const result = evaluateRoutePlayability({
+      manifest: manifestFixture(),
+      controllerProfile: createDefaultControllerProfile(),
+    });
+    expect(result.evidence.map((record) => record.kind)).not.toContain(
+      "softlock-candidate",
     );
-    const truncated = {
-      ...graph,
-      edges: graph.edges.filter(
-        (edge) => edge.fromObjectId !== checkpoint.objectId,
+    expect(Object.keys(result)).not.toContain("softlockCandidates");
+  });
+
+  it("uses the shared landing-margin rule for direct skip candidates", () => {
+    const manifest = manifestFixture();
+    const finish = requiredFixture(
+      manifest.layers.gameplay.objects.find(
+        (object) => object.role === "finish",
       ),
-    };
-    expect(detectStructuralSoftlockCandidates(truncated)).toContainEqual(
-      expect.objectContaining({
-        subjectObjectId: checkpoint.objectId,
-        candidateKind: "checkpoint-without-outgoing-path",
-        state: "structural-softlock-candidate",
-      }),
+      "finish",
     );
+    finish.transform.position = { x: 0, y: 3, z: 8 };
+    rehashManifest(manifest);
+    const defaultProfile = createDefaultControllerProfile();
+    const largeMarginProfile = structuredClone(defaultProfile);
+    largeMarginProfile.requiredLandingMargin.value = 100;
+    largeMarginProfile.controllerProfileHash =
+      hashControllerProfile(largeMarginProfile).hash;
+    const defaultCandidates = evaluateRoutePlayability({
+      manifest,
+      controllerProfile: defaultProfile,
+    }).evidence.filter((record) => record.kind === "skip-candidate");
+    const largeMarginCandidates = evaluateRoutePlayability({
+      manifest,
+      controllerProfile: largeMarginProfile,
+    }).evidence.filter((record) => record.kind === "skip-candidate");
+    expect(defaultCandidates.length).toBeGreaterThan(0);
+    expect(largeMarginCandidates).toHaveLength(0);
+  });
+
+  it("emits one deterministic record per unique skip candidate pair", () => {
+    const manifest = manifestFixture();
+    const finish = requiredFixture(
+      manifest.layers.gameplay.objects.find(
+        (object) => object.role === "finish",
+      ),
+      "finish",
+    );
+    finish.transform.position = { x: 0, y: 3, z: 8 };
+    rehashManifest(manifest);
+    const first = evaluateRoutePlayability({
+      manifest,
+      controllerProfile: createDefaultControllerProfile(),
+    });
+    const second = evaluateRoutePlayability({
+      manifest: structuredClone(manifest),
+      controllerProfile: createDefaultControllerProfile(),
+    });
+    const candidateIds = first.evidence
+      .filter((record) => record.kind === "skip-candidate")
+      .map((record) => record.payload.candidateId);
+    expect(new Set(candidateIds).size).toBe(candidateIds.length);
+    expect(second.evidence).toEqual(first.evidence);
   });
 
   it.each([

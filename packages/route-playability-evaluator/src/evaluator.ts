@@ -1,5 +1,6 @@
 import {
   canonicalizeEvaluatorSnapshot,
+  compareUnicodeScalars,
   sha256Bytes,
   snapshotEvaluatorInput,
 } from "@obby/canonical-json";
@@ -8,21 +9,22 @@ import {
   normalizeGeometryObjects,
   normalizeTransitionInputs,
   type AxisAlignedBounds,
+  type ConservativeMeasurement,
   type NormalizedGeometryObject,
 } from "@obby/geometry-evaluator";
 import {
   assertValidEvidenceGraph,
   hashEvidenceContent,
-  verifyControllerProfileIdentity,
-  type ControllerProfile,
+  type CoarseTransitionStatePayload,
   type EvidenceRecordContract,
   type EvaluationSubject,
   type Finding,
 } from "@obby/obby-evaluator-contracts";
 
 import {
-  classifyCoarseTransition,
   coarseSurfaceKind,
+  createCoarseTransitionClassifier,
+  type CoarseTransitionClassifier,
 } from "./classification.js";
 import { buildRouteGraph, validateAndNormalizeManifest } from "./graph.js";
 import {
@@ -36,7 +38,6 @@ import type {
   RoutePlayabilityEvaluation,
   RoutePlayabilityInput,
 } from "./types.js";
-import { detectStructuralSoftlockCandidates } from "./softlocks.js";
 
 const PRODUCER = Object.freeze({
   component: "route-playability-evaluator" as const,
@@ -178,8 +179,9 @@ function axisGap(
 function directCandidateFits(
   source: NormalizedGeometryObject,
   destination: NormalizedGeometryObject,
-  profile: ControllerProfile,
+  classifier: CoarseTransitionClassifier,
 ): boolean {
+  const profile = classifier.profile;
   if (!source.gameplayAuthoritative || !destination.gameplayAuthoritative) {
     return false;
   }
@@ -206,11 +208,51 @@ function directCandidateFits(
     destination.axisAlignedBounds.maximum.z,
   );
   const delta = destination.topSurface.maximumY - source.topSurface.maximumY;
-  const tolerance = profile.tolerancePolicy.comparisonToleranceStuds;
+  const conservativeMeasurement = (
+    value: number,
+    method: ConservativeMeasurement["method"],
+    approximationKind: ConservativeMeasurement["approximationKind"],
+    limitation: string,
+  ): ConservativeMeasurement => ({
+    value,
+    method,
+    approximationKind,
+    toleranceStuds: 1e-9,
+    limitations: [limitation],
+    applicability: "broad-phase-only",
+  });
   return (
-    Math.hypot(x, z) <= profile.maximumHorizontalGap.value + tolerance &&
-    Math.max(0, delta) <= profile.maximumRise.value + tolerance &&
-    Math.max(0, -delta) <= profile.maximumDownwardDrop.value + tolerance
+    classifier.classify({
+      schemaVersion: "0.1",
+      transitionId: `candidate:${source.objectId}:${destination.objectId}`,
+      routeId: source.safeRouteRef?.routeId ?? "candidate-route",
+      fromObjectId: source.objectId,
+      toObjectId: destination.objectId,
+      fromGlobalIndex: source.safeRouteRef?.globalIndex ?? 0,
+      toGlobalIndex: destination.safeRouteRef?.globalIndex ?? 1,
+      controllerProfileRef: profile.profileId,
+      units: "studs",
+      horizontalSeparation: conservativeMeasurement(
+        Math.hypot(x, z),
+        "world-aabb-horizontal-separation",
+        "conservative-lower-bound",
+        "World AABB separation is a conservative skip-candidate input.",
+      ),
+      verticalRise: conservativeMeasurement(
+        Math.max(0, delta),
+        "surface-envelope-height-delta",
+        "conservative-bounds-delta",
+        "Surface envelope rise is a conservative skip-candidate input.",
+      ),
+      downwardDrop: conservativeMeasurement(
+        Math.max(0, -delta),
+        "surface-envelope-height-delta",
+        "conservative-bounds-delta",
+        "Surface envelope drop is a conservative skip-candidate input.",
+      ),
+      sourceSurface: source.topSurface,
+      destinationSurface: destination.topSurface,
+    }).state === "feasible-under-model"
   );
 }
 
@@ -253,10 +295,12 @@ function baseEvidence(
     manifestHash,
     subject,
     producer: PRODUCER,
-    parentEvidenceHashes: [...parentEvidenceHashes].toSorted(),
+    parentEvidenceHashes: [...parentEvidenceHashes].toSorted(
+      compareUnicodeScalars,
+    ),
     artifactHashes: [],
     quality: { completeness: "complete" as const, validityCodes: [] },
-    limitations: [...limitations].toSorted(),
+    limitations: [...limitations].toSorted(compareUnicodeScalars),
   };
 }
 
@@ -277,7 +321,7 @@ function finding(
     findingId: `finding.${ruleId}.${ordinal}`,
     ruleId,
     ruleVersion: "1.0.0",
-    metricIds: [...metricIds].toSorted(),
+    metricIds: [...metricIds].toSorted(compareUnicodeScalars),
     title,
     summary,
     severity,
@@ -285,7 +329,7 @@ function finding(
     sourceKind,
     subjects,
     evidenceIds,
-    limitations: [...limitations].toSorted(),
+    limitations: [...limitations].toSorted(compareUnicodeScalars),
   };
 }
 
@@ -293,7 +337,8 @@ export function evaluateRoutePlayability(
   input: RoutePlayabilityInput,
 ): RoutePlayabilityEvaluation {
   const limits = resolveRouteLimits(input.limits);
-  const profile = verifyControllerProfileIdentity(input.controllerProfile);
+  const classifier = createCoarseTransitionClassifier(input.controllerProfile);
+  const profile = classifier.profile;
   const work = new WorkBudget(limits.maxTraversalWork);
   if (limits.maxRoutes < 1) rejectBudget("maximum-routes", 1, limits.maxRoutes);
   const gameplayObjects = nestedArray(
@@ -307,23 +352,27 @@ export function evaluateRoutePlayability(
     "navigation",
     "safeRouteObjectIds",
   );
-  const checkpointCount = gameplayObjects.filter(
-    (object) => recordValue(object)?.role === "checkpoint",
-  ).length;
-  const hazardCount = gameplayObjects.filter(
-    (object) => recordValue(object)?.role === "kill",
-  ).length;
+  let checkpointCount = 0;
+  let hazardCount = 0;
+  for (const object of gameplayObjects) {
+    const role = recordValue(object)?.role;
+    if (role === "checkpoint") checkpointCount += 1;
+    if (role === "kill") hazardCount += 1;
+    if (checkpointCount > limits.maxCheckpoints)
+      rejectBudget(
+        "maximum-checkpoints",
+        checkpointCount,
+        limits.maxCheckpoints,
+      );
+    if (hazardCount > limits.maxHazards)
+      rejectBudget("maximum-hazards", hazardCount, limits.maxHazards);
+  }
   const nodeCount = safeRouteObjectIds.length + 1;
   const transitionCount = safeRouteObjectIds.length;
   if (nodeCount > limits.maxNodes)
     rejectBudget("maximum-nodes", nodeCount, limits.maxNodes);
   if (transitionCount > limits.maxTransitions)
     rejectBudget("maximum-transitions", transitionCount, limits.maxTransitions);
-  if (checkpointCount > limits.maxCheckpoints)
-    rejectBudget("maximum-checkpoints", checkpointCount, limits.maxCheckpoints);
-  if (hazardCount > limits.maxHazards)
-    rejectBudget("maximum-hazards", hazardCount, limits.maxHazards);
-
   const manifest = validateAndNormalizeManifest(input.manifest);
 
   const routeGraph = buildRouteGraph(manifest, limits, work);
@@ -349,11 +398,6 @@ export function evaluateRoutePlayability(
     })),
     geometryById,
   );
-  const transitionStates = transitions.map((transition) => {
-    work.use();
-    return classifyCoarseTransition(transition, profile);
-  });
-
   const evidence: EvidenceRecordContract[] = [];
   const pushEvidence = (record: EvidenceRecordContract): void => {
     if (evidence.length + 1 > limits.maxEvidenceRecords) {
@@ -367,10 +411,10 @@ export function evaluateRoutePlayability(
   };
   const reproduction = (methodId: string, inputHashes: readonly string[]) => ({
     methodId,
-    inputHashes: [...new Set(inputHashes)].toSorted(),
+    inputHashes: [...new Set(inputHashes)].toSorted(compareUnicodeScalars),
   });
   const normalizedGeometry = [...geometryById.values()].toSorted((a, b) =>
-    a.objectId.localeCompare(b.objectId),
+    compareUnicodeScalars(a.objectId, b.objectId),
   );
   const geometryHash = contentHash(
     "normalized-scene-geometry-v1",
@@ -490,12 +534,39 @@ export function evaluateRoutePlayability(
     return record;
   });
 
+  const transitionStates = transitions.map((transition, index) => {
+    work.use();
+    const transitionRecord = requiredValue(
+      transitionEvidence[index],
+      transition.transitionId,
+    );
+    return classifier.classify(transition, {
+      inputEvidenceHashes: [
+        transitionRecord.evidenceContentHash as `sha256:${string}`,
+      ],
+    });
+  });
+
   const coarseEvidence = transitionStates.map((result, index) => {
     const transitionRecord = requiredValue(
       transitionEvidence[index],
-      result.transition.transitionId,
+      result.transitionId,
     );
-    const transition = result.transition;
+    const transition = requiredValue(transitions[index], result.transitionId);
+    const normalized = result.reproduction.normalizedInputs;
+    if (
+      normalized.horizontalSeparation.status !== "available" ||
+      normalized.verticalRise.status !== "available" ||
+      normalized.downwardDrop.status !== "available"
+    ) {
+      throw new RouteEvaluationError("resolved-transition-invariant", [
+        {
+          code: "resolved-transition-invariant",
+          subject: result.transitionId,
+          message: "normalized scene transition measurements must be available",
+        },
+      ]);
+    }
     const record = finishEvidence({
       ...baseEvidence(
         `e1b:coarse-transition:${index}`,
@@ -513,13 +584,30 @@ export function evaluateRoutePlayability(
         transitionId: transition.transitionId,
         fromObjectId: transition.fromObjectId,
         toObjectId: transition.toObjectId,
-        controllerProfileId: profile.profileId,
-        controllerProfileVersion: profile.profileVersion,
-        controllerProfileHash: profile.controllerProfileHash,
+        controllerProfileId: result.controllerProfileId,
+        controllerProfileVersion: result.controllerProfileVersion,
+        controllerProfileHash: result.controllerProfileHash,
+        inputEvidenceHashes: [...result.inputEvidenceHashes] as [
+          string,
+          string,
+          ...string[],
+        ],
         state: result.state,
-        horizontalGapStuds: transition.horizontalSeparation.value,
-        verticalRiseStuds: transition.verticalRise.value,
-        downwardDropStuds: transition.downwardDrop.value,
+        reasonCodes: [...result.reasonCodes],
+        horizontalGapStuds: normalized.horizontalSeparation.value,
+        verticalRiseStuds: normalized.verticalRise.value,
+        downwardDropStuds: normalized.downwardDrop.value,
+        landingRegion: {
+          ...normalized.landingRegion,
+          ...(normalized.landingRegion.status === "unavailable"
+            ? {
+                missingEvidenceHashes: [
+                  ...normalized.landingRegion.missingEvidenceHashes,
+                ],
+              }
+            : {}),
+          limitations: [...normalized.landingRegion.limitations],
+        } as CoarseTransitionStatePayload["landingRegion"],
         sourceSurfaceKind: coarseSurfaceKind(transition.sourceSurface),
         destinationSurfaceKind: coarseSurfaceKind(
           transition.destinationSurface,
@@ -527,10 +615,10 @@ export function evaluateRoutePlayability(
         approximationMethod: transition.horizontalSeparation.method,
         geometryToleranceStuds: transition.horizontalSeparation.toleranceStuds,
         confidenceBasis: result.confidenceBasis,
-        reproduction: reproduction("coarse-transition-v1", [
-          transitionRecord.evidenceContentHash,
-          profile.controllerProfileHash,
-        ]),
+        reproduction: reproduction(
+          "coarse-transition-v2",
+          result.inputEvidenceHashes,
+        ),
       },
     });
     pushEvidence(record);
@@ -720,6 +808,8 @@ export function evaluateRoutePlayability(
             : "landing-surface-overlap",
           assessment: "candidate",
           geometryMethod: "world-aabb-broad-phase",
+          approximationKind: "conservative-bounds",
+          geometryToleranceStuds: 1e-9,
           hazardGameplayAuthoritative: hazard.gameplayAuthoritative,
           reproduction: reproduction("hazard-relationship-v1", [geometryHash]),
         },
@@ -750,15 +840,20 @@ export function evaluateRoutePlayability(
         manifest.manifestHash,
         { kind: "scene" },
         [geometryRecord.evidenceContentHash, routeRecord.evidenceContentHash],
-        ["Static bounds do not evaluate dynamic hazard behavior."],
+        [
+          "World AABB containment is a conservative candidate, not confirmed native-shape containment.",
+          "Static bounds do not evaluate dynamic hazard behavior.",
+        ],
       ),
       kind: "hazard-relationship",
       payload: {
         kind: "hazard-relationship",
         hazardObjectId: hazardId,
         relationship: "kill-floor-bounds",
-        assessment: consistentKillFloor ? "confirmed" : "not-detected",
+        assessment: consistentKillFloor ? "candidate" : "not-detected",
         geometryMethod: "world-aabb-broad-phase",
+        approximationKind: "conservative-bounds",
+        geometryToleranceStuds: 1e-9,
         hazardGameplayAuthoritative: hazard.gameplayAuthoritative,
         reproduction: reproduction("hazard-relationship-v1", [geometryHash]),
       },
@@ -784,6 +879,8 @@ export function evaluateRoutePlayability(
         relationship: "structural-enclosure",
         assessment: "indeterminate",
         geometryMethod: "world-aabb-broad-phase",
+        approximationKind: "conservative-bounds",
+        geometryToleranceStuds: 1e-9,
         hazardGameplayAuthoritative: hazard.gameplayAuthoritative,
         reproduction: reproduction("hazard-relationship-v1", [geometryHash]),
       },
@@ -824,7 +921,7 @@ export function evaluateRoutePlayability(
         geometryById.get(destinationNode.objectId),
         destinationNode.objectId,
       );
-      if (!directCandidateFits(source, destination, profile)) continue;
+      if (!directCandidateFits(source, destination, classifier)) continue;
       const skippedStageIndexes = [...intermediateStageIndexes]
         .filter(
           (stageIndex) =>
@@ -845,7 +942,10 @@ export function evaluateRoutePlayability(
         ...(skippedStageIndexes.length > 0
           ? (["required-stage-skip"] as const)
           : []),
-      ].toSorted() as [SkipCandidateKind, ...SkipCandidateKind[]];
+      ].toSorted(compareUnicodeScalars) as [
+        SkipCandidateKind,
+        ...SkipCandidateKind[],
+      ];
       const record = finishEvidence({
         ...baseEvidence(
           `e1b:skip:${fromIndex}:${toIndex}`,
@@ -880,42 +980,10 @@ export function evaluateRoutePlayability(
     }
   }
 
-  const softlockRecords = detectStructuralSoftlockCandidates(
-    routeGraph,
-    work,
-  ).map((candidate) => {
-    const record = finishEvidence({
-      ...baseEvidence(
-        `e1b:softlock:${candidate.candidateId}`,
-        "softlock-candidate",
-        manifest.manifestHash,
-        { kind: "scene" },
-        [routeRecord.evidenceContentHash],
-        ["This is a structural candidate and is not runtime proof."],
-      ),
-      kind: "softlock-candidate",
-      payload: {
-        kind: "softlock-candidate",
-        candidateId: candidate.candidateId,
-        subjectObjectId: candidate.subjectObjectId,
-        candidateKind: candidate.candidateKind,
-        state: candidate.state,
-        reproduction: reproduction("softlock-candidate-v1", [
-          routeRecord.evidenceContentHash,
-        ]),
-      },
-    });
-    pushEvidence(record);
-    return record;
-  });
-
   const findings: Finding[] = [];
   for (const [index, result] of transitionStates.entries()) {
     if (result.state === "feasible-under-model") continue;
-    const record = requiredValue(
-      coarseEvidence[index],
-      result.transition.transitionId,
-    );
+    const record = requiredValue(coarseEvidence[index], result.transitionId);
     findings.push(
       finding(
         findings.length,
@@ -943,18 +1011,28 @@ export function evaluateRoutePlayability(
       record.payload.assessment !== "candidate"
     )
       continue;
+    const isConsumption =
+      record.payload.relationship === "landing-surface-fully-consumed";
+    const isKillFloorBounds =
+      record.payload.relationship === "kill-floor-bounds";
     findings.push(
       finding(
         findings.length,
-        record.payload.relationship === "landing-surface-fully-consumed"
+        isConsumption
           ? "hazard.landing-consumption-candidate"
-          : "hazard.landing-overlap-candidate",
-        record.payload.relationship === "landing-surface-fully-consumed"
+          : isKillFloorBounds
+            ? "hazard.kill-floor-bounds-candidate"
+            : "hazard.landing-overlap-candidate",
+        isConsumption
           ? "Hazard landing-consumption candidate"
-          : "Hazard overlap candidate",
-        record.payload.relationship === "landing-surface-fully-consumed"
+          : isKillFloorBounds
+            ? "KillFloor bounds candidate"
+            : "Hazard overlap candidate",
+        isConsumption
           ? "Conservative broad-phase bounds indicate that a hazard may fully consume a required landing surface."
-          : "Conservative broad-phase bounds indicate a candidate hazard relationship with required route geometry.",
+          : isKillFloorBounds
+            ? "Conservative world-AABB bounds indicate a candidate KillFloor relationship; native-shape containment is not confirmed."
+            : "Conservative broad-phase bounds indicate a candidate hazard relationship with required route geometry.",
         "warning",
         "heuristic",
         [record.subject],
@@ -973,22 +1051,6 @@ export function evaluateRoutePlayability(
         "A non-adjacent broad-phase edge is a route skip candidate; E1b does not claim it is executable.",
         "warning",
         "heuristic",
-        [record.subject],
-        [requiredEvidenceId(record)],
-        record.limitations,
-      ),
-    );
-  }
-  for (const record of softlockRecords) {
-    if (record.kind !== "softlock-candidate") continue;
-    findings.push(
-      finding(
-        findings.length,
-        "route.structural-softlock-candidate",
-        "Structural softlock candidate",
-        "A required gameplay node has no declared outgoing route path.",
-        "error",
-        "deterministic",
         [record.subject],
         [requiredEvidenceId(record)],
         record.limitations,
@@ -1016,7 +1078,8 @@ export function evaluateRoutePlayability(
     );
   }
   findings.sort((a, b) =>
-    `${a.ruleId}\u0000${a.findingId}`.localeCompare(
+    compareUnicodeScalars(
+      `${a.ruleId}\u0000${a.findingId}`,
       `${b.ruleId}\u0000${b.findingId}`,
     ),
   );

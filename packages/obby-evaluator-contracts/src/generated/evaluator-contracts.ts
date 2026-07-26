@@ -56,7 +56,6 @@ export type EvidenceKind =
   | "finish-topology"
   | "hazard-relationship"
   | "skip-candidate"
-  | "softlock-candidate"
   | "runtime-observation"
   | "screenshot"
   | "image-feature"
@@ -194,7 +193,6 @@ export type EvidenceRecordContract = Omit<EvidenceRecord, "kind" | "payload"> &
     | { kind: "finish-topology"; payload: FinishTopologyPayload }
     | { kind: "hazard-relationship"; payload: HazardRelationshipPayload }
     | { kind: "skip-candidate"; payload: SkipCandidatePayload }
-    | { kind: "softlock-candidate"; payload: SoftlockCandidatePayload }
     | {
         kind: "runtime-observation";
         payload: RuntimeObservationReferencePayload;
@@ -221,6 +219,32 @@ export type EvaluationSubject =
     };
 export type ObjectId = string;
 export type RouteTransitionId = string;
+export type LandingRegionEvidence =
+  | {
+      status: "available";
+      method: "exact-planar-intrinsic-edge-spans-v1";
+      approximationKind: "exact-native-primitive";
+      spanAStuds: number;
+      spanBStuds: number;
+      toleranceStuds: number;
+      /**
+       * @maxItems 32
+       */
+      limitations: string[];
+    }
+  | {
+      status: "unavailable";
+      reasonCode: "insufficient-landing-evidence";
+      /**
+       * @maxItems 64
+       */
+      missingEvidenceHashes: ContentHash[];
+      /**
+       * @minItems 1
+       * @maxItems 32
+       */
+      limitations: [string, ...string[]];
+    };
 export type RuntimeObservationContentContract = Omit<
   RuntimeObservationContent,
   "kind" | "payload"
@@ -655,7 +679,6 @@ export interface EvidenceRecord {
     | "finish-topology"
     | "hazard-relationship"
     | "skip-candidate"
-    | "softlock-candidate"
     | "runtime-observation";
   manifestHash: ContentHash;
   subject: EvaluationSubject;
@@ -671,7 +694,6 @@ export interface EvidenceRecord {
     | FinishTopologyPayload
     | HazardRelationshipPayload
     | SkipCandidatePayload
-    | SoftlockCandidatePayload
     | RuntimeObservationReferencePayload;
   /**
    * @maxItems 4096
@@ -773,10 +795,30 @@ export interface CoarseTransitionStatePayload {
   controllerProfileId: StableId;
   controllerProfileVersion: SemanticVersion;
   controllerProfileHash: ContentHash;
+  /**
+   * @minItems 2
+   * @maxItems 64
+   */
+  inputEvidenceHashes: [ContentHash, ContentHash, ...ContentHash[]];
   state: "feasible-under-model" | "infeasible-under-model" | "indeterminate";
+  /**
+   * @maxItems 16
+   */
+  reasonCodes: (
+    | "missing-horizontal-separation"
+    | "missing-vertical-rise"
+    | "missing-downward-drop"
+    | "unsupported-surface-measurement"
+    | "insufficient-landing-evidence"
+    | "landing-region-too-small"
+    | "horizontal-gap-exceeds-profile"
+    | "vertical-rise-exceeds-profile"
+    | "downward-drop-exceeds-profile"
+  )[];
   horizontalGapStuds: number;
   verticalRiseStuds: number;
   downwardDropStuds: number;
+  landingRegion: LandingRegionEvidence;
   sourceSurfaceKind: StableId;
   destinationSurfaceKind: StableId;
   approximationMethod: StableId;
@@ -850,8 +892,10 @@ export interface HazardRelationshipPayload {
     | "route-envelope-overlap"
     | "kill-floor-bounds"
     | "structural-enclosure";
-  assessment: "confirmed" | "candidate" | "not-detected" | "indeterminate";
+  assessment: "candidate" | "not-detected" | "indeterminate";
   geometryMethod: StableId;
+  approximationKind: "conservative-bounds";
+  geometryToleranceStuds: number;
   hazardGameplayAuthoritative: boolean;
   reproduction: EvidenceReproduction;
 }
@@ -888,23 +932,6 @@ export interface SkipCandidatePayload {
   skippedStageIndexes: number[];
   modelState: "candidate";
   geometryMethod: StableId;
-  reproduction: EvidenceReproduction;
-}
-export interface SoftlockCandidatePayload {
-  kind: "softlock-candidate";
-  candidateId: StableId;
-  subjectObjectId: ObjectId;
-  candidateKind:
-    | "checkpoint-without-outgoing-path"
-    | "branch-without-required-return"
-    | "route-object-without-outgoing-transition"
-    | "enclosed-region-without-exit"
-    | "missing-one-way-continuation"
-    | "isolated-progression-object";
-  state:
-    | "structural-softlock-candidate"
-    | "model-relative-softlock-candidate"
-    | "indeterminate";
   reproduction: EvidenceReproduction;
 }
 export interface RuntimeObservationReferencePayload {

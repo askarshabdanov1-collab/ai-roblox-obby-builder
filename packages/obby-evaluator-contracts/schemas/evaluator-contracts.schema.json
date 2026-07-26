@@ -105,7 +105,6 @@
         "finish-topology",
         "hazard-relationship",
         "skip-candidate",
-        "softlock-candidate",
         "runtime-observation",
         "screenshot",
         "image-feature",
@@ -1528,6 +1527,76 @@
         "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
       }
     },
+    "LandingRegionEvidence": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "method",
+            "approximationKind",
+            "spanAStuds",
+            "spanBStuds",
+            "toleranceStuds",
+            "limitations"
+          ],
+          "properties": {
+            "status": { "const": "available" },
+            "method": { "const": "exact-planar-intrinsic-edge-spans-v1" },
+            "approximationKind": { "const": "exact-native-primitive" },
+            "spanAStuds": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "spanBStuds": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1000000
+            },
+            "toleranceStuds": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.001
+            },
+            "limitations": {
+              "type": "array",
+              "maxItems": 32,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reasonCode",
+            "missingEvidenceHashes",
+            "limitations"
+          ],
+          "properties": {
+            "status": { "const": "unavailable" },
+            "reasonCode": { "const": "insufficient-landing-evidence" },
+            "missingEvidenceHashes": {
+              "type": "array",
+              "maxItems": 64,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/ContentHash" }
+            },
+            "limitations": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 32,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+            }
+          }
+        }
+      ]
+    },
     "CoarseTransitionStatePayload": {
       "type": "object",
       "additionalProperties": false,
@@ -1541,10 +1610,13 @@
         "controllerProfileId",
         "controllerProfileVersion",
         "controllerProfileHash",
+        "inputEvidenceHashes",
         "state",
+        "reasonCodes",
         "horizontalGapStuds",
         "verticalRiseStuds",
         "downwardDropStuds",
+        "landingRegion",
         "sourceSurfaceKind",
         "destinationSurfaceKind",
         "approximationMethod",
@@ -1562,12 +1634,37 @@
         "controllerProfileId": { "$ref": "#/$defs/StableId" },
         "controllerProfileVersion": { "$ref": "#/$defs/SemanticVersion" },
         "controllerProfileHash": { "$ref": "#/$defs/ContentHash" },
+        "inputEvidenceHashes": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ContentHash" }
+        },
         "state": {
           "enum": [
             "feasible-under-model",
             "infeasible-under-model",
             "indeterminate"
           ]
+        },
+        "reasonCodes": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "missing-horizontal-separation",
+              "missing-vertical-rise",
+              "missing-downward-drop",
+              "unsupported-surface-measurement",
+              "insufficient-landing-evidence",
+              "landing-region-too-small",
+              "horizontal-gap-exceeds-profile",
+              "vertical-rise-exceeds-profile",
+              "downward-drop-exceeds-profile"
+            ]
+          }
         },
         "horizontalGapStuds": {
           "type": "number",
@@ -1584,6 +1681,7 @@
           "minimum": 0,
           "maximum": 1000000
         },
+        "landingRegion": { "$ref": "#/$defs/LandingRegionEvidence" },
         "sourceSurfaceKind": { "$ref": "#/$defs/StableId" },
         "destinationSurfaceKind": { "$ref": "#/$defs/StableId" },
         "approximationMethod": { "$ref": "#/$defs/StableId" },
@@ -1765,6 +1863,8 @@
         "relationship",
         "assessment",
         "geometryMethod",
+        "approximationKind",
+        "geometryToleranceStuds",
         "hazardGameplayAuthoritative",
         "reproduction"
       ],
@@ -1782,9 +1882,15 @@
           ]
         },
         "assessment": {
-          "enum": ["confirmed", "candidate", "not-detected", "indeterminate"]
+          "enum": ["candidate", "not-detected", "indeterminate"]
         },
         "geometryMethod": { "$ref": "#/$defs/StableId" },
+        "approximationKind": { "const": "conservative-bounds" },
+        "geometryToleranceStuds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.001
+        },
         "hazardGameplayAuthoritative": { "type": "boolean" },
         "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
       }
@@ -1839,41 +1945,6 @@
         },
         "modelState": { "const": "candidate" },
         "geometryMethod": { "$ref": "#/$defs/StableId" },
-        "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
-      }
-    },
-    "SoftlockCandidatePayload": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "kind",
-        "candidateId",
-        "subjectObjectId",
-        "candidateKind",
-        "state",
-        "reproduction"
-      ],
-      "properties": {
-        "kind": { "const": "softlock-candidate" },
-        "candidateId": { "$ref": "#/$defs/StableId" },
-        "subjectObjectId": { "$ref": "#/$defs/ObjectId" },
-        "candidateKind": {
-          "enum": [
-            "checkpoint-without-outgoing-path",
-            "branch-without-required-return",
-            "route-object-without-outgoing-transition",
-            "enclosed-region-without-exit",
-            "missing-one-way-continuation",
-            "isolated-progression-object"
-          ]
-        },
-        "state": {
-          "enum": [
-            "structural-softlock-candidate",
-            "model-relative-softlock-candidate",
-            "indeterminate"
-          ]
-        },
         "reproduction": { "$ref": "#/$defs/EvidenceReproduction" }
       }
     },
@@ -1964,7 +2035,6 @@
             "finish-topology",
             "hazard-relationship",
             "skip-candidate",
-            "softlock-candidate",
             "runtime-observation"
           ]
         },
@@ -1983,7 +2053,6 @@
             { "$ref": "#/$defs/FinishTopologyPayload" },
             { "$ref": "#/$defs/HazardRelationshipPayload" },
             { "$ref": "#/$defs/SkipCandidatePayload" },
-            { "$ref": "#/$defs/SoftlockCandidatePayload" },
             { "$ref": "#/$defs/RuntimeObservationReferencePayload" }
           ]
         },
@@ -2128,15 +2197,6 @@
           "then": {
             "properties": {
               "payload": { "$ref": "#/$defs/SkipCandidatePayload" }
-            }
-          }
-        },
-        {
-          "type": "object",
-          "if": { "properties": { "kind": { "const": "softlock-candidate" } } },
-          "then": {
-            "properties": {
-              "payload": { "$ref": "#/$defs/SoftlockCandidatePayload" }
             }
           }
         },

@@ -216,6 +216,25 @@ function evidencePayload(evidence: EvidenceRecord): Record<string, unknown> {
       reproduction,
     };
   }
+  if (evidence.payload.kind === "coarse-transition-state") {
+    return {
+      ...payload,
+      inputEvidenceHashes: strings(evidence.payload.inputEvidenceHashes),
+      reasonCodes: strings(evidence.payload.reasonCodes),
+      landingRegion: {
+        ...evidence.payload.landingRegion,
+        ...(evidence.payload.landingRegion.status === "unavailable"
+          ? {
+              missingEvidenceHashes: strings(
+                evidence.payload.landingRegion.missingEvidenceHashes,
+              ),
+            }
+          : {}),
+        limitations: strings(evidence.payload.landingRegion.limitations),
+      },
+      reproduction,
+    };
+  }
   return {
     ...payload,
     ...(reproduction === undefined ? {} : { reproduction }),

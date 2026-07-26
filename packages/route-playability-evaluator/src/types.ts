@@ -5,6 +5,7 @@ import type {
   Finding,
 } from "@obby/obby-evaluator-contracts";
 import type {
+  ConservativeMeasurement,
   NormalizedGeometryObject,
   NormalizedTransitionInput,
 } from "@obby/geometry-evaluator";
@@ -46,13 +47,98 @@ export type RouteGraph = {
 export type CoarseTransitionState =
   "feasible-under-model" | "infeasible-under-model" | "indeterminate";
 
+export type CoarseTransitionReasonCode =
+  | "missing-horizontal-separation"
+  | "missing-vertical-rise"
+  | "missing-downward-drop"
+  | "unsupported-surface-measurement"
+  | "insufficient-landing-evidence"
+  | "landing-region-too-small"
+  | "horizontal-gap-exceeds-profile"
+  | "vertical-rise-exceeds-profile"
+  | "downward-drop-exceeds-profile";
+
+export type AvailableTransitionMeasurement = ConservativeMeasurement & {
+  status: "available";
+};
+
+export type UnavailableTransitionMeasurement = {
+  status: "unavailable";
+  reasonCode: Extract<
+    CoarseTransitionReasonCode,
+    | "missing-horizontal-separation"
+    | "missing-vertical-rise"
+    | "missing-downward-drop"
+    | "unsupported-surface-measurement"
+  >;
+  missingEvidenceHashes: readonly `sha256:${string}`[];
+  limitations: readonly string[];
+};
+
+export type TransitionMeasurementEvidence =
+  AvailableTransitionMeasurement | UnavailableTransitionMeasurement;
+
+export type AvailableLandingRegionEvidence = {
+  status: "available";
+  method: "exact-planar-intrinsic-edge-spans-v1";
+  approximationKind: "exact-native-primitive";
+  spanAStuds: number;
+  spanBStuds: number;
+  toleranceStuds: number;
+  limitations: readonly string[];
+};
+
+export type UnavailableLandingRegionEvidence = {
+  status: "unavailable";
+  reasonCode: "insufficient-landing-evidence";
+  missingEvidenceHashes: readonly `sha256:${string}`[];
+  limitations: readonly string[];
+};
+
+export type LandingRegionEvidence =
+  AvailableLandingRegionEvidence | UnavailableLandingRegionEvidence;
+
+export type CoarseTransitionInput = Omit<
+  NormalizedTransitionInput,
+  "horizontalSeparation" | "verticalRise" | "downwardDrop"
+> & {
+  horizontalSeparation: ConservativeMeasurement | TransitionMeasurementEvidence;
+  verticalRise: ConservativeMeasurement | TransitionMeasurementEvidence;
+  downwardDrop: ConservativeMeasurement | TransitionMeasurementEvidence;
+  landingRegion?: LandingRegionEvidence;
+};
+
 export type CoarseTransitionResult = {
   resultId: string;
   metricId: "playability.coarse-transition-state";
-  transition: NormalizedTransitionInput;
+  transitionId: string;
+  routeId: string;
+  sourceObjectId: string;
+  destinationObjectId: string;
+  fromGlobalIndex: number;
+  toGlobalIndex: number;
+  controllerProfileId: string;
+  controllerProfileVersion: string;
+  controllerProfileHash: `sha256:${string}`;
+  inputEvidenceHashes: readonly `sha256:${string}`[];
   state: CoarseTransitionState;
+  reasonCodes: readonly CoarseTransitionReasonCode[];
   confidenceBasis: "deterministic-model-rule-bounded-inputs";
+  confidenceSemantics: "deterministic-rule-result-not-probability";
   limitations: readonly string[];
+  reproduction: {
+    methodId: "coarse-transition-classifier";
+    methodVersion: "2.0.0";
+    inputEvidenceHashes: readonly `sha256:${string}`[];
+    normalizedInputs: {
+      horizontalSeparation: TransitionMeasurementEvidence;
+      verticalRise: TransitionMeasurementEvidence;
+      downwardDrop: TransitionMeasurementEvidence;
+      landingRegion: LandingRegionEvidence;
+      sourceSurfaceKind: string;
+      destinationSurfaceKind: string;
+    };
+  };
 };
 
 export type RouteEvaluationIssue = {

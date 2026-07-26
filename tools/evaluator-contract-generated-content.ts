@@ -31,7 +31,6 @@ export function postprocessEvaluatorContractTypes(source: string): string {
   | { kind: "finish-topology"; payload: FinishTopologyPayload }
   | { kind: "hazard-relationship"; payload: HazardRelationshipPayload }
   | { kind: "skip-candidate"; payload: SkipCandidatePayload }
-  | { kind: "softlock-candidate"; payload: SoftlockCandidatePayload }
   | { kind: "runtime-observation"; payload: RuntimeObservationReferencePayload }
 );`,
     )

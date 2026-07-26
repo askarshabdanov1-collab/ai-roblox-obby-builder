@@ -59,8 +59,8 @@
     { "id": "missing-finish", "expectedCode": "missing-finish" },
     { "id": "hazard-consuming-landing-candidate", "expected": "candidate" },
     {
-      "id": "dead-end-softlock-candidate",
-      "expectedCode": "structural-softlock-candidate"
+      "id": "required-route-dead-end",
+      "expectedCode": "required-route-dead-end"
     }
   ]
 }
