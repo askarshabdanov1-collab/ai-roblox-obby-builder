@@ -7,7 +7,7 @@ Gameplay insertion order, hazards, spatial proximity, and decoration never defin
 route.
 
 The public library exports route graph construction, a content-addressed provisional controller
-profile, coarse transition classification, structural softlock detection, typed limits/errors, and
+profile, coarse transition classification, typed limits/errors, and
 evidence/finding assembly. Package exports point to `dist`; the repository smoke test imports the
 built package with plain Node.
 
@@ -17,16 +17,34 @@ controller profile, and are not exact Roblox physics. Finite static rules cannot
 universal impossibility. Unsupported curved surface combinations are indeterminate. Future runtime
 trials remain separate empirical evidence and cannot overwrite static components.
 
+The public transition result carries endpoint and transition identity, profile ID/version/hash,
+input evidence hashes, stable reason codes, deterministic non-probabilistic confidence semantics,
+and versioned normalized reproduction inputs. Required measurements are explicitly `available` or
+`unavailable`; unavailable evidence yields `indeterminate`, while malformed evidence fails with a
+typed deterministic error.
+
+For Block top faces and Wedge slopes, landing fit uses the two exact intrinsic planar edge spans.
+Sorted avatar width/depth requirements are `avatarSpan + 2 * requiredLandingMargin`; each span fits
+when `available + max(profileTolerance, geometryTolerance) >= required`. Circular, curved, or absent
+landing regions are indeterminate.
+
 The package emits discriminated route graph, route transition, coarse state, route summary,
-checkpoint, finish, hazard relationship, skip candidate, and softlock candidate evidence. The
+checkpoint, finish, hazard relationship, and skip candidate evidence. The
 contract also models a future derived coarse/runtime conflict without collecting runtime data.
 Candidate evidence never becomes a confirmed runtime failure. Checkpoint topology binds progression
 state to the Phase 0 `per-player` scope but explicitly reports runtime isolation as
-`not-evaluated`/missing evidence. Hazard consumption remains a world-AABB broad-phase candidate;
-KillFloor consistency is derived from gameplay-authoritative bounds rather than an object name.
+`not-evaluated`/missing evidence. Hazard consumption and KillFloor containment remain world-AABB
+broad-phase candidates; KillFloor consistency is derived from gameplay-authoritative bounds rather
+than an object name.
 Skip evidence records whether a non-adjacent candidate is a checkpoint bypass, spawn-to-late-route
 edge, checkpoint-to-finish edge, or required-stage skip.
 
+Static softlock evidence is unavailable in E1b. Phase 0 has one structurally valid linear required
+route and no authoritative optional-branch, enclosure, recovery, or one-way-mechanic metadata.
+Required-route dead ends remain typed topology validation errors. Runtime softlock observations and
+richer static softlock classes are deferred.
+
+The canonical Unicode-scalar comparator owns semantic ordering; host locale never does.
 Deterministic budgets bound routes, nodes, transitions, checkpoints, hazards, evidence records, and
 graph work. Traversal is iterative. No manifest content is executed and the package performs no
 network access.

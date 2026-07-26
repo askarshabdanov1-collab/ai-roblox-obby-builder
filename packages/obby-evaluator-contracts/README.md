@@ -2,7 +2,7 @@
 
 Phase E1b extends the closed E1a foundation with a content-addressed `ControllerProfile`, Phase 0
 object-ID compatibility, and kind-correlated route graph, coarse transition, checkpoint, finish,
-hazard, skip-candidate, and softlock-candidate evidence payloads. These contracts remain evidence
+hazard and skip-candidate evidence payloads. These contracts remain evidence
 and finding foundations only; they do not introduce scoring, reports, or workflow behavior.
 
 Evaluator-owned, bounded JSON Schema Draft 2020-12 contracts for Phase E1. The schema in

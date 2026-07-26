@@ -116,7 +116,8 @@ tractable.
   avatar/model profile.
 - Emit `coarse-infeasible-transition-count`, indeterminate count, excessive-drop and clearance
   estimates, checkpoint topology/respawn-geometry facts, hazard-route overlap/safe-margin facts or
-  estimates, and conservative softlock/skip candidates.
+  estimates and conservative skip candidates. Static softlock evidence is deferred because Phase 0
+  has no authoritative branch, enclosure, recovery, or one-way-mechanic metadata.
 - Preserve conflicting future coarse/runtime components as separate evidence plus a derived conflict
   result; E1b fixtures model the contract but do not run Studio.
 - Store developer-fixture evidence in memory or test-owned temporary directories only.
@@ -134,7 +135,9 @@ store, runtime isolation verdict, or external integration is included.
   are covered.
 - Coarse states never use "impossible"; runtime trials are represented as empirical
   controller/avatar/engine evidence and cannot overwrite the coarse component.
-- Softlock/skip candidates are heuristic and have false-positive-control fixtures.
+- Skip candidates are heuristic and have false-positive-control fixtures; required-route dead ends
+  remain structural validation errors, while unsupported static softlock classes are explicitly
+  unavailable.
 - Zero checkpoint-isolation opportunities produce `missing-evidence`, not pass; no multiplayer
   isolation claim is emitted.
 

@@ -105,6 +105,16 @@ host/environment metadata, and storage metadata. Supported-surface and limitatio
 their stable text identity. Equivalent semantic profiles hash identically; every behavior-affecting
 profile change changes the hash.
 
+The E1b coarse transition result is the authoritative public classification contract: transition
+and endpoint identity, controller profile ID/version/hash, input evidence hashes, model-relative
+state, stable reason codes, deterministic non-probabilistic confidence semantics, limitations, and
+versioned normalized reproduction inputs. Gap/rise/drop measurements are explicitly available or
+unavailable. Missing required measurements and unavailable landing regions produce `indeterminate`;
+malformed evidence is a typed validation error. For exact planar Block/Wedge landing regions,
+intrinsic edge spans must satisfy
+`available + max(profileTolerance, geometryTolerance) >= avatarSpan + 2 * landingMargin` on both
+sorted axes. Circular and curved landing regions are indeterminate.
+
 ## `EvaluationPlan`
 
 An immutable request describing what evidence and scores are required.
@@ -160,23 +170,23 @@ states have no finalized envelope hash.
 
 An envelope for one reproducible evidence item.
 
-| Field                              | Design                                                                                                                                                                                                                                     |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `schemaVersion`, `evidenceId`      | Content identity                                                                                                                                                                                                                           |
-| `executionId?`                     | Optional execution provenance; always excluded from `EvidenceContentPreimage` and included only by a named execution-envelope preimage                                                                                                     |
-| `kind`                             | Existing kinds plus E1b `route-graph`, `coarse-transition-state`, `route-playability-summary`, `transition-evidence-conflict`, `checkpoint-topology`, `finish-topology`, `hazard-relationship`, `skip-candidate`, and `softlock-candidate` |
-| `sourceKind`                       | One of the six source classifications                                                                                                                                                                                                      |
-| `manifestHash`, `generationToken?` | Scene binding; `generationToken` is execution-envelope-only                                                                                                                                                                                |
-| `subject`                          | Object refs, transition refs, coordinates, image regions, or whole-scene scope                                                                                                                                                             |
-| `producer`                         | Component/model/collector version and configuration hash                                                                                                                                                                                   |
-| `capturedAt?`                      | Wall-clock provenance; execution-envelope-only and absent for static evidence                                                                                                                                                              |
-| `monotonicOffsetMs?`               | Required content for runtime observations/performance samples; absent for every other evidence kind                                                                                                                                        |
-| `payload`                          | Discriminated union keyed by `kind`; generic unvalidated maps are prohibited                                                                                                                                                               |
-| `artifactRefs[]`                   | Content-addressed screenshots/log chunks/etc.                                                                                                                                                                                              |
-| `parentEvidenceIds[]`              | Inputs used to derive this evidence                                                                                                                                                                                                        |
-| `quality`                          | Completeness, validity checks, confidence where non-deterministic                                                                                                                                                                          |
-| `limitations[]`                    | Required for non-deterministic evidence                                                                                                                                                                                                    |
-| `evidenceContentHash`              | Hash of the kind-discriminated `EvidenceContentPreimage`; execution-envelope fields are governed by fixed kind rules                                                                                                                       |
+| Field                              | Design                                                                                                                                                                                                               |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `schemaVersion`, `evidenceId`      | Content identity                                                                                                                                                                                                     |
+| `executionId?`                     | Optional execution provenance; always excluded from `EvidenceContentPreimage` and included only by a named execution-envelope preimage                                                                               |
+| `kind`                             | Existing kinds plus E1b `route-graph`, `coarse-transition-state`, `route-playability-summary`, `transition-evidence-conflict`, `checkpoint-topology`, `finish-topology`, `hazard-relationship`, and `skip-candidate` |
+| `sourceKind`                       | One of the six source classifications                                                                                                                                                                                |
+| `manifestHash`, `generationToken?` | Scene binding; `generationToken` is execution-envelope-only                                                                                                                                                          |
+| `subject`                          | Object refs, transition refs, coordinates, image regions, or whole-scene scope                                                                                                                                       |
+| `producer`                         | Component/model/collector version and configuration hash                                                                                                                                                             |
+| `capturedAt?`                      | Wall-clock provenance; execution-envelope-only and absent for static evidence                                                                                                                                        |
+| `monotonicOffsetMs?`               | Required content for runtime observations/performance samples; absent for every other evidence kind                                                                                                                  |
+| `payload`                          | Discriminated union keyed by `kind`; generic unvalidated maps are prohibited                                                                                                                                         |
+| `artifactRefs[]`                   | Content-addressed screenshots/log chunks/etc.                                                                                                                                                                        |
+| `parentEvidenceIds[]`              | Inputs used to derive this evidence                                                                                                                                                                                  |
+| `quality`                          | Completeness, validity checks, confidence where non-deterministic                                                                                                                                                    |
+| `limitations[]`                    | Required for non-deterministic evidence                                                                                                                                                                              |
+| `evidenceContentHash`              | Hash of the kind-discriminated `EvidenceContentPreimage`; execution-envelope fields are governed by fixed kind rules                                                                                                 |
 
 Evidence derivation must be acyclic. Every parent must belong to the same manifest/execution or be an
 explicitly versioned approved reference/calibration snapshot.
@@ -536,7 +546,6 @@ for the current evidence kinds; a new kind requires a new versioned variant befo
 | `finish-topology`              | Required finish membership/count/order, structural/coarse path state, authority, reproduction                                                                   | Excludes approval/score and execution metadata                                                                     |
 | `hazard-relationship`          | Hazard/route subjects, overlap/full-consumption/kill-floor/enclosure relationship, candidate assessment, bounded geometry method, authority, reproduction       | Excludes confirmation where only broad-phase geometry exists                                                       |
 | `skip-candidate`               | Non-adjacent endpoints/indexes, typed bypass/spawn-late/checkpoint-finish/stage-skip classes, skipped stages, candidate state, broad-phase method, reproduction | Excludes claims that the candidate is executable                                                                   |
-| `softlock-candidate`           | Subject, structural/model-relative candidate kind and state, reproduction                                                                                       | Excludes runtime proof                                                                                             |
 | `runtime-observation`          | `runtimeObservationContentHash` defined below                                                                                                                   | Execution/session/generation/wall-clock fields live only in `RuntimeObservationEnvelopePreimage`                   |
 | `screenshot`                   | `screenshotBinaryHash` and `screenshotProtocolMetadataHash`                                                                                                     | Capture execution/session/generation/time live only in `ScreenshotEvidenceEnvelopePreimage`                        |
 | `image-feature`                | Input artifact hashes, feature/model/configuration hashes, typed feature payload, semantic environment compatibility class                                      | Excludes execution IDs, wall-clock time, raw host identity, and environment fields outside the compatibility class |

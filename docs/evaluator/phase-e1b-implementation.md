@@ -56,7 +56,7 @@ remain separate.
 ## Evidence and findings
 
 E1b adds closed payloads for route graph, coarse state, route summary, checkpoint/finish topology,
-hazard relationship, skip candidate, softlock candidate, and future coarse/runtime conflict, and
+hazard relationship, skip candidate, and future coarse/runtime conflict, and
 tightens route-transition reproduction.
 Every emitted record binds manifest, subject, producer, parents, limitations, reproduction method
 and inputs, and `evidenceContentHash`. Scene-level evidence may aggregate same-manifest child
@@ -75,19 +75,39 @@ Because Phase 0 has no overhead route-region metadata, clearance remains explici
 The conflict payload preserves future coarse and runtime evidence hashes as separate parents; E1b
 does not create runtime observations.
 
-Hazard evidence labels world-AABB overlap and full landing-surface consumption as candidates, not
-confirmed native-shape collision. KillFloor consistency uses gameplay-authoritative placement and
-bounds rather than a literal object ID. Conservative non-adjacent reach produces typed checkpoint
-bypass, spawn-to-late-route, checkpoint-to-finish, and required-stage skip candidates. Structural
-dead ends produce softlock candidates. Candidate findings are non-blocking and cannot become
-confirmed runtime failures.
+Hazard evidence labels world-AABB overlap, full landing-surface consumption, and KillFloor bounds as
+candidates, never confirmed native-shape collision or containment. KillFloor consistency uses
+gameplay-authoritative placement and bounds rather than a literal object ID. Conservative
+non-adjacent reach produces typed checkpoint bypass, spawn-to-late-route, checkpoint-to-finish, and
+required-stage skip candidates. Candidate findings are non-blocking and cannot become confirmed
+runtime failures.
+
+Static softlock evidence is intentionally unavailable in E1b. Phase 0 provides one required linear
+route but no authoritative optional branches, enclosure regions, recovery actions, or one-way
+mechanic metadata. Required-route dead ends are topology validation errors. Branch-return,
+enclosure, model-relative, and runtime softlock evidence remain deferred; the E1b public evidence
+union contains no unreachable static softlock payload.
+
+The public coarse transition result is the authoritative classification representation. It includes
+transition and endpoint identity, controller profile ID/version/hash, input evidence hashes, stable
+reason codes, deterministic non-probabilistic confidence semantics, limitations, and versioned
+normalized reproduction inputs. Required measurements are explicitly available or unavailable.
+Unavailable measurement or landing evidence yields `indeterminate`; malformed evidence produces a
+typed deterministic validation error.
+
+Landing margin uses exact intrinsic planar edge spans for Block top faces and Wedge slopes. Sorted
+avatar width/depth requirements are `avatarSpan + 2 * requiredLandingMargin`; each available span
+must satisfy `available + max(profileTolerance, geometryTolerance) >= required`. Curved, circular,
+or missing landing regions are indeterminate. Direct skip candidates call the same classifier.
 
 ## Determinism, limits, and fixtures
 
-Equivalent semantic inputs produce identical graph, transition, evidence, finding order, and
-hashes. Tests cover shuffled inputs, repeated runs, cardinal/diagonal/vertical directions, exact and
-epsilon limits, wedge metadata, unsupported curved surfaces, multiple checkpoints/stages, invalid
-references, hazards, skips, softlocks, and all budgets.
+Equivalent semantic inputs produce identical graph, transition, evidence, finding order, and hashes.
+Semantic identities and diagnostics use the repository Unicode-scalar comparator, never host locale.
+Tests cover shuffled inputs, repeated runs, cardinal/diagonal/vertical directions, exact/inside/outside
+tolerance boundaries for gap, rise, drop, and landing spans, missing and malformed measurements,
+wedge metadata, unsupported curved surfaces, multiple checkpoints/stages, invalid references,
+hazards, skips, deferred softlock scope, and all budgets.
 
 Defaults are one route, 10,000 nodes, 10,000 transitions, 1,000 checkpoints, 1,000 hazards, 50,000
 evidence records, and 200,000 traversal work units. Limits are deterministic non-negative safe
@@ -103,11 +123,22 @@ are non-mutating.
 - [x] Declared graph and forward topology are deterministic and fail closed.
 - [x] Controller profile and evidence identities are content-addressed.
 - [x] Coarse states remain model-relative and separate from structural invariants.
-- [x] Checkpoint, finish, hazard, skip, and softlock evidence/finding foundations exist.
+- [x] Checkpoint, finish, hazard, and skip evidence/finding foundations exist; static softlocks are explicitly deferred pending authoritative metadata.
 - [x] Evidence integrity, ordering, and bounded work are tested.
 - [x] Build, plain-Node import, root tests, validation, and both CI platforms include E1b.
 - [x] Generated fixture drift has an owner and non-mutating check.
 - [x] E1c and all external/runtime integrations remain excluded.
+
+## Independent-audit remediation
+
+| Blocker                                                | Correction                                                                                                                                                                                 |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| B1 — landing margin was identity-only                  | Exact intrinsic planar spans now apply avatar dimensions and twice the configured margin in required-route and shared skip classification.                                                 |
+| B2 — missing measurements caused incidental exceptions | Tagged available/unavailable measurement and landing evidence produces stable indeterminate reasons; malformed payloads raise `CoarseTransitionValidationError`.                           |
+| B3 — public transition results were incomplete         | `CoarseTransitionResult` now carries endpoint/transition/profile identity, evidence hashes, reason codes, confidence semantics, limitations, and versioned normalized reproduction inputs. |
+| B4 — broad-phase KillFloor containment was confirmed   | E1b permits only candidate/not-detected/indeterminate hazard assessments and records conservative method, approximation, tolerance, and limitations.                                       |
+| B5 — semantic ordering used host locale                | E1b uses the shared Unicode-scalar comparator for identities, diagnostics, evidence inputs, and findings.                                                                                  |
+| B6 — static softlock support was unreachable           | The unreachable static evidence payload/detector was removed; required-route dead ends are topology errors and unsupported softlock classes are explicitly deferred.                       |
 
 ## Deferred
 
