@@ -1022,6 +1022,7 @@ export interface AvailabilityRecord {
     authorityKind: StableId;
     authorityId: string;
   };
+  producer: VersionRef;
   effectiveAt?: Timestamp;
   effectiveSequence?: number;
   /**

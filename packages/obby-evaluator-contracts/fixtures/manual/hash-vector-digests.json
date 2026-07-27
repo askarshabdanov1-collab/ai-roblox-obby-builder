@@ -9,7 +9,7 @@
     "EvaluationRequestPreimage": "sha256:e09afc76bfdf24871f0926a76b4458c03a370db572c9da7003aeb639e6e0b0e9",
     "EvidenceContentPreimage": "sha256:2a7d5a0b3b9ee3167e19ee2c327e8912015258157c3c03796e4d1d99b5a713bf",
     "CalculationBundlePreimage": "sha256:3722933f9e5d43d1fe1cb9af8a98ef4aae9498232588e50ec9c7f889af61e5a0",
-    "AvailabilityRecordPreimage": "sha256:d3aa9328d56e8cfb57da47edefb3d634cbc50732bfeb462395288ab293e98595"
+    "AvailabilityRecordPreimage": "sha256:d1ee6a6a2784edf273b8384ba91194a941bcf60c2d395b9feebdbfd76a12d514"
   },
   "smallVectors": [
     {

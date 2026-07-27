@@ -14,6 +14,10 @@ import { ScoringContractError } from "./types.js";
 
 export const RUNTIME_CAPABILITY_ID = "runtime";
 export const RUNTIME_CAPABILITY_VERSION = "checkpoint-isolation-deferred-v1";
+export const RUNTIME_AVAILABILITY_PRODUCER = Object.freeze({
+  component: "scoring-engine",
+  version: "0.1.0",
+});
 
 export function runtimeCapabilitySubjectHash(
   manifestHash: ContentHash,
@@ -64,6 +68,19 @@ function assertNewer(
   }
 }
 
+function authorityProducerPolicyKey(record: AvailabilityRecord): string {
+  return [
+    record.authority.authorityKind,
+    record.authority.authorityId,
+    record.producer.component,
+    record.producer.version,
+    record.producer.buildHash ?? "",
+    record.policy.component,
+    record.policy.version,
+    record.policy.buildHash ?? "",
+  ].join("\u0000");
+}
+
 export function resolveAvailabilityRecords(
   inputs: readonly unknown[],
 ): AvailabilityRecord[] {
@@ -87,6 +104,12 @@ export function resolveAvailabilityRecords(
   for (const [subject, group] of [...groups.entries()].toSorted((left, right) =>
     compareUnicodeScalars(left[0], right[0]),
   )) {
+    if (new Set(group.map(authorityProducerPolicyKey)).size !== 1) {
+      throw new ScoringContractError(
+        "conflicting-availability-producers",
+        `availability subject ${subject} has conflicting authority, producer, or policy identities`,
+      );
+    }
     if (group.length === 1) {
       const only = group[0];
       if (only !== undefined) effective.push(only);
@@ -167,6 +190,9 @@ export function resolveRuntimeCapabilityAvailability(
       record.reasonCode !== "phase-deferred" ||
       record.authority.authorityKind !== "evaluator-policy" ||
       record.authority.authorityId !== "evaluator-policy:e1c" ||
+      record.producer.component !== RUNTIME_AVAILABILITY_PRODUCER.component ||
+      record.producer.version !== RUNTIME_AVAILABILITY_PRODUCER.version ||
+      record.producer.buildHash !== undefined ||
       record.policy.component !== "e1-scope-policy" ||
       record.policy.version !== "1.0.0" ||
       record.impactScope.scopeKind !== "subject-only" ||

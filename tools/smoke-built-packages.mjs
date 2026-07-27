@@ -63,4 +63,18 @@ if (
 if (typeof runEvaluatorCli !== "function")
   throw new Error("built evaluator CLI library export is unavailable");
 
+const compiledReportModule = await import(
+  new URL("../packages/scoring-engine/dist/report.js", import.meta.url)
+);
+if ("finalizeValidatedE1Report" in compiledReportModule)
+  throw new Error("built scoring engine exposes unchecked report finalization");
+const compiledReportDeclaration = await readFile(
+  new URL("../packages/scoring-engine/dist/report.d.ts", import.meta.url),
+  "utf8",
+);
+if (compiledReportDeclaration.includes("finalizeValidatedE1Report"))
+  throw new Error(
+    "built scoring declaration exposes unchecked report finalization",
+  );
+
 console.log("plain Node imported all Phase 0 and implemented E1 packages");

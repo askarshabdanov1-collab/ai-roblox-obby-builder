@@ -148,6 +148,7 @@ export function deferredRuntimeAvailability(
       authorityKind: "evaluator-policy",
       authorityId: "evaluator-policy:e1c",
     },
+    producer: { component: "scoring-engine", version: "0.1.0" },
     effectiveSequence: 1,
     supersedesAvailabilityRecordHashes: [],
     policy: { component: "e1-scope-policy", version: "1.0.0" },

@@ -413,6 +413,7 @@ describe("evaluator contracts", () => {
         authorityKind: "retention-policy",
         authorityId: "retention-policy:default",
       },
+      producer: { component: "retention-policy", version: "1.0.0" },
       effectiveAt: "2030-01-01T00:00:00Z",
       supersedesAvailabilityRecordHashes: [],
       policy: {
@@ -439,6 +440,13 @@ describe("evaluator contracts", () => {
         effectiveAt: "2030-99-99T99:99:99Z",
       }),
     ).toThrow();
+
+    const missingProducer = structuredClone(record) as unknown as Record<
+      string,
+      unknown
+    >;
+    delete missingProducer.producer;
+    expect(() => parseAvailabilityRecord(missingProducer)).toThrow(/producer/i);
   });
 
   it("verifies evidence hashes, scope, IDs, parent compatibility, and a valid acyclic graph", () => {

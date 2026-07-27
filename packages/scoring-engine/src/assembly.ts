@@ -10,9 +10,12 @@ import {
   assertValidEvidenceGraph,
   hashCalculationBundle,
   hashMetricCalculation,
+  hashReportPayload,
   parseEvaluationMetric,
   parseFinding,
+  parseReportPayloadPreimage,
   verifyMetricCalculationIdentity,
+  verifyReportPayloadIdentity,
   type CalculationBundlePreimage,
   type EvaluationCompleteness,
   type EvaluationMetric,
@@ -26,9 +29,9 @@ import {
   type MetricValue,
   type ProfileGateResult,
   type ReportCategoryResult,
+  type ReportPayloadPreimage,
 } from "@obby/obby-evaluator-contracts";
 
-import { finalizeValidatedE1Report } from "./report.js";
 import { resolveRuntimeCapabilityAvailability } from "./availability.js";
 import {
   selectAuthoritativeE1Evidence,
@@ -39,6 +42,8 @@ import {
   type E1EvaluationInput,
   type E1EvaluationLimits,
   type E1EvaluationResult,
+  type E1ReportInput,
+  type FinalizedE1Report,
 } from "./types.js";
 
 const DEFAULT_LIMITS: E1EvaluationLimits = Object.freeze({
@@ -123,6 +128,120 @@ function requiredEvidenceId(record: EvidenceRecordContract): string {
     );
   }
   return record.evidenceId;
+}
+
+function reportSubjectKey(evidence: EvidenceRecordContract): string {
+  const subject = evidence.subject;
+  switch (subject.kind) {
+    case "scene":
+      return "scene";
+    case "object":
+      return `object:${subject.objectId}`;
+    case "transition":
+      return `transition:${subject.fromObjectId}:${subject.toObjectId}:${subject.fromGlobalIndex}:${subject.toGlobalIndex}`;
+    case "point":
+      return `point:${subject.point.x}:${subject.point.y}:${subject.point.z}`;
+  }
+}
+
+function cleanFinding(finding: Finding): Finding {
+  const clean = structuredClone(finding);
+  if (clean.executionId === undefined) delete clean.executionId;
+  if (clean.invariantId === undefined) delete clean.invariantId;
+  return clean;
+}
+
+function executiveOutcome(
+  input: E1ReportInput,
+): ReportPayloadPreimage["outcome"] {
+  if (input.invariantGates.some((gate) => gate.state === "fail")) return "fail";
+  if (
+    input.invariantGates.some((gate) => gate.state === "missing-evidence") ||
+    input.profileGates.some((gate) => gate.state === "missing-evidence") ||
+    input.categories.some(
+      (category) =>
+        category.status === "missing-evidence" ||
+        category.status === "incomplete",
+    )
+  ) {
+    return "incomplete";
+  }
+  if (input.profileGates.some((gate) => gate.state === "fail")) {
+    return "fail-under-profile";
+  }
+  return input.findings.some(
+    (finding) => finding.severity === "warning" || finding.severity === "error",
+  ) ||
+    input.metrics.some(
+      (metric) => metric.severity === "warning" || metric.severity === "error",
+    )
+    ? "pass-with-warnings"
+    : "pass";
+}
+
+function finalizeAssembledReport(input: E1ReportInput): FinalizedE1Report {
+  const blockingFindingIds = unique([
+    ...input.invariantGates
+      .filter((gate) => gate.state === "fail")
+      .flatMap((gate) => gate.findingIds),
+    ...input.profileGates
+      .filter((gate) => gate.state === "fail")
+      .flatMap((gate) => gate.findingIds),
+  ]);
+  const payload = parseReportPayloadPreimage({
+    schemaVersion: "0.1",
+    calculationBundleHash: input.identities.calculationBundleHash,
+    scene: {
+      manifestHash: input.identities.manifestHash,
+      manifestSchemaVersion: input.identities.manifestSchemaVersion,
+    },
+    plan: {
+      configurationHash: input.identities.configurationHash,
+      evaluationRequestHash: input.identities.evaluationRequestHash,
+    },
+    versions: {
+      evaluator: input.identities.evaluator,
+      metricCatalogHash: input.catalog.metricCatalogHash,
+      scoringProfileHash: input.scoringProfile.scoringProfileHash,
+    },
+    outcome: executiveOutcome(input),
+    blockingFindingIds,
+    scoreProfile: {
+      profileId: input.scoringProfile.profileId,
+      profileVersion: input.scoringProfile.profileVersion,
+      compatibilityClass: input.scoringProfile.compatibilityClass,
+      aggregateScore: false,
+      categories: structuredClone([...input.categories]),
+    },
+    calculations: structuredClone([...input.calculations]),
+    invariantGates: structuredClone([...input.invariantGates]),
+    profileGates: structuredClone([...input.profileGates]),
+    completeness: structuredClone(input.completeness),
+    metrics: structuredClone([...input.metrics]),
+    findings: input.findings.map(cleanFinding),
+    evidenceIndex: input.evidence.map((record) => ({
+      evidenceId: requiredEvidenceId(record),
+      kind: record.kind,
+      subjectKey: reportSubjectKey(record),
+      evidenceContentHash: record.evidenceContentHash,
+      artifactHashes: record.artifactHashes.map(
+        (artifact) => artifact.contentHash,
+      ),
+    })),
+    availabilityRecordHashes: unique(input.availabilityRecordHashes),
+    missingEvidence: structuredClone(input.missingEvidence),
+    comparability: {
+      compatibilityClass: input.scoringProfile.compatibilityClass,
+      compatibleDimensions: [...input.compatibleDimensions],
+    },
+    limitations: structuredClone(input.limitations),
+  });
+  const report = {
+    ...payload,
+    reportPayloadHash: hashReportPayload(payload).hash,
+  } as FinalizedE1Report;
+  verifyReportPayloadIdentity(report);
+  return report;
 }
 
 function categoryForMetric(
@@ -1135,7 +1254,7 @@ export function assembleE1Evaluation(
   const selectedEvidence = selectAuthoritativeE1Evidence(evidence, (units) =>
     work.use(units),
   );
-  const authoritativeEvidence = [
+  const authoritativeCandidates = [
     ...(selectedEvidence.routeGraph === undefined
       ? []
       : [selectedEvidence.routeGraph]),
@@ -1151,20 +1270,23 @@ export function assembleE1Evaluation(
     ...selectedEvidence.finishes,
     ...selectedEvidence.hazards,
     ...selectedEvidence.skips,
-  ]
-    .filter(
-      (record, index, records) =>
-        records.findIndex(
-          (candidate) =>
-            candidate.evidenceContentHash === record.evidenceContentHash,
-        ) === index,
-    )
-    .toSorted((left, right) =>
+  ];
+  const authoritativeByHash = new Map<string, EvidenceRecordContract>();
+  for (const record of authoritativeCandidates) {
+    work.use(2);
+    authoritativeByHash.set(record.evidenceContentHash, record);
+  }
+  work.use(
+    authoritativeByHash.size *
+      Math.ceil(Math.log2(Math.max(1, authoritativeByHash.size))),
+  );
+  const authoritativeEvidence = [...authoritativeByHash.values()].toSorted(
+    (left, right) =>
       compareUnicodeScalars(
         left.evidenceContentHash,
         right.evidenceContentHash,
       ),
-    );
+  );
   const selectedMetricIds = new Set(
     graph.plan.metricInclude.filter(
       (metricId) => !graph.plan.metricExclude.includes(metricId),
@@ -1510,7 +1632,7 @@ export function assembleE1Evaluation(
       authoritativeEvidence.length +
       missingEvidence.length,
   );
-  const report = finalizeValidatedE1Report({
+  const report = finalizeAssembledReport({
     identities: {
       calculationBundleHash: calculationBundle.calculationBundleHash,
       manifestHash: graph.plan.scene.manifestHash,

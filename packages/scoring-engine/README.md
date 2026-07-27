@@ -25,11 +25,14 @@ gameplay fields.
 Hazard and skip candidates enter that closure only when their deterministic E1b evidence ID agrees
 with their validated object/relationship or route indexes; unrelated same-manifest candidates are
 validated but remain byte-inert.
+Missing route indexes are never interpolated into semantic IDs. Transition-parent and checkpoint
+correlation use charged maps, making selection linear apart from deterministic `O(n log n)` sorting.
 
 Catalog invariant dependencies explicitly name affected metrics/categories or declare global
 scope. Generic runtime observations cannot satisfy checkpoint isolation; that optional metric stays
 unavailable until a future exact multiplayer contract exists. Its E1c deferral record is bound to
-the manifest-scoped capability identity, and competing effective availability records fail closed.
+the manifest-scoped capability, authority, producer, and policy identity, and competing effective
+availability records fail closed.
 
 The reference profile has no weights and no aggregate score. `infeasible-under-model` remains a
 profile-relative state, hazard/skip observations remain candidates, and optional runtime evidence
@@ -41,6 +44,7 @@ executive outcome, so a warning cannot become a clean pass merely because no fin
 calculation, category blockers, finding, evidence, deferred-capability, limitation, and
 reproduction sections. The render hash binds payload hash, renderer/template version,
 configuration, and exact bytes; it excludes paths and execution time.
+CRLF and lone CR content are normalized only for rendering, so emitted bytes never contain CR.
 
 Focused checks:
 

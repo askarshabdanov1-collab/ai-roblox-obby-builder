@@ -144,7 +144,7 @@ trained.
 2. Stop new evaluation use and feature generation.
 3. Locate artifacts/derived features through provenance indexes.
 4. Delete according to rights/retention policy; create an immutable `AvailabilityRecord` with the
-   governed subject, reason, authority, semantic effective point, policy, and impact scope.
+   governed subject, reason, authority, producer, semantic effective point, policy, and impact scope.
 5. Invalidate affected dataset snapshots and publish a successor snapshot.
 6. Identify dependent reports/models. Never rewrite a finalized report or its hash; publish an
    external `AvailabilityRecord` identified by `availabilityRecordHash`, or a newly hashed derived

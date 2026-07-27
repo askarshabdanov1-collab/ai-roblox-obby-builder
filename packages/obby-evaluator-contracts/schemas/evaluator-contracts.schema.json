@@ -2380,6 +2380,7 @@
         "reasonCode",
         "reasonDetails",
         "authority",
+        "producer",
         "supersedesAvailabilityRecordHashes",
         "policy",
         "impactScope",
@@ -2416,6 +2417,7 @@
             }
           }
         },
+        "producer": { "$ref": "#/$defs/VersionRef" },
         "effectiveAt": { "$ref": "#/$defs/Timestamp" },
         "effectiveSequence": {
           "type": "integer",

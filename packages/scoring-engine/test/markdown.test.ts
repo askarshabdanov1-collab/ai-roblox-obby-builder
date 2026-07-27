@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 
+import { hashReportPayload } from "@obby/obby-evaluator-contracts";
+
 import { assembleE1Evaluation, renderMarkdownReport } from "../src/index.js";
 import {
   deferredRuntimeAvailability,
@@ -27,6 +29,13 @@ function report() {
   }).report;
 }
 
+function rehashReport(source: ReturnType<typeof report>) {
+  return {
+    ...source,
+    reportPayloadHash: hashReportPayload(source).hash,
+  };
+}
+
 describe("E1c Markdown rendering", () => {
   it("produces deterministic LF-only bytes and a separate renderer identity", () => {
     const first = renderMarkdownReport(report());
@@ -38,6 +47,35 @@ describe("E1c Markdown rendering", () => {
     expect(text).toContain(`Report payload: ${first.reportPayloadHash}`);
     expect(text).not.toContain(first.reportRenderHash);
     expect(text).not.toContain("\r\n");
+  });
+
+  it("normalizes CRLF and lone CR content before hashing exact Markdown bytes", () => {
+    const source = structuredClone(report());
+    source.limitations[0] = {
+      code: "renderer-newline-probe",
+      text: "limitation one\r\nlimitation two\rlimitation three\nend",
+    };
+    const evidence = source.evidenceIndex[0];
+    if (evidence === undefined) throw new Error("missing evidence fixture");
+    evidence.subjectKey = "table one\r\ntable two\rtable three";
+    const finding = structuredClone(
+      evaluatorFixtureGraph().evidenceBundle.findings[0],
+    );
+    if (finding === undefined) throw new Error("missing finding fixture");
+    finding.title = "finding one\r\nfinding two\rfinding three";
+    source.findings = [finding];
+    const rendered = renderMarkdownReport(rehashReport(source));
+    const text = new TextDecoder().decode(rendered.bytes);
+
+    expect(rendered.bytes).not.toContain(13);
+    expect(text).toContain(
+      "limitation one limitation two limitation three end",
+    );
+    expect(text).toContain("table one table two table three");
+    expect(text).toContain("finding one finding two finding three");
+    expect(rendered.renderedBytesHash).toBe(
+      renderMarkdownReport(rehashReport(source)).renderedBytesHash,
+    );
   });
 
   it("renders profile gates and unavailable runtime evidence explicitly", () => {

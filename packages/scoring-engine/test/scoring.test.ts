@@ -116,6 +116,7 @@ describe("E1c immutable evidence availability", () => {
         authorityKind: "retention-policy",
         authorityId: "retention-policy:local",
       },
+      producer: { component: "retention-policy", version: "1.0.0" },
       effectiveSequence: 1,
       supersedesAvailabilityRecordHashes: [],
       policy: { component: "retention-policy", version: "1.0.0" },

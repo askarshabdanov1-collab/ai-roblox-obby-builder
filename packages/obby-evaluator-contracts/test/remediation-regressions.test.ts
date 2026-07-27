@@ -169,6 +169,7 @@ function availability(effectiveAt: string) {
     reasonCode: "created",
     reasonDetails: [],
     authority: { authorityKind: "evaluator", authorityId: "evaluator:local" },
+    producer: { component: "availability-recorder", version: "1.0.0" },
     effectiveAt,
     supersedesAvailabilityRecordHashes: [],
     policy: { component: "availability", version: "1.0.0" },

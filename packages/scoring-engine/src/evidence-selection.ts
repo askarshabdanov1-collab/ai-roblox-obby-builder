@@ -89,9 +89,11 @@ function uniqueSemanticRecords(
   records: readonly EvidenceRecordContract[],
   key: (record: EvidenceRecordContract) => string,
   context: string,
+  charge: ChargeWork,
 ): EvidenceRecordContract[] {
   const seen = new Map<string, EvidenceRecordContract>();
   for (const record of records) {
+    charge(2);
     const semanticKey = key(record);
     if (seen.has(semanticKey)) {
       throw new ScoringContractError(
@@ -101,6 +103,7 @@ function uniqueSemanticRecords(
     }
     seen.set(semanticKey, record);
   }
+  charge(records.length * Math.ceil(Math.log2(Math.max(1, records.length))));
   return [...records].toSorted((left, right) =>
     compareUnicodeScalars(left.evidenceContentHash, right.evidenceContentHash),
   );
@@ -165,12 +168,15 @@ export function selectAuthoritativeE1Evidence(
   const routeIndexes = new Map(
     route.orderedNodeIds.map((objectId, index) => [objectId, index]),
   );
+  charge(route.orderedNodeIds.length * 2);
   for (const objectId of route.orderedNodeIds) {
     requireKnownObject(objectIds, objectId, "required route");
   }
 
-  const transitionById = new Map<string, EvidenceRecordContract[]>();
+  const transitionById = new Map<string, EvidenceRecordContract>();
+  const transitionByHash = new Map<string, EvidenceRecordContract>();
   for (const record of suppliedTransitions) {
+    charge(3);
     if (record.payload.kind !== "route-transition") continue;
     const payload = record.payload;
     requireKnownObject(objectIds, payload.fromObjectId, "route transition");
@@ -191,23 +197,24 @@ export function selectAuthoritativeE1Evidence(
       routeGraph.evidenceContentHash,
       geometry.evidenceContentHash,
     ]);
-    transitionById.set(payload.transitionId, [
-      ...(transitionById.get(payload.transitionId) ?? []),
-      record,
-    ]);
+    if (
+      transitionById.has(payload.transitionId) ||
+      transitionByHash.has(record.evidenceContentHash)
+    ) {
+      throw new ScoringContractError(
+        "conflicting-evidence-coverage",
+        `route transition ${payload.transitionId} has duplicate identity coverage`,
+      );
+    }
+    transitionById.set(payload.transitionId, record);
+    transitionByHash.set(record.evidenceContentHash, record);
   }
   const transitions: EvidenceRecordContract[] = [];
   for (let index = 0; index < route.orderedTransitionIds.length; index += 1) {
+    charge();
     const transitionId = route.orderedTransitionIds[index];
     if (transitionId === undefined) continue;
-    const candidates = transitionById.get(transitionId) ?? [];
-    if (candidates.length > 1) {
-      throw new ScoringContractError(
-        "conflicting-evidence-coverage",
-        `required transition ${transitionId} has ${candidates.length} records`,
-      );
-    }
-    const record = candidates[0];
+    const record = transitionById.get(transitionId);
     if (record?.payload.kind !== "route-transition") {
       continue;
     }
@@ -230,8 +237,9 @@ export function selectAuthoritativeE1Evidence(
   const selectedTransitionHashes = new Set(
     transitions.map((record) => record.evidenceContentHash),
   );
-  const coarseByTransition = new Map<string, EvidenceRecordContract[]>();
+  const coarseByTransition = new Map<string, EvidenceRecordContract>();
   for (const record of suppliedCoarse) {
+    charge(2);
     if (record.payload.kind !== "coarse-transition-state") continue;
     requireKnownObject(
       objectIds,
@@ -250,9 +258,7 @@ export function selectAuthoritativeE1Evidence(
         `coarse transition ${record.payload.transitionId} requires one transition parent`,
       );
     }
-    const transition = suppliedTransitions.find(
-      (candidate) => candidate.evidenceContentHash === parent,
-    );
+    const transition = transitionByHash.get(parent);
     if (
       transition?.payload.kind !== "route-transition" ||
       transition.payload.transitionId !== record.payload.transitionId ||
@@ -266,24 +272,20 @@ export function selectAuthoritativeE1Evidence(
       );
     }
     if (selectedTransitionHashes.has(parent)) {
-      coarseByTransition.set(record.payload.transitionId, [
-        ...(coarseByTransition.get(record.payload.transitionId) ?? []),
-        record,
-      ]);
+      if (coarseByTransition.has(record.payload.transitionId)) {
+        throw new ScoringContractError(
+          "conflicting-evidence-coverage",
+          `required transition ${record.payload.transitionId} has conflicting coarse states`,
+        );
+      }
+      coarseByTransition.set(record.payload.transitionId, record);
     }
   }
   const coarseTransitions: EvidenceRecordContract[] = [];
   for (const transition of transitions) {
+    charge();
     if (transition.payload.kind !== "route-transition") continue;
-    const candidates =
-      coarseByTransition.get(transition.payload.transitionId) ?? [];
-    if (candidates.length > 1) {
-      throw new ScoringContractError(
-        "conflicting-evidence-coverage",
-        `required transition ${transition.payload.transitionId} has conflicting coarse states`,
-      );
-    }
-    const record = candidates[0];
+    const record = coarseByTransition.get(transition.payload.transitionId);
     if (record !== undefined) coarseTransitions.push(record);
   }
 
@@ -307,22 +309,44 @@ export function selectAuthoritativeE1Evidence(
     ]);
   }
 
-  const checkpoints: EvidenceRecordContract[] = [];
-  for (let order = 0; order < route.checkpointObjectIds.length; order += 1) {
-    const checkpointId = route.checkpointObjectIds[order];
-    if (checkpointId === undefined) continue;
-    const candidates = suppliedCheckpoints.filter(
-      (record) =>
-        record.payload.kind === "checkpoint-topology" &&
-        record.payload.checkpointObjectId === checkpointId,
+  const declaredCheckpointIds = new Set(route.checkpointObjectIds);
+  charge(route.checkpointObjectIds.length);
+  const checkpointById = new Map<string, EvidenceRecordContract>();
+  for (const record of suppliedCheckpoints) {
+    charge(3);
+    if (record.payload.kind !== "checkpoint-topology") continue;
+    requireKnownObject(
+      objectIds,
+      record.payload.checkpointObjectId,
+      "checkpoint topology",
     );
-    if (candidates.length > 1) {
+    if (!declaredCheckpointIds.has(record.payload.checkpointObjectId)) {
       throw new ScoringContractError(
-        "conflicting-evidence-coverage",
-        `checkpoint ${checkpointId} has duplicate topology records`,
+        "unexpected-checkpoint-evidence",
+        `checkpoint ${record.payload.checkpointObjectId} is not declared by the required route`,
       );
     }
-    const record = candidates[0];
+    if (checkpointById.has(record.payload.checkpointObjectId)) {
+      throw new ScoringContractError(
+        "conflicting-evidence-coverage",
+        `checkpoint ${record.payload.checkpointObjectId} has duplicate topology records`,
+      );
+    }
+    checkpointById.set(record.payload.checkpointObjectId, record);
+  }
+  const checkpoints: EvidenceRecordContract[] = [];
+  for (let order = 0; order < route.checkpointObjectIds.length; order += 1) {
+    charge(2);
+    const checkpointId = route.checkpointObjectIds[order];
+    if (checkpointId === undefined) continue;
+    const routeIndex = routeIndexes.get(checkpointId);
+    if (routeIndex === undefined) {
+      throw new ScoringContractError(
+        "checkpoint-route-mismatch",
+        `checkpoint ${checkpointId} is absent from the required route`,
+      );
+    }
+    const record = checkpointById.get(checkpointId);
     if (record?.payload.kind !== "checkpoint-topology") {
       continue;
     }
@@ -331,7 +355,7 @@ export function selectAuthoritativeE1Evidence(
       record.subject.objectId !== checkpointId ||
       record.payload.routeId !== route.routeId ||
       record.payload.checkpointOrder !== order + 1 ||
-      record.payload.routeIndex !== routeIndexes.get(checkpointId)
+      record.payload.routeIndex !== routeIndex
     ) {
       throw new ScoringContractError(
         "checkpoint-subject-mismatch",
@@ -341,28 +365,17 @@ export function selectAuthoritativeE1Evidence(
     requireParents(record, [routeGraph.evidenceContentHash]);
     checkpoints.push(record);
   }
-  for (const record of suppliedCheckpoints) {
-    if (record.payload.kind !== "checkpoint-topology") continue;
-    requireKnownObject(
-      objectIds,
-      record.payload.checkpointObjectId,
-      "checkpoint topology",
-    );
+
+  const matchingFinishes: EvidenceRecordContract[] = [];
+  for (const record of suppliedFinishes) {
+    charge();
     if (
-      !route.checkpointObjectIds.includes(record.payload.checkpointObjectId)
+      record.payload.kind === "finish-topology" &&
+      record.payload.finishObjectId === route.finishObjectId
     ) {
-      throw new ScoringContractError(
-        "unexpected-checkpoint-evidence",
-        `checkpoint ${record.payload.checkpointObjectId} is not declared by the required route`,
-      );
+      matchingFinishes.push(record);
     }
   }
-
-  const matchingFinishes = suppliedFinishes.filter(
-    (record) =>
-      record.payload.kind === "finish-topology" &&
-      record.payload.finishObjectId === route.finishObjectId,
-  );
   if (matchingFinishes.length > 1 || suppliedFinishes.length > 1) {
     throw new ScoringContractError(
       "conflicting-evidence-coverage",
@@ -371,10 +384,17 @@ export function selectAuthoritativeE1Evidence(
   }
   const finish = matchingFinishes[0];
   if (finish?.payload.kind === "finish-topology") {
+    const finishRouteIndex = routeIndexes.get(route.finishObjectId);
+    if (finishRouteIndex === undefined) {
+      throw new ScoringContractError(
+        "finish-route-mismatch",
+        `finish ${route.finishObjectId} is absent from the required route`,
+      );
+    }
     requireSceneSubject(finish);
     if (
       finish.payload.routeId !== route.routeId ||
-      finish.payload.routeIndex !== routeIndexes.get(route.finishObjectId)
+      finish.payload.routeIndex !== finishRouteIndex
     ) {
       throw new ScoringContractError(
         "finish-subject-mismatch",
@@ -414,10 +434,20 @@ export function selectAuthoritativeE1Evidence(
         ? `${record.payload.hazardObjectId}:${record.payload.relationship}`
         : record.evidenceContentHash,
     "hazard evidence",
+    charge,
   );
   const hazards = validatedHazards.filter((record) => {
+    charge();
     if (record.payload.kind !== "hazard-relationship") return false;
     const payload = record.payload;
+    const routeRelationship =
+      payload.relationship === "landing-surface-fully-consumed" ||
+      payload.relationship === "landing-surface-overlap";
+    const routeIndex =
+      payload.routeObjectId === undefined
+        ? undefined
+        : routeIndexes.get(payload.routeObjectId);
+    if (routeRelationship && routeIndex === undefined) return false;
     const expectedSuffix =
       payload.relationship === "kill-floor-bounds"
         ? "bounds"
@@ -425,7 +455,7 @@ export function selectAuthoritativeE1Evidence(
           ? "enclosure"
           : payload.routeObjectId === undefined
             ? undefined
-            : `${routeIndexes.get(payload.routeObjectId)}:${
+            : `${routeIndex}:${
                 payload.relationship === "landing-surface-fully-consumed"
                   ? "consumption"
                   : payload.relationship === "landing-surface-overlap"
@@ -476,13 +506,16 @@ export function selectAuthoritativeE1Evidence(
         ? `${record.payload.candidateId}:${record.payload.fromObjectId}:${record.payload.toObjectId}`
         : record.evidenceContentHash,
     "skip evidence",
+    charge,
   );
-  const skips = validatedSkips.filter(
-    (record) =>
+  const skips = validatedSkips.filter((record) => {
+    charge();
+    return (
       record.payload.kind === "skip-candidate" &&
       record.evidenceId ===
-        `e1b:skip:${record.payload.fromRouteIndex}:${record.payload.toRouteIndex}`,
-  );
+        `e1b:skip:${record.payload.fromRouteIndex}:${record.payload.toRouteIndex}`
+    );
+  });
 
   return {
     routeGraph,

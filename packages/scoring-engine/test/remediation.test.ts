@@ -219,6 +219,38 @@ describe("authoritative E1b evidence selection", () => {
     expect(result.report).toEqual(baseline.report);
   });
 
+  it("keeps route-external hazard evidence with a literal undefined index byte-inert", () => {
+    const fixture = fixtureInput();
+    const baseline = assembleE1Evaluation(fixture.input);
+    const hazard = structuredClone(
+      fixture.input.evidence.find(
+        (record) => record.kind === "hazard-relationship",
+      ),
+    );
+    if (hazard?.payload.kind !== "hazard-relationship") {
+      throw new Error("missing hazard fixture");
+    }
+    hazard.evidenceId = "e1b:hazard:KillFloor:undefined:overlap";
+    hazard.payload.hazardObjectId = "KillFloor";
+    hazard.payload.routeObjectId = "KillFloor";
+    hazard.payload.relationship = "landing-surface-overlap";
+    const routeExternal = rehashEvidence(hazard);
+
+    const forward = assembleE1Evaluation({
+      ...fixture.input,
+      evidence: [...fixture.input.evidence, routeExternal],
+    });
+    const shuffled = assembleE1Evaluation({
+      ...fixture.input,
+      evidence: [routeExternal, ...fixture.input.evidence].reverse(),
+    });
+
+    expect(forward.calculations).toEqual(baseline.calculations);
+    expect(forward.calculationBundle).toEqual(baseline.calculationBundle);
+    expect(forward.report).toEqual(baseline.report);
+    expect(shuffled.report).toEqual(baseline.report);
+  });
+
   it("rejects duplicate checkpoint coverage", () => {
     const fixture = fixtureInput();
     const checkpoint = structuredClone(
@@ -341,6 +373,12 @@ describe("runtime capability availability identity", () => {
         if (detail !== undefined) detail.value = `sha256:${"b".repeat(64)}`;
       },
     ],
+    [
+      "wrong producer",
+      (record: AvailabilityRecord) => {
+        record.producer.component = "untrusted-producer";
+      },
+    ],
   ])("rejects %s", (_name, mutate) => {
     const fixture = fixtureInput();
     const record = structuredClone(fixture.input.availabilityRecords[0]);
@@ -367,6 +405,36 @@ describe("runtime capability availability identity", () => {
         availabilityRecords: [record],
       }),
     ).toThrow(/availabilityRecordHash content hash mismatch/);
+  });
+
+  it("rejects a producer mutation that retains the old availability hash", () => {
+    const fixture = fixtureInput();
+    const record = structuredClone(fixture.input.availabilityRecords[0]);
+    if (record === undefined) throw new Error("missing availability fixture");
+    record.producer.version = "0.2.0";
+
+    expect(() =>
+      assembleE1Evaluation({
+        ...fixture.input,
+        availabilityRecords: [record],
+      }),
+    ).toThrow(/availabilityRecordHash content hash mismatch/);
+  });
+
+  it("rejects conflicting producers for one availability subject", () => {
+    const fixture = fixtureInput();
+    const first = fixture.input.availabilityRecords[0];
+    if (first === undefined) throw new Error("missing availability fixture");
+    const second = structuredClone(first);
+    second.producer.component = "competing-producer";
+    second.effectiveSequence = 2;
+
+    expect(() =>
+      assembleE1Evaluation({
+        ...fixture.input,
+        availabilityRecords: [first, rehashAvailability(second)],
+      }),
+    ).toThrow(/producer|authority/i);
   });
 
   it("rejects conflicting effective records without supersession", () => {
@@ -538,6 +606,7 @@ describe("availability-derived report determinism", () => {
         authorityKind: "retention-policy",
         authorityId: "retention-policy:local",
       },
+      producer: { component: "retention-policy", version: "1.0.0" },
       effectiveSequence: sequence,
       supersedesAvailabilityRecordHashes: [],
       policy: { component: "retention-policy", version: "1.0.0" },
@@ -602,6 +671,122 @@ describe("availability-derived report determinism", () => {
 });
 
 describe("exact scoring resource boundaries", () => {
+  function measuredSelection(evidence: readonly EvidenceRecordContract[]): {
+    selected: ReturnType<typeof selectAuthoritativeE1Evidence>;
+    units: number;
+  } {
+    let units = 0;
+    const selected = selectAuthoritativeE1Evidence(evidence, (amount = 1) => {
+      units += amount;
+    });
+    return { selected, units };
+  }
+
+  function transitionCorrelationFixture(
+    count: number,
+  ): EvidenceRecordContract[] {
+    const fixture = fixtureInput();
+    const transition = fixture.input.evidence.find(
+      (record) => record.kind === "route-transition",
+    );
+    const coarse = fixture.input.evidence.find(
+      (record) => record.kind === "coarse-transition-state",
+    );
+    if (
+      transition?.payload.kind !== "route-transition" ||
+      coarse?.payload.kind !== "coarse-transition-state"
+    ) {
+      throw new Error("missing transition fixtures");
+    }
+    const additions: EvidenceRecordContract[] = [];
+    for (let index = 0; index < count; index += 1) {
+      const hash =
+        `sha256:${(index + 10_000).toString(16).padStart(64, "0")}` as const;
+      const coarseHash =
+        `sha256:${(index + 20_000).toString(16).padStart(64, "0")}` as const;
+      const transitionId = `route:audit/Spawn/JumpPlatform01/${index}/${index + 1}`;
+      const candidate = structuredClone(transition);
+      candidate.evidenceId = `audit:transition:${index}`;
+      candidate.evidenceContentHash = hash;
+      candidate.payload.transitionId = transitionId;
+      const state = structuredClone(coarse);
+      state.evidenceId = `audit:coarse:${index}`;
+      state.evidenceContentHash = coarseHash;
+      state.parentEvidenceHashes = [hash];
+      state.payload.transitionId = transitionId;
+      additions.push(candidate, state);
+    }
+    return [...fixture.input.evidence, ...additions];
+  }
+
+  function checkpointCorrelationFixture(
+    count: number,
+  ): EvidenceRecordContract[] {
+    const fixture = fixtureInput();
+    const route = structuredClone(
+      fixture.input.evidence.find((record) => record.kind === "route-graph"),
+    );
+    const geometry = structuredClone(
+      fixture.input.evidence.find((record) => record.kind === "geometry-fact"),
+    );
+    const checkpoint = fixture.input.evidence.find(
+      (record) => record.kind === "checkpoint-topology",
+    );
+    if (
+      route?.payload.kind !== "route-graph" ||
+      geometry?.payload.kind !== "geometry-fact" ||
+      checkpoint?.payload.kind !== "checkpoint-topology"
+    ) {
+      throw new Error("missing checkpoint fixtures");
+    }
+    const checkpointIds = Array.from(
+      { length: count },
+      (_, index) => `CheckpointAudit${index}`,
+    );
+    route.payload.checkpointObjectIds = checkpointIds;
+    route.payload.orderedNodeIds = [
+      "Spawn",
+      ...checkpointIds,
+      "FinishPlatform",
+    ] as unknown as [string, string, ...string[]];
+    route.payload.orderedTransitionIds = ["route:audit/missing"];
+    geometry.payload.objectIds = [...route.payload.orderedNodeIds];
+    const records = checkpointIds.map((checkpointId, index) => {
+      const record = structuredClone(checkpoint);
+      record.evidenceId = `audit:checkpoint:${index}`;
+      record.evidenceContentHash = `sha256:${(index + 30_000)
+        .toString(16)
+        .padStart(64, "0")}`;
+      record.subject = { kind: "object", objectId: checkpointId };
+      record.payload.checkpointObjectId = checkpointId;
+      record.payload.checkpointOrder = index + 1;
+      record.payload.routeIndex = index + 1;
+      return record;
+    });
+    return [route, geometry, ...records];
+  }
+
+  it("accounts for near-maximum transition and checkpoint correlation linearly", () => {
+    const transitionSmall = measuredSelection(
+      transitionCorrelationFixture(500),
+    );
+    const transitionLarge = measuredSelection(
+      transitionCorrelationFixture(1_000),
+    );
+    const checkpointSmall = measuredSelection(
+      checkpointCorrelationFixture(1_000),
+    );
+    const checkpointLarge = measuredSelection(
+      checkpointCorrelationFixture(2_000),
+    );
+
+    expect(transitionLarge.units).toBeGreaterThan(transitionSmall.units);
+    expect(transitionLarge.units).toBeLessThan(transitionSmall.units * 2.1);
+    expect(checkpointLarge.units).toBeGreaterThan(checkpointSmall.units);
+    expect(checkpointLarge.units).toBeLessThan(checkpointSmall.units * 2.1);
+    expect(checkpointLarge.selected.checkpoints).toHaveLength(2_000);
+  });
+
   it("accepts exact collection limits and rejects one below each collection", () => {
     const fixture = fixtureInput();
     const exact = {

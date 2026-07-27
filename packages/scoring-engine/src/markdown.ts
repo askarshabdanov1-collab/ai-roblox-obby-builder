@@ -16,7 +16,7 @@ import type { FinalizedE1Report } from "./types.js";
 
 const RENDERER = Object.freeze({
   component: "e1-markdown-renderer",
-  version: "1.0.0",
+  version: "1.0.1",
 });
 const TEMPLATE = Object.freeze({
   component: "e1-report-template",
@@ -47,8 +47,12 @@ export class MarkdownRenderLimitError extends Error {
   }
 }
 
+function normalizeLineBreaks(value: string): string {
+  return value.replace(/\r\n?|\n/gu, "\n");
+}
+
 function cell(value: string): string {
-  return value
+  return normalizeLineBreaks(value)
     .replaceAll("\\", "\\\\")
     .replaceAll("|", "\\|")
     .replaceAll("\n", " ");
@@ -215,19 +219,22 @@ export function renderMarkdownReport(
     ),
     "",
   ];
+  const normalizedLines = lines.map((line) =>
+    normalizeLineBreaks(line).replaceAll("\n", " "),
+  );
   const encoder = new TextEncoder();
   const maximumBytes = options.maxBytes ?? Number.MAX_SAFE_INTEGER;
   const maximumWork = options.maxWorkUnits ?? Number.MAX_SAFE_INTEGER;
   let byteLength = 0;
-  for (let index = 0; index < lines.length; index += 1) {
+  for (let index = 0; index < normalizedLines.length; index += 1) {
     if (index + 1 > maximumWork) {
       throw new MarkdownRenderLimitError(
         "MARKDOWN_WORK_LIMIT",
         `Markdown rendering exceeds ${maximumWork} work units`,
       );
     }
-    byteLength += encoder.encode(lines[index]).byteLength;
-    if (index < lines.length - 1) byteLength += 1;
+    byteLength += encoder.encode(normalizedLines[index]).byteLength;
+    if (index < normalizedLines.length - 1) byteLength += 1;
     if (byteLength > maximumBytes) {
       throw new MarkdownRenderLimitError(
         "MARKDOWN_SIZE_LIMIT",
@@ -235,7 +242,7 @@ export function renderMarkdownReport(
       );
     }
   }
-  const bytes = encoder.encode(lines.join("\n"));
+  const bytes = encoder.encode(normalizedLines.join("\n"));
   const preimage: ReportRenderPreimage = {
     schemaVersion: "0.1",
     reportPayloadHash: report.reportPayloadHash,

@@ -793,6 +793,7 @@ const availability = {
     authorityKind: "evaluator",
     authorityId: "evaluator:local",
   },
+  producer: { component: "availability-recorder", version: "1.0.0" },
   effectiveSequence: 0,
   supersedesAvailabilityRecordHashes: [],
   policy: {

@@ -33,6 +33,9 @@ the deterministic semantic evidence ID produced from their validated object/rela
 indexes; same-manifest records outside that namespace are ignored after their object, subject, and
 parent bindings are validated. A conflicting alternative for the selected semantic subject is
 rejected. Input order cannot choose the winner.
+Route-relative semantic IDs are constructed only after membership yields a defined integer route
+index. Missing indexes, including a caller-supplied literal `undefined` segment, are never
+stringified into an authoritative ID. Route-external hazard records remain byte-inert.
 
 ## Metrics, states, and gates
 
@@ -76,11 +79,12 @@ metrics are incomplete; conditional not-applicable and a correctly explained opt
 deferral are the only accepted absence cases in the E1 profile.
 
 Runtime availability is keyed by capability ID/version, manifest-derived stable subject ID,
-subject kind and content hash, authority, policy version, effective sequence/time domain, state,
-reason, impact scope, and `availabilityRecordHash`. Equivalent records deduplicate and their input
-order is inert. Supersession must produce one unambiguous effective leaf; competing leaves or an
-unresolvable authority state fail closed without overwriting history. Availability-derived report
-items use the full subject/capability/record identity, so different subjects cannot collide.
+subject kind and content hash, authority, producer, policy version, effective sequence/time domain,
+state, reason, impact scope, and `availabilityRecordHash`. Equivalent records deduplicate and their
+input order is inert. Supersession must produce one unambiguous effective leaf; competing leaves,
+producer changes without an explicit resolution policy, or an unresolvable authority state fail
+closed without overwriting history. Availability-derived report items use the full
+subject/capability/record identity, so different subjects cannot collide.
 
 Category membership is copied from the selected verified profile after gates and completeness.
 Optional missing metrics are shown explicitly and are never numerically renormalized. Profile
@@ -100,6 +104,8 @@ wall-clock time, paths, export format, transport, and CLI invocation metadata.
 Report finalization is an internal assembly step. The package public API exposes
 `assembleE1Evaluation`, which validates the full configuration/evidence/calculation graph before
 finalization; callers cannot publish a trusted-looking report through a raw public finalizer.
+The finalizer is a non-exported local function in the assembly module; neither built `report.js`
+nor its declaration contains a raw finalization export.
 Availability overlays create a newly hashed derived report and preserve the original payload.
 
 Markdown deterministically renders identity, executive state, invariant gates, completeness,
@@ -110,6 +116,8 @@ template, configuration, format, and exact rendered bytes. Rendering never accep
 verification bypass, includes profile-gate and category blocker rows, and emits LF-only bytes on
 every platform. Output is incrementally byte/work bounded before the complete Markdown buffer is
 allocated.
+Renderer-only normalization converts CRLF and lone CR content to LF and then flattens embedded line
+breaks inside one Markdown line. It does not mutate or redefine semantic report payload identity.
 
 ## CLI and atomic output
 
@@ -123,7 +131,10 @@ Add `--json-errors` for a stable `{ok:false,error:{code,message}}` response. Usa
 unknown, duplicate, missing-value, and missing-required options. Input errors distinguish missing
 or unreadable files, non-files, byte limits, malformed JSON, schema failures, and semantic/hash
 validation. Publication, path-change, destination-conflict, cleanup, and output-limit failures also
-have stable codes. Messages omit absolute input paths and stack traces. There is no network access.
+have stable codes. Known filesystem failures (`ENOENT`, `ENOTDIR`, `EISDIR`, permission denial,
+existing entries, overlong paths, and reparse loops) map to platform-neutral codes. Messages use
+logical labels, omit absolute host paths and native OS text, and do not emit stack traces. There is
+no network access.
 
 Output is a semantic directory named from the full `reportPayloadHash`. Each invocation uses a
 unique temporary sibling directory. The CLI writes `report.json` and `report.md`, fsyncs every
@@ -141,6 +152,10 @@ before and after rename, failing closed if an ancestor changes. Windows collisio
 case-insensitive. Portable Node does not provide descriptor-relative rename on every target, so a
 small replacement window remains between the final identity check and path-based operation; E1c
 does not claim absolute race freedom against a privileged concurrent filesystem attacker.
+An existing semantic output is convergent only after the final path and every captured ancestor are
+verified as ordinary directories under the validated root. Identity is checked before reading
+report bytes and again after reading; byte equality never authorizes a symlink, junction, reparse
+point, or replaced directory.
 
 ## Deterministic limits
 
@@ -158,6 +173,10 @@ availability resolution, category/gate assembly, and report construction. Counte
 integer growth. Renderer work/bytes are incrementally bounded. Dominant selection and validation
 passes are linear in bounded records with map/set indexes; canonical sorting and hashing are
 `O(n log n)` in their bounded collections. Input data is parsed as JSON only and is never executed.
+Transition parent hashes and checkpoint IDs are indexed once. Each insertion, duplicate/conflict
+check, and correlation lookup consumes work units; route correlation contains no repeated full-array
+`find` or `filter` scan, so its worst case is `O(n log n)` including deterministic sorting and
+`O(n)` excluding sorting.
 
 ## Fixtures and validation
 
