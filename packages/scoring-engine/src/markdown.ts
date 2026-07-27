@@ -7,12 +7,12 @@ import {
 import {
   hashRenderedBytes,
   hashReportRender,
-  verifyReportPayloadIdentity,
   verifyReportRenderIdentity,
   type ReportRenderPreimage,
 } from "@obby/obby-evaluator-contracts";
 
-import type { FinalizedE1Report } from "./types.js";
+import { assertValidatedE1Report } from "./report.js";
+import type { ValidatedE1Report } from "./types.js";
 
 const RENDERER = Object.freeze({
   component: "e1-markdown-renderer",
@@ -68,13 +68,10 @@ function valueText(
 }
 
 export function renderMarkdownReport(
-  input: FinalizedE1Report,
+  input: ValidatedE1Report,
   options: { maxBytes?: number; maxWorkUnits?: number } = {},
 ): RenderedMarkdownReport {
-  const report = verifyReportPayloadIdentity(input);
-  if (report.reportPayloadHash === undefined) {
-    throw new Error("Markdown rendering requires reportPayloadHash");
-  }
+  const report = assertValidatedE1Report(input);
   const categories = [...report.scoreProfile.categories].toSorted(
     (left, right) => compareUnicodeScalars(left.categoryId, right.categoryId),
   );

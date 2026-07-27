@@ -176,7 +176,21 @@ passes are linear in bounded records with map/set indexes; canonical sorting and
 Transition parent hashes and checkpoint IDs are indexed once. Each insertion, duplicate/conflict
 check, and correlation lookup consumes work units; route correlation contains no repeated full-array
 `find` or `filter` scan, so its worst case is `O(n log n)` including deterministic sorting and
-`O(n)` excluding sorting.
+`O(n)` excluding sorting. Selected route transitions and selected coarse-transition states are
+charged separately before sorting, using `n * ceil(log2(max(n, 1)))` for each collection. Work-budget
+overflow is rejected before either sort executes.
+Parent-evidence equality uses charged linear set construction and membership lookup, including the
+potentially large route-summary parent closure, instead of an additional canonical sort.
+
+## Runtime report trust boundary
+
+The serializable report payload is not itself proof that full E1 assembly ran. The public
+`assembleE1Evaluation` facade registers its report object in a module-private weak identity map and
+binds that object to its assembly-time `reportPayloadHash`. Public Markdown rendering and availability
+derivation require the same unchanged registered object. The marker is not serialized or exported;
+plain objects, deserialized reports, clones, structural TypeScript casts, and caller-rehashed reports
+fail deterministically with `unvalidated-report`. Availability-derived reports are newly hashed and
+registered by the same private boundary without mutating the source report.
 
 ## Fixtures and validation
 

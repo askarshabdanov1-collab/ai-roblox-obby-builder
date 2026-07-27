@@ -92,6 +92,16 @@ export type FinalizedE1Report = ReportPayloadPreimage & {
   reportPayloadHash: ContentHash;
 };
 
+declare const validatedE1ReportBrand: unique symbol;
+
+export type ValidatedE1Report = FinalizedE1Report & {
+  readonly [validatedE1ReportBrand]: true;
+};
+
+export type ValidatedE1EvaluationResult = Omit<E1EvaluationResult, "report"> & {
+  report: ValidatedE1Report;
+};
+
 export class ScoringContractError extends Error {
   public constructor(
     public readonly code: string,

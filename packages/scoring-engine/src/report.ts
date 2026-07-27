@@ -8,33 +8,83 @@ import {
 } from "@obby/obby-evaluator-contracts";
 
 import { resolveAvailabilityRecords } from "./availability.js";
-import { ScoringContractError, type FinalizedE1Report } from "./types.js";
+import { assembleE1Evaluation as assembleE1EvaluationCore } from "./assembly.js";
+import {
+  ScoringContractError,
+  type E1EvaluationInput,
+  type FinalizedE1Report,
+  type ValidatedE1EvaluationResult,
+  type ValidatedE1Report,
+} from "./types.js";
+
+const validatedReports = new WeakMap<object, string>();
 
 function unique(values: readonly string[]): string[] {
   return [...new Set(values)].toSorted(compareUnicodeScalars);
 }
 
-function finalize(payload: ReportPayloadPreimage): FinalizedE1Report {
+function trustReport(report: FinalizedE1Report): ValidatedE1Report {
+  const verified = verifyReportPayloadIdentity(report);
+  if (verified.reportPayloadHash === undefined) {
+    throw new ScoringContractError(
+      "missing-report-payload-hash",
+      "validated assembly produced a report without reportPayloadHash",
+    );
+  }
+  validatedReports.set(report, verified.reportPayloadHash);
+  return report as ValidatedE1Report;
+}
+
+export function assertValidatedE1Report(input: unknown): FinalizedE1Report {
+  if (typeof input !== "object" || input === null) {
+    throw new ScoringContractError(
+      "unvalidated-report",
+      "report operation requires an object returned by validated E1 assembly",
+    );
+  }
+  const trustedHash = validatedReports.get(input);
+  const currentHash = Reflect.get(input, "reportPayloadHash") as unknown;
+  if (trustedHash === undefined || currentHash !== trustedHash) {
+    throw new ScoringContractError(
+      "unvalidated-report",
+      "report operation requires an unchanged object returned by validated E1 assembly",
+    );
+  }
+  const verified = verifyReportPayloadIdentity(input);
+  if (verified.reportPayloadHash !== trustedHash) {
+    throw new ScoringContractError(
+      "unvalidated-report",
+      "validated report identity no longer matches its assembly identity",
+    );
+  }
+  return verified as FinalizedE1Report;
+}
+
+export function assembleE1Evaluation(
+  input: E1EvaluationInput,
+): ValidatedE1EvaluationResult {
+  const result = assembleE1EvaluationCore(input);
+  return {
+    ...result,
+    report: trustReport(result.report),
+  };
+}
+
+function finalize(payload: ReportPayloadPreimage): ValidatedE1Report {
   const parsed = parseReportPayloadPreimage(payload);
   const report = {
     ...parsed,
     reportPayloadHash: hashReportPayload(parsed).hash,
   } as FinalizedE1Report;
   verifyReportPayloadIdentity(report);
-  return report;
+  return trustReport(report);
 }
 
 export function applyAvailabilityRecords(
-  source: FinalizedE1Report,
+  source: ValidatedE1Report,
   records: readonly AvailabilityRecord[],
-): FinalizedE1Report {
-  const original = verifyReportPayloadIdentity(source);
-  if (original.reportPayloadHash === undefined) {
-    throw new ScoringContractError(
-      "missing-report-payload-hash",
-      "availability derivation requires a finalized report",
-    );
-  }
+): ValidatedE1Report {
+  const original = assertValidatedE1Report(source);
   const availability = resolveAvailabilityRecords(records);
   const evidenceByHash = new Map(
     original.evidenceIndex.map((entry) => [entry.evidenceContentHash, entry]),

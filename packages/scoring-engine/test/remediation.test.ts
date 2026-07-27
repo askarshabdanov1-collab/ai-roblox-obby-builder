@@ -12,6 +12,7 @@ import {
 import {
   applyAvailabilityRecords,
   assembleE1Evaluation,
+  ScoringContractError,
 } from "../src/index.js";
 import { selectAuthoritativeE1Evidence } from "../src/evidence-selection.js";
 import {
@@ -674,12 +675,113 @@ describe("exact scoring resource boundaries", () => {
   function measuredSelection(evidence: readonly EvidenceRecordContract[]): {
     selected: ReturnType<typeof selectAuthoritativeE1Evidence>;
     units: number;
+    charges: number[];
   } {
     let units = 0;
+    const charges: number[] = [];
     const selected = selectAuthoritativeE1Evidence(evidence, (amount = 1) => {
       units += amount;
+      charges.push(amount);
     });
-    return { selected, units };
+    return { selected, units, charges };
+  }
+
+  function selectedTransitionFixture(count: number): EvidenceRecordContract[] {
+    const fixture = fixtureInput();
+    const route = structuredClone(
+      fixture.input.evidence.find((record) => record.kind === "route-graph"),
+    );
+    const geometry = structuredClone(
+      fixture.input.evidence.find((record) => record.kind === "geometry-fact"),
+    );
+    const transition = fixture.input.evidence.find(
+      (record) => record.kind === "route-transition",
+    );
+    const coarse = fixture.input.evidence.find(
+      (record) => record.kind === "coarse-transition-state",
+    );
+    const summary = structuredClone(
+      fixture.input.evidence.find(
+        (record) => record.kind === "route-playability-summary",
+      ),
+    );
+    if (
+      route?.payload.kind !== "route-graph" ||
+      geometry?.payload.kind !== "geometry-fact" ||
+      transition?.payload.kind !== "route-transition" ||
+      coarse?.payload.kind !== "coarse-transition-state" ||
+      summary?.payload.kind !== "route-playability-summary"
+    ) {
+      throw new Error("missing selected transition fixtures");
+    }
+    const objectIds = Array.from(
+      { length: count + 1 },
+      (_, index) => `SelectedRouteObject${index}`,
+    );
+    const transitionIds = Array.from(
+      { length: count },
+      (_, index) => `route:selected/${index}/${index + 1}`,
+    );
+    route.payload.orderedNodeIds = objectIds as [string, string, ...string[]];
+    route.payload.orderedTransitionIds = transitionIds as [string, ...string[]];
+    route.payload.checkpointObjectIds = [];
+    route.payload.spawnObjectId = objectIds[0] ?? "SelectedRouteObject0";
+    route.payload.finishObjectId = objectIds.at(-1) ?? "SelectedRouteObject0";
+    geometry.payload.objectIds = objectIds as [string, ...string[]];
+    const records: EvidenceRecordContract[] = [route, geometry];
+    for (let index = 0; index < count; index += 1) {
+      const fromObjectId = objectIds[index];
+      const toObjectId = objectIds[index + 1];
+      const transitionId = transitionIds[index];
+      if (
+        fromObjectId === undefined ||
+        toObjectId === undefined ||
+        transitionId === undefined
+      ) {
+        throw new Error("invalid selected transition fixture index");
+      }
+      const edge = structuredClone(transition);
+      edge.evidenceId = `selected:transition:${index}`;
+      edge.evidenceContentHash = `sha256:${(index + 40_000)
+        .toString(16)
+        .padStart(64, "0")}`;
+      edge.subject = {
+        kind: "transition",
+        fromObjectId,
+        toObjectId,
+        fromGlobalIndex: index,
+        toGlobalIndex: index + 1,
+      };
+      edge.parentEvidenceHashes = [
+        route.evidenceContentHash,
+        geometry.evidenceContentHash,
+      ];
+      edge.payload.transitionId = transitionId;
+      edge.payload.fromObjectId = fromObjectId;
+      edge.payload.toObjectId = toObjectId;
+      edge.payload.fromGlobalIndex = index;
+      edge.payload.toGlobalIndex = index + 1;
+      const state = structuredClone(coarse);
+      state.evidenceId = `selected:coarse:${index}`;
+      state.evidenceContentHash = `sha256:${(index + 50_000)
+        .toString(16)
+        .padStart(64, "0")}`;
+      state.subject = structuredClone(edge.subject);
+      state.parentEvidenceHashes = [edge.evidenceContentHash];
+      state.payload.transitionId = transitionId;
+      state.payload.fromObjectId = fromObjectId;
+      state.payload.toObjectId = toObjectId;
+      records.push(edge, state);
+    }
+    summary.payload.routeId = route.payload.routeId;
+    summary.parentEvidenceHashes = [
+      route.evidenceContentHash,
+      ...records
+        .filter((record) => record.kind === "coarse-transition-state")
+        .map((record) => record.evidenceContentHash),
+    ];
+    records.push(summary);
+    return records;
   }
 
   function transitionCorrelationFixture(
@@ -766,13 +868,22 @@ describe("exact scoring resource boundaries", () => {
     return [route, geometry, ...records];
   }
 
-  it("accounts for near-maximum transition and checkpoint correlation linearly", () => {
-    const transitionSmall = measuredSelection(
-      transitionCorrelationFixture(500),
-    );
-    const transitionLarge = measuredSelection(
-      transitionCorrelationFixture(1_000),
-    );
+  it("charges both selected-route sorts at their deterministic n-log-n cost", () => {
+    const count = 64;
+    const expectedSortCharge = count * Math.ceil(Math.log2(count));
+    const measured = measuredSelection(selectedTransitionFixture(count));
+
+    expect(measured.selected.transitions).toHaveLength(count);
+    expect(measured.selected.coarseTransitions).toHaveLength(count);
+    expect(measured.charges.slice(-2)).toEqual([
+      expectedSortCharge,
+      expectedSortCharge,
+    ]);
+  });
+
+  it("accounts for near-maximum selected transitions and checkpoints within the documented bound", () => {
+    const transitionSmall = measuredSelection(selectedTransitionFixture(900));
+    const transitionLarge = measuredSelection(selectedTransitionFixture(1_900));
     const checkpointSmall = measuredSelection(
       checkpointCorrelationFixture(1_000),
     );
@@ -781,10 +892,52 @@ describe("exact scoring resource boundaries", () => {
     );
 
     expect(transitionLarge.units).toBeGreaterThan(transitionSmall.units);
-    expect(transitionLarge.units).toBeLessThan(transitionSmall.units * 2.1);
+    expect(transitionLarge.units).toBeLessThan(transitionSmall.units * 2.5);
     expect(checkpointLarge.units).toBeGreaterThan(checkpointSmall.units);
     expect(checkpointLarge.units).toBeLessThan(checkpointSmall.units * 2.1);
+    expect(transitionLarge.selected.transitions).toHaveLength(1_900);
+    expect(transitionLarge.selected.coarseTransitions).toHaveLength(1_900);
     expect(checkpointLarge.selected.checkpoints).toHaveLength(2_000);
+  });
+
+  it("does not substitute unrelated route-external records for selected-route sort load", () => {
+    const selected = measuredSelection(selectedTransitionFixture(64));
+    const external = measuredSelection(transitionCorrelationFixture(1_000));
+
+    expect(selected.selected.transitions).toHaveLength(64);
+    expect(external.selected.transitions.length).toBeLessThan(64);
+    expect(selected.charges.slice(-2)).toEqual([
+      64 * Math.ceil(Math.log2(64)),
+      64 * Math.ceil(Math.log2(64)),
+    ]);
+  });
+
+  it("enforces selected-route sorting at one below, exactly at, and one above a work limit", () => {
+    const evidence = selectedTransitionFixture(128);
+    const baseline = measuredSelection(evidence);
+    const maximum = baseline.units + 1;
+    const runWithAdditionalWork = (additionalUnits: number): number => {
+      let used = 0;
+      const charge = (amount = 1): void => {
+        if (amount > maximum - used) {
+          throw new ScoringContractError(
+            "maximum-work-units",
+            `selection work exceeds ${maximum}`,
+          );
+        }
+        used += amount;
+      };
+      selectAuthoritativeE1Evidence(evidence, charge);
+      charge(additionalUnits);
+      return used;
+    };
+
+    expect(runWithAdditionalWork(0)).toBe(maximum - 1);
+    expect(runWithAdditionalWork(1)).toBe(maximum);
+    expect(() => runWithAdditionalWork(2)).toThrow(/selection work exceeds/);
+    expect(measuredSelection([...evidence].reverse()).units).toBe(
+      baseline.units,
+    );
   });
 
   it("accepts exact collection limits and rejects one below each collection", () => {

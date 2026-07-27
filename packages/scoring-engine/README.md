@@ -27,6 +27,16 @@ with their validated object/relationship or route indexes; unrelated same-manife
 validated but remain byte-inert.
 Missing route indexes are never interpolated into semantic IDs. Transition-parent and checkpoint
 correlation use charged maps, making selection linear apart from deterministic `O(n log n)` sorting.
+The selected transition and selected coarse-transition arrays each charge
+`n * ceil(log2(max(n, 1)))` work units before their canonical hash-order sort.
+Parent-evidence set comparison uses charged linear set construction and lookup rather than an
+additional unaccounted sort.
+
+`assembleE1Evaluation` is the only public creator of runtime-validated reports. The returned report
+object is registered in a module-private weak identity map together with its assembly-time payload
+hash. Rendering and availability derivation require that exact unchanged object (or a derived object
+created by the same validated path); serialized reports, clones, structural lookalikes, TypeScript
+casts, and caller-rehashed payloads remain untrusted and fail with `unvalidated-report`.
 
 Catalog invariant dependencies explicitly name affected metrics/categories or declare global
 scope. Generic runtime observations cannot satisfy checkpoint isolation; that optional metric stays

@@ -20,6 +20,26 @@ export type EvidenceSelection = {
 
 type ChargeWork = (units?: number) => void;
 
+function sortingWorkUnits(length: number): number {
+  if (!Number.isSafeInteger(length) || length < 0) {
+    throw new ScoringContractError(
+      "invalid-work-size",
+      "sorting work length must be a non-negative safe integer",
+    );
+  }
+  const comparisonsPerItem = Math.ceil(Math.log2(Math.max(1, length)));
+  if (
+    comparisonsPerItem !== 0 &&
+    length > Math.floor(Number.MAX_SAFE_INTEGER / comparisonsPerItem)
+  ) {
+    throw new ScoringContractError(
+      "maximum-work-units",
+      "sorting work exceeds the safe integer range",
+    );
+  }
+  return length * comparisonsPerItem;
+}
+
 function recordsOfKind(
   evidence: readonly EvidenceRecordContract[],
   kind: EvidenceKind,
@@ -44,18 +64,26 @@ function optionalSingleton(
   return records[0];
 }
 
-function sameSet(left: readonly string[], right: readonly string[]): boolean {
-  return (
-    [...new Set(left)].toSorted(compareUnicodeScalars).join("\u0000") ===
-    [...new Set(right)].toSorted(compareUnicodeScalars).join("\u0000")
-  );
+function sameSet(
+  left: readonly string[],
+  right: readonly string[],
+  charge: ChargeWork,
+): boolean {
+  charge(left.length);
+  const leftSet = new Set(left);
+  charge(right.length);
+  const rightSet = new Set(right);
+  if (leftSet.size !== rightSet.size) return false;
+  charge(rightSet.size);
+  return [...rightSet].every((value) => leftSet.has(value));
 }
 
 function requireParents(
   record: EvidenceRecordContract,
   expected: readonly string[],
+  charge: ChargeWork,
 ): void {
-  if (!sameSet(record.parentEvidenceHashes, expected)) {
+  if (!sameSet(record.parentEvidenceHashes, expected, charge)) {
     throw new ScoringContractError(
       "evidence-parent-closure",
       `${record.kind} ${record.evidenceContentHash} is outside the authoritative parent closure`,
@@ -103,7 +131,7 @@ function uniqueSemanticRecords(
     }
     seen.set(semanticKey, record);
   }
-  charge(records.length * Math.ceil(Math.log2(Math.max(1, records.length))));
+  charge(sortingWorkUnits(records.length));
   return [...records].toSorted((left, right) =>
     compareUnicodeScalars(left.evidenceContentHash, right.evidenceContentHash),
   );
@@ -193,10 +221,11 @@ export function selectAuthoritativeE1Evidence(
         `transition ${payload.transitionId} has a mismatched subject`,
       );
     }
-    requireParents(record, [
-      routeGraph.evidenceContentHash,
-      geometry.evidenceContentHash,
-    ]);
+    requireParents(
+      record,
+      [routeGraph.evidenceContentHash, geometry.evidenceContentHash],
+      charge,
+    );
     if (
       transitionById.has(payload.transitionId) ||
       transitionByHash.has(record.evidenceContentHash)
@@ -303,10 +332,14 @@ export function selectAuthoritativeE1Evidence(
         "route playability summary references the wrong route",
       );
     }
-    requireParents(summary, [
-      routeGraph.evidenceContentHash,
-      ...coarseTransitions.map((record) => record.evidenceContentHash),
-    ]);
+    requireParents(
+      summary,
+      [
+        routeGraph.evidenceContentHash,
+        ...coarseTransitions.map((record) => record.evidenceContentHash),
+      ],
+      charge,
+    );
   }
 
   const declaredCheckpointIds = new Set(route.checkpointObjectIds);
@@ -362,7 +395,7 @@ export function selectAuthoritativeE1Evidence(
         `checkpoint ${checkpointId} does not match required route coverage`,
       );
     }
-    requireParents(record, [routeGraph.evidenceContentHash]);
+    requireParents(record, [routeGraph.evidenceContentHash], charge);
     checkpoints.push(record);
   }
 
@@ -401,10 +434,14 @@ export function selectAuthoritativeE1Evidence(
         `finish ${route.finishObjectId} does not match the required route`,
       );
     }
-    requireParents(finish, [
-      routeGraph.evidenceContentHash,
-      ...coarseTransitions.map((record) => record.evidenceContentHash),
-    ]);
+    requireParents(
+      finish,
+      [
+        routeGraph.evidenceContentHash,
+        ...coarseTransitions.map((record) => record.evidenceContentHash),
+      ],
+      charge,
+    );
   }
 
   const validatedHazards = uniqueSemanticRecords(
@@ -423,10 +460,11 @@ export function selectAuthoritativeE1Evidence(
           "hazard route relationship",
         );
       }
-      requireParents(record, [
-        routeGraph.evidenceContentHash,
-        geometry.evidenceContentHash,
-      ]);
+      requireParents(
+        record,
+        [routeGraph.evidenceContentHash, geometry.evidenceContentHash],
+        charge,
+      );
       return record;
     }),
     (record) =>
@@ -495,10 +533,11 @@ export function selectAuthoritativeE1Evidence(
           `skip candidate ${record.payload.candidateId} has the wrong route indexes`,
         );
       }
-      requireParents(record, [
-        routeGraph.evidenceContentHash,
-        geometry.evidenceContentHash,
-      ]);
+      requireParents(
+        record,
+        [routeGraph.evidenceContentHash, geometry.evidenceContentHash],
+        charge,
+      );
       return record;
     }),
     (record) =>
@@ -517,22 +556,21 @@ export function selectAuthoritativeE1Evidence(
     );
   });
 
+  charge(sortingWorkUnits(transitions.length));
+  const sortedTransitions = transitions.toSorted((left, right) =>
+    compareUnicodeScalars(left.evidenceContentHash, right.evidenceContentHash),
+  );
+  charge(sortingWorkUnits(coarseTransitions.length));
+  const sortedCoarseTransitions = coarseTransitions.toSorted((left, right) =>
+    compareUnicodeScalars(left.evidenceContentHash, right.evidenceContentHash),
+  );
+
   return {
     routeGraph,
     summary,
     geometry,
-    transitions: transitions.toSorted((left, right) =>
-      compareUnicodeScalars(
-        left.evidenceContentHash,
-        right.evidenceContentHash,
-      ),
-    ),
-    coarseTransitions: coarseTransitions.toSorted((left, right) =>
-      compareUnicodeScalars(
-        left.evidenceContentHash,
-        right.evidenceContentHash,
-      ),
-    ),
+    transitions: sortedTransitions,
+    coarseTransitions: sortedCoarseTransitions,
     checkpoints,
     finishes: finish === undefined ? [] : [finish],
     hazards,
