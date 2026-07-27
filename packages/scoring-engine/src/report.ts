@@ -50,14 +50,22 @@ export function assertValidatedE1Report(input: unknown): FinalizedE1Report {
       "report operation requires an unchanged object returned by validated E1 assembly",
     );
   }
-  const verified = verifyReportPayloadIdentity(input);
+  let verified: FinalizedE1Report;
+  try {
+    verified = verifyReportPayloadIdentity(input) as FinalizedE1Report;
+  } catch {
+    throw new ScoringContractError(
+      "unvalidated-report",
+      "validated report identity no longer matches its assembly identity",
+    );
+  }
   if (verified.reportPayloadHash !== trustedHash) {
     throw new ScoringContractError(
       "unvalidated-report",
       "validated report identity no longer matches its assembly identity",
     );
   }
-  return verified as FinalizedE1Report;
+  return verified;
 }
 
 export function assembleE1Evaluation(

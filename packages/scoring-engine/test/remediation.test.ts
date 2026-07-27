@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import {
   hashAvailabilityRecord,
@@ -718,17 +718,27 @@ describe("exact scoring resource boundaries", () => {
       { length: count + 1 },
       (_, index) => `SelectedRouteObject${index}`,
     );
-    const transitionIds = Array.from(
-      { length: count },
-      (_, index) => `route:selected/${index}/${index + 1}`,
-    );
+    const transitionIds = Array.from({ length: count }, (_, index) => {
+      const fromObjectId = objectIds[index] ?? "SelectedRouteObject0";
+      const toObjectId = objectIds[index + 1] ?? "SelectedRouteObject1";
+      return `route:${route.payload.routeId}/${fromObjectId}/${toObjectId}/${index}/${index + 1}`;
+    });
     route.payload.orderedNodeIds = objectIds as [string, string, ...string[]];
     route.payload.orderedTransitionIds = transitionIds as [string, ...string[]];
     route.payload.checkpointObjectIds = [];
     route.payload.spawnObjectId = objectIds[0] ?? "SelectedRouteObject0";
     route.payload.finishObjectId = objectIds.at(-1) ?? "SelectedRouteObject0";
     geometry.payload.objectIds = objectIds as [string, ...string[]];
-    const records: EvidenceRecordContract[] = [route, geometry];
+    geometry.payload.gameplayAuthoritativeObjectIds = [...objectIds] as [
+      string,
+      ...string[],
+    ];
+    const finalizedRoute = rehashEvidence(route);
+    const finalizedGeometry = rehashEvidence(geometry);
+    const records: EvidenceRecordContract[] = [
+      finalizedRoute,
+      finalizedGeometry,
+    ];
     for (let index = 0; index < count; index += 1) {
       const fromObjectId = objectIds[index];
       const toObjectId = objectIds[index + 1];
@@ -753,34 +763,48 @@ describe("exact scoring resource boundaries", () => {
         toGlobalIndex: index + 1,
       };
       edge.parentEvidenceHashes = [
-        route.evidenceContentHash,
-        geometry.evidenceContentHash,
+        finalizedRoute.evidenceContentHash,
+        finalizedGeometry.evidenceContentHash,
       ];
       edge.payload.transitionId = transitionId;
       edge.payload.fromObjectId = fromObjectId;
       edge.payload.toObjectId = toObjectId;
       edge.payload.fromGlobalIndex = index;
       edge.payload.toGlobalIndex = index + 1;
+      const finalizedEdge = rehashEvidence(edge);
       const state = structuredClone(coarse);
       state.evidenceId = `selected:coarse:${index}`;
       state.evidenceContentHash = `sha256:${(index + 50_000)
         .toString(16)
         .padStart(64, "0")}`;
       state.subject = structuredClone(edge.subject);
-      state.parentEvidenceHashes = [edge.evidenceContentHash];
+      state.parentEvidenceHashes = [finalizedEdge.evidenceContentHash];
       state.payload.transitionId = transitionId;
       state.payload.fromObjectId = fromObjectId;
       state.payload.toObjectId = toObjectId;
-      records.push(edge, state);
+      state.payload.inputEvidenceHashes = [
+        finalizedGeometry.evidenceContentHash,
+      ];
+      state.payload.reproduction.inputHashes = [
+        finalizedGeometry.evidenceContentHash,
+      ];
+      records.push(finalizedEdge, rehashEvidence(state));
     }
     summary.payload.routeId = route.payload.routeId;
+    summary.payload.transitionCount = count;
+    summary.payload.feasibleUnderModelCount = count;
+    summary.payload.coarseInfeasibleTransitionCount = 0;
+    summary.payload.coarseIndeterminateTransitionCount = 0;
+    summary.payload.excessiveDropTransitionCount = 0;
     summary.parentEvidenceHashes = [
-      route.evidenceContentHash,
+      finalizedRoute.evidenceContentHash,
       ...records
         .filter((record) => record.kind === "coarse-transition-state")
         .map((record) => record.evidenceContentHash),
     ];
-    records.push(summary);
+    summary.payload.reproduction.inputHashes =
+      summary.parentEvidenceHashes.slice(0, 64);
+    records.push(rehashEvidence(summary));
     return records;
   }
 
@@ -881,24 +905,73 @@ describe("exact scoring resource boundaries", () => {
     ]);
   });
 
-  it("accounts for near-maximum selected transitions and checkpoints within the documented bound", () => {
-    const transitionSmall = measuredSelection(selectedTransitionFixture(900));
-    const transitionLarge = measuredSelection(selectedTransitionFixture(1_900));
-    const checkpointSmall = measuredSelection(
-      checkpointCorrelationFixture(1_000),
-    );
-    const checkpointLarge = measuredSelection(
-      checkpointCorrelationFixture(2_000),
-    );
+  it(
+    "charges exactly 20,900 units for each 1,900-record selected-route sort",
+    { timeout: 120_000 },
+    () => {
+      const transitionSmall = measuredSelection(selectedTransitionFixture(900));
+      const evidence = selectedTransitionFixture(1_900);
+      const transitionLarge = measuredSelection(evidence);
+      const reversed = measuredSelection([...evidence].reverse());
+      const checkpointSmall = measuredSelection(
+        checkpointCorrelationFixture(1_000),
+      );
+      const checkpointLarge = measuredSelection(
+        checkpointCorrelationFixture(2_000),
+      );
 
-    expect(transitionLarge.units).toBeGreaterThan(transitionSmall.units);
-    expect(transitionLarge.units).toBeLessThan(transitionSmall.units * 2.5);
-    expect(checkpointLarge.units).toBeGreaterThan(checkpointSmall.units);
-    expect(checkpointLarge.units).toBeLessThan(checkpointSmall.units * 2.1);
-    expect(transitionLarge.selected.transitions).toHaveLength(1_900);
-    expect(transitionLarge.selected.coarseTransitions).toHaveLength(1_900);
-    expect(checkpointLarge.selected.checkpoints).toHaveLength(2_000);
-  });
+      expect(transitionLarge.units).toBeGreaterThan(transitionSmall.units);
+      expect(transitionLarge.units).toBeLessThan(transitionSmall.units * 2.5);
+      expect(checkpointLarge.units).toBeGreaterThan(checkpointSmall.units);
+      expect(checkpointLarge.units).toBeLessThan(checkpointSmall.units * 2.1);
+      expect(transitionLarge.selected.transitions).toHaveLength(1_900);
+      expect(transitionLarge.selected.coarseTransitions).toHaveLength(1_900);
+      expect(transitionLarge.charges.slice(-2)).toEqual([20_900, 20_900]);
+      expect(
+        transitionLarge.charges
+          .slice(-2)
+          .reduce((sum, value) => sum + value, 0),
+      ).toBe(41_800);
+      expect(
+        transitionLarge.selected.transitions.map(
+          (record) => record.evidenceContentHash,
+        ),
+      ).toEqual(
+        reversed.selected.transitions.map(
+          (record) => record.evidenceContentHash,
+        ),
+      );
+      expect(
+        transitionLarge.selected.coarseTransitions.map(
+          (record) => record.evidenceContentHash,
+        ),
+      ).toEqual(
+        reversed.selected.coarseTransitions.map(
+          (record) => record.evidenceContentHash,
+        ),
+      );
+      expect(reversed.units).toBe(transitionLarge.units);
+      expect(checkpointLarge.selected.checkpoints).toHaveLength(2_000);
+
+      const input = fixtureInput().input;
+      const forwardAssembly = assembleE1Evaluation({
+        ...input,
+        evidence,
+        findings: [],
+        limits: { maxWorkUnits: 1_000_000 },
+      });
+      const reversedAssembly = assembleE1Evaluation({
+        ...input,
+        evidence: [...evidence].reverse(),
+        findings: [],
+        limits: { maxWorkUnits: 1_000_000 },
+      });
+      expect(reversedAssembly.calculations).toEqual(
+        forwardAssembly.calculations,
+      );
+      expect(reversedAssembly.report).toEqual(forwardAssembly.report);
+    },
+  );
 
   it("does not substitute unrelated route-external records for selected-route sort load", () => {
     const selected = measuredSelection(selectedTransitionFixture(64));
@@ -912,11 +985,10 @@ describe("exact scoring resource boundaries", () => {
     ]);
   });
 
-  it("enforces selected-route sorting at one below, exactly at, and one above a work limit", () => {
+  it("gates the real selected-route sort at exact N-1, N, and N+1 work budgets", () => {
     const evidence = selectedTransitionFixture(128);
     const baseline = measuredSelection(evidence);
-    const maximum = baseline.units + 1;
-    const runWithAdditionalWork = (additionalUnits: number): number => {
+    const runWithLimit = (maximum: number) => {
       let used = 0;
       const charge = (amount = 1): void => {
         if (amount > maximum - used) {
@@ -927,18 +999,67 @@ describe("exact scoring resource boundaries", () => {
         }
         used += amount;
       };
-      selectAuthoritativeE1Evidence(evidence, charge);
-      charge(additionalUnits);
-      return used;
+      const selected = selectAuthoritativeE1Evidence(evidence, charge);
+      return { selected, used };
     };
 
-    expect(runWithAdditionalWork(0)).toBe(maximum - 1);
-    expect(runWithAdditionalWork(1)).toBe(maximum);
-    expect(() => runWithAdditionalWork(2)).toThrow(/selection work exceeds/);
-    expect(measuredSelection([...evidence].reverse()).units).toBe(
-      baseline.units,
+    const underfundedSort = vi.spyOn(Array.prototype, "toSorted");
+    expect(() => runWithLimit(baseline.units - 1)).toThrow(
+      expect.objectContaining({ code: "maximum-work-units" }),
     );
+    const underfundedSortCount = underfundedSort.mock.calls.length;
+    underfundedSort.mockRestore();
+
+    const exactSort = vi.spyOn(Array.prototype, "toSorted");
+    const exact = runWithLimit(baseline.units);
+    const exactSortCount = exactSort.mock.calls.length;
+    exactSort.mockRestore();
+    const oneSpare = runWithLimit(baseline.units + 1);
+
+    expect(exactSortCount).toBe(underfundedSortCount + 1);
+    expect(exact.used).toBe(baseline.units);
+    expect(oneSpare.used).toBe(baseline.units);
+    expect(exact.selected).toEqual(baseline.selected);
+    expect(oneSpare.selected).toEqual(baseline.selected);
   });
+
+  it.each([
+    ["duplicate selected transition identity", "transition-duplicate"],
+    ["conflicting selected transition identity", "transition-conflict"],
+    ["duplicate selected coarse-transition evidence", "coarse-duplicate"],
+    ["conflicting selected coarse-transition evidence", "coarse-conflict"],
+  ] as const)(
+    "rejects %s deterministically under shuffled input",
+    (_name, kind) => {
+      const evidence = selectedTransitionFixture(4);
+      const original = evidence.find((record) =>
+        kind.startsWith("transition")
+          ? record.kind === "route-transition"
+          : record.kind === "coarse-transition-state",
+      );
+      if (original === undefined) throw new Error("missing selected evidence");
+      const addition = structuredClone(original);
+      if (kind.endsWith("conflict")) {
+        addition.evidenceId = `${addition.evidenceId}:conflict`;
+        addition.limitations = [...addition.limitations, "Conflicting record."];
+        addition.evidenceContentHash = hashEvidenceContent(addition).hash;
+      }
+      const invalid = [...evidence, addition];
+
+      for (const ordered of [invalid, [...invalid].reverse()]) {
+        try {
+          selectAuthoritativeE1Evidence(ordered);
+        } catch (error) {
+          expect(error).toBeInstanceOf(ScoringContractError);
+          expect(error).toMatchObject({
+            code: "conflicting-evidence-coverage",
+          });
+          continue;
+        }
+        throw new Error("expected conflicting selected evidence rejection");
+      }
+    },
+  );
 
   it("accepts exact collection limits and rejects one below each collection", () => {
     const fixture = fixtureInput();

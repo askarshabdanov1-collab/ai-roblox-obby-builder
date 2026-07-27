@@ -114,8 +114,15 @@ and reproduction data. Unicode-scalar ordering is used; locale time/number forma
 timestamps are absent. `reportRenderHash` is separate from `reportPayloadHash` and binds renderer,
 template, configuration, format, and exact rendered bytes. Rendering never accepts an identity
 verification bypass, includes profile-gate and category blocker rows, and emits LF-only bytes on
-every platform. Output is incrementally byte/work bounded before the complete Markdown buffer is
-allocated.
+every platform. Output bytes are incrementally bounded before the complete Markdown buffer is
+allocated. Renderer work is deterministically precharged: the exact output-line count is charged
+first, followed by a separate pre-sort charge for every ordered renderer collection. A collection
+of size `n` costs `n * ceil(log2(max(n, 1)))` sort units, so zero- and one-item sorts cost zero.
+All additions and multiplications are safe-integer checked. If a charge would exceed the budget,
+the corresponding sort is not invoked and neither Markdown bytes nor a render identity is returned.
+Successful results expose `workUnitsUsed`; that operational counter is excluded from the render
+identity preimage. Reproduction entries reuse the already charged canonical calculation ordering;
+they do not perform or claim a second sort.
 Renderer-only normalization converts CRLF and lone CR content to LF and then flattens embedded line
 breaks inside one Markdown line. It does not mutate or redefine semantic report payload identity.
 
@@ -170,7 +177,8 @@ point, or replaced directory.
 Limits are checked before the corresponding expensive or publishing operation. Work units charge
 input/configuration validation, evidence selection and correlation, metric dispatch and hashing,
 availability resolution, category/gate assembly, and report construction. Counters reject unsafe
-integer growth. Renderer work/bytes are incrementally bounded. Dominant selection and validation
+integer growth. Renderer line work is precharged exactly, renderer sort work is charged immediately
+before each sort, and output bytes are incrementally bounded. Dominant selection and validation
 passes are linear in bounded records with map/set indexes; canonical sorting and hashing are
 `O(n log n)` in their bounded collections. Input data is parsed as JSON only and is never executed.
 Transition parent hashes and checkpoint IDs are indexed once. Each insertion, duplicate/conflict

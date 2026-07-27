@@ -109,6 +109,45 @@ function deletionRecord(
 }
 
 describe("compiled validated-report trust boundary", () => {
+  it("rejects direct serialized, copied, and same-prototype report forgeries", () => {
+    const { result } = assembledReport();
+    const source = result.report;
+    const serialized: unknown = JSON.parse(JSON.stringify(source));
+    const samePrototypeTarget: Record<PropertyKey, unknown> = {};
+    Object.setPrototypeOf(samePrototypeTarget, Reflect.getPrototypeOf(source));
+    const samePrototype: unknown = Object.assign(samePrototypeTarget, source);
+    const forgeries: unknown[] = [
+      serialized,
+      { ...source },
+      Object.assign({}, source),
+      samePrototype,
+    ];
+
+    for (const forgery of forgeries) {
+      expectTrustBoundaryViolation(() =>
+        builtRoot.renderMarkdownReport(
+          forgery as Parameters<typeof builtRoot.renderMarkdownReport>[0],
+        ),
+      );
+      expectTrustBoundaryViolation(() =>
+        builtRoot.applyAvailabilityRecords(
+          forgery as Parameters<typeof builtRoot.applyAvailabilityRecords>[0],
+          [],
+        ),
+      );
+    }
+  });
+
+  it("isolates trust registration from a separately loaded report module instance", async () => {
+    const { result } = assembledReport();
+    const isolatedAvailability = await directBuiltFunction(
+      "../dist/report.js?isolated-trust-boundary",
+      "applyAvailabilityRecords",
+    );
+
+    expectTrustBoundaryViolation(() => isolatedAvailability(result.report, []));
+  });
+
   it("rejects caller-rehashed raw reports through package-root and direct dist entry points", async () => {
     const { result } = assembledReport();
     const directRender = await directBuiltFunction(
@@ -155,9 +194,18 @@ describe("compiled validated-report trust boundary", () => {
     }
   });
 
-  it("rejects an in-place mutation and rehash of a previously validated report", () => {
+  it("rejects an in-place mutation retaining its original report hash", () => {
     const { result } = assembledReport();
     result.report.calculationBundleHash = `sha256:${"e".repeat(64)}`;
+
+    expectTrustBoundaryViolation(() =>
+      builtRoot.renderMarkdownReport(result.report),
+    );
+  });
+
+  it("rejects an in-place mutation and caller-recomputed report hash", () => {
+    const { result } = assembledReport();
+    result.report.calculationBundleHash = `sha256:${"f".repeat(64)}`;
     result.report.reportPayloadHash = hashReportPayload(result.report).hash;
 
     expectTrustBoundaryViolation(() =>

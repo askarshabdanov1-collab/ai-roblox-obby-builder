@@ -10,8 +10,15 @@ must remain present with the same metric set. E1 reports always declare `aggrega
 Report finalization is internal. The public `assembleE1Evaluation` boundary proves the complete
 configuration, authoritative E1b evidence closure, calculation, finding, category, and identity
 graph before producing a content-addressed payload with no execution ID or timestamp.
-`renderMarkdownReport` accepts only verified payloads and produces LF-only, incrementally bounded,
-separately hashed bytes that never contain their own render hash. `applyAvailabilityRecords`
+`renderMarkdownReport` accepts only verified payloads and produces LF-only, deterministically
+bounded, separately hashed bytes that never contain their own render hash. Rendering first charges
+the exact output-line count, then charges each deterministic collection sort separately as
+`n * ceil(log2(max(n, 1)))`; collections of zero or one item cost zero sort units. Every charge uses
+safe-integer arithmetic and is enforced before its corresponding sort, so an underfunded sort never
+starts and no partial Markdown or render identity is returned. The result exposes deterministic
+`workUnitsUsed` outside the render-hash preimage. Reproduction rows reuse the already charged,
+canonically ordered calculation collection and do not execute or charge a second sort.
+`applyAvailabilityRecords`
 preserves the original report and creates a new derived report linked to exact immutable
 availability-record hashes.
 

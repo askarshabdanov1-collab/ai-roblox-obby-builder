@@ -11,8 +11,9 @@ import {
   type ReportRenderPreimage,
 } from "@obby/obby-evaluator-contracts";
 
+import { sortMarkdownCollection } from "./markdown-sort.js";
 import { assertValidatedE1Report } from "./report.js";
-import type { ValidatedE1Report } from "./types.js";
+import type { FinalizedE1Report, ValidatedE1Report } from "./types.js";
 
 const RENDERER = Object.freeze({
   component: "e1-markdown-renderer",
@@ -35,6 +36,7 @@ const CONFIGURATION_HASH = sha256Bytes(
 export type RenderedMarkdownReport = ReportRenderPreimage & {
   reportRenderHash: `sha256:${string}`;
   bytes: Uint8Array;
+  workUnitsUsed: number;
 };
 
 export class MarkdownRenderLimitError extends Error {
@@ -67,37 +69,118 @@ function valueText(
   return `${String(value.value)}${value.unit === undefined ? "" : ` ${value.unit}`}`;
 }
 
+const FIXED_MARKDOWN_LINE_COUNT = 66;
+
+function safeWorkSum(values: readonly number[]): number {
+  let total = 0;
+  for (const value of values) {
+    if (
+      !Number.isSafeInteger(value) ||
+      value < 0 ||
+      value > Number.MAX_SAFE_INTEGER - total
+    ) {
+      throw new MarkdownRenderLimitError(
+        "MARKDOWN_WORK_LIMIT",
+        "Markdown rendering work exceeds the safe integer range",
+      );
+    }
+    total += value;
+  }
+  return total;
+}
+
+function markdownLineWorkUnits(report: FinalizedE1Report): number {
+  return safeWorkSum([
+    FIXED_MARKDOWN_LINE_COUNT,
+    report.invariantGates.length,
+    report.calculations.length,
+    report.scoreProfile.categories.length,
+    report.profileGates.length,
+    Math.max(1, report.findings.length),
+    report.evidenceIndex.length,
+    Math.max(1, report.missingEvidence.length),
+    Math.max(1, report.limitations.length),
+    report.calculations.length,
+  ]);
+}
+
+function workCounter(maximum: number): {
+  charge: (units: number) => void;
+  used: () => number;
+} {
+  if (!Number.isSafeInteger(maximum) || maximum < 0) {
+    throw new MarkdownRenderLimitError(
+      "MARKDOWN_WORK_LIMIT",
+      "Markdown maximum work units must be a non-negative safe integer",
+    );
+  }
+  let used = 0;
+  return {
+    charge(units: number): void {
+      if (!Number.isSafeInteger(units) || units < 0 || units > maximum - used) {
+        throw new MarkdownRenderLimitError(
+          "MARKDOWN_WORK_LIMIT",
+          `Markdown rendering exceeds ${maximum} work units`,
+        );
+      }
+      used += units;
+    },
+    used: () => used,
+  };
+}
+
 export function renderMarkdownReport(
   input: ValidatedE1Report,
   options: { maxBytes?: number; maxWorkUnits?: number } = {},
 ): RenderedMarkdownReport {
   const report = assertValidatedE1Report(input);
-  const categories = [...report.scoreProfile.categories].toSorted(
+  const maximumWork = options.maxWorkUnits ?? Number.MAX_SAFE_INTEGER;
+  const work = workCounter(maximumWork);
+  const expectedLineCount = markdownLineWorkUnits(report);
+  work.charge(expectedLineCount);
+  const categories = sortMarkdownCollection(
+    report.scoreProfile.categories,
     (left, right) => compareUnicodeScalars(left.categoryId, right.categoryId),
+    work.charge,
   );
-  const findings = [...report.findings].toSorted((left, right) =>
-    compareUnicodeScalars(left.findingId, right.findingId),
+  const findings = sortMarkdownCollection(
+    report.findings,
+    (left, right) => compareUnicodeScalars(left.findingId, right.findingId),
+    work.charge,
   );
-  const invariantGates = [...report.invariantGates].toSorted((left, right) =>
-    compareUnicodeScalars(left.invariantId, right.invariantId),
+  const invariantGates = sortMarkdownCollection(
+    report.invariantGates,
+    (left, right) => compareUnicodeScalars(left.invariantId, right.invariantId),
+    work.charge,
   );
-  const profileGates = [...report.profileGates].toSorted((left, right) =>
-    compareUnicodeScalars(left.gateId, right.gateId),
+  const profileGates = sortMarkdownCollection(
+    report.profileGates,
+    (left, right) => compareUnicodeScalars(left.gateId, right.gateId),
+    work.charge,
   );
-  const calculations = [...report.calculations].toSorted((left, right) =>
-    compareUnicodeScalars(left.metricId, right.metricId),
+  const calculations = sortMarkdownCollection(
+    report.calculations,
+    (left, right) => compareUnicodeScalars(left.metricId, right.metricId),
+    work.charge,
   );
-  const evidence = [...report.evidenceIndex].toSorted((left, right) =>
-    compareUnicodeScalars(left.evidenceId, right.evidenceId),
+  const evidence = sortMarkdownCollection(
+    report.evidenceIndex,
+    (left, right) => compareUnicodeScalars(left.evidenceId, right.evidenceId),
+    work.charge,
   );
-  const missing = [...report.missingEvidence].toSorted((left, right) =>
-    compareUnicodeScalars(
-      `${left.metricId ?? ""}:${left.reasonCode}`,
-      `${right.metricId ?? ""}:${right.reasonCode}`,
-    ),
+  const missing = sortMarkdownCollection(
+    report.missingEvidence,
+    (left, right) =>
+      compareUnicodeScalars(
+        `${left.metricId ?? ""}:${left.reasonCode}`,
+        `${right.metricId ?? ""}:${right.reasonCode}`,
+      ),
+    work.charge,
   );
-  const limitations = [...report.limitations].toSorted((left, right) =>
-    compareUnicodeScalars(left.code, right.code),
+  const limitations = sortMarkdownCollection(
+    report.limitations,
+    (left, right) => compareUnicodeScalars(left.code, right.code),
+    work.charge,
   );
   const lines = [
     "# Roblox Obby Evaluation Report",
@@ -219,17 +302,15 @@ export function renderMarkdownReport(
   const normalizedLines = lines.map((line) =>
     normalizeLineBreaks(line).replaceAll("\n", " "),
   );
+  if (normalizedLines.length !== expectedLineCount) {
+    throw new Error(
+      `Markdown line work model expected ${expectedLineCount} lines but rendered ${normalizedLines.length}`,
+    );
+  }
   const encoder = new TextEncoder();
   const maximumBytes = options.maxBytes ?? Number.MAX_SAFE_INTEGER;
-  const maximumWork = options.maxWorkUnits ?? Number.MAX_SAFE_INTEGER;
   let byteLength = 0;
   for (let index = 0; index < normalizedLines.length; index += 1) {
-    if (index + 1 > maximumWork) {
-      throw new MarkdownRenderLimitError(
-        "MARKDOWN_WORK_LIMIT",
-        `Markdown rendering exceeds ${maximumWork} work units`,
-      );
-    }
     byteLength += encoder.encode(normalizedLines[index]).byteLength;
     if (index < normalizedLines.length - 1) byteLength += 1;
     if (byteLength > maximumBytes) {
@@ -255,5 +336,5 @@ export function renderMarkdownReport(
     reportRenderHash: hashReportRender(preimage).hash,
   };
   verifyReportRenderIdentity(finalized);
-  return { ...finalized, bytes };
+  return { ...finalized, bytes, workUnitsUsed: work.used() };
 }
