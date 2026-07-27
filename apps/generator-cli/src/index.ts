@@ -1,0 +1,464 @@
+import { lstat, mkdir, open, realpath, rename, rm } from "node:fs/promises";
+import { isAbsolute, relative, resolve, sep } from "node:path";
+
+import { evaluatorCanonicalStringify } from "@obby/canonical-json";
+import {
+  DEFAULT_GENERATOR_CONFIGURATION,
+  DEFAULT_MECHANIC_CATALOG,
+  GeneratorContractError,
+  generateObby,
+} from "@obby/obby-generator";
+import type {
+  GeneratorConfiguration,
+  MechanicCatalog,
+} from "@obby/obby-generator";
+
+export type GeneratorCliStreams = {
+  stdout: { write(text: string): unknown };
+  stderr: { write(text: string): unknown };
+};
+export type GeneratorCliOptions = {
+  cwd?: string;
+  beforeCommit?: (temporaryDirectory: string) => void | Promise<void>;
+  onAtomicStep?: (
+    step:
+      | "file-write"
+      | "file-sync"
+      | "temporary-directory-sync"
+      | "rename"
+      | "final-parent-sync"
+      | "cleanup",
+  ) => void | Promise<void>;
+};
+type Options = {
+  requestPath: string;
+  configurationPath?: string;
+  catalogPath?: string;
+  outputDirectory: string;
+  jsonErrors: boolean;
+};
+
+function parseArguments(arguments_: readonly string[]): Options {
+  if (arguments_[0] !== "generate")
+    throw new GeneratorContractError("schema", "expected command: generate");
+  const values = new Map<string, string>();
+  let jsonErrors = false;
+  for (let index = 1; index < arguments_.length; index += 1) {
+    const argument = arguments_[index];
+    if (argument === "--json-errors") {
+      jsonErrors = true;
+      continue;
+    }
+    if (
+      !["--request", "--config", "--catalog", "--output"].includes(
+        argument ?? "",
+      )
+    )
+      throw new GeneratorContractError(
+        "schema",
+        `unknown argument ${String(argument)}`,
+      );
+    if (argument === undefined)
+      throw new GeneratorContractError("schema", "missing argument name");
+    const value = arguments_[index + 1];
+    if (value === undefined || value.startsWith("--"))
+      throw new GeneratorContractError(
+        "schema",
+        `${argument} requires a value`,
+      );
+    values.set(argument, value);
+    index += 1;
+  }
+  const requestPath = values.get("--request");
+  const outputDirectory = values.get("--output");
+  if (requestPath === undefined || outputDirectory === undefined)
+    throw new GeneratorContractError(
+      "schema",
+      "--request and --output are required",
+    );
+  const configurationPath = values.get("--config");
+  const catalogPath = values.get("--catalog");
+  return {
+    requestPath,
+    outputDirectory,
+    jsonErrors,
+    ...(configurationPath === undefined ? {} : { configurationPath }),
+    ...(catalogPath === undefined ? {} : { catalogPath }),
+  };
+}
+
+function safeOutputRoot(
+  cwd: string,
+  supplied: string,
+  maximumLength: number,
+): string {
+  const segments = supplied.split(/[\\/]/u).filter(Boolean);
+  const reserved = /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$/iu;
+  if (
+    isAbsolute(supplied) ||
+    segments.includes("..") ||
+    segments.some(
+      (segment) =>
+        segment !== segment.normalize("NFC") ||
+        reserved.test(segment) ||
+        /[. ]$/u.test(segment),
+    )
+  )
+    throw new GeneratorContractError(
+      "path-safety",
+      "output must be a normalized relative path inside the working directory",
+    );
+  const target = resolve(cwd, supplied);
+  const rel = relative(cwd, target);
+  if (
+    rel === "" ||
+    rel === ".." ||
+    rel.startsWith(`..${sep}`) ||
+    target.length > maximumLength
+  )
+    throw new GeneratorContractError(
+      "path-safety",
+      "output path is outside safe limits",
+    );
+  return target;
+}
+
+async function readBoundedJson(
+  label: string,
+  path: string,
+  maximumBytes: number,
+): Promise<unknown> {
+  let handle;
+  try {
+    handle = await open(path, "r");
+  } catch (error) {
+    throw new GeneratorContractError(
+      (error as NodeJS.ErrnoException).code === "ENOENT"
+        ? "schema"
+        : "path-safety",
+      `${label} cannot be opened`,
+    );
+  }
+  try {
+    const info = await handle.stat();
+    if (!info.isFile())
+      throw new GeneratorContractError(
+        "path-safety",
+        `${label} is not a regular file`,
+      );
+    if (info.size > maximumBytes)
+      throw new GeneratorContractError(
+        "input-too-large",
+        `${label} exceeds ${maximumBytes} bytes`,
+      );
+    const bytes = await handle.readFile();
+    if (bytes.byteLength > maximumBytes)
+      throw new GeneratorContractError(
+        "input-too-large",
+        `${label} changed beyond its size limit`,
+      );
+    try {
+      return JSON.parse(bytes.toString("utf8")) as unknown;
+    } catch {
+      throw new GeneratorContractError("schema", `${label} is not valid JSON`);
+    }
+  } finally {
+    await handle.close();
+  }
+}
+
+type DirectoryIdentity = {
+  path: string;
+  realPath: string;
+  device: number;
+  inode: number;
+  birthtimeMs: number;
+};
+async function directoryIdentity(path: string): Promise<DirectoryIdentity> {
+  const info = await lstat(path);
+  if (!info.isDirectory() || info.isSymbolicLink())
+    throw new GeneratorContractError(
+      "path-safety",
+      "output contains a non-directory or reparse-point segment",
+    );
+  return {
+    path,
+    realPath: await realpath(path),
+    device: info.dev,
+    inode: info.ino,
+    birthtimeMs: info.birthtimeMs,
+  };
+}
+
+async function rejectSymlinkSegments(
+  cwd: string,
+  target: string,
+): Promise<void> {
+  let current = cwd;
+  for (const segment of relative(cwd, target).split(sep).filter(Boolean)) {
+    current = resolve(current, segment);
+    try {
+      if ((await lstat(current)).isSymbolicLink())
+        throw new GeneratorContractError(
+          "path-safety",
+          "output contains a symbolic link or reparse point",
+        );
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+      else break;
+    }
+  }
+}
+
+async function captureDirectoryChain(
+  cwd: string,
+  target: string,
+): Promise<DirectoryIdentity[]> {
+  const result = [await directoryIdentity(cwd)];
+  let current = cwd;
+  for (const segment of relative(cwd, target).split(sep).filter(Boolean)) {
+    current = resolve(current, segment);
+    result.push(await directoryIdentity(current));
+  }
+  const root = result[0]?.realPath;
+  const end = result.at(-1)?.realPath;
+  if (
+    root === undefined ||
+    end === undefined ||
+    relative(root, end) === ".." ||
+    relative(root, end).startsWith(`..${sep}`)
+  )
+    throw new GeneratorContractError(
+      "path-safety",
+      "output resolves outside the working directory",
+    );
+  return result;
+}
+
+async function assertDirectoryChain(
+  expected: readonly DirectoryIdentity[],
+): Promise<void> {
+  for (const identity of expected) {
+    let actual: DirectoryIdentity;
+    try {
+      actual = await directoryIdentity(identity.path);
+    } catch {
+      throw new GeneratorContractError(
+        "path-safety",
+        "output directory identity changed during publication",
+      );
+    }
+    if (
+      actual.realPath !== identity.realPath ||
+      actual.device !== identity.device ||
+      actual.inode !== identity.inode ||
+      actual.birthtimeMs !== identity.birthtimeMs
+    )
+      throw new GeneratorContractError(
+        "path-safety",
+        "output directory identity changed during publication",
+      );
+  }
+}
+
+async function syncDirectory(
+  path: string,
+  step: "temporary-directory-sync" | "final-parent-sync",
+  hook: GeneratorCliOptions["onAtomicStep"],
+): Promise<void> {
+  await hook?.(step);
+  let handle;
+  try {
+    handle = await open(path, "r");
+    await handle.sync();
+  } catch (error) {
+    if (
+      !["EACCES", "EINVAL", "EISDIR", "ENOTSUP", "EPERM"].includes(
+        (error as NodeJS.ErrnoException).code ?? "",
+      )
+    )
+      throw error;
+  } finally {
+    await handle?.close();
+  }
+}
+
+async function publish(
+  cwd: string,
+  outputRoot: string,
+  directoryName: string,
+  content: Uint8Array,
+  options: GeneratorCliOptions,
+): Promise<string> {
+  await rejectSymlinkSegments(cwd, outputRoot);
+  await mkdir(outputRoot, { recursive: true });
+  await rejectSymlinkSegments(cwd, outputRoot);
+  const outputChain = await captureDirectoryChain(cwd, outputRoot);
+  const finalPath = resolve(outputRoot, directoryName);
+  if (
+    finalPath.length >
+    DEFAULT_GENERATOR_CONFIGURATION.limits.maxOutputPathLength
+  )
+    throw new GeneratorContractError(
+      "path-safety",
+      "semantic output path exceeds its configured limit",
+    );
+  try {
+    await lstat(finalPath);
+    throw new GeneratorContractError(
+      "output-conflict",
+      `output already exists: ${directoryName}`,
+    );
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  let stagingPath = "";
+  for (let counter = 0; counter < 32; counter += 1) {
+    const candidate = resolve(
+      outputRoot,
+      `.obby-generator-${directoryName.slice(5)}-${process.pid}-${counter}.tmp`,
+    );
+    try {
+      await mkdir(candidate, { mode: 0o700 });
+      stagingPath = candidate;
+      break;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+    }
+  }
+  if (stagingPath === "")
+    throw new GeneratorContractError(
+      "work-limit",
+      "bounded staging acquisition exhausted",
+    );
+  let committed = false;
+  try {
+    await options.onAtomicStep?.("file-write");
+    const handle = await open(
+      resolve(stagingPath, "generation-bundle.json"),
+      "wx",
+      0o600,
+    );
+    try {
+      await handle.writeFile(content);
+      await options.onAtomicStep?.("file-sync");
+      await handle.sync();
+    } finally {
+      await handle.close();
+    }
+    await syncDirectory(
+      stagingPath,
+      "temporary-directory-sync",
+      options.onAtomicStep,
+    );
+    await options.beforeCommit?.(stagingPath);
+    await assertDirectoryChain(outputChain);
+    await options.onAtomicStep?.("rename");
+    await rename(stagingPath, finalPath);
+    committed = true;
+    await assertDirectoryChain(outputChain);
+    await syncDirectory(outputRoot, "final-parent-sync", options.onAtomicStep);
+    return finalPath;
+  } catch (error) {
+    if (!committed) {
+      try {
+        await assertDirectoryChain(outputChain);
+        await options.onAtomicStep?.("cleanup");
+        await rm(stagingPath, { force: true, recursive: true });
+      } catch {
+        throw new GeneratorContractError(
+          "cleanup-failed",
+          "temporary output cleanup failed",
+        );
+      }
+    }
+    if (error instanceof GeneratorContractError) throw error;
+    throw new GeneratorContractError(
+      "output-publication",
+      "atomic output publication failed",
+    );
+  }
+}
+
+export async function runGeneratorCli(
+  arguments_: readonly string[],
+  streams: GeneratorCliStreams = process,
+  executionOptions: GeneratorCliOptions = {},
+): Promise<number> {
+  let jsonErrors = arguments_.includes("--json-errors");
+  try {
+    const options = parseArguments(arguments_);
+    jsonErrors = options.jsonErrors;
+    const cwd = resolve(executionOptions.cwd ?? process.cwd());
+    const outputRoot = safeOutputRoot(
+      cwd,
+      options.outputDirectory,
+      DEFAULT_GENERATOR_CONFIGURATION.limits.maxOutputPathLength,
+    );
+    const inputPaths = [
+      options.requestPath,
+      options.configurationPath,
+      options.catalogPath,
+    ]
+      .filter((value): value is string => value !== undefined)
+      .map((path) => resolve(cwd, path));
+    if (inputPaths.includes(outputRoot))
+      throw new GeneratorContractError(
+        "path-safety",
+        "output directory cannot also be an input file",
+      );
+    const request = await readBoundedJson(
+      "request",
+      resolve(cwd, options.requestPath),
+      DEFAULT_GENERATOR_CONFIGURATION.limits.maxRequestBytes,
+    );
+    const configuration =
+      options.configurationPath === undefined
+        ? DEFAULT_GENERATOR_CONFIGURATION
+        : ((await readBoundedJson(
+            "configuration",
+            resolve(cwd, options.configurationPath),
+            DEFAULT_GENERATOR_CONFIGURATION.limits.maxConfigurationBytes,
+          )) as GeneratorConfiguration);
+    const catalog =
+      options.catalogPath === undefined
+        ? DEFAULT_MECHANIC_CATALOG
+        : ((await readBoundedJson(
+            "catalog",
+            resolve(cwd, options.catalogPath),
+            DEFAULT_GENERATOR_CONFIGURATION.limits.maxCatalogBytes,
+          )) as MechanicCatalog);
+    const bundle = generateObby(request, configuration, catalog);
+    const output = new TextEncoder().encode(
+      `${evaluatorCanonicalStringify(bundle)}\n`,
+    );
+    if (output.byteLength > configuration.limits.maxOutputBytes)
+      throw new GeneratorContractError(
+        "work-limit",
+        "canonical output exceeds configured byte limit",
+      );
+    const path = await publish(
+      cwd,
+      outputRoot,
+      `obby-${bundle.obbySpec.obbySpecHash.slice(7)}`,
+      output,
+      executionOptions,
+    );
+    streams.stdout.write(`${path}\n`);
+    return 0;
+  } catch (error) {
+    const normalized =
+      error instanceof GeneratorContractError
+        ? error
+        : new GeneratorContractError(
+            "schema",
+            error instanceof Error ? error.message : "unknown failure",
+          );
+    streams.stderr.write(
+      jsonErrors
+        ? `${JSON.stringify({ error: { code: normalized.code, message: normalized.message } })}\n`
+        : `obby-generator: ${normalized.code}: ${normalized.message}\n`,
+    );
+    return 1;
+  }
+}

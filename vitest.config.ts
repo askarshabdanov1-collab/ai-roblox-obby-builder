@@ -23,6 +23,18 @@ export default defineConfig({
           import.meta.url,
         ),
       ),
+      "@obby/obby-generator-contracts": fileURLToPath(
+        new URL(
+          "./packages/obby-generator-contracts/src/index.ts",
+          import.meta.url,
+        ),
+      ),
+      "@obby/obby-generator": fileURLToPath(
+        new URL("./packages/obby-generator/src/index.ts", import.meta.url),
+      ),
+      "@obby/generator-cli": fileURLToPath(
+        new URL("./apps/generator-cli/src/index.ts", import.meta.url),
+      ),
       "@obby/roblox-emitter": fileURLToPath(
         new URL("./packages/roblox-emitter/src/index.ts", import.meta.url),
       ),

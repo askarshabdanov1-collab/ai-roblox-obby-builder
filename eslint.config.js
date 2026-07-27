@@ -12,6 +12,7 @@ export default tseslint.config(
       "node_modules/**",
       "packages/contracts/src/generated/**",
       "packages/obby-evaluator-contracts/src/generated/**",
+      "packages/obby-generator-contracts/src/generated/**",
       "roblox/generated/**",
       "tools/smoke-built-packages.mjs",
     ],

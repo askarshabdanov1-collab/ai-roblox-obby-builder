@@ -35,6 +35,15 @@
     "evaluator": "tsx apps/evaluator-cli/src/bin.ts",
     "fixtures:check": "tsx tools/check-generated.ts",
     "fixtures:generate": "tsx tools/generate-fixtures.ts",
+    "generator": "tsx apps/generator-cli/src/bin.ts",
+    "generator:check": "npm run generator:contracts:check && npm run generator:fixtures:check && npm run generator:determinism:check && npm run generator:test && npm run generator:cli:test",
+    "generator:cli:test": "vitest run apps/generator-cli",
+    "generator:contracts:check": "tsx tools/check-generator-contracts.ts",
+    "generator:contracts:generate": "tsx tools/generate-generator-contracts.ts",
+    "generator:determinism:check": "tsx tools/check-generator-determinism.ts",
+    "generator:fixtures:check": "tsx tools/check-generator-fixtures.ts",
+    "generator:fixtures:generate": "tsx tools/generate-generator-fixtures.ts",
+    "generator:test": "vitest run packages/obby-generator-contracts packages/obby-generator",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",
@@ -48,7 +57,7 @@
     "test": "vitest run",
     "toolchain:install": "rokit install",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run contracts:check && npm run evaluator:contracts:check && npm run evaluator:route:check && npm run evaluator:scoring:check && npm run evaluator:fixtures:check && npm run fixtures:check && npm run test && npm run security:secrets && npm run security:dependencies && npm run roblox:format:check && npm run roblox:lint && npm run roblox:test && npm run roblox:build"
+    "validate": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run contracts:check && npm run evaluator:contracts:check && npm run evaluator:route:check && npm run evaluator:scoring:check && npm run evaluator:fixtures:check && npm run generator:contracts:check && npm run generator:fixtures:check && npm run generator:determinism:check && npm run fixtures:check && npm run test && npm run security:secrets && npm run security:dependencies && npm run roblox:format:check && npm run roblox:lint && npm run roblox:test && npm run roblox:build"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

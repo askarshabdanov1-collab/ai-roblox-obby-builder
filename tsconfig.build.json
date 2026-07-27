@@ -13,6 +13,11 @@
       "@obby/obby-evaluator-contracts": [
         "./packages/obby-evaluator-contracts/src/index.ts"
       ],
+      "@obby/obby-generator-contracts": [
+        "./packages/obby-generator-contracts/src/index.ts"
+      ],
+      "@obby/obby-generator": ["./packages/obby-generator/src/index.ts"],
+      "@obby/generator-cli": ["./apps/generator-cli/src/index.ts"],
       "@obby/route-playability-evaluator": [
         "./packages/route-playability-evaluator/src/index.ts"
       ],

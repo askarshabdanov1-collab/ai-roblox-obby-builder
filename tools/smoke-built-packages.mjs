@@ -15,6 +15,8 @@ import {
   renderMarkdownReport,
 } from "@obby/scoring-engine";
 import { runEvaluatorCli } from "@obby/evaluator-cli";
+import { generateObby } from "@obby/obby-generator";
+import { runGeneratorCli } from "@obby/generator-cli";
 
 const spec = JSON.parse(
   await readFile(
@@ -62,6 +64,18 @@ if (
   throw new Error("built scoring engine exports are unavailable");
 if (typeof runEvaluatorCli !== "function")
   throw new Error("built evaluator CLI library export is unavailable");
+const generated = generateObby({
+  schemaVersion: "0.1",
+  requestId: "built-smoke",
+  workingName: "Built Smoke",
+  genre: "obby",
+  stageCount: 5,
+  seed: 1,
+});
+if (generated.obbySpec.stages.length !== 5)
+  throw new Error("built generator returned an invalid stage plan");
+if (typeof runGeneratorCli !== "function")
+  throw new Error("built generator CLI library export is unavailable");
 
 const compiledReportModule = await import(
   new URL("../packages/scoring-engine/dist/report.js", import.meta.url)
@@ -77,4 +91,4 @@ if (compiledReportDeclaration.includes("finalizeValidatedE1Report"))
     "built scoring declaration exposes unchecked report finalization",
   );
 
-console.log("plain Node imported all Phase 0 and implemented E1 packages");
+console.log("plain Node imported Phase 0, E1, and G0 packages");
