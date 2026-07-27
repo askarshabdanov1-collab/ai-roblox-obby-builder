@@ -21,7 +21,7 @@
     "dev:orchestrator": "tsx apps/orchestrator/src/index.ts",
     "evaluator:contracts:check": "tsx tools/check-evaluator-contracts.ts",
     "evaluator:contracts:generate": "tsx tools/generate-evaluator-contracts.ts",
-    "evaluator:test": "vitest run packages/obby-evaluator-contracts packages/geometry-evaluator packages/route-playability-evaluator",
+    "evaluator:test": "vitest run packages/obby-evaluator-contracts packages/geometry-evaluator packages/route-playability-evaluator packages/scoring-engine",
     "evaluator:route:test": "vitest run packages/route-playability-evaluator",
     "evaluator:route:check": "tsx tools/check-route-evaluator.ts",
     "evaluator:route:fixtures:generate": "tsx tools/generate-route-evaluator-fixtures.ts",

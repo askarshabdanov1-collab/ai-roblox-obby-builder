@@ -13,7 +13,10 @@ import type {
   EvaluationPlan,
   EvaluationRequest,
   MetricCatalog,
+  MetricCalculationPreimage,
   MetricDefinition,
+  ReportPayloadPreimage,
+  ReportRenderPreimage,
   ScoringProfile,
 } from "./generated/evaluator-contracts.js";
 import {
@@ -24,7 +27,10 @@ import {
   parseEvaluationRequest,
   parseEvidenceRecord,
   parseMetricCatalog,
+  parseMetricCalculationPreimage,
   parseMetricDefinition,
+  parseReportPayloadPreimage,
+  parseReportRenderPreimage,
   parseScoringProfile,
 } from "./validation.js";
 
@@ -291,6 +297,117 @@ export function hashCalculationBundle(input: unknown): NamedHashResult {
   });
 }
 
+export function hashMetricCalculation(input: unknown): NamedHashResult {
+  const calculation = parseMetricCalculationPreimage(input);
+  const payload = omitFields(calculation, ["calculationHash"]);
+  return namedHash({
+    ...payload,
+    evidence: records(
+      payload.evidence,
+      (item) => `${item.kind}:${item.subjectKey}:${item.evidenceContentHash}`,
+    ),
+    parentCalculations: records(
+      payload.parentCalculations,
+      (item) => `${item.metricId}:${item.calculationHash}`,
+    ),
+    thresholdsApplied: records(
+      payload.thresholdsApplied,
+      (threshold) => threshold.thresholdId,
+    ),
+    confidence: {
+      ...payload.confidence,
+      limitations: strings(payload.confidence.limitations),
+    },
+    limitations: records(
+      payload.limitations,
+      (limitation) => `${limitation.code}:${limitation.text}`,
+    ),
+  });
+}
+
+export function hashReportPayload(input: unknown): NamedHashResult {
+  const report = parseReportPayloadPreimage(input);
+  const payload = omitFields(report, ["reportPayloadHash"]);
+  return namedHash({
+    ...payload,
+    blockingFindingIds: strings(payload.blockingFindingIds),
+    scoreProfile: {
+      ...payload.scoreProfile,
+      categories: records(
+        payload.scoreProfile.categories.map((category) => ({
+          ...category,
+          metricIds: strings(category.metricIds),
+          ...(category.confidence === undefined
+            ? {}
+            : {
+                confidence: {
+                  ...category.confidence,
+                  limitations: strings(category.confidence.limitations),
+                },
+              }),
+        })),
+        (category) => category.categoryId,
+      ),
+    },
+    metrics: records(
+      payload.metrics,
+      (metric) => `${metric.category}:${metric.metricId}`,
+    ),
+    findings: records(
+      payload.findings.map((finding) => ({
+        ...omitFields(finding, ["executionId"]),
+        evidenceIds: strings(finding.evidenceIds),
+        limitations: strings(finding.limitations),
+        metricIds: strings(finding.metricIds),
+      })),
+      (finding) =>
+        `${finding.invariantId === undefined ? "1" : "0"}:` +
+        `${finding.blocking ? "0" : "1"}:${finding.ruleId}:` +
+        `${JSON.stringify(finding.subjects)}:${finding.findingId}`,
+    ),
+    evidenceIndex: records(
+      payload.evidenceIndex.map((entry) => ({
+        ...entry,
+        artifactHashes: strings(entry.artifactHashes),
+      })),
+      (entry) =>
+        `${entry.kind}:${entry.subjectKey}:${entry.evidenceId}:${entry.evidenceContentHash}`,
+    ),
+    missingEvidence: records(
+      payload.missingEvidence,
+      (entry) =>
+        `${entry.capability ?? ""}:${entry.metricId ?? ""}:${entry.reasonCode}`,
+    ),
+    comparability: {
+      ...payload.comparability,
+      compatibleDimensions: strings(payload.comparability.compatibleDimensions),
+    },
+    limitations: records(
+      payload.limitations,
+      (limitation) => `${limitation.code}:${limitation.text}`,
+    ),
+    ...(payload.derivedFrom === undefined
+      ? {}
+      : {
+          derivedFrom: {
+            ...payload.derivedFrom,
+            availabilityRecordHashes: strings(
+              payload.derivedFrom.availabilityRecordHashes,
+            ),
+          },
+        }),
+  });
+}
+
+export function hashRenderedBytes(bytes: Uint8Array): `sha256:${string}` {
+  return sha256Bytes(bytes);
+}
+
+export function hashReportRender(input: unknown): NamedHashResult {
+  const render = parseReportRenderPreimage(input);
+  return namedHash(omitFields(render, ["reportRenderHash"]));
+}
+
 export function hashAvailabilityRecord(input: unknown): NamedHashResult {
   const validated: AvailabilityRecord = parseAvailabilityRecord(input);
   const payload = omitFields(validated, ["availabilityRecordHash"]);
@@ -406,6 +523,42 @@ export function verifyCalculationBundleIdentity(
     "calculationBundleHash",
     hashCalculationBundle(value).hash,
     value.calculationBundleHash,
+  );
+  return value;
+}
+
+export function verifyMetricCalculationIdentity(
+  input: unknown,
+): MetricCalculationPreimage {
+  const value = parseMetricCalculationPreimage(input);
+  assertHash(
+    "calculationHash",
+    hashMetricCalculation(value).hash,
+    value.calculationHash,
+  );
+  return value;
+}
+
+export function verifyReportPayloadIdentity(
+  input: unknown,
+): ReportPayloadPreimage {
+  const value = parseReportPayloadPreimage(input);
+  assertHash(
+    "reportPayloadHash",
+    hashReportPayload(value).hash,
+    value.reportPayloadHash,
+  );
+  return value;
+}
+
+export function verifyReportRenderIdentity(
+  input: unknown,
+): ReportRenderPreimage {
+  const value = parseReportRenderPreimage(input);
+  assertHash(
+    "reportRenderHash",
+    hashReportRender(value).hash,
+    value.reportRenderHash,
   );
   return value;
 }

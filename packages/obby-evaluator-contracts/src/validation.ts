@@ -19,7 +19,10 @@ import type {
   Finding,
   GeometryObjectInput,
   MetricCatalog,
+  MetricCalculationPreimage,
   MetricDefinition,
+  ReportPayloadPreimage,
+  ReportRenderPreimage,
   RuntimeObservationContent,
   RuntimeObservationEnvelope,
   ScoringProfile,
@@ -86,6 +89,9 @@ const validators = {
   Finding: validator<Finding>("Finding"),
   GeometryObjectInput: validator<GeometryObjectInput>("GeometryObjectInput"),
   MetricCatalog: validator<MetricCatalog>("MetricCatalog"),
+  MetricCalculationPreimage: validator<MetricCalculationPreimage>(
+    "MetricCalculationPreimage",
+  ),
   MetricDefinition: validator<MetricDefinition>("MetricDefinition"),
   RuntimeObservationContent: validator<RuntimeObservationContent>(
     "RuntimeObservationContentContract",
@@ -93,6 +99,10 @@ const validators = {
   RuntimeObservationEnvelope: validator<RuntimeObservationEnvelope>(
     "RuntimeObservationEnvelope",
   ),
+  ReportPayloadPreimage: validator<ReportPayloadPreimage>(
+    "ReportPayloadPreimage",
+  ),
+  ReportRenderPreimage: validator<ReportRenderPreimage>("ReportRenderPreimage"),
   ScoringProfile: validator<ScoringProfile>("ScoringProfile"),
   TransitionInput: validator<TransitionInput>("TransitionInput"),
 } as const;
@@ -458,6 +468,15 @@ export const parseTransitionInput = (input: unknown): TransitionInput =>
 export const parseCalculationBundlePreimage = (
   input: unknown,
 ): CalculationBundlePreimage => parse("CalculationBundlePreimage", input);
+export const parseMetricCalculationPreimage = (
+  input: unknown,
+): MetricCalculationPreimage => parse("MetricCalculationPreimage", input);
+export const parseReportPayloadPreimage = (
+  input: unknown,
+): ReportPayloadPreimage => parse("ReportPayloadPreimage", input);
+export const parseReportRenderPreimage = (
+  input: unknown,
+): ReportRenderPreimage => parse("ReportRenderPreimage", input);
 export const parseControllerProfile = (input: unknown): ControllerProfile =>
   parse("ControllerProfile", input);
 

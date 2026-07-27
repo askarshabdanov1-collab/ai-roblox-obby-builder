@@ -16,7 +16,10 @@ export type EvaluatorContract =
   | Finding
   | GeometryObjectInput
   | TransitionInput
-  | CalculationBundlePreimage;
+  | CalculationBundlePreimage
+  | MetricCalculationPreimage
+  | ReportPayloadPreimage
+  | ReportRenderPreimage;
 export type SchemaVersion = "0.1";
 export type StableId = string;
 export type SemanticVersion = string;
@@ -1156,4 +1159,164 @@ export interface CalculationBundlePreimage {
    */
   ruleVersions: VersionRef[];
   calculationBundleHash?: ContentHash;
+}
+export interface MetricCalculationPreimage {
+  schemaVersion: SchemaVersion;
+  metricDefinitionHash: ContentHash;
+  deterministicParametersHash: ContentHash;
+  /**
+   * @maxItems 4096
+   */
+  evidence: {
+    kind: EvidenceKind;
+    subjectKey: string;
+    evidenceContentHash: ContentHash;
+  }[];
+  /**
+   * @maxItems 256
+   */
+  parentCalculations: {
+    metricId: StableId;
+    calculationHash: ContentHash;
+  }[];
+  result: {
+    status: "available" | "not-applicable" | "missing-evidence" | "failed";
+    value?: MetricValue;
+    normalizedScore?: number;
+  };
+  /**
+   * @maxItems 64
+   */
+  thresholdsApplied: {
+    thresholdId: StableId;
+    classification: ProfileConstantClassification;
+    matched: boolean;
+  }[];
+  confidence: Confidence;
+  /**
+   * @maxItems 64
+   */
+  limitations: {
+    code: StableId;
+    text: string;
+  }[];
+  calculationHash?: ContentHash;
+}
+export interface ReportPayloadPreimage {
+  schemaVersion: SchemaVersion;
+  calculationBundleHash: ContentHash;
+  scene: {
+    manifestHash: ContentHash;
+    manifestSchemaVersion: SemanticVersion;
+  };
+  plan: {
+    configurationHash: ContentHash;
+    evaluationRequestHash: ContentHash;
+  };
+  versions: {
+    evaluator: VersionRef;
+    metricCatalogHash: ContentHash;
+    scoringProfileHash: ContentHash;
+  };
+  outcome:
+    | "pass"
+    | "pass-with-warnings"
+    | "fail-under-profile"
+    | "fail"
+    | "incomplete";
+  /**
+   * @maxItems 4096
+   */
+  blockingFindingIds: StableId[];
+  scoreProfile: {
+    profileId: StableId;
+    profileVersion: SemanticVersion;
+    compatibilityClass: StableId;
+    aggregateScore: false;
+    /**
+     * @maxItems 32
+     */
+    categories: ReportCategoryResult[];
+  };
+  /**
+   * @maxItems 4096
+   */
+  metrics: EvaluationMetric[];
+  /**
+   * @maxItems 4096
+   */
+  findings: Finding[];
+  /**
+   * @maxItems 4096
+   */
+  evidenceIndex: {
+    evidenceId: OpaqueId;
+    kind: EvidenceKind;
+    subjectKey: string;
+    evidenceContentHash: ContentHash;
+    /**
+     * @maxItems 64
+     */
+    artifactHashes: ContentHash[];
+  }[];
+  /**
+   * @maxItems 4096
+   */
+  missingEvidence: {
+    capability?: Capability;
+    metricId?: StableId;
+    reasonCode: StableId;
+    consequence: string;
+  }[];
+  comparability: {
+    compatibilityClass: StableId;
+    comparisonGroupHash?: ContentHash;
+    /**
+     * @maxItems 64
+     */
+    compatibleDimensions: StableId[];
+  };
+  /**
+   * @maxItems 128
+   */
+  limitations: {
+    code: StableId;
+    text: string;
+  }[];
+  derivedFrom?: {
+    reportPayloadHash: ContentHash;
+    /**
+     * @minItems 1
+     * @maxItems 4096
+     */
+    availabilityRecordHashes: [ContentHash, ...ContentHash[]];
+    reproduction?: "complete" | "partial" | "impossible";
+  };
+  reportPayloadHash?: ContentHash;
+}
+export interface ReportCategoryResult {
+  categoryId: StableId;
+  status:
+    | "available"
+    | "unavailable"
+    | "missing-evidence"
+    | "not-applicable"
+    | "incomplete";
+  /**
+   * @maxItems 256
+   */
+  metricIds: StableId[];
+  confidence?: Confidence;
+  classification: ProfileConstantClassification;
+}
+export interface ReportRenderPreimage {
+  schemaVersion: SchemaVersion;
+  reportPayloadHash: ContentHash;
+  renderer: VersionRef;
+  template: VersionRef;
+  locale: string;
+  configurationHash: ContentHash;
+  outputFormat: "markdown" | "html" | "json";
+  renderedBytesHash: ContentHash;
+  reportRenderHash?: ContentHash;
 }

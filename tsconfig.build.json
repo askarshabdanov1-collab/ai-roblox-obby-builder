@@ -16,6 +16,7 @@
       "@obby/route-playability-evaluator": [
         "./packages/route-playability-evaluator/src/index.ts"
       ],
+      "@obby/scoring-engine": ["./packages/scoring-engine/src/index.ts"],
       "@obby/roblox-emitter": ["./packages/roblox-emitter/src/index.ts"]
     },
     "rootDir": ".",
