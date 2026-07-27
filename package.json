@@ -21,10 +21,18 @@
     "dev:orchestrator": "tsx apps/orchestrator/src/index.ts",
     "evaluator:contracts:check": "tsx tools/check-evaluator-contracts.ts",
     "evaluator:contracts:generate": "tsx tools/generate-evaluator-contracts.ts",
-    "evaluator:test": "vitest run packages/obby-evaluator-contracts packages/geometry-evaluator packages/route-playability-evaluator",
+    "evaluator:test": "vitest run packages/obby-evaluator-contracts packages/geometry-evaluator packages/route-playability-evaluator packages/scoring-engine",
     "evaluator:route:test": "vitest run packages/route-playability-evaluator",
     "evaluator:route:check": "tsx tools/check-route-evaluator.ts",
     "evaluator:route:fixtures:generate": "tsx tools/generate-route-evaluator-fixtures.ts",
+    "evaluator:scoring:test": "vitest run packages/scoring-engine",
+    "evaluator:scoring:check": "tsx tools/check-e1c-fixtures.ts",
+    "evaluator:report:test": "vitest run packages/scoring-engine/test/markdown.test.ts packages/scoring-engine/test/e1c-fixtures.test.ts",
+    "evaluator:cli:test": "vitest run apps/evaluator-cli",
+    "evaluator:fixtures:generate": "tsx tools/generate-e1c-fixtures.ts",
+    "evaluator:fixtures:check": "tsx tools/check-e1c-fixtures.ts",
+    "evaluator:smoke": "npm run evaluator:scoring:check && npm run evaluator:scoring:test && npm run evaluator:cli:test",
+    "evaluator": "tsx apps/evaluator-cli/src/bin.ts",
     "fixtures:check": "tsx tools/check-generated.ts",
     "fixtures:generate": "tsx tools/generate-fixtures.ts",
     "format": "prettier --write .",
@@ -40,7 +48,7 @@
     "test": "vitest run",
     "toolchain:install": "rokit install",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run contracts:check && npm run evaluator:contracts:check && npm run evaluator:route:check && npm run fixtures:check && npm run test && npm run security:secrets && npm run security:dependencies && npm run roblox:format:check && npm run roblox:lint && npm run roblox:test && npm run roblox:build"
+    "validate": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run contracts:check && npm run evaluator:contracts:check && npm run evaluator:route:check && npm run evaluator:scoring:check && npm run evaluator:fixtures:check && npm run fixtures:check && npm run test && npm run security:secrets && npm run security:dependencies && npm run roblox:format:check && npm run roblox:lint && npm run roblox:test && npm run roblox:build"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

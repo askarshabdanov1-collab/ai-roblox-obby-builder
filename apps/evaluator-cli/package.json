@@ -1,0 +1,21 @@
+{
+  "name": "@obby/evaluator-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "obby-evaluator": "./dist/bin.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@obby/canonical-json": "0.2.0",
+    "@obby/contracts": "0.2.0",
+    "@obby/obby-evaluator-contracts": "0.1.0",
+    "@obby/scoring-engine": "0.1.0"
+  }
+}

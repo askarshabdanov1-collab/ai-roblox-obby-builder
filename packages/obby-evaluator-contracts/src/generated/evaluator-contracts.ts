@@ -16,7 +16,10 @@ export type EvaluatorContract =
   | Finding
   | GeometryObjectInput
   | TransitionInput
-  | CalculationBundlePreimage;
+  | CalculationBundlePreimage
+  | MetricCalculationPreimage
+  | ReportPayloadPreimage
+  | ReportRenderPreimage;
 export type SchemaVersion = "0.1";
 export type StableId = string;
 export type SemanticVersion = string;
@@ -366,6 +369,15 @@ export interface MetricCatalog {
      * @maxItems 16
      */
     requiredEvidenceKinds: EvidenceKind[];
+    /**
+     * @maxItems 256
+     */
+    affectedMetricIds: StableId[];
+    /**
+     * @maxItems 32
+     */
+    affectedCategoryIds: StableId[];
+    dependencyScope: "declared" | "global";
   }[];
   /**
    * @minItems 1
@@ -634,7 +646,7 @@ export interface MetricResultBase {
    * @minItems 1
    * @maxItems 4096
    */
-  evidenceIds: [string, ...string[]];
+  evidenceIds: [OpaqueId, ...OpaqueId[]];
   /**
    * @maxItems 64
    */
@@ -731,6 +743,15 @@ export interface GeometryFactPayload {
    * @maxItems 2048
    */
   objectIds: [ObjectId, ...ObjectId[]];
+  /**
+   * @maxItems 2048
+   */
+  gameplayAuthoritativeObjectIds: ObjectId[];
+  /**
+   * @maxItems 2048
+   */
+  decorativeObjectIds: ObjectId[];
+  decorativeGameplayCollisionCount: number;
   factKind:
     | "normalized-object"
     | "axis-aligned-bounds"
@@ -1001,6 +1022,7 @@ export interface AvailabilityRecord {
     authorityKind: StableId;
     authorityId: string;
   };
+  producer: VersionRef;
   effectiveAt?: Timestamp;
   effectiveSequence?: number;
   /**
@@ -1156,4 +1178,285 @@ export interface CalculationBundlePreimage {
    */
   ruleVersions: VersionRef[];
   calculationBundleHash?: ContentHash;
+}
+export interface MetricCalculationPreimage {
+  schemaVersion: SchemaVersion;
+  metricId: StableId;
+  metricVersion: SemanticVersion;
+  metricDefinitionHash: ContentHash;
+  calculationConfigurationHash: ContentHash;
+  deterministicParametersHash: ContentHash;
+  calculationState:
+    | "calculated"
+    | "unavailable"
+    | "not-applicable"
+    | "blocked-by-invariant"
+    | "indeterminate";
+  /**
+   * @maxItems 4096
+   */
+  evidence: {
+    kind: EvidenceKind;
+    subjectKey: string;
+    evidenceContentHash: ContentHash;
+  }[];
+  /**
+   * @maxItems 256
+   */
+  parentCalculations: {
+    metricId: StableId;
+    calculationHash: ContentHash;
+  }[];
+  result: {
+    status: "available" | "not-applicable" | "missing-evidence" | "failed";
+    value?: MetricValue;
+    normalizedScore?: number;
+  };
+  /**
+   * @maxItems 64
+   */
+  thresholdsApplied: {
+    thresholdId: StableId;
+    classification: ProfileConstantClassification;
+    matched: boolean;
+  }[];
+  confidence: Confidence;
+  unavailableReason?: {
+    reasonCode: StableId;
+    deferredCapability: Capability;
+    responsibleProducer?: StableId;
+  };
+  blockedBy?: {
+    invariantId: StableId;
+    /**
+     * @minItems 1
+     * @maxItems 4096
+     */
+    evidenceContentHashes: [ContentHash, ...ContentHash[]];
+  };
+  /**
+   * @maxItems 64
+   */
+  limitations: {
+    code: StableId;
+    text: string;
+  }[];
+  reproduction: {
+    method: VersionRef;
+    /**
+     * @maxItems 4096
+     */
+    inputEvidenceHashes: ContentHash[];
+    deterministicParametersHash: ContentHash;
+  };
+  calculationHash?: ContentHash;
+}
+export interface ReportPayloadPreimage {
+  schemaVersion: SchemaVersion;
+  calculationBundleHash: ContentHash;
+  scene: {
+    manifestHash: ContentHash;
+    manifestSchemaVersion: SemanticVersion;
+  };
+  plan: {
+    configurationHash: ContentHash;
+    evaluationRequestHash: ContentHash;
+  };
+  versions: {
+    evaluator: VersionRef;
+    metricCatalogHash: ContentHash;
+    scoringProfileHash: ContentHash;
+  };
+  outcome:
+    | "pass"
+    | "pass-with-warnings"
+    | "fail-under-profile"
+    | "fail"
+    | "incomplete";
+  /**
+   * @maxItems 4096
+   */
+  blockingFindingIds: StableId[];
+  scoreProfile: {
+    profileId: StableId;
+    profileVersion: SemanticVersion;
+    compatibilityClass: StableId;
+    aggregateScore: false;
+    /**
+     * @maxItems 32
+     */
+    categories: ReportCategoryResult[];
+  };
+  /**
+   * @maxItems 4096
+   */
+  calculations: MetricCalculationPreimage[];
+  /**
+   * @maxItems 256
+   */
+  invariantGates: InvariantGateResult[];
+  /**
+   * @maxItems 256
+   */
+  profileGates: ProfileGateResult[];
+  completeness: EvaluationCompleteness;
+  /**
+   * @maxItems 4096
+   */
+  metrics: EvaluationMetric[];
+  /**
+   * @maxItems 4096
+   */
+  findings: Finding[];
+  /**
+   * @maxItems 4096
+   */
+  evidenceIndex: {
+    evidenceId: OpaqueId;
+    kind: EvidenceKind;
+    subjectKey: string;
+    evidenceContentHash: ContentHash;
+    /**
+     * @maxItems 64
+     */
+    artifactHashes: ContentHash[];
+  }[];
+  /**
+   * @maxItems 4096
+   */
+  availabilityRecordHashes: ContentHash[];
+  /**
+   * @maxItems 4096
+   */
+  missingEvidence: {
+    capability?: Capability;
+    metricId?: StableId;
+    reasonCode: StableId;
+    /**
+     * @maxItems 128
+     */
+    availabilityRecordHashes?: ContentHash[];
+    consequence: string;
+  }[];
+  comparability: {
+    compatibilityClass: StableId;
+    comparisonGroupHash?: ContentHash;
+    /**
+     * @maxItems 64
+     */
+    compatibleDimensions: StableId[];
+  };
+  /**
+   * @maxItems 128
+   */
+  limitations: {
+    code: StableId;
+    text: string;
+  }[];
+  derivedFrom?: {
+    reportPayloadHash: ContentHash;
+    /**
+     * @minItems 1
+     * @maxItems 4096
+     */
+    availabilityRecordHashes: [ContentHash, ...ContentHash[]];
+    reproduction?: "complete" | "partial" | "impossible";
+  };
+  reportPayloadHash?: ContentHash;
+}
+export interface ReportCategoryResult {
+  categoryId: StableId;
+  status:
+    | "available"
+    | "unavailable"
+    | "missing-evidence"
+    | "not-applicable"
+    | "incomplete";
+  /**
+   * @maxItems 256
+   */
+  metricIds: StableId[];
+  confidence?: Confidence;
+  classification: ProfileConstantClassification;
+}
+export interface InvariantGateResult {
+  invariantId: StableId;
+  state: "pass" | "fail" | "missing-evidence";
+  /**
+   * @maxItems 4096
+   */
+  evidenceIds: OpaqueId[];
+  /**
+   * @maxItems 4096
+   */
+  evidenceContentHashes: ContentHash[];
+  /**
+   * @maxItems 4096
+   */
+  findingIds: StableId[];
+  /**
+   * @maxItems 4096
+   */
+  blockedMetricIds: StableId[];
+}
+export interface ProfileGateResult {
+  gateId: StableId;
+  metricId: StableId;
+  state: "pass" | "fail" | "missing-evidence" | "not-applicable";
+  classification: "provisional" | "calibration-required";
+  /**
+   * @maxItems 4096
+   */
+  evidenceContentHashes: ContentHash[];
+  /**
+   * @maxItems 4096
+   */
+  findingIds: StableId[];
+}
+export interface EvaluationCompleteness {
+  state: "complete" | "incomplete" | "blocked";
+  /**
+   * @maxItems 4096
+   */
+  requestedMetricIds: StableId[];
+  /**
+   * @maxItems 4096
+   */
+  calculatedMetricIds: StableId[];
+  /**
+   * @maxItems 4096
+   */
+  missingMetricIds: StableId[];
+  /**
+   * @maxItems 64
+   */
+  missingEvidenceKinds: EvidenceKind[];
+  /**
+   * @maxItems 4096
+   */
+  unresolvedEvidenceHashes: ContentHash[];
+  /**
+   * @maxItems 4096
+   */
+  unresolvedFindingIds: StableId[];
+  /**
+   * @maxItems 4096
+   */
+  unavailable: {
+    metricId: StableId;
+    reasonCode: StableId;
+    deferredCapability: Capability;
+    responsibleProducer?: StableId;
+  }[];
+}
+export interface ReportRenderPreimage {
+  schemaVersion: SchemaVersion;
+  reportPayloadHash: ContentHash;
+  renderer: VersionRef;
+  template: VersionRef;
+  locale: string;
+  configurationHash: ContentHash;
+  outputFormat: "markdown" | "html" | "json";
+  renderedBytesHash: ContentHash;
+  reportRenderHash?: ContentHash;
 }

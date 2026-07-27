@@ -496,6 +496,23 @@ export function assertValidEvaluatorConfigurationGraph(
       );
     }
   }
+  const categoryIds = new Set<string>(
+    profile.categories.map((category) => category.categoryId),
+  );
+  for (const gate of catalog.invariantGates.toSorted((left, right) =>
+    left.invariantId.localeCompare(right.invariantId),
+  )) {
+    for (const categoryId of gate.affectedCategoryIds.toSorted()) {
+      if (!categoryIds.has(categoryId)) {
+        reject(
+          "EvaluatorConfigurationGraph",
+          "unknown-invariant-category-dependency",
+          "/catalog/invariantGates/affectedCategoryIds",
+          `invariant ${gate.invariantId} references unknown category ${categoryId}`,
+        );
+      }
+    }
+  }
 
   const plan = verifyEvaluationPlanConfigurationIdentity(input.plan);
   const include = new Set(plan.metricInclude);

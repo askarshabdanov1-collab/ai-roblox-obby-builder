@@ -48,7 +48,7 @@
   "evidence": [
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d",
+      "evidenceContentHash": "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4",
       "evidenceId": "e1b:geometry:scene",
       "kind": "geometry-fact",
       "limitations": [
@@ -57,7 +57,17 @@
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [],
       "payload": {
+        "decorativeGameplayCollisionCount": 0,
+        "decorativeObjectIds": [],
         "factKind": "normalized-object",
+        "gameplayAuthoritativeObjectIds": [
+          "Checkpoint01",
+          "FinishPlatform",
+          "JumpPlatform01",
+          "KillFloor",
+          "Spawn",
+          "WedgeClimb01"
+        ],
         "geometryHash": "sha256:b0be0ad74afa32e5e885c44f6de53b7275327901d4406f290b8a9876d44920e4",
         "kind": "geometry-fact",
         "objectIds": [
@@ -145,7 +155,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:95228d49d6e4a4e29fffe933a9852e9bfb6d1b8c997c90c5c5e87ce925be9db5",
+      "evidenceContentHash": "sha256:6abf9e53f8062a3655ed0d8b01ad563db189ee5d8d52697122e7f279d55d5455",
       "evidenceId": "e1b:route-transition:0",
       "kind": "route-transition",
       "limitations": [
@@ -154,7 +164,7 @@
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
         "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-        "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+        "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
       ],
       "payload": {
         "destinationGeometryHash": "sha256:0c90f9f6abf4dd5b88fad0ec1b0679fc9a7e23b10a20b78442ee06b33e4475b4",
@@ -163,9 +173,9 @@
         "kind": "route-transition",
         "measurementSourceEvidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
-        "normalizationHash": "sha256:93ca3e793de773db2da4346fcb91857ef71078daa5d26a09af997e1b83211147",
+        "normalizationHash": "sha256:143b1220a2d9dccfa9878ea6b3513cb0a6322c56e71c53398ac6a5bd807a5eee",
         "reproduction": {
           "inputHashes": [
             "sha256:0c90f9f6abf4dd5b88fad0ec1b0679fc9a7e23b10a20b78442ee06b33e4475b4",
@@ -198,7 +208,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:ced3c3cacea1118fee504e044a1ad39354040f2f7b39528d8635627c14874c8c",
+      "evidenceContentHash": "sha256:f8b56ab83d81660725b7343cfb2c6c9ee6026e600f767f5226e4b7cd5fd1a0eb",
       "evidenceId": "e1b:route-transition:1",
       "kind": "route-transition",
       "limitations": [
@@ -207,7 +217,7 @@
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
         "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-        "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+        "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
       ],
       "payload": {
         "destinationGeometryHash": "sha256:f1a4343fb461806350483c5be308aaac0041ad1f694d559a32ca0d2ba9167237",
@@ -216,9 +226,9 @@
         "kind": "route-transition",
         "measurementSourceEvidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
-        "normalizationHash": "sha256:1f9776e53734cfcae0c0522f92bc38a29a3761b07f9f3fb205416881b2ac1615",
+        "normalizationHash": "sha256:445f8600a3adc3bf28cfef37ef194f3b93a4a1de56d838b7e4a21383294395b1",
         "reproduction": {
           "inputHashes": [
             "sha256:0c90f9f6abf4dd5b88fad0ec1b0679fc9a7e23b10a20b78442ee06b33e4475b4",
@@ -251,7 +261,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:9f52a6eb5d55da06b7c6c8343fc069ebbb4195c4c1614d93ea58b92457626333",
+      "evidenceContentHash": "sha256:20ac2f73dcd6df9fb034d0363d3a27c06b7ad5cabc1dbbff90c151438773a262",
       "evidenceId": "e1b:route-transition:2",
       "kind": "route-transition",
       "limitations": [
@@ -260,7 +270,7 @@
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
         "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-        "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+        "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
       ],
       "payload": {
         "destinationGeometryHash": "sha256:1b8938534120b7ebd0da7eac85e44635228bce5cc246227511b14f571a48a04a",
@@ -269,9 +279,9 @@
         "kind": "route-transition",
         "measurementSourceEvidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
-        "normalizationHash": "sha256:e7babe4e922092409266f457c1e272ac204c93f3be1a6782b4e1fe9e9acf6d59",
+        "normalizationHash": "sha256:7ce8e22ca204502ca883f6a00f87e7246bcc7a4875fc9ee0eb5e5128c9bb0b20",
         "reproduction": {
           "inputHashes": [
             "sha256:1b8938534120b7ebd0da7eac85e44635228bce5cc246227511b14f571a48a04a",
@@ -304,7 +314,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:02b37683d111b6f09abc2c6525a8de72fae98cfccc91459739b062513241ee9d",
+      "evidenceContentHash": "sha256:e80a2298bdeb760bab417a3b60d8214f8a01599df02405af75e538052c23a5b0",
       "evidenceId": "e1b:route-transition:3",
       "kind": "route-transition",
       "limitations": [
@@ -313,7 +323,7 @@
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
         "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-        "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+        "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
       ],
       "payload": {
         "destinationGeometryHash": "sha256:c28670ef2a97f92cfdaa69bd722584f9aa6cee16b65e9d52f762f2390d645c88",
@@ -322,9 +332,9 @@
         "kind": "route-transition",
         "measurementSourceEvidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
-        "normalizationHash": "sha256:ce3a3dcbca9c4692a2b576217bff666e2d20440d9a4538b0758cf54c124d99cc",
+        "normalizationHash": "sha256:d55b22e7ce1ce5a93c7179b07fac452cbec9a681cf9ec718ad2b0d8134ac9a98",
         "reproduction": {
           "inputHashes": [
             "sha256:1b8938534120b7ebd0da7eac85e44635228bce5cc246227511b14f571a48a04a",
@@ -357,7 +367,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:3baceba171a5cbde5e15e639c0c1c466eb6c6dc5ca7abc920a79475f3b1fe5e0",
+      "evidenceContentHash": "sha256:3cfa63691a4771e01e2037c8569a584f6812f74060e54422f7067567473bcddc",
       "evidenceId": "e1b:coarse-transition:0",
       "kind": "coarse-transition-state",
       "limitations": [
@@ -368,7 +378,7 @@
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
-        "sha256:95228d49d6e4a4e29fffe933a9852e9bfb6d1b8c997c90c5c5e87ce925be9db5"
+        "sha256:6abf9e53f8062a3655ed0d8b01ad563db189ee5d8d52697122e7f279d55d5455"
       ],
       "payload": {
         "approximationMethod": "world-aabb-horizontal-separation",
@@ -382,7 +392,7 @@
         "geometryToleranceStuds": 1e-9,
         "horizontalGapStuds": 5,
         "inputEvidenceHashes": [
-          "sha256:95228d49d6e4a4e29fffe933a9852e9bfb6d1b8c997c90c5c5e87ce925be9db5"
+          "sha256:6abf9e53f8062a3655ed0d8b01ad563db189ee5d8d52697122e7f279d55d5455"
         ],
         "kind": "coarse-transition-state",
         "landingRegion": {
@@ -397,11 +407,11 @@
           "toleranceStuds": 1e-9
         },
         "metricId": "playability.coarse-transition-state",
-        "normalizedInputHash": "sha256:9901c3f2c6b5936462b9778fbce9e7986a225210d3ef84be4ce8d3bbc6d44098",
+        "normalizedInputHash": "sha256:a0f968e0498f08fad9f5b84d8c02ea90ba01392c0c5bc6d007071bdba82f3154",
         "reasonCodes": [],
         "reproduction": {
           "inputHashes": [
-            "sha256:95228d49d6e4a4e29fffe933a9852e9bfb6d1b8c997c90c5c5e87ce925be9db5"
+            "sha256:6abf9e53f8062a3655ed0d8b01ad563db189ee5d8d52697122e7f279d55d5455"
           ],
           "methodId": "coarse-transition-v2"
         },
@@ -431,7 +441,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:da39d99494b35f1f3c3da7c4a3a817db915cbb9dad3757fdd382db3740a7f10c",
+      "evidenceContentHash": "sha256:5fa821bb79023bb2a7053f82a4359074c4df491503c30f2c2cd66d8a13a9dad9",
       "evidenceId": "e1b:coarse-transition:1",
       "kind": "coarse-transition-state",
       "limitations": [
@@ -442,7 +452,7 @@
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
-        "sha256:ced3c3cacea1118fee504e044a1ad39354040f2f7b39528d8635627c14874c8c"
+        "sha256:f8b56ab83d81660725b7343cfb2c6c9ee6026e600f767f5226e4b7cd5fd1a0eb"
       ],
       "payload": {
         "approximationMethod": "world-aabb-horizontal-separation",
@@ -456,7 +466,7 @@
         "geometryToleranceStuds": 1e-9,
         "horizontalGapStuds": 4,
         "inputEvidenceHashes": [
-          "sha256:ced3c3cacea1118fee504e044a1ad39354040f2f7b39528d8635627c14874c8c"
+          "sha256:f8b56ab83d81660725b7343cfb2c6c9ee6026e600f767f5226e4b7cd5fd1a0eb"
         ],
         "kind": "coarse-transition-state",
         "landingRegion": {
@@ -471,11 +481,11 @@
           "toleranceStuds": 1e-9
         },
         "metricId": "playability.coarse-transition-state",
-        "normalizedInputHash": "sha256:7f8dcabce87253ed0d236f9f7fc62cdec669ff5bfc32114a9db87d0368526f5e",
+        "normalizedInputHash": "sha256:ca0b1d01991a6a420e5ff8bd26f9e2a64f1989a64cb1ded79eed1e2f037e1b0a",
         "reasonCodes": [],
         "reproduction": {
           "inputHashes": [
-            "sha256:ced3c3cacea1118fee504e044a1ad39354040f2f7b39528d8635627c14874c8c"
+            "sha256:f8b56ab83d81660725b7343cfb2c6c9ee6026e600f767f5226e4b7cd5fd1a0eb"
           ],
           "methodId": "coarse-transition-v2"
         },
@@ -505,7 +515,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:7b89a715480697006ec207fcd683bc449b4d844be123adb7bd7987bfd76199b0",
+      "evidenceContentHash": "sha256:6fffd3e4743ea9bbe407bf7ac5b7896eb8bdb2e2cbd1cefdd238e8206e87e068",
       "evidenceId": "e1b:coarse-transition:2",
       "kind": "coarse-transition-state",
       "limitations": [
@@ -516,7 +526,7 @@
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
-        "sha256:9f52a6eb5d55da06b7c6c8343fc069ebbb4195c4c1614d93ea58b92457626333"
+        "sha256:20ac2f73dcd6df9fb034d0363d3a27c06b7ad5cabc1dbbff90c151438773a262"
       ],
       "payload": {
         "approximationMethod": "world-aabb-horizontal-separation",
@@ -530,7 +540,7 @@
         "geometryToleranceStuds": 1e-9,
         "horizontalGapStuds": 3,
         "inputEvidenceHashes": [
-          "sha256:9f52a6eb5d55da06b7c6c8343fc069ebbb4195c4c1614d93ea58b92457626333"
+          "sha256:20ac2f73dcd6df9fb034d0363d3a27c06b7ad5cabc1dbbff90c151438773a262"
         ],
         "kind": "coarse-transition-state",
         "landingRegion": {
@@ -545,11 +555,11 @@
           "toleranceStuds": 1e-9
         },
         "metricId": "playability.coarse-transition-state",
-        "normalizedInputHash": "sha256:d43d0a0a99351e904bcf7891e9ed7f395088c653c5dbe0cb1c537aaa44f27def",
+        "normalizedInputHash": "sha256:7b389853fae6cc9e2c190a9669bafe904fa9da5fc8e199e9504556ebbbd91c3c",
         "reasonCodes": [],
         "reproduction": {
           "inputHashes": [
-            "sha256:9f52a6eb5d55da06b7c6c8343fc069ebbb4195c4c1614d93ea58b92457626333"
+            "sha256:20ac2f73dcd6df9fb034d0363d3a27c06b7ad5cabc1dbbff90c151438773a262"
           ],
           "methodId": "coarse-transition-v2"
         },
@@ -579,7 +589,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:63d17c90df9e0264377b980610c85b3643d57074e32f80981ef17ee4a8a1735b",
+      "evidenceContentHash": "sha256:e44b81645bedb750c6377eaa6e51e3dfbbc6a41fa473e7c149df0ef18db046c7",
       "evidenceId": "e1b:coarse-transition:3",
       "kind": "coarse-transition-state",
       "limitations": [
@@ -590,7 +600,7 @@
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
-        "sha256:02b37683d111b6f09abc2c6525a8de72fae98cfccc91459739b062513241ee9d"
+        "sha256:e80a2298bdeb760bab417a3b60d8214f8a01599df02405af75e538052c23a5b0"
       ],
       "payload": {
         "approximationMethod": "world-aabb-horizontal-separation",
@@ -604,7 +614,7 @@
         "geometryToleranceStuds": 1e-9,
         "horizontalGapStuds": 2,
         "inputEvidenceHashes": [
-          "sha256:02b37683d111b6f09abc2c6525a8de72fae98cfccc91459739b062513241ee9d"
+          "sha256:e80a2298bdeb760bab417a3b60d8214f8a01599df02405af75e538052c23a5b0"
         ],
         "kind": "coarse-transition-state",
         "landingRegion": {
@@ -619,11 +629,11 @@
           "toleranceStuds": 1e-9
         },
         "metricId": "playability.coarse-transition-state",
-        "normalizedInputHash": "sha256:ea2747232685a650e172955a4fe9146b83b16c19b4cfeab9022afa1ef6e0abcb",
+        "normalizedInputHash": "sha256:7370af02a4b404ed398ae6af5be36bb360aa34f93469bb29e9ccd94a3d5b8dfd",
         "reasonCodes": [],
         "reproduction": {
           "inputHashes": [
-            "sha256:02b37683d111b6f09abc2c6525a8de72fae98cfccc91459739b062513241ee9d"
+            "sha256:e80a2298bdeb760bab417a3b60d8214f8a01599df02405af75e538052c23a5b0"
           ],
           "methodId": "coarse-transition-v2"
         },
@@ -653,7 +663,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:3a8bad73d9e267d48518b23138cdcf4c6bcbe6abba8af3edd98b911e922ee0fb",
+      "evidenceContentHash": "sha256:ef476e8be3898d1436fefdf85ec1eb4e76fae5e12652b8fd5547f5b554c333b4",
       "evidenceId": "e1b:route-playability-summary",
       "kind": "route-playability-summary",
       "limitations": [
@@ -662,11 +672,11 @@
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
-        "sha256:3baceba171a5cbde5e15e639c0c1c466eb6c6dc5ca7abc920a79475f3b1fe5e0",
+        "sha256:3cfa63691a4771e01e2037c8569a584f6812f74060e54422f7067567473bcddc",
         "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-        "sha256:63d17c90df9e0264377b980610c85b3643d57074e32f80981ef17ee4a8a1735b",
-        "sha256:7b89a715480697006ec207fcd683bc449b4d844be123adb7bd7987bfd76199b0",
-        "sha256:da39d99494b35f1f3c3da7c4a3a817db915cbb9dad3757fdd382db3740a7f10c"
+        "sha256:5fa821bb79023bb2a7053f82a4359074c4df491503c30f2c2cd66d8a13a9dad9",
+        "sha256:6fffd3e4743ea9bbe407bf7ac5b7896eb8bdb2e2cbd1cefdd238e8206e87e068",
+        "sha256:e44b81645bedb750c6377eaa6e51e3dfbbc6a41fa473e7c149df0ef18db046c7"
       ],
       "payload": {
         "clearanceEstimateState": "indeterminate-no-overhead-route-metadata",
@@ -678,11 +688,11 @@
         "reproduction": {
           "inputHashes": [
             "sha256:3472ccfc4683b16d6052c265abd2e1e39e4caf56db66425715370ffa48e4ccdd",
-            "sha256:3baceba171a5cbde5e15e639c0c1c466eb6c6dc5ca7abc920a79475f3b1fe5e0",
+            "sha256:3cfa63691a4771e01e2037c8569a584f6812f74060e54422f7067567473bcddc",
             "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-            "sha256:63d17c90df9e0264377b980610c85b3643d57074e32f80981ef17ee4a8a1735b",
-            "sha256:7b89a715480697006ec207fcd683bc449b4d844be123adb7bd7987bfd76199b0",
-            "sha256:da39d99494b35f1f3c3da7c4a3a817db915cbb9dad3757fdd382db3740a7f10c"
+            "sha256:5fa821bb79023bb2a7053f82a4359074c4df491503c30f2c2cd66d8a13a9dad9",
+            "sha256:6fffd3e4743ea9bbe407bf7ac5b7896eb8bdb2e2cbd1cefdd238e8206e87e068",
+            "sha256:e44b81645bedb750c6377eaa6e51e3dfbbc6a41fa473e7c149df0ef18db046c7"
           ],
           "methodId": "route-playability-summary-v1"
         },
@@ -751,7 +761,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:b0cae7cff3146f1620cb680cc69246ae2758ce40dc623af168f6a7ba3be7ba8d",
+      "evidenceContentHash": "sha256:88c24a4d04f96f9f82bba0a9aa762c3a46d689d07734e6575ae26441ec037205",
       "evidenceId": "e1b:finish",
       "kind": "finish-topology",
       "limitations": [
@@ -759,11 +769,11 @@
       ],
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
-        "sha256:3baceba171a5cbde5e15e639c0c1c466eb6c6dc5ca7abc920a79475f3b1fe5e0",
+        "sha256:3cfa63691a4771e01e2037c8569a584f6812f74060e54422f7067567473bcddc",
         "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-        "sha256:63d17c90df9e0264377b980610c85b3643d57074e32f80981ef17ee4a8a1735b",
-        "sha256:7b89a715480697006ec207fcd683bc449b4d844be123adb7bd7987bfd76199b0",
-        "sha256:da39d99494b35f1f3c3da7c4a3a817db915cbb9dad3757fdd382db3740a7f10c"
+        "sha256:5fa821bb79023bb2a7053f82a4359074c4df491503c30f2c2cd66d8a13a9dad9",
+        "sha256:6fffd3e4743ea9bbe407bf7ac5b7896eb8bdb2e2cbd1cefdd238e8206e87e068",
+        "sha256:e44b81645bedb750c6377eaa6e51e3dfbbc6a41fa473e7c149df0ef18db046c7"
       ],
       "payload": {
         "afterAllCheckpoints": true,
@@ -774,11 +784,11 @@
         "onRequiredRoute": true,
         "reproduction": {
           "inputHashes": [
-            "sha256:3baceba171a5cbde5e15e639c0c1c466eb6c6dc5ca7abc920a79475f3b1fe5e0",
+            "sha256:3cfa63691a4771e01e2037c8569a584f6812f74060e54422f7067567473bcddc",
             "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-            "sha256:63d17c90df9e0264377b980610c85b3643d57074e32f80981ef17ee4a8a1735b",
-            "sha256:7b89a715480697006ec207fcd683bc449b4d844be123adb7bd7987bfd76199b0",
-            "sha256:da39d99494b35f1f3c3da7c4a3a817db915cbb9dad3757fdd382db3740a7f10c"
+            "sha256:5fa821bb79023bb2a7053f82a4359074c4df491503c30f2c2cd66d8a13a9dad9",
+            "sha256:6fffd3e4743ea9bbe407bf7ac5b7896eb8bdb2e2cbd1cefdd238e8206e87e068",
+            "sha256:e44b81645bedb750c6377eaa6e51e3dfbbc6a41fa473e7c149df0ef18db046c7"
           ],
           "methodId": "finish-topology-v1"
         },
@@ -802,7 +812,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:4b25c54114fee8b21f0e27c593c5105b9b19f701851bf506e8aae7d7a1560871",
+      "evidenceContentHash": "sha256:71f78396645e0dc1d8f4893409e84a5db1ac41e65320dab827719b713f788836",
       "evidenceId": "e1b:hazard:KillFloor:bounds",
       "kind": "hazard-relationship",
       "limitations": [
@@ -812,7 +822,7 @@
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
         "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-        "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+        "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
       ],
       "payload": {
         "approximationKind": "conservative-bounds",
@@ -845,7 +855,7 @@
     },
     {
       "artifactHashes": [],
-      "evidenceContentHash": "sha256:89ebff961285d546aff48ec5368228f22cf1cb8a92dcd5083194889f20b78ec7",
+      "evidenceContentHash": "sha256:83af8e3c2b516fa9be044c50f72b4b0f550979aa3f824855b7cabffcd3568023",
       "evidenceId": "e1b:hazard:KillFloor:enclosure",
       "kind": "hazard-relationship",
       "limitations": [
@@ -854,7 +864,7 @@
       "manifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
       "parentEvidenceHashes": [
         "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-        "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+        "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
       ],
       "payload": {
         "approximationKind": "conservative-bounds",
@@ -1043,7 +1053,7 @@
       "destinationObjectId": "JumpPlatform01",
       "fromGlobalIndex": 0,
       "inputEvidenceHashes": [
-        "sha256:95228d49d6e4a4e29fffe933a9852e9bfb6d1b8c997c90c5c5e87ce925be9db5"
+        "sha256:6abf9e53f8062a3655ed0d8b01ad563db189ee5d8d52697122e7f279d55d5455"
       ],
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
@@ -1055,11 +1065,11 @@
       "reasonCodes": [],
       "reproduction": {
         "inputEvidenceHashes": [
-          "sha256:95228d49d6e4a4e29fffe933a9852e9bfb6d1b8c997c90c5c5e87ce925be9db5"
+          "sha256:6abf9e53f8062a3655ed0d8b01ad563db189ee5d8d52697122e7f279d55d5455"
         ],
         "methodId": "coarse-transition-classifier",
         "methodVersion": "2.0.0",
-        "normalizedInputHash": "sha256:9901c3f2c6b5936462b9778fbce9e7986a225210d3ef84be4ce8d3bbc6d44098",
+        "normalizedInputHash": "sha256:a0f968e0498f08fad9f5b84d8c02ea90ba01392c0c5bc6d007071bdba82f3154",
         "normalizedInputs": {
           "destinationSurfaceKind": "planar-face",
           "downwardDrop": {
@@ -1067,7 +1077,7 @@
             "approximationKind": "conservative-bounds-delta",
             "evidenceHashes": [
               "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-              "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+              "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
             ],
             "limitations": [
               "Surface envelope maxima are not a character landing or feasibility test."
@@ -1082,7 +1092,7 @@
             "approximationKind": "conservative-lower-bound",
             "evidenceHashes": [
               "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-              "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+              "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
             ],
             "limitations": [
               "World AABB overlap does not prove native primitive surface contact."
@@ -1109,7 +1119,7 @@
             "approximationKind": "conservative-bounds-delta",
             "evidenceHashes": [
               "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-              "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+              "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
             ],
             "limitations": [
               "Surface envelope maxima are not a character landing or feasibility test."
@@ -1137,7 +1147,7 @@
       "destinationObjectId": "Checkpoint01",
       "fromGlobalIndex": 1,
       "inputEvidenceHashes": [
-        "sha256:ced3c3cacea1118fee504e044a1ad39354040f2f7b39528d8635627c14874c8c"
+        "sha256:f8b56ab83d81660725b7343cfb2c6c9ee6026e600f767f5226e4b7cd5fd1a0eb"
       ],
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
@@ -1149,11 +1159,11 @@
       "reasonCodes": [],
       "reproduction": {
         "inputEvidenceHashes": [
-          "sha256:ced3c3cacea1118fee504e044a1ad39354040f2f7b39528d8635627c14874c8c"
+          "sha256:f8b56ab83d81660725b7343cfb2c6c9ee6026e600f767f5226e4b7cd5fd1a0eb"
         ],
         "methodId": "coarse-transition-classifier",
         "methodVersion": "2.0.0",
-        "normalizedInputHash": "sha256:7f8dcabce87253ed0d236f9f7fc62cdec669ff5bfc32114a9db87d0368526f5e",
+        "normalizedInputHash": "sha256:ca0b1d01991a6a420e5ff8bd26f9e2a64f1989a64cb1ded79eed1e2f037e1b0a",
         "normalizedInputs": {
           "destinationSurfaceKind": "planar-face",
           "downwardDrop": {
@@ -1161,7 +1171,7 @@
             "approximationKind": "conservative-bounds-delta",
             "evidenceHashes": [
               "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-              "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+              "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
             ],
             "limitations": [
               "Surface envelope maxima are not a character landing or feasibility test."
@@ -1176,7 +1186,7 @@
             "approximationKind": "conservative-lower-bound",
             "evidenceHashes": [
               "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-              "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+              "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
             ],
             "limitations": [
               "World AABB overlap does not prove native primitive surface contact."
@@ -1203,7 +1213,7 @@
             "approximationKind": "conservative-bounds-delta",
             "evidenceHashes": [
               "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-              "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+              "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
             ],
             "limitations": [
               "Surface envelope maxima are not a character landing or feasibility test."
@@ -1231,7 +1241,7 @@
       "destinationObjectId": "WedgeClimb01",
       "fromGlobalIndex": 2,
       "inputEvidenceHashes": [
-        "sha256:9f52a6eb5d55da06b7c6c8343fc069ebbb4195c4c1614d93ea58b92457626333"
+        "sha256:20ac2f73dcd6df9fb034d0363d3a27c06b7ad5cabc1dbbff90c151438773a262"
       ],
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
@@ -1243,11 +1253,11 @@
       "reasonCodes": [],
       "reproduction": {
         "inputEvidenceHashes": [
-          "sha256:9f52a6eb5d55da06b7c6c8343fc069ebbb4195c4c1614d93ea58b92457626333"
+          "sha256:20ac2f73dcd6df9fb034d0363d3a27c06b7ad5cabc1dbbff90c151438773a262"
         ],
         "methodId": "coarse-transition-classifier",
         "methodVersion": "2.0.0",
-        "normalizedInputHash": "sha256:d43d0a0a99351e904bcf7891e9ed7f395088c653c5dbe0cb1c537aaa44f27def",
+        "normalizedInputHash": "sha256:7b389853fae6cc9e2c190a9669bafe904fa9da5fc8e199e9504556ebbbd91c3c",
         "normalizedInputs": {
           "destinationSurfaceKind": "wedge-slope",
           "downwardDrop": {
@@ -1255,7 +1265,7 @@
             "approximationKind": "conservative-bounds-delta",
             "evidenceHashes": [
               "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-              "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+              "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
             ],
             "limitations": [
               "Surface envelope maxima are not a character landing or feasibility test."
@@ -1270,7 +1280,7 @@
             "approximationKind": "conservative-lower-bound",
             "evidenceHashes": [
               "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-              "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+              "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
             ],
             "limitations": [
               "World AABB overlap does not prove native primitive surface contact."
@@ -1297,7 +1307,7 @@
             "approximationKind": "conservative-bounds-delta",
             "evidenceHashes": [
               "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-              "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+              "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
             ],
             "limitations": [
               "Surface envelope maxima are not a character landing or feasibility test."
@@ -1325,7 +1335,7 @@
       "destinationObjectId": "FinishPlatform",
       "fromGlobalIndex": 3,
       "inputEvidenceHashes": [
-        "sha256:02b37683d111b6f09abc2c6525a8de72fae98cfccc91459739b062513241ee9d"
+        "sha256:e80a2298bdeb760bab417a3b60d8214f8a01599df02405af75e538052c23a5b0"
       ],
       "limitations": [
         "Classification is relative to the selected deterministic model, not exact Roblox physics.",
@@ -1337,11 +1347,11 @@
       "reasonCodes": [],
       "reproduction": {
         "inputEvidenceHashes": [
-          "sha256:02b37683d111b6f09abc2c6525a8de72fae98cfccc91459739b062513241ee9d"
+          "sha256:e80a2298bdeb760bab417a3b60d8214f8a01599df02405af75e538052c23a5b0"
         ],
         "methodId": "coarse-transition-classifier",
         "methodVersion": "2.0.0",
-        "normalizedInputHash": "sha256:ea2747232685a650e172955a4fe9146b83b16c19b4cfeab9022afa1ef6e0abcb",
+        "normalizedInputHash": "sha256:7370af02a4b404ed398ae6af5be36bb360aa34f93469bb29e9ccd94a3d5b8dfd",
         "normalizedInputs": {
           "destinationSurfaceKind": "planar-face",
           "downwardDrop": {
@@ -1349,7 +1359,7 @@
             "approximationKind": "conservative-bounds-delta",
             "evidenceHashes": [
               "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-              "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+              "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
             ],
             "limitations": [
               "Surface envelope maxima are not a character landing or feasibility test."
@@ -1364,7 +1374,7 @@
             "approximationKind": "conservative-lower-bound",
             "evidenceHashes": [
               "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-              "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+              "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
             ],
             "limitations": [
               "World AABB overlap does not prove native primitive surface contact."
@@ -1391,7 +1401,7 @@
             "approximationKind": "conservative-bounds-delta",
             "evidenceHashes": [
               "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-              "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+              "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
             ],
             "limitations": [
               "Surface envelope maxima are not a character landing or feasibility test."
@@ -1477,7 +1487,7 @@
         "approximationKind": "conservative-bounds-delta",
         "evidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
         "limitations": [
           "Surface envelope maxima are not a character landing or feasibility test."
@@ -1494,7 +1504,7 @@
         "approximationKind": "conservative-lower-bound",
         "evidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
         "limitations": [
           "World AABB overlap does not prove native primitive surface contact."
@@ -1573,7 +1583,7 @@
         "approximationKind": "conservative-bounds-delta",
         "evidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
         "limitations": [
           "Surface envelope maxima are not a character landing or feasibility test."
@@ -1649,7 +1659,7 @@
         "approximationKind": "conservative-bounds-delta",
         "evidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
         "limitations": [
           "Surface envelope maxima are not a character landing or feasibility test."
@@ -1666,7 +1676,7 @@
         "approximationKind": "conservative-lower-bound",
         "evidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
         "limitations": [
           "World AABB overlap does not prove native primitive surface contact."
@@ -1745,7 +1755,7 @@
         "approximationKind": "conservative-bounds-delta",
         "evidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
         "limitations": [
           "Surface envelope maxima are not a character landing or feasibility test."
@@ -1943,7 +1953,7 @@
         "approximationKind": "conservative-bounds-delta",
         "evidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
         "limitations": [
           "Surface envelope maxima are not a character landing or feasibility test."
@@ -1960,7 +1970,7 @@
         "approximationKind": "conservative-lower-bound",
         "evidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
         "limitations": [
           "World AABB overlap does not prove native primitive surface contact."
@@ -2039,7 +2049,7 @@
         "approximationKind": "conservative-bounds-delta",
         "evidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
         "limitations": [
           "Surface envelope maxima are not a character landing or feasibility test."
@@ -2115,7 +2125,7 @@
         "approximationKind": "conservative-bounds-delta",
         "evidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
         "limitations": [
           "Surface envelope maxima are not a character landing or feasibility test."
@@ -2132,7 +2142,7 @@
         "approximationKind": "conservative-lower-bound",
         "evidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
         "limitations": [
           "World AABB overlap does not prove native primitive surface contact."
@@ -2333,7 +2343,7 @@
         "approximationKind": "conservative-bounds-delta",
         "evidenceHashes": [
           "sha256:501724c9f67b862356a73ccd2c8d42509c2f6059ccc20143e16630455c641b32",
-          "sha256:fceac0e5b8d842777aa0c07510ada1ea45d2ca58bb9dca872875f2d73e61e87d"
+          "sha256:83d14efe7bf8f7b9b6e7d4caa2881ce3e7e62e57103723fcda4219f668acc7f4"
         ],
         "limitations": [
           "Surface envelope maxima are not a character landing or feasibility test."

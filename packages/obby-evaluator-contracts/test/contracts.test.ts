@@ -79,6 +79,9 @@ function evidence(
     payload: {
       kind: "geometry-fact",
       objectIds: ["platform-a"],
+      gameplayAuthoritativeObjectIds: ["platform-a"],
+      decorativeObjectIds: [],
+      decorativeGameplayCollisionCount: 0,
       factKind: "normalized-object",
       geometryHash: TEST_IDENTITIES.geometryHash,
     },
@@ -143,7 +146,16 @@ describe("evaluator contracts", () => {
           graph.catalog.metricDefinitions as Record<string, unknown>[]
         )[0];
         if (reference === undefined) throw new Error("missing test reference");
+        const previousMetricId = reference.metricId;
         reference.metricId = "unknown.metric";
+        const gates = graph.catalog.invariantGates as {
+          affectedMetricIds: string[];
+        }[];
+        for (const gate of gates) {
+          gate.affectedMetricIds = gate.affectedMetricIds.map((metricId) =>
+            metricId === previousMetricId ? "unknown.metric" : metricId,
+          );
+        }
         graph.catalog.metricCatalogHash = hashMetricCatalog(graph.catalog).hash;
       },
     ],
@@ -401,6 +413,7 @@ describe("evaluator contracts", () => {
         authorityKind: "retention-policy",
         authorityId: "retention-policy:default",
       },
+      producer: { component: "retention-policy", version: "1.0.0" },
       effectiveAt: "2030-01-01T00:00:00Z",
       supersedesAvailabilityRecordHashes: [],
       policy: {
@@ -427,6 +440,13 @@ describe("evaluator contracts", () => {
         effectiveAt: "2030-99-99T99:99:99Z",
       }),
     ).toThrow();
+
+    const missingProducer = structuredClone(record) as unknown as Record<
+      string,
+      unknown
+    >;
+    delete missingProducer.producer;
+    expect(() => parseAvailabilityRecord(missingProducer)).toThrow(/producer/i);
   });
 
   it("verifies evidence hashes, scope, IDs, parent compatibility, and a valid acyclic graph", () => {

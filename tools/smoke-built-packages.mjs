@@ -10,6 +10,11 @@ import {
   evaluateRoutePlayability,
 } from "@obby/route-playability-evaluator";
 import { emitManifestModule } from "@obby/roblox-emitter";
+import {
+  assembleE1Evaluation,
+  renderMarkdownReport,
+} from "@obby/scoring-engine";
+import { runEvaluatorCli } from "@obby/evaluator-cli";
 
 const spec = JSON.parse(
   await readFile(
@@ -50,5 +55,26 @@ const routeResult = evaluateRoutePlayability({
 });
 if (routeResult.routeGraph.finishObjectId !== "FinishPlatform")
   throw new Error("built route evaluator returned invalid topology");
+if (
+  typeof assembleE1Evaluation !== "function" ||
+  typeof renderMarkdownReport !== "function"
+)
+  throw new Error("built scoring engine exports are unavailable");
+if (typeof runEvaluatorCli !== "function")
+  throw new Error("built evaluator CLI library export is unavailable");
 
-console.log("plain Node imported all Phase 0, E1a, and E1b packages");
+const compiledReportModule = await import(
+  new URL("../packages/scoring-engine/dist/report.js", import.meta.url)
+);
+if ("finalizeValidatedE1Report" in compiledReportModule)
+  throw new Error("built scoring engine exposes unchecked report finalization");
+const compiledReportDeclaration = await readFile(
+  new URL("../packages/scoring-engine/dist/report.d.ts", import.meta.url),
+  "utf8",
+);
+if (compiledReportDeclaration.includes("finalizeValidatedE1Report"))
+  throw new Error(
+    "built scoring declaration exposes unchecked report finalization",
+  );
+
+console.log("plain Node imported all Phase 0 and implemented E1 packages");

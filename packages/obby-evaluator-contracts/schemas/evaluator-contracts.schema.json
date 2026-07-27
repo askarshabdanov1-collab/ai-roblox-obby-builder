@@ -18,7 +18,10 @@
     { "$ref": "#/$defs/Finding" },
     { "$ref": "#/$defs/GeometryObjectInput" },
     { "$ref": "#/$defs/TransitionInput" },
-    { "$ref": "#/$defs/CalculationBundlePreimage" }
+    { "$ref": "#/$defs/CalculationBundlePreimage" },
+    { "$ref": "#/$defs/MetricCalculationPreimage" },
+    { "$ref": "#/$defs/ReportPayloadPreimage" },
+    { "$ref": "#/$defs/ReportRenderPreimage" }
   ],
   "$defs": {
     "SchemaVersion": {
@@ -565,11 +568,7 @@
           "minItems": 1,
           "maxItems": 4096,
           "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "pattern": "^(geometry|transition|runtime):[A-Za-z0-9._:/-]+:sha256:[0-9a-f]{64}$",
-            "maxLength": 320
-          }
+          "items": { "$ref": "#/$defs/OpaqueId" }
         },
         "thresholdsApplied": {
           "type": "array",
@@ -909,7 +908,10 @@
               "invariantId",
               "blocking",
               "outcomeEffect",
-              "requiredEvidenceKinds"
+              "requiredEvidenceKinds",
+              "affectedMetricIds",
+              "affectedCategoryIds",
+              "dependencyScope"
             ],
             "properties": {
               "invariantId": { "$ref": "#/$defs/StableId" },
@@ -920,6 +922,21 @@
                 "maxItems": 16,
                 "uniqueItems": true,
                 "items": { "$ref": "#/$defs/EvidenceKind" }
+              },
+              "affectedMetricIds": {
+                "type": "array",
+                "maxItems": 256,
+                "uniqueItems": true,
+                "items": { "$ref": "#/$defs/StableId" }
+              },
+              "affectedCategoryIds": {
+                "type": "array",
+                "maxItems": 32,
+                "uniqueItems": true,
+                "items": { "$ref": "#/$defs/StableId" }
+              },
+              "dependencyScope": {
+                "enum": ["declared", "global"]
               }
             }
           }
@@ -1403,7 +1420,15 @@
     "GeometryFactPayload": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "objectIds", "factKind", "geometryHash"],
+      "required": [
+        "kind",
+        "objectIds",
+        "gameplayAuthoritativeObjectIds",
+        "decorativeObjectIds",
+        "decorativeGameplayCollisionCount",
+        "factKind",
+        "geometryHash"
+      ],
       "properties": {
         "kind": { "const": "geometry-fact" },
         "objectIds": {
@@ -1412,6 +1437,23 @@
           "maxItems": 2048,
           "uniqueItems": true,
           "items": { "$ref": "#/$defs/ObjectId" }
+        },
+        "gameplayAuthoritativeObjectIds": {
+          "type": "array",
+          "maxItems": 2048,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ObjectId" }
+        },
+        "decorativeObjectIds": {
+          "type": "array",
+          "maxItems": 2048,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ObjectId" }
+        },
+        "decorativeGameplayCollisionCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2048
         },
         "factKind": {
           "enum": [
@@ -2338,6 +2380,7 @@
         "reasonCode",
         "reasonDetails",
         "authority",
+        "producer",
         "supersedesAvailabilityRecordHashes",
         "policy",
         "impactScope",
@@ -2374,6 +2417,7 @@
             }
           }
         },
+        "producer": { "$ref": "#/$defs/VersionRef" },
         "effectiveAt": { "$ref": "#/$defs/Timestamp" },
         "effectiveSequence": {
           "type": "integer",
@@ -2497,6 +2541,599 @@
           "maxItems": 64,
           "items": { "type": "string", "minLength": 1, "maxLength": 512 }
         }
+      }
+    },
+    "MetricCalculationPreimage": {
+      "title": "MetricCalculationPreimage",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "metricId",
+        "metricVersion",
+        "metricDefinitionHash",
+        "calculationConfigurationHash",
+        "deterministicParametersHash",
+        "calculationState",
+        "evidence",
+        "parentCalculations",
+        "result",
+        "thresholdsApplied",
+        "confidence",
+        "limitations",
+        "reproduction"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "metricId": { "$ref": "#/$defs/StableId" },
+        "metricVersion": { "$ref": "#/$defs/SemanticVersion" },
+        "metricDefinitionHash": { "$ref": "#/$defs/ContentHash" },
+        "calculationConfigurationHash": { "$ref": "#/$defs/ContentHash" },
+        "deterministicParametersHash": { "$ref": "#/$defs/ContentHash" },
+        "calculationState": {
+          "enum": [
+            "calculated",
+            "unavailable",
+            "not-applicable",
+            "blocked-by-invariant",
+            "indeterminate"
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "subjectKey", "evidenceContentHash"],
+            "properties": {
+              "kind": { "$ref": "#/$defs/EvidenceKind" },
+              "subjectKey": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 320
+              },
+              "evidenceContentHash": { "$ref": "#/$defs/ContentHash" }
+            }
+          }
+        },
+        "parentCalculations": {
+          "type": "array",
+          "maxItems": 256,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["metricId", "calculationHash"],
+            "properties": {
+              "metricId": { "$ref": "#/$defs/StableId" },
+              "calculationHash": { "$ref": "#/$defs/ContentHash" }
+            }
+          }
+        },
+        "result": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status"],
+          "properties": {
+            "status": {
+              "enum": [
+                "available",
+                "not-applicable",
+                "missing-evidence",
+                "failed"
+              ]
+            },
+            "value": { "$ref": "#/$defs/MetricValue" },
+            "normalizedScore": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        },
+        "thresholdsApplied": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["thresholdId", "classification", "matched"],
+            "properties": {
+              "thresholdId": { "$ref": "#/$defs/StableId" },
+              "classification": {
+                "$ref": "#/$defs/ProfileConstantClassification"
+              },
+              "matched": { "type": "boolean" }
+            }
+          }
+        },
+        "confidence": { "$ref": "#/$defs/Confidence" },
+        "unavailableReason": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reasonCode", "deferredCapability"],
+          "properties": {
+            "reasonCode": { "$ref": "#/$defs/StableId" },
+            "deferredCapability": { "$ref": "#/$defs/Capability" },
+            "responsibleProducer": { "$ref": "#/$defs/StableId" }
+          }
+        },
+        "blockedBy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["invariantId", "evidenceContentHashes"],
+          "properties": {
+            "invariantId": { "$ref": "#/$defs/StableId" },
+            "evidenceContentHashes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 4096,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/ContentHash" }
+            }
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "text"],
+            "properties": {
+              "code": { "$ref": "#/$defs/StableId" },
+              "text": { "type": "string", "minLength": 1, "maxLength": 512 }
+            }
+          }
+        },
+        "reproduction": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "method",
+            "inputEvidenceHashes",
+            "deterministicParametersHash"
+          ],
+          "properties": {
+            "method": { "$ref": "#/$defs/VersionRef" },
+            "inputEvidenceHashes": {
+              "type": "array",
+              "maxItems": 4096,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/ContentHash" }
+            },
+            "deterministicParametersHash": {
+              "$ref": "#/$defs/ContentHash"
+            }
+          }
+        },
+        "calculationHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "InvariantGateResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "invariantId",
+        "state",
+        "evidenceIds",
+        "evidenceContentHashes",
+        "findingIds",
+        "blockedMetricIds"
+      ],
+      "properties": {
+        "invariantId": { "$ref": "#/$defs/StableId" },
+        "state": { "enum": ["pass", "fail", "missing-evidence"] },
+        "evidenceIds": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/OpaqueId" }
+        },
+        "evidenceContentHashes": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ContentHash" }
+        },
+        "findingIds": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "blockedMetricIds": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        }
+      }
+    },
+    "EvaluationCompleteness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "requestedMetricIds",
+        "calculatedMetricIds",
+        "missingMetricIds",
+        "missingEvidenceKinds",
+        "unresolvedEvidenceHashes",
+        "unresolvedFindingIds",
+        "unavailable"
+      ],
+      "properties": {
+        "state": { "enum": ["complete", "incomplete", "blocked"] },
+        "requestedMetricIds": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "calculatedMetricIds": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "missingMetricIds": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "missingEvidenceKinds": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/EvidenceKind" }
+        },
+        "unresolvedEvidenceHashes": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ContentHash" }
+        },
+        "unresolvedFindingIds": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "unavailable": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["metricId", "reasonCode", "deferredCapability"],
+            "properties": {
+              "metricId": { "$ref": "#/$defs/StableId" },
+              "reasonCode": { "$ref": "#/$defs/StableId" },
+              "deferredCapability": { "$ref": "#/$defs/Capability" },
+              "responsibleProducer": { "$ref": "#/$defs/StableId" }
+            }
+          }
+        }
+      }
+    },
+    "ProfileGateResult": {
+      "title": "ProfileGateResult",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "gateId",
+        "metricId",
+        "state",
+        "classification",
+        "evidenceContentHashes",
+        "findingIds"
+      ],
+      "properties": {
+        "gateId": { "$ref": "#/$defs/StableId" },
+        "metricId": { "$ref": "#/$defs/StableId" },
+        "state": {
+          "enum": ["pass", "fail", "missing-evidence", "not-applicable"]
+        },
+        "classification": {
+          "enum": ["provisional", "calibration-required"]
+        },
+        "evidenceContentHashes": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ContentHash" }
+        },
+        "findingIds": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        }
+      }
+    },
+    "ReportCategoryResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["categoryId", "status", "metricIds", "classification"],
+      "properties": {
+        "categoryId": { "$ref": "#/$defs/StableId" },
+        "status": {
+          "enum": [
+            "available",
+            "unavailable",
+            "missing-evidence",
+            "not-applicable",
+            "incomplete"
+          ]
+        },
+        "metricIds": {
+          "type": "array",
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "confidence": { "$ref": "#/$defs/Confidence" },
+        "classification": { "$ref": "#/$defs/ProfileConstantClassification" }
+      }
+    },
+    "ReportPayloadPreimage": {
+      "title": "ReportPayloadPreimage",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "calculationBundleHash",
+        "scene",
+        "plan",
+        "versions",
+        "outcome",
+        "blockingFindingIds",
+        "scoreProfile",
+        "calculations",
+        "invariantGates",
+        "profileGates",
+        "completeness",
+        "metrics",
+        "findings",
+        "evidenceIndex",
+        "availabilityRecordHashes",
+        "missingEvidence",
+        "comparability",
+        "limitations"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "calculationBundleHash": { "$ref": "#/$defs/ContentHash" },
+        "scene": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["manifestHash", "manifestSchemaVersion"],
+          "properties": {
+            "manifestHash": { "$ref": "#/$defs/ContentHash" },
+            "manifestSchemaVersion": { "$ref": "#/$defs/SemanticVersion" }
+          }
+        },
+        "plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["configurationHash", "evaluationRequestHash"],
+          "properties": {
+            "configurationHash": { "$ref": "#/$defs/ContentHash" },
+            "evaluationRequestHash": { "$ref": "#/$defs/ContentHash" }
+          }
+        },
+        "versions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["evaluator", "metricCatalogHash", "scoringProfileHash"],
+          "properties": {
+            "evaluator": { "$ref": "#/$defs/VersionRef" },
+            "metricCatalogHash": { "$ref": "#/$defs/ContentHash" },
+            "scoringProfileHash": { "$ref": "#/$defs/ContentHash" }
+          }
+        },
+        "outcome": {
+          "enum": [
+            "pass",
+            "pass-with-warnings",
+            "fail-under-profile",
+            "fail",
+            "incomplete"
+          ]
+        },
+        "blockingFindingIds": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/StableId" }
+        },
+        "scoreProfile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profileId",
+            "profileVersion",
+            "compatibilityClass",
+            "aggregateScore",
+            "categories"
+          ],
+          "properties": {
+            "profileId": { "$ref": "#/$defs/StableId" },
+            "profileVersion": { "$ref": "#/$defs/SemanticVersion" },
+            "compatibilityClass": { "$ref": "#/$defs/StableId" },
+            "aggregateScore": { "const": false },
+            "categories": {
+              "type": "array",
+              "maxItems": 32,
+              "items": { "$ref": "#/$defs/ReportCategoryResult" }
+            }
+          }
+        },
+        "calculations": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/MetricCalculationPreimage" }
+        },
+        "invariantGates": {
+          "type": "array",
+          "maxItems": 256,
+          "items": { "$ref": "#/$defs/InvariantGateResult" }
+        },
+        "profileGates": {
+          "type": "array",
+          "maxItems": 256,
+          "items": { "$ref": "#/$defs/ProfileGateResult" }
+        },
+        "completeness": { "$ref": "#/$defs/EvaluationCompleteness" },
+        "metrics": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/EvaluationMetric" }
+        },
+        "findings": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/Finding" }
+        },
+        "evidenceIndex": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "evidenceId",
+              "kind",
+              "subjectKey",
+              "evidenceContentHash",
+              "artifactHashes"
+            ],
+            "properties": {
+              "evidenceId": { "$ref": "#/$defs/OpaqueId" },
+              "kind": { "$ref": "#/$defs/EvidenceKind" },
+              "subjectKey": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 320
+              },
+              "evidenceContentHash": { "$ref": "#/$defs/ContentHash" },
+              "artifactHashes": {
+                "type": "array",
+                "maxItems": 64,
+                "uniqueItems": true,
+                "items": { "$ref": "#/$defs/ContentHash" }
+              }
+            }
+          }
+        },
+        "availabilityRecordHashes": {
+          "type": "array",
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/ContentHash" }
+        },
+        "missingEvidence": {
+          "type": "array",
+          "maxItems": 4096,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["reasonCode", "consequence"],
+            "properties": {
+              "capability": { "$ref": "#/$defs/Capability" },
+              "metricId": { "$ref": "#/$defs/StableId" },
+              "reasonCode": { "$ref": "#/$defs/StableId" },
+              "availabilityRecordHashes": {
+                "type": "array",
+                "maxItems": 128,
+                "uniqueItems": true,
+                "items": { "$ref": "#/$defs/ContentHash" }
+              },
+              "consequence": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              }
+            }
+          }
+        },
+        "comparability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["compatibilityClass", "compatibleDimensions"],
+          "properties": {
+            "compatibilityClass": { "$ref": "#/$defs/StableId" },
+            "comparisonGroupHash": { "$ref": "#/$defs/ContentHash" },
+            "compatibleDimensions": {
+              "type": "array",
+              "maxItems": 64,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/StableId" }
+            }
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "text"],
+            "properties": {
+              "code": { "$ref": "#/$defs/StableId" },
+              "text": { "type": "string", "minLength": 1, "maxLength": 1024 }
+            }
+          }
+        },
+        "derivedFrom": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reportPayloadHash", "availabilityRecordHashes"],
+          "properties": {
+            "reportPayloadHash": { "$ref": "#/$defs/ContentHash" },
+            "availabilityRecordHashes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 4096,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/ContentHash" }
+            },
+            "reproduction": { "enum": ["complete", "partial", "impossible"] }
+          }
+        },
+        "reportPayloadHash": { "$ref": "#/$defs/ContentHash" }
+      }
+    },
+    "ReportRenderPreimage": {
+      "title": "ReportRenderPreimage",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "reportPayloadHash",
+        "renderer",
+        "template",
+        "locale",
+        "configurationHash",
+        "outputFormat",
+        "renderedBytesHash"
+      ],
+      "properties": {
+        "schemaVersion": { "$ref": "#/$defs/SchemaVersion" },
+        "reportPayloadHash": { "$ref": "#/$defs/ContentHash" },
+        "renderer": { "$ref": "#/$defs/VersionRef" },
+        "template": { "$ref": "#/$defs/VersionRef" },
+        "locale": {
+          "type": "string",
+          "pattern": "^[a-z]{2}(?:-[A-Z]{2})?$",
+          "maxLength": 16
+        },
+        "configurationHash": { "$ref": "#/$defs/ContentHash" },
+        "outputFormat": { "enum": ["markdown", "html", "json"] },
+        "renderedBytesHash": { "$ref": "#/$defs/ContentHash" },
+        "reportRenderHash": { "$ref": "#/$defs/ContentHash" }
       }
     },
     "CalculationBundlePreimage": {

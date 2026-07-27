@@ -3,7 +3,10 @@ import {
   type ErrorObject,
   type ValidateFunction,
 } from "ajv/dist/2020.js";
-import { snapshotEvaluatorInput } from "@obby/canonical-json";
+import {
+  compareUnicodeScalars,
+  snapshotEvaluatorInput,
+} from "@obby/canonical-json";
 
 import schema from "../schemas/evaluator-contracts.schema.json" with { type: "json" };
 import type {
@@ -19,7 +22,10 @@ import type {
   Finding,
   GeometryObjectInput,
   MetricCatalog,
+  MetricCalculationPreimage,
   MetricDefinition,
+  ReportPayloadPreimage,
+  ReportRenderPreimage,
   RuntimeObservationContent,
   RuntimeObservationEnvelope,
   ScoringProfile,
@@ -86,6 +92,9 @@ const validators = {
   Finding: validator<Finding>("Finding"),
   GeometryObjectInput: validator<GeometryObjectInput>("GeometryObjectInput"),
   MetricCatalog: validator<MetricCatalog>("MetricCatalog"),
+  MetricCalculationPreimage: validator<MetricCalculationPreimage>(
+    "MetricCalculationPreimage",
+  ),
   MetricDefinition: validator<MetricDefinition>("MetricDefinition"),
   RuntimeObservationContent: validator<RuntimeObservationContent>(
     "RuntimeObservationContentContract",
@@ -93,6 +102,10 @@ const validators = {
   RuntimeObservationEnvelope: validator<RuntimeObservationEnvelope>(
     "RuntimeObservationEnvelope",
   ),
+  ReportPayloadPreimage: validator<ReportPayloadPreimage>(
+    "ReportPayloadPreimage",
+  ),
+  ReportRenderPreimage: validator<ReportRenderPreimage>("ReportRenderPreimage"),
   ScoringProfile: validator<ScoringProfile>("ScoringProfile"),
   TransitionInput: validator<TransitionInput>("TransitionInput"),
 } as const;
@@ -178,6 +191,9 @@ function semanticMetricDefinitionIssues(
 
 function semanticMetricCatalogIssues(value: MetricCatalog): ContractIssue[] {
   const issues: ContractIssue[] = [];
+  const metricIds = new Set(
+    value.metricDefinitions.map((definition) => definition.metricId),
+  );
   for (const duplicate of duplicateValues(
     value.metricDefinitions.map(
       (definition) => `${definition.metricId}@${definition.metricVersion}`,
@@ -213,6 +229,35 @@ function semanticMetricCatalogIssues(value: MetricCatalog): ContractIssue[] {
       ),
     );
   }
+  for (const gate of value.invariantGates.toSorted((left, right) =>
+    compareUnicodeScalars(left.invariantId, right.invariantId),
+  )) {
+    for (const metricId of gate.affectedMetricIds.toSorted(
+      compareUnicodeScalars,
+    )) {
+      if (!metricIds.has(metricId)) {
+        issues.push(
+          semanticIssue(
+            "unknown-invariant-metric-dependency",
+            "/invariantGates",
+            `invariant ${gate.invariantId} references unknown metric ${metricId}`,
+          ),
+        );
+      }
+    }
+    if (
+      gate.dependencyScope === "global" &&
+      (gate.affectedMetricIds.length > 0 || gate.affectedCategoryIds.length > 0)
+    ) {
+      issues.push(
+        semanticIssue(
+          "global-invariant-dependencies",
+          "/invariantGates",
+          `global invariant ${gate.invariantId} must not declare partial dependencies`,
+        ),
+      );
+    }
+  }
   return issues;
 }
 
@@ -221,7 +266,7 @@ function semanticScoringProfileIssues(value: ScoringProfile): ContractIssue[] {
   const required = new Set(value.requiredMetricIds);
   const overlap = value.optionalMetricIds
     .filter((id) => required.has(id))
-    .toSorted();
+    .toSorted(compareUnicodeScalars);
   if (overlap.length > 0) {
     issues.push(
       semanticIssue(
@@ -274,6 +319,151 @@ function semanticEvaluationMetricIssues(
     ];
   }
   return [];
+}
+
+function semanticMetricCalculationIssues(
+  value: MetricCalculationPreimage,
+): ContractIssue[] {
+  const issues: ContractIssue[] = [];
+  const hasValue = value.result.value !== undefined;
+  const allowed = {
+    calculated: value.result.status === "available" && hasValue,
+    unavailable:
+      value.result.status === "missing-evidence" &&
+      !hasValue &&
+      value.unavailableReason !== undefined,
+    "not-applicable": value.result.status === "not-applicable" && !hasValue,
+    "blocked-by-invariant":
+      value.result.status === "failed" &&
+      !hasValue &&
+      value.blockedBy !== undefined,
+    indeterminate:
+      value.result.status === "available" &&
+      value.result.value?.kind === "state" &&
+      value.result.value.value === "indeterminate",
+  }[value.calculationState];
+  if (!allowed) {
+    issues.push(
+      semanticIssue(
+        "calculation-state-result",
+        "/calculationState",
+        `${value.calculationState} calculation has an incompatible result or reason`,
+      ),
+    );
+  }
+  if (
+    value.calculationState !== "unavailable" &&
+    value.unavailableReason !== undefined
+  ) {
+    issues.push(
+      semanticIssue(
+        "unexpected-unavailable-reason",
+        "/unavailableReason",
+        "unavailableReason is allowed only for unavailable calculations",
+      ),
+    );
+  }
+  if (
+    value.calculationState !== "blocked-by-invariant" &&
+    value.blockedBy !== undefined
+  ) {
+    issues.push(
+      semanticIssue(
+        "unexpected-invariant-block",
+        "/blockedBy",
+        "blockedBy is allowed only for blocked-by-invariant calculations",
+      ),
+    );
+  }
+  if (
+    value.deterministicParametersHash !==
+    value.reproduction.deterministicParametersHash
+  ) {
+    issues.push(
+      semanticIssue(
+        "reproduction-parameters",
+        "/reproduction/deterministicParametersHash",
+        "reproduction must bind the calculation deterministicParametersHash",
+      ),
+    );
+  }
+  const evidenceHashes = value.evidence
+    .map((entry) => entry.evidenceContentHash)
+    .toSorted();
+  const reproductionHashes = [
+    ...value.reproduction.inputEvidenceHashes,
+  ].toSorted(compareUnicodeScalars);
+  if (evidenceHashes.join("\u0000") !== reproductionHashes.join("\u0000")) {
+    issues.push(
+      semanticIssue(
+        "reproduction-evidence",
+        "/reproduction/inputEvidenceHashes",
+        "reproduction evidence hashes must exactly match calculation evidence",
+      ),
+    );
+  }
+  return issues;
+}
+
+function semanticReportPayloadIssues(
+  value: ReportPayloadPreimage,
+): ContractIssue[] {
+  const issues: ContractIssue[] = [];
+  for (const duplicate of duplicateValues(
+    value.calculations.map((calculation) => calculation.metricId),
+  )) {
+    issues.push(
+      semanticIssue(
+        "duplicate-metric-calculation",
+        "/calculations",
+        `duplicate metric calculation ${duplicate}`,
+      ),
+    );
+  }
+  for (const duplicate of duplicateValues(
+    value.invariantGates.map((gate) => gate.invariantId),
+  )) {
+    issues.push(
+      semanticIssue(
+        "duplicate-invariant-result",
+        "/invariantGates",
+        `duplicate invariant result ${duplicate}`,
+      ),
+    );
+  }
+  const calculationIds = value.calculations
+    .map((calculation) => calculation.metricId)
+    .toSorted(compareUnicodeScalars);
+  if (
+    calculationIds.join("\u0000") !==
+    [...value.completeness.calculatedMetricIds]
+      .toSorted(compareUnicodeScalars)
+      .join("\u0000")
+  ) {
+    issues.push(
+      semanticIssue(
+        "completeness-calculation-set",
+        "/completeness/calculatedMetricIds",
+        "completeness calculatedMetricIds must exactly match report calculations",
+      ),
+    );
+  }
+  const requested = new Set(value.completeness.requestedMetricIds);
+  for (const metricId of [
+    ...value.completeness.calculatedMetricIds,
+    ...value.completeness.missingMetricIds,
+  ]) {
+    if (!requested.has(metricId)) {
+      issues.push(
+        semanticIssue(
+          "completeness-unrequested-metric",
+          "/completeness",
+          `completeness references unrequested metric ${metricId}`,
+        ),
+      );
+    }
+  }
+  return issues;
 }
 
 function semanticTransitionIssues(value: TransitionInput): ContractIssue[] {
@@ -458,6 +648,17 @@ export const parseTransitionInput = (input: unknown): TransitionInput =>
 export const parseCalculationBundlePreimage = (
   input: unknown,
 ): CalculationBundlePreimage => parse("CalculationBundlePreimage", input);
+export const parseMetricCalculationPreimage = (
+  input: unknown,
+): MetricCalculationPreimage =>
+  parse("MetricCalculationPreimage", input, semanticMetricCalculationIssues);
+export const parseReportPayloadPreimage = (
+  input: unknown,
+): ReportPayloadPreimage =>
+  parse("ReportPayloadPreimage", input, semanticReportPayloadIssues);
+export const parseReportRenderPreimage = (
+  input: unknown,
+): ReportRenderPreimage => parse("ReportRenderPreimage", input);
 export const parseControllerProfile = (input: unknown): ControllerProfile =>
   parse("ControllerProfile", input);
 

@@ -53,7 +53,7 @@ Rules:
 - deleting governed evidence never mutates its record or any finalized report;
 - an external immutable `AvailabilityRecord`, identified by `availabilityRecordHash`, records the
   affected evidence/artifact/reference identity, state, reason, semantic effective point, authority,
-  policy, supersession parents, optional successor, and impact scope without containing deleted
+  producer, policy, supersession parents, optional successor, and impact scope without containing deleted
   material;
 - a later derived report may reference the original report and ordered `availabilityRecordHash`
   values, but receives a new payload hash; the original report and hash remain unchanged;

@@ -7,5 +7,6 @@ packages/contracts/src/generated/
 packages/obby-evaluator-contracts/fixtures/generated/
 packages/obby-evaluator-contracts/src/generated/
 packages/route-playability-evaluator/fixtures/generated/
+packages/scoring-engine/fixtures/generated/
 roblox/generated/
 roblox.yml

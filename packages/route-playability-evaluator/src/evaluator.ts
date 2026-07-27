@@ -480,6 +480,17 @@ export function evaluateRoutePlayability(
         string,
         ...string[],
       ],
+      gameplayAuthoritativeObjectIds: normalizedGeometry
+        .filter((object) => object.gameplayAuthoritative)
+        .map((object) => object.objectId),
+      decorativeObjectIds: normalizedGeometry
+        .filter((object) => object.collisionAuthority === "decorative")
+        .map((object) => object.objectId),
+      decorativeGameplayCollisionCount: normalizedGeometry.filter(
+        (object) =>
+          object.collisionAuthority === "decorative" &&
+          object.invariantViolationCandidates.length > 0,
+      ).length,
       factKind: "normalized-object",
       geometryHash,
       reproduction: reproduction("normalize-scene-geometry-v1", [

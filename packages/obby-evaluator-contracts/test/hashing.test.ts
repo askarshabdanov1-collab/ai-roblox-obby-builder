@@ -56,6 +56,9 @@ function namedHashDomainCases() {
     payload: {
       kind: "geometry-fact",
       objectIds: ["platform-a"],
+      gameplayAuthoritativeObjectIds: ["platform-a"],
+      decorativeObjectIds: [],
+      decorativeGameplayCollisionCount: 0,
       factKind: "normalized-object",
       geometryHash: TEST_IDENTITIES.geometryHash,
     },
@@ -105,6 +108,7 @@ function namedHashDomainCases() {
       authorityKind: "evaluator",
       authorityId: "evaluator:local",
     },
+    producer: { component: "availability-recorder", version: "1.0.0" },
     effectiveSequence: 0,
     supersedesAvailabilityRecordHashes: [],
     policy: {
@@ -326,6 +330,9 @@ describe("named evaluator preimages", () => {
       payload: {
         kind: "geometry-fact",
         objectIds: ["platform-a"],
+        gameplayAuthoritativeObjectIds: ["platform-a"],
+        decorativeObjectIds: [],
+        decorativeGameplayCollisionCount: 0,
         factKind: "normalized-object",
         geometryHash: TEST_IDENTITIES.geometryHash,
       },
@@ -387,6 +394,7 @@ describe("named evaluator preimages", () => {
         authorityKind: "rights-review",
         authorityId: "rights-review:review-1",
       },
+      producer: { component: "availability-recorder", version: "1.0.0" },
       effectiveSequence: 1,
       supersedesAvailabilityRecordHashes: [],
       policy: {
@@ -403,6 +411,9 @@ describe("named evaluator preimages", () => {
     expect(availability.hash).toMatch(/^sha256:/);
     expect(new TextDecoder().decode(availability.canonicalBytes)).not.toContain(
       "availabilityRecordHash",
+    );
+    expect(new TextDecoder().decode(availability.canonicalBytes)).toContain(
+      '"producer":{"component":"availability-recorder","version":"1.0.0"}',
     );
   });
 });

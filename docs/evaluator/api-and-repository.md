@@ -323,7 +323,7 @@ visual worker → composition adapter through a versioned process/API boundary
 Folders are introduced only in the phase that owns their first behavior:
 
 - **E1a:** `packages/obby-evaluator-contracts` and `packages/geometry-evaluator`;
-- **E1b:** `packages/playability-evaluator`;
+- **E1b:** `packages/route-playability-evaluator`;
 - **E1c:** `packages/scoring-engine` and `apps/evaluator-cli`.
 
 The dashboard, visual worker, MCP adapter, and dataset metadata wait for phases that exercise them.

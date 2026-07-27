@@ -26,6 +26,18 @@ export default defineConfig({
       "@obby/roblox-emitter": fileURLToPath(
         new URL("./packages/roblox-emitter/src/index.ts", import.meta.url),
       ),
+      "@obby/route-playability-evaluator": fileURLToPath(
+        new URL(
+          "./packages/route-playability-evaluator/src/index.ts",
+          import.meta.url,
+        ),
+      ),
+      "@obby/scoring-engine": fileURLToPath(
+        new URL("./packages/scoring-engine/src/index.ts", import.meta.url),
+      ),
+      "@obby/evaluator-cli": fileURLToPath(
+        new URL("./apps/evaluator-cli/src/index.ts", import.meta.url),
+      ),
     },
   },
   test: {

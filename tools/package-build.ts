@@ -16,6 +16,8 @@ const outputs = [
     "dist/packages/route-playability-evaluator/src",
     "packages/route-playability-evaluator/dist",
   ],
+  ["dist/packages/scoring-engine/src", "packages/scoring-engine/dist"],
+  ["dist/apps/evaluator-cli/src", "apps/evaluator-cli/dist"],
   ["dist/apps/orchestrator/src", "apps/orchestrator/dist"],
 ] as const;
 
