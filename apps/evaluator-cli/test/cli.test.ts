@@ -1,4 +1,14 @@
-import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rename,
+  rm,
+  stat,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -8,6 +18,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   EvaluatorCliError,
   evaluateFiles,
+  parseCliArguments,
   runEvaluatorCli,
   type EvaluateFileInputs,
 } from "../src/index.js";
@@ -38,9 +49,12 @@ const inputs = (output = "output"): EvaluateFileInputs => ({
   output,
 });
 
+const flags = (values = inputs()): string[] =>
+  Object.entries(values).flatMap(([name, value]) => [`--${name}`, value]);
+
 const temporaryDirectories: string[] = [];
-async function temporary(): Promise<string> {
-  const path = await mkdtemp(resolve(tmpdir(), "obby-evaluator-cli-"));
+async function temporary(prefix = "obby-evaluator-cli-"): Promise<string> {
+  const path = await mkdtemp(resolve(tmpdir(), prefix));
   temporaryDirectories.push(path);
   return path;
 }
@@ -58,7 +72,9 @@ describe("atomic evaluator CLI", () => {
     const cwd = await temporary();
     const first = await evaluateFiles(inputs(), { cwd });
     const second = await evaluateFiles(inputs(), { cwd });
+
     expect(second).toEqual(first);
+    expect(first.outputDirectory).toContain(first.reportPayloadHash.slice(7));
     expect(
       JSON.parse(
         await readFile(resolve(first.outputDirectory, "report.json"), "utf8"),
@@ -69,26 +85,183 @@ describe("atomic evaluator CLI", () => {
     ).toContain("## Reproduction information");
   });
 
-  it("removes temporary output after a pre-commit failure", async () => {
+  it.each([
+    "first-file-write",
+    "second-file-write",
+    "file-sync",
+    "temporary-directory-sync",
+    "rename",
+  ] as const)(
+    "does not expose partial output after %s failure",
+    async (step) => {
+      const cwd = await temporary();
+      let injected = false;
+      await expect(
+        evaluateFiles(inputs(), {
+          cwd,
+          onAtomicStep: (actual) => {
+            if (!injected && actual === step) {
+              injected = true;
+              throw new EvaluatorCliError("INJECTED_FAILURE", step);
+            }
+          },
+        }),
+      ).rejects.toMatchObject({ code: "OUTPUT_PUBLICATION_FAILED" });
+
+      expect(await readdir(resolve(cwd, "output"))).toEqual([]);
+    },
+  );
+
+  it("reports cleanup failure deterministically", async () => {
     const cwd = await temporary();
     await expect(
       evaluateFiles(inputs(), {
         cwd,
-        beforeCommit: () => {
-          throw new EvaluatorCliError("INJECTED_FAILURE", "test failure");
+        onAtomicStep: (step) => {
+          if (step === "first-file-write") throw new Error("write failed");
+          if (step === "cleanup") throw new Error("cleanup failed");
         },
       }),
-    ).rejects.toThrow("test failure");
-    expect(await readdir(resolve(cwd, "output"))).toEqual([]);
+    ).rejects.toMatchObject({ code: "CLEANUP_FAILED" });
   });
 
-  it("rejects path traversal and input/output size limit violations", async () => {
+  it("keeps a complete report visible if final-parent sync fails", async () => {
+    const cwd = await temporary();
+    await expect(
+      evaluateFiles(inputs(), {
+        cwd,
+        onAtomicStep: (step) => {
+          if (step === "final-parent-sync") throw new Error("sync failed");
+        },
+      }),
+    ).rejects.toMatchObject({ code: "OUTPUT_PUBLICATION_FAILED" });
+    const directories = await readdir(resolve(cwd, "output"));
+
+    expect(directories).toHaveLength(1);
+    const [publishedDirectory] = directories;
+    if (publishedDirectory === undefined) throw new Error("missing output");
+    expect(await readdir(resolve(cwd, "output", publishedDirectory))).toEqual([
+      "report.json",
+      "report.md",
+    ]);
+  });
+
+  it("converges concurrent identical publications", async () => {
+    const cwd = await temporary();
+    const [first, second] = await Promise.all([
+      evaluateFiles(inputs(), { cwd }),
+      evaluateFiles(inputs(), { cwd }),
+    ]);
+
+    expect(second).toEqual(first);
+    expect(await readdir(resolve(cwd, "output"))).toEqual([
+      first.outputDirectory.split(/[\\/]/u).at(-1),
+    ]);
+  });
+
+  it("fails safely when deterministic destination content conflicts", async () => {
+    const cwd = await temporary();
+    const published = await evaluateFiles(inputs(), { cwd });
+    await writeFile(resolve(published.outputDirectory, "report.md"), "changed");
+
+    await expect(evaluateFiles(inputs(), { cwd })).rejects.toMatchObject({
+      code: "OUTPUT_CONFLICT",
+    });
+  });
+});
+
+describe("CLI validation and deterministic errors", () => {
+  it("rejects unknown, duplicate, missing-value, and missing required options", () => {
+    expect(() =>
+      parseCliArguments(["evaluate", ...flags(), "--unsupported", "value"]),
+    ).toThrow(expect.objectContaining({ code: "USAGE_UNKNOWN_OPTION" }));
+    expect(() =>
+      parseCliArguments([
+        "evaluate",
+        ...flags(),
+        "--request",
+        inputs().request,
+      ]),
+    ).toThrow(expect.objectContaining({ code: "USAGE_DUPLICATE_OPTION" }));
+    expect(() =>
+      parseCliArguments(["evaluate", "--request", "--plan", "value"]),
+    ).toThrow(expect.objectContaining({ code: "USAGE_MISSING_VALUE" }));
+    expect(() => parseCliArguments(["evaluate"])).toThrow(
+      expect.objectContaining({ code: "USAGE_MISSING_OPTION" }),
+    );
+  });
+
+  it("returns typed malformed, missing, schema, and stale-hash errors", async () => {
+    const cwd = await temporary();
+    const malformed = resolve(cwd, "malformed.json");
+    const wrongSchema = resolve(cwd, "wrong-schema.json");
+    const stalePlan = resolve(cwd, "stale-plan.json");
+    await writeFile(malformed, "{");
+    await writeFile(wrongSchema, "{}");
+    const plan = JSON.parse(await readFile(inputs().plan, "utf8")) as {
+      seed: number;
+    };
+    plan.seed += 1;
+    await writeFile(stalePlan, JSON.stringify(plan));
+
+    await expect(
+      evaluateFiles({ ...inputs(), request: malformed }, { cwd }),
+    ).rejects.toMatchObject({ code: "INVALID_JSON" });
+    await expect(
+      evaluateFiles(
+        { ...inputs(), request: resolve(cwd, "missing.json") },
+        {
+          cwd,
+        },
+      ),
+    ).rejects.toMatchObject({ code: "INPUT_NOT_FOUND" });
+    await expect(
+      evaluateFiles({ ...inputs(), manifest: wrongSchema }, { cwd }),
+    ).rejects.toMatchObject({ code: "INPUT_SCHEMA_ERROR" });
+    await expect(
+      evaluateFiles({ ...inputs(), plan: stalePlan }, { cwd }),
+    ).rejects.toMatchObject({ code: "INPUT_VALIDATION_ERROR" });
+  });
+
+  it("returns stable machine-readable errors without paths or stack traces", async () => {
+    let stderr = "";
+    const values = inputs();
+    values.request = "definitely-missing.json";
+    const code = await runEvaluatorCli(
+      ["evaluate", ...flags(values), "--json-errors"],
+      {
+        stdout: () => undefined,
+        stderr: (text) => {
+          stderr += text;
+        },
+      },
+    );
+
+    expect(code).toBe(2);
+    expect(JSON.parse(stderr)).toEqual({
+      ok: false,
+      error: {
+        code: "INPUT_NOT_FOUND",
+        message: "Input file not found: request",
+      },
+    });
+    expect(stderr).not.toContain(process.cwd());
+    expect(stderr).not.toContain("at runEvaluatorCli");
+  });
+});
+
+describe("CLI path safety", () => {
+  it("rejects traversal, reserved names, non-NFC paths, and size limits", async () => {
     const cwd = await temporary();
     await expect(
       evaluateFiles(inputs("../escape"), { cwd }),
-    ).rejects.toMatchObject({
+    ).rejects.toMatchObject({ code: "UNSAFE_OUTPUT_PATH" });
+    await expect(evaluateFiles(inputs("CON"), { cwd })).rejects.toMatchObject({
       code: "UNSAFE_OUTPUT_PATH",
     });
+    await expect(
+      evaluateFiles(inputs("e\u0301valuation"), { cwd }),
+    ).rejects.toMatchObject({ code: "UNSAFE_OUTPUT_PATH" });
     await expect(
       evaluateFiles(inputs(), { cwd, limits: { maxInputFileBytes: 1 } }),
     ).rejects.toMatchObject({ code: "INPUT_SIZE_LIMIT" });
@@ -97,19 +270,98 @@ describe("atomic evaluator CLI", () => {
     ).rejects.toMatchObject({ code: "OUTPUT_SIZE_LIMIT" });
   });
 
-  it("returns nonzero machine-readable errors without a stack trace", async () => {
-    let stderr = "";
-    const code = await runEvaluatorCli(["evaluate", "--json-errors"], {
-      stdout: () => undefined,
-      stderr: (text) => {
-        stderr += text;
-      },
-    });
-    expect(code).not.toBe(0);
-    expect(JSON.parse(stderr)).toEqual({
-      ok: false,
-      error: { code: "USAGE", message: "Missing required --request" },
-    });
-    expect(stderr).not.toContain("at runEvaluatorCli");
+  it("rejects an existing Windows junction or portable directory symlink", async () => {
+    const cwd = await temporary();
+    const outside = await temporary("obby-evaluator-outside-");
+    await symlink(
+      outside,
+      resolve(cwd, "linked"),
+      process.platform === "win32" ? "junction" : "dir",
+    );
+
+    await expect(
+      evaluateFiles(inputs("linked/reports"), { cwd }),
+    ).rejects.toMatchObject({ code: "UNSAFE_OUTPUT_PATH" });
+  });
+
+  it("fails closed when an output ancestor is replaced before commit", async () => {
+    const cwd = await temporary();
+    const outside = await temporary("obby-evaluator-race-outside-");
+    await expect(
+      evaluateFiles(inputs(), {
+        cwd,
+        beforeCommit: async () => {
+          await rename(resolve(cwd, "output"), resolve(cwd, "displaced"));
+          await symlink(
+            outside,
+            resolve(cwd, "output"),
+            process.platform === "win32" ? "junction" : "dir",
+          );
+        },
+      }),
+    ).rejects.toMatchObject({ code: "OUTPUT_ROOT_CHANGED" });
+
+    expect(await readdir(outside)).toEqual([]);
+  });
+
+  it("rejects output/input identity collision", async () => {
+    const cwd = await temporary();
+    const requestPath = resolve(cwd, "request.json");
+    await writeFile(requestPath, await readFile(inputs().request));
+
+    await expect(
+      evaluateFiles(
+        { ...inputs("request.json"), request: requestPath },
+        { cwd },
+      ),
+    ).rejects.toMatchObject({ code: "OUTPUT_INPUT_COLLISION" });
+  });
+
+  it("accepts exact input/output byte limits and rejects one byte below", async () => {
+    const paths = Object.values(inputs()).filter((value) => value !== "output");
+    const sizes = await Promise.all(
+      paths.map(async (path) => (await stat(path)).size),
+    );
+    const maximumInput = Math.max(...sizes);
+    const firstCwd = await temporary();
+    const baseline = await evaluateFiles(inputs(), { cwd: firstCwd });
+    const outputBytes =
+      (await stat(resolve(baseline.outputDirectory, "report.json"))).size +
+      (await stat(resolve(baseline.outputDirectory, "report.md"))).size;
+
+    const exactCwd = await temporary();
+    await expect(
+      evaluateFiles(inputs(), {
+        cwd: exactCwd,
+        limits: {
+          maxInputFileBytes: maximumInput,
+          maxOutputBytes: outputBytes,
+        },
+      }),
+    ).resolves.toBeDefined();
+    await expect(
+      evaluateFiles(inputs(), {
+        cwd: await temporary(),
+        limits: { maxInputFileBytes: maximumInput - 1 },
+      }),
+    ).rejects.toMatchObject({ code: "INPUT_SIZE_LIMIT" });
+    await expect(
+      evaluateFiles(inputs(), {
+        cwd: await temporary(),
+        limits: { maxOutputBytes: outputBytes - 1 },
+      }),
+    ).rejects.toMatchObject({ code: "OUTPUT_SIZE_LIMIT" });
+  });
+
+  it("treats case variants as the same collision domain on Windows", async () => {
+    if (process.platform !== "win32") return;
+    const cwd = await temporary();
+    await mkdir(resolve(cwd, "Output"));
+    const first = await evaluateFiles(inputs("Output"), { cwd });
+    const second = await evaluateFiles(inputs("output"), { cwd });
+
+    expect(second.outputDirectory.toLowerCase()).toBe(
+      first.outputDirectory.toLowerCase(),
+    );
   });
 });

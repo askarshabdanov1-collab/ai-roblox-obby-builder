@@ -1,4 +1,13 @@
-import { lstat, mkdir, open, readFile, rename, rm } from "node:fs/promises";
+import {
+  lstat,
+  mkdir,
+  open,
+  readFile,
+  realpath,
+  rename,
+  rm,
+} from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import { isAbsolute, relative, resolve, sep } from "node:path";
 
 import {
@@ -53,6 +62,16 @@ export type EvaluateFilesOptions = {
   cwd?: string;
   limits?: Partial<EvaluatorCliLimits>;
   beforeCommit?: (temporaryDirectory: string) => void | Promise<void>;
+  onAtomicStep?: (
+    step:
+      | "first-file-write"
+      | "second-file-write"
+      | "file-sync"
+      | "temporary-directory-sync"
+      | "rename"
+      | "final-parent-sync"
+      | "cleanup",
+  ) => void | Promise<void>;
 };
 
 export type PublishedEvaluation = {
@@ -63,20 +82,35 @@ export type PublishedEvaluation = {
   reportRenderHash: ContentHash;
 };
 
-async function readJson(path: string, maximum: number): Promise<unknown> {
-  const handle = await open(path, "r");
+async function readJson(
+  label: string,
+  path: string,
+  maximum: number,
+): Promise<unknown> {
+  let handle;
+  try {
+    handle = await open(path, "r");
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    throw new EvaluatorCliError(
+      code === "ENOENT" ? "INPUT_NOT_FOUND" : "INPUT_UNREADABLE",
+      code === "ENOENT"
+        ? `Input file not found: ${label}`
+        : `Input file cannot be read: ${label}`,
+    );
+  }
   try {
     const stat = await handle.stat();
     if (!stat.isFile()) {
       throw new EvaluatorCliError(
         "INPUT_NOT_FILE",
-        `Input is not a file: ${path}`,
+        `Input is not a file: ${label}`,
       );
     }
     if (stat.size > maximum) {
       throw new EvaluatorCliError(
         "INPUT_SIZE_LIMIT",
-        `Input exceeds ${maximum} bytes: ${path}`,
+        `Input exceeds ${maximum} bytes: ${label}`,
       );
     }
     const bytes = await handle.readFile();
@@ -85,7 +119,7 @@ async function readJson(path: string, maximum: number): Promise<unknown> {
     } catch {
       throw new EvaluatorCliError(
         "INVALID_JSON",
-        `Input is not valid JSON: ${path}`,
+        `Input is not valid JSON: ${label}`,
       );
     }
   } finally {
@@ -98,7 +132,18 @@ function safeOutputRoot(
   supplied: string,
   maximumLength: number,
 ): string {
-  if (isAbsolute(supplied) || supplied.split(/[\\/]/u).includes("..")) {
+  const segments = supplied.split(/[\\/]/u).filter(Boolean);
+  const reserved = /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$/iu;
+  if (
+    isAbsolute(supplied) ||
+    segments.includes("..") ||
+    segments.some(
+      (segment) =>
+        segment !== segment.normalize("NFC") ||
+        reserved.test(segment) ||
+        /[. ]$/u.test(segment),
+    )
+  ) {
     throw new EvaluatorCliError(
       "UNSAFE_OUTPUT_PATH",
       "Output must be a relative path inside the working directory",
@@ -118,6 +163,88 @@ function safeOutputRoot(
     );
   }
   return target;
+}
+
+function collisionKey(path: string): string {
+  const normalized = resolve(path).normalize("NFC");
+  return process.platform === "win32" ? normalized.toLowerCase() : normalized;
+}
+
+type DirectoryIdentity = {
+  path: string;
+  realPath: string;
+  device: number;
+  inode: number;
+  birthtimeMs: number;
+};
+
+async function directoryIdentity(path: string): Promise<DirectoryIdentity> {
+  const info = await lstat(path);
+  if (!info.isDirectory() || info.isSymbolicLink()) {
+    throw new EvaluatorCliError(
+      "UNSAFE_OUTPUT_PATH",
+      "Output path contains a non-directory or reparse-point segment",
+    );
+  }
+  return {
+    path,
+    realPath: await realpath(path),
+    device: info.dev,
+    inode: info.ino,
+    birthtimeMs: info.birthtimeMs,
+  };
+}
+
+async function captureDirectoryChain(
+  cwd: string,
+  target: string,
+): Promise<DirectoryIdentity[]> {
+  const identities = [await directoryIdentity(cwd)];
+  let current = cwd;
+  for (const segment of relative(cwd, target).split(sep).filter(Boolean)) {
+    current = resolve(current, segment);
+    identities.push(await directoryIdentity(current));
+  }
+  const rootRealPath = identities[0]?.realPath;
+  const targetRealPath = identities.at(-1)?.realPath;
+  if (
+    rootRealPath === undefined ||
+    targetRealPath === undefined ||
+    relative(rootRealPath, targetRealPath).startsWith(`..${sep}`)
+  ) {
+    throw new EvaluatorCliError(
+      "UNSAFE_OUTPUT_PATH",
+      "Output directory resolves outside the working directory",
+    );
+  }
+  return identities;
+}
+
+async function assertDirectoryChain(
+  expected: readonly DirectoryIdentity[],
+): Promise<void> {
+  for (const identity of expected) {
+    let actual: DirectoryIdentity;
+    try {
+      actual = await directoryIdentity(identity.path);
+    } catch {
+      throw new EvaluatorCliError(
+        "OUTPUT_ROOT_CHANGED",
+        "Output directory identity changed during publication",
+      );
+    }
+    if (
+      actual.realPath !== identity.realPath ||
+      actual.device !== identity.device ||
+      actual.inode !== identity.inode ||
+      actual.birthtimeMs !== identity.birthtimeMs
+    ) {
+      throw new EvaluatorCliError(
+        "OUTPUT_ROOT_CHANGED",
+        "Output directory identity changed during publication",
+      );
+    }
+  }
 }
 
 async function rejectSymlinkSegments(
@@ -142,13 +269,40 @@ async function rejectSymlinkSegments(
   }
 }
 
-async function durableWrite(path: string, bytes: Uint8Array): Promise<void> {
+async function durableWrite(
+  path: string,
+  bytes: Uint8Array,
+  onAtomicStep: EvaluateFilesOptions["onAtomicStep"],
+): Promise<void> {
   const handle = await open(path, "wx", 0o600);
   try {
     await handle.writeFile(bytes);
+    await onAtomicStep?.("file-sync");
     await handle.sync();
   } finally {
     await handle.close();
+  }
+}
+
+async function syncDirectory(
+  path: string,
+  step: "temporary-directory-sync" | "final-parent-sync",
+  onAtomicStep: EvaluateFilesOptions["onAtomicStep"],
+): Promise<void> {
+  await onAtomicStep?.(step);
+  let handle;
+  try {
+    handle = await open(path, "r");
+    await handle.sync();
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (
+      !["EACCES", "EINVAL", "EISDIR", "ENOTSUP", "EPERM"].includes(code ?? "")
+    ) {
+      throw error;
+    }
+  } finally {
+    await handle?.close();
   }
 }
 
@@ -180,6 +334,27 @@ export async function evaluateFiles(
     inputs.output,
     limits.maxOutputPathLength,
   );
+  const inputEntries = [
+    ["request", inputs.request],
+    ["plan", inputs.plan],
+    ["definitions", inputs.definitions],
+    ["catalog", inputs.catalog],
+    ["profile", inputs.profile],
+    ["manifest", inputs.manifest],
+    ["evidence", inputs.evidence],
+    ["availability", inputs.availability],
+  ] as const;
+  if (
+    inputEntries.some(
+      ([, path]) =>
+        collisionKey(resolve(cwd, path)) === collisionKey(outputRoot),
+    )
+  ) {
+    throw new EvaluatorCliError(
+      "OUTPUT_INPUT_COLLISION",
+      "Output directory must not be an input file",
+    );
+  }
   await rejectSymlinkSegments(cwd, outputRoot);
   const [
     request,
@@ -191,18 +366,19 @@ export async function evaluateFiles(
     evidenceInput,
     availabilityInput,
   ] = await Promise.all(
-    [
-      inputs.request,
-      inputs.plan,
-      inputs.definitions,
-      inputs.catalog,
-      inputs.profile,
-      inputs.manifest,
-      inputs.evidence,
-      inputs.availability,
-    ].map((path) => readJson(resolve(cwd, path), limits.maxInputFileBytes)),
+    inputEntries.map(([label, path]) =>
+      readJson(label, resolve(cwd, path), limits.maxInputFileBytes),
+    ),
   );
-  const manifest = assertValidSceneManifest(manifestInput);
+  let manifest;
+  try {
+    manifest = assertValidSceneManifest(manifestInput);
+  } catch {
+    throw new EvaluatorCliError(
+      "INPUT_SCHEMA_ERROR",
+      "SceneManifest failed schema or semantic validation",
+    );
+  }
   if (!Array.isArray(definitions)) {
     throw new EvaluatorCliError(
       "INVALID_INPUT_SHAPE",
@@ -238,48 +414,87 @@ export async function evaluateFiles(
       "Availability records must be an array",
     );
   }
-  const assembled = assembleE1Evaluation({
-    metricDefinitions: definitions,
-    catalog,
-    profile,
-    plan,
-    request,
-    evaluatorVersion: CLI_VERSION,
-    componentVersions: {
-      "obby-evaluator-contracts": "0.1.0",
-      "geometry-evaluator": "0.1.0",
-      "route-playability-evaluator": "0.1.0",
-      "scoring-engine": "0.1.0",
-    },
-    evidence: bundle.evidence,
-    findings: bundle.findings,
-    availabilityRecords: availabilityInput,
-  });
-  const rendered = renderMarkdownReport(assembled.report);
+  let assembled;
+  try {
+    assembled = assembleE1Evaluation({
+      metricDefinitions: definitions,
+      catalog,
+      profile,
+      plan,
+      request,
+      evaluatorVersion: CLI_VERSION,
+      componentVersions: {
+        "obby-evaluator-contracts": "0.1.0",
+        "geometry-evaluator": "0.1.0",
+        "route-playability-evaluator": "0.1.0",
+        "scoring-engine": "0.1.0",
+      },
+      evidence: bundle.evidence,
+      findings: bundle.findings,
+      availabilityRecords: availabilityInput,
+    });
+  } catch {
+    throw new EvaluatorCliError(
+      "INPUT_VALIDATION_ERROR",
+      "Evaluator inputs failed identity, graph, or policy validation",
+    );
+  }
   const reportBytes = new TextEncoder().encode(
     `${canonicalizeEvaluatorSnapshot(assembled.report as unknown as JsonValue).canonicalText}\n`,
   );
-  const outputBytes = reportBytes.byteLength + rendered.bytes.byteLength;
-  if (outputBytes > limits.maxOutputBytes) {
+  if (reportBytes.byteLength > limits.maxOutputBytes) {
     throw new EvaluatorCliError(
       "OUTPUT_SIZE_LIMIT",
-      `Output requires ${outputBytes} bytes, exceeding ${limits.maxOutputBytes}`,
+      `Report JSON exceeds ${limits.maxOutputBytes} bytes`,
+    );
+  }
+  let rendered;
+  try {
+    rendered = renderMarkdownReport(assembled.report, {
+      maxBytes: limits.maxOutputBytes - reportBytes.byteLength,
+      maxWorkUnits: 100_000,
+    });
+  } catch {
+    throw new EvaluatorCliError(
+      "OUTPUT_SIZE_LIMIT",
+      `Combined semantic output exceeds ${limits.maxOutputBytes} bytes`,
     );
   }
   await mkdir(outputRoot, { recursive: true });
   await rejectSymlinkSegments(cwd, outputRoot);
-  const semanticName = `report-${assembled.report.reportPayloadHash.slice(7, 23)}`;
+  const outputChain = await captureDirectoryChain(cwd, outputRoot);
+  const semanticName = `report-${assembled.report.reportPayloadHash.slice(7)}`;
   const finalDirectory = resolve(outputRoot, semanticName);
+  if (finalDirectory.length > limits.maxOutputPathLength) {
+    throw new EvaluatorCliError(
+      "UNSAFE_OUTPUT_PATH",
+      "Final semantic output path exceeds the configured limit",
+    );
+  }
+  const finalFiles = [
+    resolve(finalDirectory, "report.json"),
+    resolve(finalDirectory, "report.md"),
+  ];
+  const inputKeys = new Set(
+    inputEntries.map(([, path]) => collisionKey(resolve(cwd, path))),
+  );
+  if (finalFiles.some((path) => inputKeys.has(collisionKey(path)))) {
+    throw new EvaluatorCliError(
+      "OUTPUT_INPUT_COLLISION",
+      "Final output files must not replace evaluator inputs",
+    );
+  }
+  const published = (): PublishedEvaluation => ({
+    outputDirectory: finalDirectory,
+    reportFilename: "report.json",
+    markdownFilename: "report.md",
+    reportPayloadHash: assembled.report.reportPayloadHash,
+    reportRenderHash: rendered.reportRenderHash,
+  });
   if (
     await existingOutputMatches(finalDirectory, reportBytes, rendered.bytes)
   ) {
-    return {
-      outputDirectory: finalDirectory,
-      reportFilename: "report.json",
-      markdownFilename: "report.md",
-      reportPayloadHash: assembled.report.reportPayloadHash,
-      reportRenderHash: rendered.reportRenderHash,
-    };
+    return published();
   }
   try {
     await lstat(finalDirectory);
@@ -292,31 +507,85 @@ export async function evaluateFiles(
   }
   const temporaryDirectory = resolve(
     outputRoot,
-    `.obby-evaluator-${process.pid}-${assembled.report.reportPayloadHash.slice(7, 19)}.tmp`,
+    `.obby-evaluator-${assembled.report.reportPayloadHash.slice(7)}-${process.pid}-${randomUUID()}.tmp`,
   );
-  await rm(temporaryDirectory, { force: true, recursive: true });
   await mkdir(temporaryDirectory, { recursive: false, mode: 0o700 });
+  const publicationState = { committed: false };
   try {
     const orderedOutputs = [
       ["report.json", reportBytes] as const,
       ["report.md", rendered.bytes] as const,
     ].toSorted((left, right) => compareUnicodeScalars(left[0], right[0]));
-    for (const [name, bytes] of orderedOutputs) {
-      await durableWrite(resolve(temporaryDirectory, name), bytes);
+    for (let index = 0; index < orderedOutputs.length; index += 1) {
+      const output = orderedOutputs[index];
+      if (output === undefined) continue;
+      const [name, bytes] = output;
+      await options.onAtomicStep?.(
+        index === 0 ? "first-file-write" : "second-file-write",
+      );
+      await durableWrite(
+        resolve(temporaryDirectory, name),
+        bytes,
+        options.onAtomicStep,
+      );
     }
+    await syncDirectory(
+      temporaryDirectory,
+      "temporary-directory-sync",
+      options.onAtomicStep,
+    );
     await options.beforeCommit?.(temporaryDirectory);
-    await rename(temporaryDirectory, finalDirectory);
+    await assertDirectoryChain(outputChain);
+    await options.onAtomicStep?.("rename");
+    try {
+      await rename(temporaryDirectory, finalDirectory);
+      publicationState.committed = true;
+    } catch (error) {
+      if (
+        ["EEXIST", "ENOTEMPTY", "EPERM"].includes(
+          (error as NodeJS.ErrnoException).code ?? "",
+        ) &&
+        (await existingOutputMatches(
+          finalDirectory,
+          reportBytes,
+          rendered.bytes,
+        ))
+      ) {
+        await rm(temporaryDirectory, { force: true, recursive: true });
+        return published();
+      }
+      throw error;
+    }
+    await assertDirectoryChain(outputChain);
+    await syncDirectory(outputRoot, "final-parent-sync", options.onAtomicStep);
   } catch (error) {
-    await rm(temporaryDirectory, { force: true, recursive: true });
-    throw error;
+    const publicationError =
+      error instanceof EvaluatorCliError && error.code === "OUTPUT_ROOT_CHANGED"
+        ? error
+        : new EvaluatorCliError(
+            "OUTPUT_PUBLICATION_FAILED",
+            "Atomic output publication failed",
+          );
+    if (!publicationState.committed) {
+      try {
+        await assertDirectoryChain(outputChain);
+        await options.onAtomicStep?.("cleanup");
+        await rm(temporaryDirectory, { force: true, recursive: true });
+      } catch (cleanupError) {
+        if (publicationError.code === "OUTPUT_ROOT_CHANGED") {
+          throw publicationError;
+        }
+        throw new EvaluatorCliError(
+          "CLEANUP_FAILED",
+          cleanupError instanceof Error
+            ? "Temporary output cleanup failed"
+            : "Temporary output cleanup failed",
+        );
+      }
+    }
+    throw publicationError;
   }
-  return {
-    outputDirectory: finalDirectory,
-    reportFilename: "report.json",
-    markdownFilename: "report.md",
-    reportPayloadHash: assembled.report.reportPayloadHash,
-    reportRenderHash: rendered.reportRenderHash,
-  };
+  return published();
 }
 
 const REQUIRED_FLAGS = [
@@ -354,16 +623,38 @@ export function parseCliArguments(argv: readonly string[]): {
       );
     }
     const name = token.slice(2);
+    if (!(REQUIRED_FLAGS as readonly string[]).includes(name)) {
+      throw new EvaluatorCliError(
+        "USAGE_UNKNOWN_OPTION",
+        `Unknown option: --${name}`,
+        64,
+      );
+    }
     const value = argv[index + 1];
-    if (value === undefined || value.startsWith("--") || values.has(name)) {
-      throw new EvaluatorCliError("USAGE", `Invalid value for --${name}`, 64);
+    if (values.has(name)) {
+      throw new EvaluatorCliError(
+        "USAGE_DUPLICATE_OPTION",
+        `Duplicate option: --${name}`,
+        64,
+      );
+    }
+    if (value === undefined || value.startsWith("--")) {
+      throw new EvaluatorCliError(
+        "USAGE_MISSING_VALUE",
+        `Missing value for --${name}`,
+        64,
+      );
     }
     values.set(name, value);
     index += 1;
   }
   for (const flag of REQUIRED_FLAGS) {
     if (!values.has(flag)) {
-      throw new EvaluatorCliError("USAGE", `Missing required --${flag}`, 64);
+      throw new EvaluatorCliError(
+        "USAGE_MISSING_OPTION",
+        `Missing required --${flag}`,
+        64,
+      );
     }
   }
   return {
