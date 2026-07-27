@@ -10,7 +10,10 @@ import {
   evaluateRoutePlayability,
 } from "@obby/route-playability-evaluator";
 import { emitManifestModule } from "@obby/roblox-emitter";
-import { finalizeE1Report, renderMarkdownReport } from "@obby/scoring-engine";
+import {
+  assembleE1Evaluation,
+  renderMarkdownReport,
+} from "@obby/scoring-engine";
 import { runEvaluatorCli } from "@obby/evaluator-cli";
 
 const spec = JSON.parse(
@@ -53,7 +56,7 @@ const routeResult = evaluateRoutePlayability({
 if (routeResult.routeGraph.finishObjectId !== "FinishPlatform")
   throw new Error("built route evaluator returned invalid topology");
 if (
-  typeof finalizeE1Report !== "function" ||
+  typeof assembleE1Evaluation !== "function" ||
   typeof renderMarkdownReport !== "function"
 )
   throw new Error("built scoring engine exports are unavailable");

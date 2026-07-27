@@ -85,6 +85,7 @@ export type E1EvaluationResult = {
     calculationBundleHash: ContentHash;
   };
   report: FinalizedE1Report;
+  workUnitsUsed: number;
 };
 
 export type FinalizedE1Report = ReportPayloadPreimage & {

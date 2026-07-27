@@ -108,6 +108,9 @@ export function catalog(definitionHash: string): Record<string, unknown> {
         blocking: true,
         outcomeEffect: "fail",
         requiredEvidenceKinds: ["route-transition"],
+        affectedMetricIds: ["playability.route-completeness"],
+        affectedCategoryIds: ["playability"],
+        dependencyScope: "declared",
       },
     ],
     supportedVersions: [

@@ -1,4 +1,5 @@
 export * from "./assembly.js";
+export * from "./availability.js";
 export * from "./markdown.js";
-export * from "./report.js";
+export { applyAvailabilityRecords } from "./report.js";
 export * from "./types.js";

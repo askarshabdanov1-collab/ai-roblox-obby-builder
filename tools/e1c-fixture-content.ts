@@ -2,7 +2,6 @@ import { readFile } from "node:fs/promises";
 
 import {
   canonicalizeEvaluatorSnapshot,
-  sha256Bytes,
   type JsonValue,
 } from "@obby/canonical-json";
 import type { SceneManifest } from "@obby/contracts";
@@ -29,6 +28,8 @@ import {
 import {
   assembleE1Evaluation,
   renderMarkdownReport,
+  RUNTIME_CAPABILITY_VERSION,
+  runtimeCapabilitySubjectHash,
 } from "@obby/scoring-engine";
 
 const ROOT = new URL("../", import.meta.url);
@@ -127,13 +128,8 @@ function planAndRequest(
   return { plan, request };
 }
 
-function availability(): AvailabilityRecord {
-  const subjectHash = sha256Bytes(
-    canonicalizeEvaluatorSnapshot({
-      domain: "e1c-deferred-capability-v1",
-      capability: "runtime",
-    }).canonicalBytes,
-  );
+function availability(manifestHash: `sha256:${string}`): AvailabilityRecord {
+  const subjectHash = runtimeCapabilitySubjectHash(manifestHash);
   const source: AvailabilityRecord = {
     schemaVersion: "0.1",
     subject: {
@@ -143,7 +139,11 @@ function availability(): AvailabilityRecord {
     },
     availabilityState: "restricted",
     reasonCode: "phase-deferred",
-    reasonDetails: [{ code: "phase", value: "E1c" }],
+    reasonDetails: [
+      { code: "capability-id", value: "runtime" },
+      { code: "capability-version", value: RUNTIME_CAPABILITY_VERSION },
+      { code: "manifest-hash", value: manifestHash },
+    ],
     authority: {
       authorityKind: "evaluator-policy",
       authorityId: "evaluator-policy:e1c",
@@ -264,7 +264,9 @@ export async function expectedE1cFixtures(): Promise<Record<string, string>> {
     ],
   ]);
   const outputs: Record<string, string> = {};
-  const availabilityRecords = [availability()];
+  const availabilityRecords = [
+    availability(manifest.manifestHash as `sha256:${string}`),
+  ];
   for (const [name, scenario] of scenarios) {
     const { plan, request } = planAndRequest(
       manifest.manifestHash,

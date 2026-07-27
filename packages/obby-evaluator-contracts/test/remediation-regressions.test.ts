@@ -12,6 +12,7 @@ import {
   hashMetricDefinition,
   hashScoringProfile,
   parseAvailabilityRecord,
+  parseMetricCatalog,
 } from "../src/index.js";
 import {
   catalog,
@@ -52,6 +53,12 @@ function graph(
     profileMetricIds?: string[];
   } = {},
 ) {
+  type MutableInvariantGate = {
+    invariantId: string;
+    dependencyScope: "declared" | "global";
+    affectedMetricIds: string[];
+    affectedCategoryIds: string[];
+  };
   const references =
     overrides.catalogReferences ??
     definitions.map((item) => ({
@@ -64,6 +71,19 @@ function graph(
       TEST_IDENTITIES.calculationConfigurationHash) as string,
   );
   metricCatalog.metricDefinitions = references;
+  metricCatalog.invariantGates = (
+    metricCatalog.invariantGates as MutableInvariantGate[]
+  ).map((gate) => ({
+    ...gate,
+    ...(gate.dependencyScope === "global"
+      ? { affectedMetricIds: [], affectedCategoryIds: [] }
+      : {
+          affectedMetricIds: references.map(
+            (reference) => reference.metricId as string,
+          ),
+          affectedCategoryIds: ["playability"],
+        }),
+  }));
   metricCatalog.metricCatalogHash = hashMetricCatalog(metricCatalog).hash;
   const metricIds =
     overrides.profileMetricIds ??
@@ -337,6 +357,19 @@ describe("focused remediation regressions", () => {
     expect(first.evidenceContentHash).not.toBe(second.evidenceContentHash);
     expect(() => assertValidEvidenceGraph([first, second])).toThrow(
       /duplicate evidence ID/i,
+    );
+  });
+
+  it("rejects unknown invariant metric dependencies before catalog hashing", () => {
+    const source = catalog(TEST_IDENTITIES.calculationConfigurationHash) as {
+      invariantGates: { affectedMetricIds: string[] }[];
+    };
+    const gate = source.invariantGates[0];
+    if (gate === undefined) throw new Error("missing invariant fixture");
+    gate.affectedMetricIds = ["metric.unknown"];
+
+    expect(() => parseMetricCatalog(source)).toThrow(
+      /references unknown metric metric\.unknown/,
     );
   });
 });

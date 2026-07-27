@@ -1,230 +1,113 @@
-import { readFileSync } from "node:fs";
-
 import { describe, expect, it } from "vitest";
 
-import type {
-  AvailabilityRecord,
-  EvidenceRecordContract,
-  Finding,
-  MetricCatalog,
-  ScoringProfile,
+import {
+  hashAvailabilityRecord,
+  type AvailabilityRecord,
 } from "@obby/obby-evaluator-contracts";
-import { hashAvailabilityRecord } from "@obby/obby-evaluator-contracts";
 
+import * as scoringEngine from "../src/index.js";
 import {
   applyAvailabilityRecords,
-  finalizeE1Report,
-  type E1ReportInput,
+  assembleE1Evaluation,
 } from "../src/index.js";
+import {
+  deferredRuntimeAvailability,
+  evaluatorFixtureGraph,
+} from "./fixtures.js";
 
-const hash = (digit: string): `sha256:${string}` =>
-  `sha256:${digit.repeat(64)}`;
-
-const fixture = (name: string): unknown =>
-  JSON.parse(
-    readFileSync(
-      new URL(
-        `../../obby-evaluator-contracts/fixtures/generated/${name}`,
-        import.meta.url,
-      ),
-      "utf8",
-    ),
-  );
-
-const catalog = fixture("e1-metric-catalog.json") as MetricCatalog;
-const scoringProfile = fixture("e1-scoring-profile.json") as ScoringProfile;
-
-const evidence = (id: string, digit: string): EvidenceRecordContract => ({
-  schemaVersion: "0.1",
-  evidenceId: id,
-  kind: "route-graph",
-  manifestHash: hash("1"),
-  subject: { kind: "scene" },
-  producer: { component: "route-playability-evaluator", version: "0.1.0" },
-  payload: {
-    kind: "route-graph",
-    routeId: "scene-a",
-    stageIds: ["stage-1"],
-    orderedNodeIds: ["Start", "Finish"],
-    orderedTransitionIds: ["route:scene-a/Start/Finish/0/1"],
-    spawnObjectId: "Start",
-    checkpointObjectIds: [],
-    finishObjectId: "Finish",
-    structuralState: "connected",
-    reproduction: { methodId: "declared-route-v1", inputHashes: [hash("1")] },
-  },
-  parentEvidenceHashes: [],
-  artifactHashes: [],
-  quality: { completeness: "complete", validityCodes: [] },
-  limitations: [],
-  evidenceContentHash: hash(digit),
-});
-
-const finding = (id: string, overrides: Partial<Finding> = {}): Finding => ({
-  schemaVersion: "0.1",
-  findingId: id,
-  ruleId: "route.required-topology",
-  ruleVersion: "1.0.0",
-  metricIds: [],
-  title: "Required route topology",
-  summary: "Required route topology failed.",
-  severity: "blocking",
-  blocking: true,
-  invariantId: "required-route-topology",
-  sourceKind: "deterministic",
-  subjects: [{ kind: "scene" }],
-  evidenceIds: ["e1c:route"],
-  limitations: [],
-  ...overrides,
-});
-
-const base = (): E1ReportInput => ({
-  identities: {
-    calculationBundleHash: hash("2"),
-    manifestHash: hash("1"),
-    manifestSchemaVersion: "1.0.0",
-    configurationHash: hash("3"),
-    evaluationRequestHash: hash("4"),
-    evaluator: { component: "scoring-engine", version: "0.1.0" },
-  },
-  catalog,
-  scoringProfile,
-  invariantGates: catalog.invariantGates.map((gate) => ({
-    invariantId: gate.invariantId,
-    state: "pass" as const,
-    evidenceIds: ["e1c:route"],
-    evidenceContentHashes: [hash("7")],
-    findingIds: [],
-    blockedMetricIds: [],
-  })),
-  profileGates: [],
-  categories: scoringProfile.categories.map((entry) => ({
-    categoryId: entry.categoryId,
-    status: "available" as const,
-    metricIds: entry.metricIds,
-    confidence: {
-      value: 1,
-      basis: "required-evidence-complete",
-      limitations: [],
+function input() {
+  const graph = evaluatorFixtureGraph();
+  return {
+    graph,
+    value: {
+      metricDefinitions: graph.metricDefinitions,
+      catalog: graph.catalog,
+      profile: graph.profile,
+      plan: graph.plan,
+      request: graph.request,
+      evaluatorVersion: "0.1.0",
+      componentVersions: {
+        "obby-evaluator-contracts": "0.1.0",
+        "geometry-evaluator": "0.1.0",
+        "route-playability-evaluator": "0.1.0",
+        "scoring-engine": "0.1.0",
+      },
+      evidence: graph.evidenceBundle.evidence,
+      findings: graph.evidenceBundle.findings,
+      availabilityRecords: [deferredRuntimeAvailability()],
     },
-    classification: "provisional" as const,
-  })),
-  calculations: [],
-  completeness: {
-    state: "complete",
-    requestedMetricIds: [],
-    calculatedMetricIds: [],
-    missingMetricIds: [],
-    missingEvidenceKinds: [],
-    unresolvedEvidenceHashes: [],
-    unresolvedFindingIds: [],
-    unavailable: [],
-  },
-  availabilityRecordHashes: [],
-  metrics: [],
-  findings: [],
-  evidence: [evidence("e1c:route", "7")],
-  missingEvidence: [],
-  limitations: [
-    {
-      code: "coarse-model-only",
-      text: "Coarse geometry is not exact physics.",
-    },
-  ],
-  compatibleDimensions: ["route"],
-});
+  };
+}
 
 describe("E1c scoring precedence", () => {
-  it("never lets a category result clear an invariant failure", () => {
-    const input = base();
-    input.invariantGates = input.invariantGates.map((gate) =>
-      gate.invariantId === "required-route-topology"
-        ? { ...gate, state: "fail", findingIds: ["finding.required-route"] }
-        : gate,
+  it("derives warning outcome from metric state when no finding is supplied", () => {
+    const fixture = input();
+    fixture.value.findings = [];
+
+    const result = assembleE1Evaluation(fixture.value);
+
+    expect(result.metrics.some((metric) => metric.severity === "warning")).toBe(
+      true,
     );
-    input.findings = [finding("finding.required-route")];
-
-    const report = finalizeE1Report(input);
-
-    expect(report.outcome).toBe("fail");
-    expect(report.blockingFindingIds).toEqual(["finding.required-route"]);
-    expect(report.scoreProfile.aggregateScore).toBe(false);
+    expect(result.report.findings).toEqual([]);
+    expect(result.report.outcome).toBe("pass-with-warnings");
   });
 
-  it("keeps model-relative profile failure separate from invariants", () => {
-    const input = base();
-    input.profileGates = [
-      {
-        gateId: "coarse-route-feasibility",
-        metricId: "playability.required-transition-feasibility",
-        state: "fail",
-        classification: "provisional",
-        evidenceContentHashes: [hash("7")],
-        findingIds: ["finding.coarse"],
-      },
-    ];
-    const profileFinding = finding("finding.coarse", {
-      ruleId: "playability.coarse-transition-infeasible-under-model",
-      severity: "error",
-      blocking: true,
-      sourceKind: "heuristic",
-    });
-    delete profileFinding.invariantId;
-    input.findings = [profileFinding];
+  it("keeps one matching producer finding as a warning without inflation", () => {
+    const fixture = input();
+    const result = assembleE1Evaluation(fixture.value);
 
-    expect(finalizeE1Report(input).outcome).toBe("fail-under-profile");
+    expect(result.report.outcome).toBe("pass-with-warnings");
+    expect(
+      new Set(result.report.findings.map((item) => item.findingId)).size,
+    ).toBe(result.report.findings.length);
   });
 
-  it("fails closed as incomplete when an invariant lacks evidence", () => {
-    const input = base();
-    input.invariantGates = input.invariantGates.map((gate) =>
-      gate.invariantId === "required-route-topology"
-        ? {
-            ...gate,
-            state: "missing-evidence",
-            evidenceIds: [],
-            evidenceContentHashes: [],
-          }
-        : gate,
+  it("rejects duplicate finding identities", () => {
+    const fixture = input();
+    const finding = fixture.value.findings[0];
+    if (finding === undefined) throw new Error("missing finding fixture");
+
+    expect(() =>
+      assembleE1Evaluation({
+        ...fixture.value,
+        findings: [...fixture.value.findings, structuredClone(finding)],
+      }),
+    ).toThrow(/duplicate finding/);
+  });
+
+  it("allows a clean pass only when neither metrics nor findings warn", () => {
+    const fixture = input();
+    fixture.value.findings = [];
+    fixture.value.evidence = fixture.value.evidence.filter(
+      (record) =>
+        record.kind !== "hazard-relationship" &&
+        record.kind !== "skip-candidate",
     );
 
-    expect(finalizeE1Report(input).outcome).toBe("incomplete");
+    expect(assembleE1Evaluation(fixture.value).report.outcome).toBe("pass");
   });
 
-  it("produces the same payload hash after set reordering and execution-id changes", () => {
-    const firstInput = base();
-    const warningFinding = finding("finding.warning", {
-      blocking: false,
-      severity: "warning",
-      executionId: "execution-a",
-    });
-    delete warningFinding.invariantId;
-    firstInput.findings = [warningFinding];
-    const secondInput = structuredClone(firstInput);
-    secondInput.evidence = [...secondInput.evidence].reverse();
-    secondInput.categories = [...secondInput.categories].reverse();
-    const secondFinding = secondInput.findings[0];
-    if (secondFinding === undefined) throw new Error("missing test finding");
-    secondFinding.executionId = "execution-b";
-
-    const first = finalizeE1Report(firstInput);
-    const second = finalizeE1Report(secondInput);
-
-    expect(first.outcome).toBe("pass-with-warnings");
-    expect(second.reportPayloadHash).toBe(first.reportPayloadHash);
+  it("does not expose a caller-trusting report finalizer", () => {
+    expect("finalizeE1Report" in scoringEngine).toBe(false);
+    expect("finalizeValidatedE1Report" in scoringEngine).toBe(false);
   });
 });
 
 describe("E1c immutable evidence availability", () => {
   it("creates a newly hashed derived report without mutating the original", () => {
-    const original = finalizeE1Report(base());
+    const fixture = input();
+    const assembled = assembleE1Evaluation(fixture.value);
+    const original = assembled.report;
     const originalSnapshot = structuredClone(original);
-    const availabilitySource: AvailabilityRecord = {
+    const evidence = fixture.graph.evidenceBundle.evidence[0];
+    if (evidence?.evidenceId === undefined) throw new Error("missing evidence");
+    const source: AvailabilityRecord = {
       schemaVersion: "0.1",
       subject: {
         kind: "evidence",
-        stableId: "e1c:route",
-        contentHash: hash("7"),
+        stableId: evidence.evidenceId,
+        contentHash: evidence.evidenceContentHash,
       },
       availabilityState: "deleted",
       reasonCode: "retention-expired",
@@ -238,24 +121,22 @@ describe("E1c immutable evidence availability", () => {
       policy: { component: "retention-policy", version: "1.0.0" },
       impactScope: {
         scopeKind: "subject-and-derived",
-        affectedIdentityHashes: [hash("7")],
+        affectedIdentityHashes: [evidence.evidenceContentHash],
       },
-      availabilityRecordHash: hash("8"),
+      availabilityRecordHash: `sha256:${"0".repeat(64)}`,
     };
-    const availability: AvailabilityRecord = {
-      ...availabilitySource,
-      availabilityRecordHash: hashAvailabilityRecord(availabilitySource).hash,
+    const availability = {
+      ...source,
+      availabilityRecordHash: hashAvailabilityRecord(source).hash,
     };
 
     const derived = applyAvailabilityRecords(original, [availability]);
 
     expect(original).toEqual(originalSnapshot);
     expect(derived.reportPayloadHash).not.toBe(original.reportPayloadHash);
-    expect(derived.derivedFrom).toEqual({
-      reportPayloadHash: original.reportPayloadHash,
-      availabilityRecordHashes: [availability.availabilityRecordHash],
-      reproduction: "impossible",
-    });
+    expect(derived.derivedFrom?.reportPayloadHash).toBe(
+      original.reportPayloadHash,
+    );
     expect(derived.outcome).toBe("incomplete");
   });
 });

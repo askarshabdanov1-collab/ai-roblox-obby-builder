@@ -146,7 +146,16 @@ describe("evaluator contracts", () => {
           graph.catalog.metricDefinitions as Record<string, unknown>[]
         )[0];
         if (reference === undefined) throw new Error("missing test reference");
+        const previousMetricId = reference.metricId;
         reference.metricId = "unknown.metric";
+        const gates = graph.catalog.invariantGates as {
+          affectedMetricIds: string[];
+        }[];
+        for (const gate of gates) {
+          gate.affectedMetricIds = gate.affectedMetricIds.map((metricId) =>
+            metricId === previousMetricId ? "unknown.metric" : metricId,
+          );
+        }
         graph.catalog.metricCatalogHash = hashMetricCatalog(graph.catalog).hash;
       },
     ],

@@ -117,6 +117,6 @@ describe("committed E1c end-to-end fixtures", () => {
         graph.metricDefinitions,
         graph.evidenceBundle.evidence,
       ),
-    ).toThrow(/duplicate metric calculation/i);
+    ).toThrow(/conflicting metric calculations/i);
   });
 });

@@ -3,12 +3,12 @@
   "algorithm": "obby-canonical-json-v1 + SHA-256",
   "generatedFixtureDigests": {
     "MetricDefinitionPreimage": "sha256:42fdf761b82da44849cbfc1189cef242e7e80569162ef48cf910449e422a39c6",
-    "MetricCatalogPreimage": "sha256:6792f022f5a928d890e6232d9eafdfe3df9fe910c9554845064a82a58aa24674",
-    "ScoringProfilePreimage": "sha256:b572d93ff5914032ccd16a144f4a9c8400e4c32eabf035bba49359e4a3ac71fd",
-    "EvaluationPlanConfigurationPreimage": "sha256:9aa0dd2962c76bff680896cfcb72cee7393ffb15b447170bcc3267fa3816a1cd",
-    "EvaluationRequestPreimage": "sha256:f6b59b9bdf6f9c5b1b1d70943039989959155adce8dc5f85fb2de9de6fd3726e",
+    "MetricCatalogPreimage": "sha256:9b256b76b5bef66b5009f648204a43241ee391ce4a4215390c46cb7c5e877d34",
+    "ScoringProfilePreimage": "sha256:fc8adef4a05875dc2169a84bbf84b69ef6987d98b9c47d80c8984e5168a04b2d",
+    "EvaluationPlanConfigurationPreimage": "sha256:6ea7637b62760734895baf141d90d358d063a47504d542fc02239c2c523119e2",
+    "EvaluationRequestPreimage": "sha256:e09afc76bfdf24871f0926a76b4458c03a370db572c9da7003aeb639e6e0b0e9",
     "EvidenceContentPreimage": "sha256:2a7d5a0b3b9ee3167e19ee2c327e8912015258157c3c03796e4d1d99b5a713bf",
-    "CalculationBundlePreimage": "sha256:3db2e7b1f74e7695a7babd9031eaca87e8265d90836bdb61b8070afb6bb1caad",
+    "CalculationBundlePreimage": "sha256:3722933f9e5d43d1fe1cb9af8a98ef4aae9498232588e50ec9c7f889af61e5a0",
     "AvailabilityRecordPreimage": "sha256:d3aa9328d56e8cfb57da47edefb3d634cbc50732bfeb462395288ab293e98595"
   },
   "smallVectors": [

@@ -1,18 +1,19 @@
 import { compareUnicodeScalars } from "@obby/canonical-json";
 import {
+  assertValidEvidenceGraph,
   hashReportPayload,
-  parseAvailabilityRecord,
   parseReportPayloadPreimage,
-  verifyAvailabilityRecordIdentity,
   verifyMetricCatalogIdentity,
   verifyReportPayloadIdentity,
   verifyScoringProfileIdentity,
+  verifyMetricCalculationIdentity,
   type AvailabilityRecord,
   type EvidenceRecordContract,
   type Finding,
   type ReportPayloadPreimage,
 } from "@obby/obby-evaluator-contracts";
 
+import { resolveAvailabilityRecords } from "./availability.js";
 import {
   ScoringContractError,
   type E1ReportInput,
@@ -53,8 +54,9 @@ function assertBindings(input: E1ReportInput): void {
       "scoring profile does not reference the supplied metric catalog",
     );
   }
+  const verifiedEvidence = assertValidEvidenceGraph(input.evidence);
   const evidenceIds = new Set(
-    input.evidence.map((record) => {
+    verifiedEvidence.map((record) => {
       if (record.evidenceId === undefined) {
         throw new ScoringContractError(
           "missing-evidence-id",
@@ -65,11 +67,85 @@ function assertBindings(input: E1ReportInput): void {
     }),
   );
   const evidenceHashes = new Set(
-    input.evidence.map((record) => record.evidenceContentHash),
+    verifiedEvidence.map((record) => record.evidenceContentHash),
   );
-  const findings = new Map(
-    input.findings.map((item) => [item.findingId, item]),
+  const findings = new Map<string, Finding>();
+  for (const finding of input.findings) {
+    if (findings.has(finding.findingId)) {
+      throw new ScoringContractError(
+        "duplicate-finding",
+        `duplicate finding ${finding.findingId}`,
+      );
+    }
+    for (const evidenceId of finding.evidenceIds) {
+      if (!evidenceIds.has(evidenceId)) {
+        throw new ScoringContractError(
+          "unresolved-finding-evidence",
+          `finding ${finding.findingId} references unknown evidence ${evidenceId}`,
+        );
+      }
+    }
+    findings.set(finding.findingId, finding);
+  }
+  const catalogDefinitions = new Map(
+    catalog.metricDefinitions.map((definition) => [
+      definition.metricId,
+      definition,
+    ]),
   );
+  const calculations = new Map<
+    string,
+    ReturnType<typeof verifyMetricCalculationIdentity>
+  >();
+  for (const inputCalculation of input.calculations) {
+    const calculation = verifyMetricCalculationIdentity(inputCalculation);
+    if (calculations.has(calculation.metricId)) {
+      throw new ScoringContractError(
+        "duplicate-metric-calculation",
+        `duplicate metric calculation ${calculation.metricId}`,
+      );
+    }
+    const definition = catalogDefinitions.get(calculation.metricId);
+    if (
+      definition?.metricVersion !== calculation.metricVersion ||
+      definition.metricDefinitionHash !== calculation.metricDefinitionHash
+    ) {
+      throw new ScoringContractError(
+        "calculation-definition-mismatch",
+        `calculation ${calculation.metricId} does not bind the supplied catalog`,
+      );
+    }
+    for (const reference of calculation.evidence) {
+      if (!evidenceHashes.has(reference.evidenceContentHash)) {
+        throw new ScoringContractError(
+          "unresolved-calculation-evidence",
+          `calculation ${calculation.metricId} references unknown evidence ${reference.evidenceContentHash}`,
+        );
+      }
+    }
+    calculations.set(calculation.metricId, calculation);
+  }
+  const expectedCalculationIds = new Set([
+    ...profile.requiredMetricIds,
+    ...profile.optionalMetricIds,
+  ]);
+  if (
+    calculations.size !== expectedCalculationIds.size ||
+    [...expectedCalculationIds].some((metricId) => !calculations.has(metricId))
+  ) {
+    throw new ScoringContractError(
+      "calculation-coverage",
+      "final report calculations must exactly cover the selected scoring profile",
+    );
+  }
+  for (const record of verifiedEvidence) {
+    if (record.manifestHash !== input.identities.manifestHash) {
+      throw new ScoringContractError(
+        "evidence-manifest-scope",
+        `evidence ${record.evidenceContentHash} is outside the report manifest`,
+      );
+    }
+  }
   const invariantIds = new Set<string>();
   for (const gate of input.invariantGates) {
     if (invariantIds.has(gate.invariantId)) {
@@ -176,7 +252,10 @@ function outcome(input: E1ReportInput): ReportPayloadPreimage["outcome"] {
   }
   return input.findings.some(
     (finding) => finding.severity === "warning" || finding.severity === "error",
-  )
+  ) ||
+    input.metrics.some(
+      (metric) => metric.severity === "warning" || metric.severity === "error",
+    )
     ? "pass-with-warnings"
     : "pass";
 }
@@ -201,7 +280,9 @@ function requiredEvidenceId(record: EvidenceRecordContract): string {
   return record.evidenceId;
 }
 
-export function finalizeE1Report(input: E1ReportInput): FinalizedE1Report {
+export function finalizeValidatedE1Report(
+  input: E1ReportInput,
+): FinalizedE1Report {
   assertBindings(input);
   const blockingFindingIds = unique([
     ...input.invariantGates
@@ -272,17 +353,28 @@ export function applyAvailabilityRecords(
       "availability derivation requires a finalized report",
     );
   }
-  const availability = records.map((record) => {
-    parseAvailabilityRecord(record);
-    return verifyAvailabilityRecordIdentity(record);
-  });
-  const evidenceHashes = new Set(
-    original.evidenceIndex.map((entry) => entry.evidenceContentHash),
+  const availability = resolveAvailabilityRecords(records);
+  const evidenceByHash = new Map(
+    original.evidenceIndex.map((entry) => [entry.evidenceContentHash, entry]),
   );
+  for (const record of availability) {
+    const evidence = evidenceByHash.get(record.subject.contentHash);
+    if (
+      record.subject.kind !== "evidence" ||
+      record.subject.stableId !== evidence?.evidenceId ||
+      !record.impactScope.affectedIdentityHashes.includes(
+        record.subject.contentHash,
+      )
+    ) {
+      throw new ScoringContractError(
+        "availability-evidence-identity",
+        "availability record does not bind an indexed evidence subject",
+      );
+    }
+  }
   const unavailable = availability.filter(
     (record) =>
       record.subject.kind === "evidence" &&
-      evidenceHashes.has(record.subject.contentHash) &&
       record.availabilityState !== "available",
   );
   const unavailableHashes = new Set(

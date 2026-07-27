@@ -12,7 +12,6 @@ import {
   hashMetricCalculation,
   parseEvaluationMetric,
   parseFinding,
-  verifyAvailabilityRecordIdentity,
   verifyMetricCalculationIdentity,
   type CalculationBundlePreimage,
   type EvaluationCompleteness,
@@ -22,13 +21,19 @@ import {
   type Finding,
   type InvariantGateResult,
   type MetricCalculationPreimage,
+  type MetricCatalog,
   type MetricDefinition,
   type MetricValue,
   type ProfileGateResult,
   type ReportCategoryResult,
 } from "@obby/obby-evaluator-contracts";
 
-import { finalizeE1Report } from "./report.js";
+import { finalizeValidatedE1Report } from "./report.js";
+import { resolveRuntimeCapabilityAvailability } from "./availability.js";
+import {
+  selectAuthoritativeE1Evidence,
+  type EvidenceSelection,
+} from "./evidence-selection.js";
 import {
   ScoringContractError,
   type E1EvaluationInput,
@@ -52,13 +57,21 @@ class WorkBudget {
   public constructor(private readonly maximum: number) {}
 
   public use(units = 1): void {
-    this.used += units;
-    if (this.used > this.maximum) {
+    if (
+      !Number.isSafeInteger(units) ||
+      units < 0 ||
+      units > this.maximum - this.used
+    ) {
       throw new ScoringContractError(
         "maximum-work-units",
-        `E1 scoring work ${this.used} exceeds limit ${this.maximum}`,
+        `E1 scoring work exceeds limit ${this.maximum}`,
       );
     }
+    this.used += units;
+  }
+
+  public get totalUsed(): number {
+    return this.used;
   }
 }
 
@@ -110,27 +123,6 @@ function requiredEvidenceId(record: EvidenceRecordContract): string {
     );
   }
   return record.evidenceId;
-}
-
-function recordsOfKind(
-  evidence: readonly EvidenceRecordContract[],
-  kind: EvidenceKind,
-): EvidenceRecordContract[] {
-  return evidence.filter((record) => record.kind === kind);
-}
-
-function singleRecord(
-  evidence: readonly EvidenceRecordContract[],
-  kind: EvidenceKind,
-): EvidenceRecordContract | undefined {
-  const records = recordsOfKind(evidence, kind);
-  if (records.length > 1) {
-    throw new ScoringContractError(
-      "conflicting-evidence",
-      `expected at most one ${kind} evidence record, received ${records.length}`,
-    );
-  }
-  return records[0];
 }
 
 function categoryForMetric(
@@ -308,18 +300,17 @@ function missingDecision(
 
 function decisionForDefinition(
   definition: MetricDefinition,
-  evidence: readonly EvidenceRecordContract[],
+  selectedEvidence: EvidenceSelection,
 ): CalculationDecision {
-  const routeGraph = singleRecord(evidence, "route-graph");
-  const summary = singleRecord(evidence, "route-playability-summary");
-  const geometry = singleRecord(evidence, "geometry-fact");
-  const transitions = recordsOfKind(evidence, "route-transition");
-  const coarse = recordsOfKind(evidence, "coarse-transition-state");
-  const checkpoints = recordsOfKind(evidence, "checkpoint-topology");
-  const finishes = recordsOfKind(evidence, "finish-topology");
-  const hazards = recordsOfKind(evidence, "hazard-relationship");
-  const skips = recordsOfKind(evidence, "skip-candidate");
-  const runtime = recordsOfKind(evidence, "runtime-observation");
+  const routeGraph = selectedEvidence.routeGraph;
+  const summary = selectedEvidence.summary;
+  const geometry = selectedEvidence.geometry;
+  const transitions = selectedEvidence.transitions;
+  const coarse = selectedEvidence.coarseTransitions;
+  const checkpoints = selectedEvidence.checkpoints;
+  const finishes = selectedEvidence.finishes;
+  const hazards = selectedEvidence.hazards;
+  const skips = selectedEvidence.skips;
   const limitations = [...definition.limitationsTemplate];
 
   switch (definition.metricId) {
@@ -474,23 +465,19 @@ function decisionForDefinition(
       };
     }
     case "runtime.checkpoint-isolation-availability":
-      return runtime.length === 0
-        ? {
-            state: "unavailable",
-            evidence: [],
-            unavailableReason: {
-              reasonCode: "studio-runtime-deferred",
-              deferredCapability: "runtime",
-              responsibleProducer: "studio-runtime-collector",
-            },
-            limitations,
-          }
-        : {
-            state: "calculated",
-            value: { kind: "state", value: "available" },
-            evidence: runtime,
-            limitations,
-          };
+      return {
+        state: "unavailable",
+        evidence: [],
+        unavailableReason: {
+          reasonCode: "studio-runtime-deferred",
+          deferredCapability: "runtime",
+          responsibleProducer: "studio-runtime-collector",
+        },
+        limitations: [
+          ...limitations,
+          "Generic runtime observations do not establish multiplayer checkpoint isolation.",
+        ],
+      };
     case "policy.decorative-collision-violations": {
       if (geometry === undefined)
         return missingDecision(definition, [], "geometry-fact");
@@ -588,15 +575,15 @@ function gate(
   };
 }
 
-function structuralGates(evidence: readonly EvidenceRecordContract[]): {
+function structuralGates(selected: EvidenceSelection): {
   gates: InvariantGateResult[];
   findings: Finding[];
 } {
-  const route = singleRecord(evidence, "route-graph");
-  const geometry = singleRecord(evidence, "geometry-fact");
-  const transitions = recordsOfKind(evidence, "route-transition");
-  const checkpoints = recordsOfKind(evidence, "checkpoint-topology");
-  const finishes = recordsOfKind(evidence, "finish-topology");
+  const route = selected.routeGraph;
+  const geometry = selected.geometry;
+  const transitions = selected.transitions;
+  const checkpoints = selected.checkpoints;
+  const finishes = selected.finishes;
   const results: InvariantGateResult[] = [];
   const findings: Finding[] = [];
   const add = (
@@ -875,16 +862,24 @@ export function validateMetricCalculations(
     .toSorted((left, right) =>
       compareUnicodeScalars(left.metricId, right.metricId),
     );
-  const metricIds = new Set<string>();
+  const metricIdentities = new Map<string, string>();
   const hashes = new Set<string>();
   for (const calculation of calculations) {
-    if (metricIds.has(calculation.metricId)) {
+    const previousIdentity = metricIdentities.get(calculation.metricId);
+    if (previousIdentity !== undefined) {
       throw new ScoringContractError(
-        "duplicate-metric-calculation",
-        `duplicate metric calculation ${calculation.metricId}`,
+        previousIdentity === calculation.calculationHash
+          ? "duplicate-metric-calculation"
+          : "conflicting-metric-calculation",
+        previousIdentity === calculation.calculationHash
+          ? `duplicate metric calculation ${calculation.metricId}`
+          : `conflicting metric calculations ${calculation.metricId}`,
       );
     }
-    metricIds.add(calculation.metricId);
+    metricIdentities.set(
+      calculation.metricId,
+      calculation.calculationHash ?? "missing",
+    );
     if (
       calculation.calculationHash === undefined ||
       hashes.has(calculation.calculationHash)
@@ -1011,12 +1006,15 @@ function categories(
   }[],
   calculations: readonly MetricCalculationPreimage[],
   gates: readonly InvariantGateResult[],
+  catalogGates: MetricCatalog["invariantGates"],
   optionalMetricIds: ReadonlySet<string>,
 ): ReportCategoryResult[] {
   const byMetric = new Map(
     calculations.map((calculation) => [calculation.metricId, calculation]),
   );
-  const invariantFailed = gates.some((gate) => gate.state === "fail");
+  const catalogById = new Map(
+    catalogGates.map((gate) => [gate.invariantId, gate]),
+  );
   return profileCategories
     .map((category): ReportCategoryResult => {
       const members = category.metricIds.map((metricId) =>
@@ -1025,18 +1023,37 @@ function categories(
       const requiredMembers = category.metricIds
         .filter((metricId) => !optionalMetricIds.has(metricId))
         .map((metricId) => byMetric.get(metricId));
-      const status: ReportCategoryResult["status"] = invariantFailed
-        ? "incomplete"
-        : requiredMembers.some(
-              (item) =>
-                item === undefined || item.calculationState === "unavailable",
-            )
+      const affectedGateState = gates.find((gate) => {
+        if (gate.state === "pass") return false;
+        const policy = catalogById.get(gate.invariantId);
+        return (
+          policy?.dependencyScope === "global" ||
+          policy?.affectedCategoryIds.includes(category.categoryId) === true ||
+          gate.blockedMetricIds.some((metricId) =>
+            category.metricIds.includes(metricId),
+          )
+        );
+      })?.state;
+      const status: ReportCategoryResult["status"] =
+        affectedGateState === "fail"
           ? "incomplete"
-          : members.every((item) => item?.calculationState === "not-applicable")
-            ? "not-applicable"
-            : members.some((item) => item?.calculationState === "indeterminate")
+          : affectedGateState === "missing-evidence"
+            ? "missing-evidence"
+            : requiredMembers.some(
+                  (item) =>
+                    item === undefined ||
+                    item.calculationState === "unavailable",
+                )
               ? "incomplete"
-              : "available";
+              : members.every(
+                    (item) => item?.calculationState === "not-applicable",
+                  )
+                ? "not-applicable"
+                : members.some(
+                      (item) => item?.calculationState === "indeterminate",
+                    )
+                  ? "incomplete"
+                  : "available";
       const available = members.filter(
         (item): item is MetricCalculationPreimage => item !== undefined,
       );
@@ -1086,6 +1103,10 @@ export function assembleE1Evaluation(
     resolvedLimits.maxAvailabilityRecords,
   );
   const work = new WorkBudget(resolvedLimits.maxWorkUnits);
+  work.use(input.metricDefinitions.length * 2);
+  work.use(input.evidence.length * 2);
+  work.use(input.findings.length);
+  work.use((input.availabilityRecords?.length ?? 0) * 2);
   const graph = assertValidEvaluatorConfigurationGraph({
     metricDefinitions: input.metricDefinitions,
     catalog: input.catalog,
@@ -1107,12 +1128,41 @@ export function assembleE1Evaluation(
       );
     }
   }
-  const availability = (input.availabilityRecords ?? [])
-    .map(verifyAvailabilityRecordIdentity)
+  const availability = resolveRuntimeCapabilityAvailability(
+    input.availabilityRecords ?? [],
+    graph.plan.scene.manifestHash,
+  );
+  const selectedEvidence = selectAuthoritativeE1Evidence(evidence, (units) =>
+    work.use(units),
+  );
+  const authoritativeEvidence = [
+    ...(selectedEvidence.routeGraph === undefined
+      ? []
+      : [selectedEvidence.routeGraph]),
+    ...(selectedEvidence.summary === undefined
+      ? []
+      : [selectedEvidence.summary]),
+    ...(selectedEvidence.geometry === undefined
+      ? []
+      : [selectedEvidence.geometry]),
+    ...selectedEvidence.transitions,
+    ...selectedEvidence.coarseTransitions,
+    ...selectedEvidence.checkpoints,
+    ...selectedEvidence.finishes,
+    ...selectedEvidence.hazards,
+    ...selectedEvidence.skips,
+  ]
+    .filter(
+      (record, index, records) =>
+        records.findIndex(
+          (candidate) =>
+            candidate.evidenceContentHash === record.evidenceContentHash,
+        ) === index,
+    )
     .toSorted((left, right) =>
       compareUnicodeScalars(
-        left.availabilityRecordHash,
-        right.availabilityRecordHash,
+        left.evidenceContentHash,
+        right.evidenceContentHash,
       ),
     );
   const selectedMetricIds = new Set(
@@ -1135,10 +1185,10 @@ export function assembleE1Evaluation(
   );
   let findings = normalizeInputFindings(
     input.findings,
-    evidence,
+    authoritativeEvidence,
     knownMetricIds,
   );
-  const structural = structuralGates(evidence);
+  const structural = structuralGates(selectedEvidence);
   findings = [...findings, ...structural.findings].toSorted((left, right) =>
     compareUnicodeScalars(left.findingId, right.findingId),
   );
@@ -1154,10 +1204,10 @@ export function assembleE1Evaluation(
   let calculations = definitions
     .filter((definition) => definition !== completenessDefinition)
     .map((definition) => {
-      work.use();
+      work.use(3);
       return finalizeCalculation(
         definition,
-        decisionForDefinition(definition, evidence),
+        decisionForDefinition(definition, selectedEvidence),
         graph.plan.configurationHash,
       );
     });
@@ -1165,61 +1215,19 @@ export function assembleE1Evaluation(
     (item) => item.state === "fail",
   );
   const requiredIds = new Set(graph.profile.requiredMetricIds);
-  const unavailableRequired = calculations.filter(
-    (calculation) =>
-      requiredIds.has(calculation.metricId) &&
-      calculation.calculationState === "unavailable",
+  const completenessEvidence =
+    selectedEvidence.routeGraph === undefined
+      ? []
+      : [selectedEvidence.routeGraph];
+  const requestedMetricIds = [...selectedMetricIds].toSorted(
+    compareUnicodeScalars,
   );
-  const completenessEvidence = recordsOfKind(evidence, "route-graph");
-  const completenessDecision: CalculationDecision =
-    failedStructuralGate === undefined
-      ? {
-          state: "calculated",
-          value: {
-            kind: "boolean",
-            value: unavailableRequired.length === 0,
-          },
-          evidence: completenessEvidence,
-          parentCalculations: calculations
-            .filter((calculation) => requiredIds.has(calculation.metricId))
-            .map((calculation) => ({
-              metricId: calculation.metricId,
-              calculationHash: requiredCalculationHash(calculation),
-            })),
-          limitations: [...completenessDefinition.limitationsTemplate],
-        }
-      : {
-          state: "blocked-by-invariant",
-          evidence: completenessEvidence,
-          blockedBy: {
-            invariantId: failedStructuralGate.invariantId,
-            evidenceContentHashes:
-              failedStructuralGate.evidenceContentHashes as [
-                `sha256:${string}`,
-                ...`sha256:${string}`[],
-              ],
-          },
-          limitations: [
-            ...completenessDefinition.limitationsTemplate,
-            `Completeness calculation is blocked by ${failedStructuralGate.invariantId}.`,
-          ],
-        };
-  calculations.push(
-    finalizeCalculation(
-      completenessDefinition,
-      completenessDecision,
-      graph.plan.configurationHash,
-    ),
-  );
-  calculations = validateMetricCalculations(
-    calculations,
-    definitions,
-    evidence,
-  );
-  const calculatedIds = calculations.map((item) => item.metricId);
-  const missingMetricIds = [...selectedMetricIds]
-    .filter((metricId) => !calculatedIds.includes(metricId))
+  const expectedCalculatedIds = definitions
+    .map((definition) => definition.metricId)
     .toSorted(compareUnicodeScalars);
+  const missingMetricIds = requestedMetricIds.filter(
+    (metricId) => !expectedCalculatedIds.includes(metricId),
+  );
   const unavailable = calculations
     .filter(
       (
@@ -1243,30 +1251,97 @@ export function assembleE1Evaluation(
     }));
   const unexplainedUnavailable = unavailable.filter(
     (item) =>
-      !availability.some(
-        (record) =>
-          record.subject.stableId === `capability:${item.deferredCapability}` &&
-          record.availabilityState !== "available",
-      ),
+      item.deferredCapability !== "runtime" || availability.length === 0,
   );
   const missingRequiredIds = calculations
-    .filter(
-      (calculation) =>
-        requiredIds.has(calculation.metricId) &&
-        (calculation.calculationState === "unavailable" ||
-          calculation.calculationState === "indeterminate"),
-    )
-    .map((calculation) => calculation.metricId);
+    .filter((calculation) => {
+      if (!requiredIds.has(calculation.metricId)) return false;
+      if (
+        calculation.calculationState === "unavailable" ||
+        calculation.calculationState === "indeterminate"
+      ) {
+        return true;
+      }
+      if (calculation.calculationState !== "not-applicable") return false;
+      const definition = definitions.find(
+        (candidate) => candidate.metricId === calculation.metricId,
+      );
+      return definition?.applicability !== "conditional";
+    })
+    .map((calculation) => calculation.metricId)
+    .toSorted(compareUnicodeScalars);
+  const completenessState: EvaluationCompleteness["state"] =
+    failedStructuralGate !== undefined
+      ? "blocked"
+      : missingMetricIds.length > 0 ||
+          missingRequiredIds.length > 0 ||
+          unexplainedUnavailable.length > 0
+        ? "incomplete"
+        : "complete";
+  const completenessDecision: CalculationDecision =
+    completenessEvidence.length === 0
+      ? {
+          state: "unavailable",
+          evidence: [],
+          unavailableReason: {
+            reasonCode: "missing-required-evidence",
+            deferredCapability: "route",
+            responsibleProducer: "route-playability-evaluator",
+          },
+          limitations: [
+            ...completenessDefinition.limitationsTemplate,
+            "Completeness cannot be calculated without authoritative route-graph evidence.",
+          ],
+        }
+      : failedStructuralGate === undefined
+        ? {
+            state: "calculated",
+            value: {
+              kind: "boolean",
+              value: completenessState === "complete",
+            },
+            evidence: completenessEvidence,
+            parentCalculations: calculations
+              .filter((calculation) => requiredIds.has(calculation.metricId))
+              .map((calculation) => ({
+                metricId: calculation.metricId,
+                calculationHash: requiredCalculationHash(calculation),
+              })),
+            limitations: [...completenessDefinition.limitationsTemplate],
+          }
+        : {
+            state: "blocked-by-invariant",
+            evidence: completenessEvidence,
+            blockedBy: {
+              invariantId: failedStructuralGate.invariantId,
+              evidenceContentHashes:
+                failedStructuralGate.evidenceContentHashes as [
+                  `sha256:${string}`,
+                  ...`sha256:${string}`[],
+                ],
+            },
+            limitations: [
+              ...completenessDefinition.limitationsTemplate,
+              `Completeness calculation is blocked by ${failedStructuralGate.invariantId}.`,
+            ],
+          };
+  calculations.push(
+    finalizeCalculation(
+      completenessDefinition,
+      completenessDecision,
+      graph.plan.configurationHash,
+    ),
+  );
+  work.use(3);
+  calculations = validateMetricCalculations(
+    calculations,
+    definitions,
+    authoritativeEvidence,
+  );
+  const calculatedIds = calculations.map((item) => item.metricId);
   const completeness: EvaluationCompleteness = {
-    state:
-      failedStructuralGate !== undefined
-        ? "blocked"
-        : missingMetricIds.length > 0 ||
-            missingRequiredIds.length > 0 ||
-            unexplainedUnavailable.length > 0
-          ? "incomplete"
-          : "complete",
-    requestedMetricIds: [...selectedMetricIds].toSorted(compareUnicodeScalars),
+    state: completenessState,
+    requestedMetricIds,
     calculatedMetricIds: calculatedIds,
     missingMetricIds,
     missingEvidenceKinds: unique(
@@ -1304,6 +1379,21 @@ export function assembleE1Evaluation(
   invariantGates.sort((left, right) =>
     compareUnicodeScalars(left.invariantId, right.invariantId),
   );
+  const invariantPolicyById = new Map(
+    graph.catalog.invariantGates.map((policy) => [policy.invariantId, policy]),
+  );
+  for (const invariantGate of invariantGates) {
+    const policy = invariantPolicyById.get(invariantGate.invariantId);
+    if (policy === undefined) continue;
+    invariantGate.blockedMetricIds =
+      invariantGate.state === "pass"
+        ? []
+        : policy.dependencyScope === "global"
+          ? definitions.map((definition) => definition.metricId)
+          : policy.affectedMetricIds.filter((metricId) =>
+              selectedMetricIds.has(metricId),
+            );
+  }
   const metrics = definitions
     .flatMap((definition) => {
       const calculation = calculations.find(
@@ -1314,7 +1404,12 @@ export function assembleE1Evaluation(
         definition,
         calculation,
         graph.profile.categories,
-        new Map(evidence.map((record) => [record.evidenceContentHash, record])),
+        new Map(
+          authoritativeEvidence.map((record) => [
+            record.evidenceContentHash,
+            record,
+          ]),
+        ),
       );
       return result === undefined ? [] : [result];
     })
@@ -1333,10 +1428,17 @@ export function assembleE1Evaluation(
     graph.profile.categories,
     calculations,
     invariantGates,
+    graph.catalog.invariantGates,
     new Set(graph.profile.optionalMetricIds),
   );
+  work.use(
+    calculations.length +
+      invariantGates.length +
+      evaluatedProfileGates.length +
+      categoryResults.length,
+  );
   const ruleVersions = unique([
-    ...evidence.map(
+    ...authoritativeEvidence.map(
       (record) => `${record.producer.component}@${record.producer.version}`,
     ),
     `scoring-engine@${input.evaluatorVersion}`,
@@ -1355,13 +1457,14 @@ export function assembleE1Evaluation(
     metricCatalogHash: graph.catalog.metricCatalogHash,
     scoringProfileHash: graph.profile.scoringProfileHash,
     environmentCompatibilityClass: graph.profile.compatibilityClass,
-    evidence: evidence.map((record) => ({
+    evidence: authoritativeEvidence.map((record) => ({
       kind: record.kind,
       subjectKey: evidenceSubjectKey(record),
       evidenceContentHash: record.evidenceContentHash,
     })),
     ruleVersions,
   };
+  work.use(authoritativeEvidence.length + ruleVersions.length + 1);
   const calculationBundle = {
     ...calculationBundleSource,
     calculationBundleHash: hashCalculationBundle(calculationBundleSource).hash,
@@ -1394,11 +1497,20 @@ export function assembleE1Evaluation(
       evaluatedProfileGates.length +
       categoryResults.length +
       findings.length +
-      evidence.length +
+      authoritativeEvidence.length +
       missingEvidence.length,
     resolvedLimits.maxReportItems,
   );
-  const report = finalizeE1Report({
+  work.use(
+    calculations.length +
+      invariantGates.length +
+      evaluatedProfileGates.length +
+      categoryResults.length +
+      findings.length +
+      authoritativeEvidence.length +
+      missingEvidence.length,
+  );
+  const report = finalizeValidatedE1Report({
     identities: {
       calculationBundleHash: calculationBundle.calculationBundleHash,
       manifestHash: graph.plan.scene.manifestHash,
@@ -1422,7 +1534,7 @@ export function assembleE1Evaluation(
     ),
     metrics,
     findings,
-    evidence,
+    evidence: authoritativeEvidence,
     missingEvidence,
     limitations: [
       {
@@ -1452,5 +1564,6 @@ export function assembleE1Evaluation(
     categories: categoryResults,
     calculationBundle,
     report,
+    workUnitsUsed: work.totalUsed,
   };
 }

@@ -109,6 +109,8 @@ export function hashMetricCatalog(input: unknown): NamedHashResult {
     invariantGates: records(
       payload.invariantGates.map((gate) => ({
         ...gate,
+        affectedCategoryIds: strings(gate.affectedCategoryIds),
+        affectedMetricIds: strings(gate.affectedMetricIds),
         requiredEvidenceKinds: strings(gate.requiredEvidenceKinds),
       })),
       (gate) => gate.invariantId,
@@ -440,7 +442,8 @@ export function hashReportPayload(input: unknown): NamedHashResult {
             }),
       })),
       (entry) =>
-        `${entry.capability ?? ""}:${entry.metricId ?? ""}:${entry.reasonCode}`,
+        `${entry.capability ?? ""}:${entry.metricId ?? ""}:${entry.reasonCode}:` +
+        `${entry.availabilityRecordHashes?.join(",") ?? ""}:${entry.consequence}`,
     ),
     comparability: {
       ...payload.comparability,

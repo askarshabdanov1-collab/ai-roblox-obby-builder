@@ -1,11 +1,6 @@
 import { readFileSync } from "node:fs";
 
 import {
-  EVALUATOR_CANONICAL_JSON_ALGORITHM,
-  canonicalizeEvaluatorSnapshot,
-  sha256Bytes,
-} from "@obby/canonical-json";
-import {
   hashAvailabilityRecord,
   hashEvaluationPlanConfiguration,
   hashEvaluationRequest,
@@ -18,6 +13,11 @@ import {
   type MetricDefinition,
   type ScoringProfile,
 } from "@obby/obby-evaluator-contracts";
+
+import {
+  RUNTIME_CAPABILITY_VERSION,
+  runtimeCapabilitySubjectHash,
+} from "../src/availability.js";
 
 export type E1bFixtureBundle = {
   schemaVersion: "0.1";
@@ -126,15 +126,10 @@ export function evaluatorFixtureGraph(manifestHash?: `sha256:${string}`) {
   return { metricDefinitions, catalog, profile, plan, request, evidenceBundle };
 }
 
-export function deferredRuntimeAvailability(): AvailabilityRecord {
-  const contentHash = sha256Bytes(
-    canonicalizeEvaluatorSnapshot({
-      canonicalizationAlgorithm: EVALUATOR_CANONICAL_JSON_ALGORITHM,
-      capability: "runtime",
-      phase: "e1c",
-      state: "deferred",
-    }).canonicalBytes,
-  );
+export function deferredRuntimeAvailability(
+  manifestHash = evaluatorFixtureGraph().plan.scene.manifestHash,
+): AvailabilityRecord {
+  const contentHash = runtimeCapabilitySubjectHash(manifestHash);
   const source: AvailabilityRecord = {
     schemaVersion: "0.1",
     subject: {
@@ -144,7 +139,11 @@ export function deferredRuntimeAvailability(): AvailabilityRecord {
     },
     availabilityState: "restricted",
     reasonCode: "phase-deferred",
-    reasonDetails: [{ code: "phase", value: "E1c" }],
+    reasonDetails: [
+      { code: "capability-id", value: "runtime" },
+      { code: "capability-version", value: RUNTIME_CAPABILITY_VERSION },
+      { code: "manifest-hash", value: manifestHash },
+    ],
     authority: {
       authorityKind: "evaluator-policy",
       authorityId: "evaluator-policy:e1c",

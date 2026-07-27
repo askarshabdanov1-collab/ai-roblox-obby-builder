@@ -76,7 +76,8 @@ These behavior-bearing configurations are content-addressed:
 ### `MetricCatalog`
 
 - ordered MetricDefinitions with unique IDs/versions;
-- invariant registry and non-overridable behavior;
+- invariant registry and non-overridable behavior, with content-addressed affected metric/category
+  IDs and explicit `declared` or `global` dependency scope;
 - catalog semantic version plus `metricCatalogHash` computed only from
   `MetricCatalogPreimage`;
 - supported evaluator/contract ranges;

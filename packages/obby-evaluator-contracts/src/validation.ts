@@ -191,6 +191,9 @@ function semanticMetricDefinitionIssues(
 
 function semanticMetricCatalogIssues(value: MetricCatalog): ContractIssue[] {
   const issues: ContractIssue[] = [];
+  const metricIds = new Set(
+    value.metricDefinitions.map((definition) => definition.metricId),
+  );
   for (const duplicate of duplicateValues(
     value.metricDefinitions.map(
       (definition) => `${definition.metricId}@${definition.metricVersion}`,
@@ -225,6 +228,35 @@ function semanticMetricCatalogIssues(value: MetricCatalog): ContractIssue[] {
         `duplicate supported component ${duplicate}`,
       ),
     );
+  }
+  for (const gate of value.invariantGates.toSorted((left, right) =>
+    compareUnicodeScalars(left.invariantId, right.invariantId),
+  )) {
+    for (const metricId of gate.affectedMetricIds.toSorted(
+      compareUnicodeScalars,
+    )) {
+      if (!metricIds.has(metricId)) {
+        issues.push(
+          semanticIssue(
+            "unknown-invariant-metric-dependency",
+            "/invariantGates",
+            `invariant ${gate.invariantId} references unknown metric ${metricId}`,
+          ),
+        );
+      }
+    }
+    if (
+      gate.dependencyScope === "global" &&
+      (gate.affectedMetricIds.length > 0 || gate.affectedCategoryIds.length > 0)
+    ) {
+      issues.push(
+        semanticIssue(
+          "global-invariant-dependencies",
+          "/invariantGates",
+          `global invariant ${gate.invariantId} must not declare partial dependencies`,
+        ),
+      );
+    }
   }
   return issues;
 }

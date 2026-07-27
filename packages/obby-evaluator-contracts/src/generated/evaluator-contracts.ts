@@ -369,6 +369,15 @@ export interface MetricCatalog {
      * @maxItems 16
      */
     requiredEvidenceKinds: EvidenceKind[];
+    /**
+     * @maxItems 256
+     */
+    affectedMetricIds: StableId[];
+    /**
+     * @maxItems 32
+     */
+    affectedCategoryIds: StableId[];
+    dependencyScope: "declared" | "global";
   }[];
   /**
    * @minItems 1

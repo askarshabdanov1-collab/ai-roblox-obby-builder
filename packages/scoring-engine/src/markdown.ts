@@ -7,7 +7,6 @@ import {
 import {
   hashRenderedBytes,
   hashReportRender,
-  parseReportPayloadPreimage,
   verifyReportPayloadIdentity,
   verifyReportRenderIdentity,
   type ReportRenderPreimage,
@@ -38,6 +37,16 @@ export type RenderedMarkdownReport = ReportRenderPreimage & {
   bytes: Uint8Array;
 };
 
+export class MarkdownRenderLimitError extends Error {
+  public constructor(
+    public readonly code: "MARKDOWN_SIZE_LIMIT" | "MARKDOWN_WORK_LIMIT",
+    message: string,
+  ) {
+    super(message);
+    this.name = "MarkdownRenderLimitError";
+  }
+}
+
 function cell(value: string): string {
   return value
     .replaceAll("\\", "\\\\")
@@ -56,12 +65,9 @@ function valueText(
 
 export function renderMarkdownReport(
   input: FinalizedE1Report,
-  options: { verifyIdentity?: boolean } = {},
+  options: { maxBytes?: number; maxWorkUnits?: number } = {},
 ): RenderedMarkdownReport {
-  const report =
-    options.verifyIdentity === false
-      ? parseReportPayloadPreimage(input)
-      : verifyReportPayloadIdentity(input);
+  const report = verifyReportPayloadIdentity(input);
   if (report.reportPayloadHash === undefined) {
     throw new Error("Markdown rendering requires reportPayloadHash");
   }
@@ -73,6 +79,9 @@ export function renderMarkdownReport(
   );
   const invariantGates = [...report.invariantGates].toSorted((left, right) =>
     compareUnicodeScalars(left.invariantId, right.invariantId),
+  );
+  const profileGates = [...report.profileGates].toSorted((left, right) =>
+    compareUnicodeScalars(left.gateId, right.gateId),
   );
   const calculations = [...report.calculations].toSorted((left, right) =>
     compareUnicodeScalars(left.metricId, right.metricId),
@@ -138,11 +147,28 @@ export function renderMarkdownReport(
     "",
     "## Category and profile results",
     "",
-    "| Category | Status | Metrics |",
-    "| --- | --- | --- |",
-    ...categories.map(
-      (category) =>
-        `| ${cell(category.categoryId)} | ${category.status} | ${cell(category.metricIds.join(", ") || "none")} |`,
+    "| Category | Status | Metrics | Blocked by |",
+    "| --- | --- | --- | --- |",
+    ...categories.map((category) => {
+      const blockers = invariantGates
+        .filter(
+          (gate) =>
+            gate.state !== "pass" &&
+            gate.blockedMetricIds.some((metricId) =>
+              category.metricIds.includes(metricId),
+            ),
+        )
+        .map((gate) => gate.invariantId);
+      return `| ${cell(category.categoryId)} | ${category.status} | ${cell(category.metricIds.join(", ") || "none")} | ${cell(blockers.join(", ") || "none")} |`;
+    }),
+    "",
+    "### Profile gates",
+    "",
+    "| Gate | Metric | State | Classification | Evidence hashes |",
+    "| --- | --- | --- | --- | --- |",
+    ...profileGates.map(
+      (gate) =>
+        `| ${cell(gate.gateId)} | ${cell(gate.metricId)} | ${gate.state} | ${gate.classification} | ${cell(gate.evidenceContentHashes.join(", ") || "none")} |`,
     ),
     "",
     "## Findings",
@@ -189,7 +215,27 @@ export function renderMarkdownReport(
     ),
     "",
   ];
-  const bytes = new TextEncoder().encode(lines.join("\n"));
+  const encoder = new TextEncoder();
+  const maximumBytes = options.maxBytes ?? Number.MAX_SAFE_INTEGER;
+  const maximumWork = options.maxWorkUnits ?? Number.MAX_SAFE_INTEGER;
+  let byteLength = 0;
+  for (let index = 0; index < lines.length; index += 1) {
+    if (index + 1 > maximumWork) {
+      throw new MarkdownRenderLimitError(
+        "MARKDOWN_WORK_LIMIT",
+        `Markdown rendering exceeds ${maximumWork} work units`,
+      );
+    }
+    byteLength += encoder.encode(lines[index]).byteLength;
+    if (index < lines.length - 1) byteLength += 1;
+    if (byteLength > maximumBytes) {
+      throw new MarkdownRenderLimitError(
+        "MARKDOWN_SIZE_LIMIT",
+        `Markdown output exceeds ${maximumBytes} bytes`,
+      );
+    }
+  }
+  const bytes = encoder.encode(lines.join("\n"));
   const preimage: ReportRenderPreimage = {
     schemaVersion: "0.1",
     reportPayloadHash: report.reportPayloadHash,
