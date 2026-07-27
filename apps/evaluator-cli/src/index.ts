@@ -62,6 +62,9 @@ export type EvaluateFilesOptions = {
   cwd?: string;
   limits?: Partial<EvaluatorCliLimits>;
   beforeCommit?: (temporaryDirectory: string) => void | Promise<void>;
+  onExistingOutputStep?: (
+    step: "before-read" | "after-read",
+  ) => void | Promise<void>;
   onAtomicStep?: (
     step:
       | "first-file-write"
@@ -259,7 +262,7 @@ async function rejectSymlinkSegments(
       if ((await lstat(current)).isSymbolicLink()) {
         throw new EvaluatorCliError(
           "UNSAFE_OUTPUT_PATH",
-          `Output path contains a symbolic link: ${current}`,
+          "Output path contains a symbolic link or reparse point",
         );
       }
     } catch (error) {
@@ -307,23 +310,64 @@ async function syncDirectory(
 }
 
 async function existingOutputMatches(
+  outputChain: readonly DirectoryIdentity[],
+  outputRoot: string,
   directory: string,
   reportBytes: Uint8Array,
   markdownBytes: Uint8Array,
+  onExistingOutputStep: EvaluateFilesOptions["onExistingOutputStep"],
 ): Promise<boolean> {
+  await assertDirectoryChain(outputChain);
+  let finalIdentity: DirectoryIdentity;
   try {
-    const [report, markdown] = await Promise.all([
-      readFile(resolve(directory, "report.json")),
-      readFile(resolve(directory, "report.md")),
-    ]);
-    return report.equals(reportBytes) && markdown.equals(markdownBytes);
+    finalIdentity = await directoryIdentity(directory);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") return false;
     throw error;
   }
+  const rootIdentity = outputChain.at(-1);
+  if (rootIdentity?.path !== outputRoot) {
+    throw new EvaluatorCliError(
+      "OUTPUT_ROOT_CHANGED",
+      "Output directory identity changed during publication",
+    );
+  }
+  const relativeRealPath = relative(
+    rootIdentity.realPath,
+    finalIdentity.realPath,
+  );
+  if (
+    relativeRealPath === "" ||
+    relativeRealPath === ".." ||
+    relativeRealPath.startsWith(`..${sep}`) ||
+    isAbsolute(relativeRealPath) ||
+    relativeRealPath.split(sep).filter(Boolean).length !== 1
+  ) {
+    throw new EvaluatorCliError(
+      "UNSAFE_OUTPUT_PATH",
+      "Final output directory resolves outside its validated root",
+    );
+  }
+  const finalChain = [...outputChain, finalIdentity];
+  await onExistingOutputStep?.("before-read");
+  let report: Buffer;
+  let markdown: Buffer;
+  try {
+    [report, markdown] = await Promise.all([
+      readFile(resolve(directory, "report.json")),
+      readFile(resolve(directory, "report.md")),
+    ]);
+  } catch (error) {
+    await assertDirectoryChain(finalChain);
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return false;
+    throw error;
+  }
+  await onExistingOutputStep?.("after-read");
+  await assertDirectoryChain(finalChain);
+  return report.equals(reportBytes) && markdown.equals(markdownBytes);
 }
 
-export async function evaluateFiles(
+async function evaluateFilesInternal(
   inputs: EvaluateFileInputs,
   options: EvaluateFilesOptions = {},
 ): Promise<PublishedEvaluation> {
@@ -492,7 +536,14 @@ export async function evaluateFiles(
     reportRenderHash: rendered.reportRenderHash,
   });
   if (
-    await existingOutputMatches(finalDirectory, reportBytes, rendered.bytes)
+    await existingOutputMatches(
+      outputChain,
+      outputRoot,
+      finalDirectory,
+      reportBytes,
+      rendered.bytes,
+      options.onExistingOutputStep,
+    )
   ) {
     return published();
   }
@@ -546,9 +597,12 @@ export async function evaluateFiles(
           (error as NodeJS.ErrnoException).code ?? "",
         ) &&
         (await existingOutputMatches(
+          outputChain,
+          outputRoot,
           finalDirectory,
           reportBytes,
           rendered.bytes,
+          options.onExistingOutputStep,
         ))
       ) {
         await rm(temporaryDirectory, { force: true, recursive: true });
@@ -586,6 +640,63 @@ export async function evaluateFiles(
     throw publicationError;
   }
   return published();
+}
+
+function normalizeCliError(error: unknown): EvaluatorCliError {
+  if (error instanceof EvaluatorCliError) return error;
+  const code = (error as NodeJS.ErrnoException | undefined)?.code;
+  switch (code) {
+    case "ENOENT":
+      return new EvaluatorCliError(
+        "OUTPUT_PATH_NOT_FOUND",
+        "An output filesystem entry was not found",
+      );
+    case "ENOTDIR":
+      return new EvaluatorCliError(
+        "OUTPUT_PATH_NOT_DIRECTORY",
+        "An output path segment is not a directory",
+      );
+    case "EISDIR":
+      return new EvaluatorCliError(
+        "FILESYSTEM_IS_DIRECTORY",
+        "A file operation targeted a directory",
+      );
+    case "EACCES":
+    case "EPERM":
+      return new EvaluatorCliError(
+        "FILESYSTEM_PERMISSION_DENIED",
+        "A filesystem operation was not permitted",
+      );
+    case "EEXIST":
+    case "ENOTEMPTY":
+      return new EvaluatorCliError(
+        "OUTPUT_ALREADY_EXISTS",
+        "An output filesystem entry already exists",
+      );
+    case "ENAMETOOLONG":
+      return new EvaluatorCliError(
+        "FILESYSTEM_PATH_TOO_LONG",
+        "A filesystem path exceeds platform limits",
+      );
+    case "ELOOP":
+      return new EvaluatorCliError(
+        "UNSAFE_OUTPUT_PATH",
+        "Output path contains a symbolic link or reparse point",
+      );
+    default:
+      return new EvaluatorCliError("EVALUATION_FAILED", "Evaluation failed", 1);
+  }
+}
+
+export async function evaluateFiles(
+  inputs: EvaluateFileInputs,
+  options: EvaluateFilesOptions = {},
+): Promise<PublishedEvaluation> {
+  try {
+    return await evaluateFilesInternal(inputs, options);
+  } catch (error) {
+    throw normalizeCliError(error);
+  }
 }
 
 const REQUIRED_FLAGS = [
@@ -671,23 +782,17 @@ export async function runEvaluatorCli(
     stdout: (text) => process.stdout.write(text),
     stderr: (text) => process.stderr.write(text),
   },
+  evaluateOptions: EvaluateFilesOptions = {},
 ): Promise<number> {
   let jsonErrors = argv.includes("--json-errors");
   try {
     const parsed = parseCliArguments(argv);
     jsonErrors = parsed.jsonErrors;
-    const result = await evaluateFiles(parsed.inputs);
+    const result = await evaluateFiles(parsed.inputs, evaluateOptions);
     output.stdout(`${JSON.stringify({ ok: true, ...result })}\n`);
     return 0;
   } catch (error) {
-    const known =
-      error instanceof EvaluatorCliError
-        ? error
-        : new EvaluatorCliError(
-            "EVALUATION_FAILED",
-            error instanceof Error ? error.message : "Evaluation failed",
-            1,
-          );
+    const known = normalizeCliError(error);
     output.stderr(
       jsonErrors
         ? `${JSON.stringify({ ok: false, error: { code: known.code, message: known.message } })}\n`

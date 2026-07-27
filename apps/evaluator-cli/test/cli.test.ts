@@ -248,6 +248,45 @@ describe("CLI validation and deterministic errors", () => {
     expect(stderr).not.toContain(process.cwd());
     expect(stderr).not.toContain("at runEvaluatorCli");
   });
+
+  it("normalizes a non-directory output segment without leaking host paths", async () => {
+    const cwd = await temporary();
+    await writeFile(resolve(cwd, "blocked"), "not a directory");
+    let stderr = "";
+    const code = await runEvaluatorCli(
+      ["evaluate", ...flags(inputs("blocked/child")), "--json-errors"],
+      {
+        stdout: () => undefined,
+        stderr: (text) => {
+          stderr += text;
+        },
+      },
+      { cwd },
+    );
+    const payload = JSON.parse(stderr) as {
+      error: { code: string; message: string };
+    };
+
+    expect(code).toBe(2);
+    expect(payload.error.code).toBe("OUTPUT_PATH_NOT_DIRECTORY");
+    expect(stderr).not.toContain(cwd);
+    expect(payload.error.message).not.toMatch(/[A-Z]:\\|\/tmp\//iu);
+
+    let textError = "";
+    const textCode = await runEvaluatorCli(
+      ["evaluate", ...flags(inputs("blocked/child"))],
+      {
+        stdout: () => undefined,
+        stderr: (text) => {
+          textError += text;
+        },
+      },
+      { cwd },
+    );
+    expect(textCode).toBe(2);
+    expect(textError).toContain("OUTPUT_PATH_NOT_DIRECTORY");
+    expect(textError).not.toContain(cwd);
+  });
 });
 
 describe("CLI path safety", () => {
@@ -282,6 +321,71 @@ describe("CLI path safety", () => {
     await expect(
       evaluateFiles(inputs("linked/reports"), { cwd }),
     ).rejects.toMatchObject({ code: "UNSAFE_OUTPUT_PATH" });
+  });
+
+  it("rejects an identical final-output junction before reading it", async () => {
+    const sourceCwd = await temporary("obby-evaluator-source-");
+    const source = await evaluateFiles(inputs(), { cwd: sourceCwd });
+    const targetCwd = await temporary("obby-evaluator-target-");
+    const outputRoot = resolve(targetCwd, "output");
+    await mkdir(outputRoot);
+    const semanticName = source.outputDirectory.split(/[\\/]/u).at(-1);
+    if (semanticName === undefined) throw new Error("missing semantic name");
+    await symlink(
+      source.outputDirectory,
+      resolve(outputRoot, semanticName),
+      process.platform === "win32" ? "junction" : "dir",
+    );
+
+    await expect(
+      evaluateFiles(inputs(), { cwd: targetCwd }),
+    ).rejects.toMatchObject({ code: "UNSAFE_OUTPUT_PATH" });
+  });
+
+  it.each(["before-read", "after-read"] as const)(
+    "fails closed when the final output is replaced %s",
+    async (replacementStep) => {
+      const cwd = await temporary("obby-evaluator-existing-race-");
+      const published = await evaluateFiles(inputs(), { cwd });
+      const outside = await temporary("obby-evaluator-existing-outside-");
+      let replaced = false;
+
+      await expect(
+        evaluateFiles(inputs(), {
+          cwd,
+          onExistingOutputStep: async (step) => {
+            if (replaced || step !== replacementStep) return;
+            replaced = true;
+            await rename(
+              published.outputDirectory,
+              `${published.outputDirectory}-displaced`,
+            );
+            await symlink(
+              outside,
+              published.outputDirectory,
+              process.platform === "win32" ? "junction" : "dir",
+            );
+          },
+        }),
+      ).rejects.toMatchObject({ code: "OUTPUT_ROOT_CHANGED" });
+    },
+  );
+
+  it("normalizes permission failures from existing-output validation", async () => {
+    const cwd = await temporary();
+    await evaluateFiles(inputs(), { cwd });
+
+    await expect(
+      evaluateFiles(inputs(), {
+        cwd,
+        onExistingOutputStep: () => {
+          throw Object.assign(new Error(`denied ${cwd}`), { code: "EACCES" });
+        },
+      }),
+    ).rejects.toMatchObject({
+      code: "FILESYSTEM_PERMISSION_DENIED",
+      message: "A filesystem operation was not permitted",
+    });
   });
 
   it("fails closed when an output ancestor is replaced before commit", async () => {
