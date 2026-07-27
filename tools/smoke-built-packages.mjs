@@ -11,6 +11,7 @@ import {
 } from "@obby/route-playability-evaluator";
 import { emitManifestModule } from "@obby/roblox-emitter";
 import { finalizeE1Report, renderMarkdownReport } from "@obby/scoring-engine";
+import { runEvaluatorCli } from "@obby/evaluator-cli";
 
 const spec = JSON.parse(
   await readFile(
@@ -56,5 +57,7 @@ if (
   typeof renderMarkdownReport !== "function"
 )
   throw new Error("built scoring engine exports are unavailable");
+if (typeof runEvaluatorCli !== "function")
+  throw new Error("built evaluator CLI library export is unavailable");
 
 console.log("plain Node imported all Phase 0 and implemented E1 packages");
