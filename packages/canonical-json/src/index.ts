@@ -118,7 +118,7 @@ type SnapshotContext = {
   ancestors: Set<object>;
 };
 
-function compareUnicodeScalars(left: string, right: string): number {
+export function compareUnicodeScalars(left: string, right: string): number {
   const leftPoints = Array.from(left, (part) => part.codePointAt(0) ?? 0);
   const rightPoints = Array.from(right, (part) => part.codePointAt(0) ?? 0);
   for (

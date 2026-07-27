@@ -1,5 +1,14 @@
 # `@obby/obby-evaluator-contracts`
 
+Phase E1b extends the closed E1a foundation with a content-addressed `ControllerProfile`, Phase 0
+object-ID compatibility, a width/depth-only landing footprint, and kind-correlated route graph, coarse transition, checkpoint, finish,
+hazard and skip-candidate evidence payloads. These contracts remain evidence
+and finding foundations only; they do not introduce scoring, reports, or workflow behavior.
+
+Avatar height is excluded because E1b has no authoritative overhead envelope. Coarse transition
+measurements use closed `available`/`unavailable` variants. `inputEvidenceHashes` is evidence-only;
+profile and normalized-input identities use their dedicated fields.
+
 Evaluator-owned, bounded JSON Schema Draft 2020-12 contracts for Phase E1. The schema in
 `schemas/evaluator-contracts.schema.json` is the structural source of truth. Generated TypeScript
 under `src/generated/` and generated catalog/profile/hash fixtures under `fixtures/generated/`

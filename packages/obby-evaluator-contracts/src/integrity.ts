@@ -545,10 +545,16 @@ function subjectKey(subject: EvidenceRecord["subject"]): string {
 }
 
 function subjectsCompatible(
-  parent: EvidenceRecord["subject"],
-  child: EvidenceRecord["subject"],
+  parent: EvidenceRecord,
+  child: EvidenceRecord,
 ): boolean {
-  return parent.kind === "scene" || subjectKey(parent) === subjectKey(child);
+  return (
+    parent.subject.kind === "scene" ||
+    ((child.kind === "finish-topology" ||
+      child.kind === "route-playability-summary") &&
+      child.subject.kind === "scene") ||
+    subjectKey(parent.subject) === subjectKey(child.subject)
+  );
 }
 
 export function assertValidEvidenceGraph(
@@ -613,7 +619,7 @@ export function assertValidEvidenceGraph(
           `parent ${parentHash} has a different manifest scope`,
         );
       }
-      if (!subjectsCompatible(parent.subject, record.subject)) {
+      if (!subjectsCompatible(parent, record)) {
         reject(
           "EvidenceGraph",
           "subject-scope-mismatch",

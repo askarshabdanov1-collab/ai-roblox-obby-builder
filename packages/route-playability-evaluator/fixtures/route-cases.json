@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "0.1",
+  "baseManifestHash": "sha256:5487d051f578f0791331199904fd7a3a873aaa421f0552179fd7ff6d23b82eb0",
+  "validCases": [
+    { "id": "simple-linear-obby", "expected": "connected" },
+    { "id": "multiple-checkpoints", "expected": "ordered" },
+    {
+      "id": "feasible-under-model-transition",
+      "expected": "feasible-under-model"
+    },
+    { "id": "shuffled-semantic-manifest", "expected": "byte-equivalent" },
+    { "id": "checkpoint-bypass-candidate", "expected": "candidate" },
+    { "id": "spawn-to-late-stage-skip-candidate", "expected": "candidate" },
+    { "id": "checkpoint-to-finish-skip-candidate", "expected": "candidate" },
+    { "id": "required-stage-skip-candidate", "expected": "candidate" }
+  ],
+  "invalidOrLimitedCases": [
+    {
+      "id": "missing-route-object",
+      "expectedCode": "unknown-safe-route-object"
+    },
+    {
+      "id": "disconnected-route",
+      "expectedCode": "disconnected-required-route"
+    },
+    { "id": "duplicate-index", "expectedCode": "duplicate-route-index" },
+    {
+      "id": "duplicate-stage-index",
+      "expectedCode": "duplicate-stage-index"
+    },
+    { "id": "reversed-edge", "expectedCode": "reversed-required-transition" },
+    {
+      "id": "source-equals-destination",
+      "expectedCode": "source-equals-destination"
+    },
+    {
+      "id": "safe-route-ref-mismatch",
+      "expectedCode": "safe-route-ref-mismatch"
+    },
+    {
+      "id": "horizontal-gap-over-profile",
+      "expected": "infeasible-under-model"
+    },
+    { "id": "excessive-rise", "expected": "infeasible-under-model" },
+    { "id": "excessive-downward-drop", "expected": "infeasible-under-model" },
+    { "id": "unsupported-curved-to-curved", "expected": "indeterminate" },
+    {
+      "id": "decorative-route-endpoint",
+      "expectedCode": "decorative-route-endpoint"
+    },
+    {
+      "id": "hazard-route-endpoint",
+      "expectedCode": "hazard-route-endpoint"
+    },
+    {
+      "id": "finish-before-checkpoint",
+      "expectedCode": "finish-before-checkpoint"
+    },
+    { "id": "missing-finish", "expectedCode": "missing-finish" },
+    { "id": "hazard-consuming-landing-candidate", "expected": "candidate" },
+    {
+      "id": "required-route-dead-end",
+      "expectedCode": "required-route-dead-end"
+    }
+  ]
+}

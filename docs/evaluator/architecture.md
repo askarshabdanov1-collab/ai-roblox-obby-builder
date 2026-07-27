@@ -75,7 +75,8 @@ Dashed components or connections are designed for later phases and are not imple
 - Uses `SceneManifest.navigation.safeRouteObjectIds` as the declared route source of truth.
 - Resolves route transitions by object ID, never construction order.
 - Detects missing/duplicate targets, disconnected route segments, finish absence, checkpoint
-  ordering errors, graph dead ends, candidate softlocks, and candidate unintended skips.
+  ordering errors, graph dead ends, and candidate unintended skips. Static softlock evidence remains
+  deferred until authoritative branch, enclosure, recovery, or one-way-mechanic metadata exists.
 - Produces both the declared safe-route graph and a conservative spatial adjacency graph.
 
 ### Jump Feasibility Analyzer

@@ -275,7 +275,7 @@ Create folders only when their phase begins and responsibility is exercised:
 packages/
 ├── obby-evaluator-contracts/   # Evaluation JSON Schemas, generated types, structural validation
 ├── geometry-evaluator/         # Canonical native-Part geometry and spatial facts
-├── playability-evaluator/      # Route, transition, checkpoint, hazard, finish, softlock/skip rules
+├── playability-evaluator/      # Route, transition, checkpoint, hazard, finish, and skip rules; static softlocks deferred
 ├── composition-evaluator/      # Future deterministic image features and visual-worker adapters
 └── scoring-engine/             # Metric catalog, caps, confidence, profiles, report assembly
 

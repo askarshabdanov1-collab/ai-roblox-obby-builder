@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import { describe, expect, it } from "vitest";
 
 import {
+  compareUnicodeScalars,
   CanonicalJsonValidationError,
   canonicalStringify,
   evaluatorCanonicalize,
@@ -15,6 +16,17 @@ import {
 } from "../src/index.js";
 
 describe("canonical JSON", () => {
+  it("orders semantic strings by Unicode scalar value without a host locale", () => {
+    const values = ["я", "é", "e\u0301", "😀", "z", "a"];
+    expect(values.toSorted(compareUnicodeScalars)).toEqual([
+      "a",
+      "e\u0301",
+      "z",
+      "é",
+      "я",
+      "😀",
+    ]);
+  });
   it("sorts object keys recursively while preserving array order", () => {
     expect(canonicalStringify({ z: 1, a: { y: 2, x: [3, 1] } })).toBe(
       '{"a":{"x":[3,1],"y":2},"z":1}',

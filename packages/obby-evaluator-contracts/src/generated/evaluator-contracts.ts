@@ -12,6 +12,7 @@ export type EvaluatorContract =
   | RuntimeObservationContentContract
   | RuntimeObservationEnvelope
   | AvailabilityRecordContract
+  | ControllerProfile
   | Finding
   | GeometryObjectInput
   | TransitionInput
@@ -46,7 +47,15 @@ export type MetricValueDefinition =
     };
 export type EvidenceKind =
   | "geometry-fact"
+  | "route-graph"
   | "route-transition"
+  | "coarse-transition-state"
+  | "route-playability-summary"
+  | "transition-evidence-conflict"
+  | "checkpoint-topology"
+  | "finish-topology"
+  | "hazard-relationship"
+  | "skip-candidate"
   | "runtime-observation"
   | "screenshot"
   | "image-feature"
@@ -68,7 +77,12 @@ export type ContentHash = string;
 export type Timestamp = string;
 export type OpaqueId = string;
 export type EvaluationMetric =
-  DeterministicFact | HeuristicEstimate | LearnedEstimate | AnalyticsDerivedEstimate | HumanJudgment | DerivedComposite;
+  | DeterministicFact
+  | HeuristicEstimate
+  | LearnedEstimate
+  | AnalyticsDerivedEstimate
+  | HumanJudgment
+  | DerivedComposite;
 export type DeterministicFact = MetricResultBase & {
   resultKind: "deterministic-fact";
   sourceKind: "deterministic";
@@ -77,7 +91,13 @@ export type DeterministicFact = MetricResultBase & {
   };
   method: VersionRef;
 };
-export type SourceKind = "deterministic" | "heuristic" | "learned" | "analytics-derived" | "subjective" | "derived";
+export type SourceKind =
+  | "deterministic"
+  | "heuristic"
+  | "learned"
+  | "analytics-derived"
+  | "subjective"
+  | "derived";
 export type MetricValue =
   | {
       kind: "number";
@@ -155,23 +175,41 @@ export type DerivedComposite = MetricResultBase & {
    */
   limitations?: [unknown, ...unknown[]];
 };
-export type EvidenceRecordContract = Omit<EvidenceRecord, "kind" | "payload"> & (
-  | { kind: "geometry-fact"; payload: GeometryFactPayload }
-  | { kind: "route-transition"; payload: RouteTransitionPayload }
-  | { kind: "runtime-observation"; payload: RuntimeObservationReferencePayload }
-);
+export type EvidenceRecordContract = Omit<EvidenceRecord, "kind" | "payload"> &
+  (
+    | { kind: "geometry-fact"; payload: GeometryFactPayload }
+    | { kind: "route-graph"; payload: RouteGraphPayload }
+    | { kind: "route-transition"; payload: RouteTransitionPayload }
+    | { kind: "coarse-transition-state"; payload: CoarseTransitionStatePayload }
+    | {
+        kind: "route-playability-summary";
+        payload: RoutePlayabilitySummaryPayload;
+      }
+    | {
+        kind: "transition-evidence-conflict";
+        payload: TransitionEvidenceConflictPayload;
+      }
+    | { kind: "checkpoint-topology"; payload: CheckpointTopologyPayload }
+    | { kind: "finish-topology"; payload: FinishTopologyPayload }
+    | { kind: "hazard-relationship"; payload: HazardRelationshipPayload }
+    | { kind: "skip-candidate"; payload: SkipCandidatePayload }
+    | {
+        kind: "runtime-observation";
+        payload: RuntimeObservationReferencePayload;
+      }
+  );
 export type EvaluationSubject =
   | {
       kind: "scene";
     }
   | {
       kind: "object";
-      objectId: StableId;
+      objectId: ObjectId;
     }
   | {
       kind: "transition";
-      fromObjectId: StableId;
-      toObjectId: StableId;
+      fromObjectId: ObjectId;
+      toObjectId: ObjectId;
       fromGlobalIndex: number;
       toGlobalIndex: number;
     }
@@ -179,15 +217,71 @@ export type EvaluationSubject =
       kind: "point";
       point: Vector3;
     };
-export type RuntimeObservationContentContract = Omit<RuntimeObservationContent, "kind" | "payload"> & (
-  | { kind: "scene-loaded"; payload: Extract<RuntimeObservationContent["payload"], { kind: "scene-loaded" }> }
-  | { kind: "character-spawned"; payload: Extract<RuntimeObservationContent["payload"], { kind: "character-spawned" }> }
-  | { kind: "transition-attempt"; payload: Extract<RuntimeObservationContent["payload"], { kind: "transition-attempt" }> }
-);
-export type AvailabilityRecordContract = Omit<AvailabilityRecord, "effectiveAt" | "effectiveSequence"> & (
-  | { effectiveAt: Timestamp; effectiveSequence?: never }
-  | { effectiveAt?: never; effectiveSequence: number }
-);
+export type ObjectId = string;
+export type RouteTransitionId = string;
+export type LandingRegionEvidence =
+  | {
+      status: "available";
+      method: "exact-planar-intrinsic-edge-spans-v1";
+      approximationKind: "exact-native-primitive";
+      spanAStuds: number;
+      spanBStuds: number;
+      toleranceStuds: number;
+      /**
+       * @maxItems 32
+       */
+      limitations: string[];
+    }
+  | {
+      status: "unavailable";
+      reasonCode: "insufficient-landing-evidence";
+      /**
+       * @maxItems 64
+       */
+      missingEvidenceHashes: ContentHash[];
+      /**
+       * @minItems 1
+       * @maxItems 32
+       */
+      limitations: [string, ...string[]];
+    };
+export type RuntimeObservationContentContract = Omit<
+  RuntimeObservationContent,
+  "kind" | "payload"
+> &
+  (
+    | {
+        kind: "scene-loaded";
+        payload: Extract<
+          RuntimeObservationContent["payload"],
+          { kind: "scene-loaded" }
+        >;
+      }
+    | {
+        kind: "character-spawned";
+        payload: Extract<
+          RuntimeObservationContent["payload"],
+          { kind: "character-spawned" }
+        >;
+      }
+    | {
+        kind: "transition-attempt";
+        payload: Extract<
+          RuntimeObservationContent["payload"],
+          { kind: "transition-attempt" }
+        >;
+      }
+  );
+export type AvailabilityRecordContract = Omit<
+  AvailabilityRecord,
+  "effectiveAt" | "effectiveSequence"
+> &
+  (
+    | { effectiveAt: Timestamp; effectiveSequence?: never }
+    | { effectiveAt?: never; effectiveSequence: number }
+  );
+export type ProfileConstantClassification =
+  "invariant" | "provisional" | "calibration-required";
 
 export interface MetricDefinition {
   schemaVersion: SchemaVersion;
@@ -259,7 +353,7 @@ export interface MetricCatalog {
       metricId: StableId;
       metricVersion: SemanticVersion;
       metricDefinitionHash: ContentHash;
-    }[]
+    }[],
   ];
   /**
    * @maxItems 64
@@ -285,7 +379,7 @@ export interface MetricCatalog {
     ...{
       component: StableId;
       versionRange: string;
-    }[]
+    }[],
   ];
   metricCatalogHash: ContentHash;
 }
@@ -312,7 +406,8 @@ export interface ScoringProfile {
    */
   categories: [
     {
-      categoryId: "playability" | "checkpoint" | "hazard" | "policy" | "performance";
+      categoryId:
+        "playability" | "checkpoint" | "hazard" | "policy" | "performance";
       /**
        * @maxItems 256
        */
@@ -320,13 +415,14 @@ export interface ScoringProfile {
       availability: "available" | "planned";
     },
     ...{
-      categoryId: "playability" | "checkpoint" | "hazard" | "policy" | "performance";
+      categoryId:
+        "playability" | "checkpoint" | "hazard" | "policy" | "performance";
       /**
        * @maxItems 256
        */
       metricIds: StableId[];
       availability: "available" | "planned";
-    }[]
+    }[],
   ];
   /**
    * @maxItems 64
@@ -439,15 +535,17 @@ export interface EvaluationRequest {
    */
   requestedOutputs: [
     {
-      outputKind: "report-payload" | "rendered-report" | "evidence-index" | "explanation";
+      outputKind:
+        "report-payload" | "rendered-report" | "evidence-index" | "explanation";
       outputFormat?: "json" | "markdown" | "html";
       renderProfileId?: StableId;
     },
     ...{
-      outputKind: "report-payload" | "rendered-report" | "evidence-index" | "explanation";
+      outputKind:
+        "report-payload" | "rendered-report" | "evidence-index" | "explanation";
       outputFormat?: "json" | "markdown" | "html";
       renderProfileId?: StableId;
-    }[]
+    }[],
   ];
   evaluationRequestHash: ContentHash;
 }
@@ -460,7 +558,14 @@ export interface EvaluationRun {
   evaluatorVersion: SemanticVersion;
   metricCatalogHash: ContentHash;
   scoringProfileHash: ContentHash;
-  status: "queued" | "validating" | "analyzing" | "finalized" | "rejected" | "cancelled" | "failed";
+  status:
+    | "queued"
+    | "validating"
+    | "analyzing"
+    | "finalized"
+    | "rejected"
+    | "cancelled"
+    | "failed";
   /**
    * @maxItems 64
    */
@@ -563,11 +668,33 @@ export interface EvidenceRecord {
   evidenceId?: OpaqueId;
   executionId?: OpaqueId;
   capturedAt?: Timestamp;
-  kind: "geometry-fact" | "route-transition" | "runtime-observation";
+  kind:
+    | "geometry-fact"
+    | "route-graph"
+    | "route-transition"
+    | "coarse-transition-state"
+    | "route-playability-summary"
+    | "transition-evidence-conflict"
+    | "checkpoint-topology"
+    | "finish-topology"
+    | "hazard-relationship"
+    | "skip-candidate"
+    | "runtime-observation";
   manifestHash: ContentHash;
   subject: EvaluationSubject;
   producer: VersionRef;
-  payload: GeometryFactPayload | RouteTransitionPayload | RuntimeObservationReferencePayload;
+  payload:
+    | GeometryFactPayload
+    | RouteGraphPayload
+    | RouteTransitionPayload
+    | CoarseTransitionStatePayload
+    | RoutePlayabilitySummaryPayload
+    | TransitionEvidenceConflictPayload
+    | CheckpointTopologyPayload
+    | FinishTopologyPayload
+    | HazardRelationshipPayload
+    | SkipCandidatePayload
+    | RuntimeObservationReferencePayload;
   /**
    * @maxItems 4096
    */
@@ -603,16 +730,215 @@ export interface GeometryFactPayload {
    * @minItems 1
    * @maxItems 2048
    */
-  objectIds: [StableId, ...StableId[]];
-  factKind: "normalized-object" | "axis-aligned-bounds" | "top-surface" | "transition-input";
+  objectIds: [ObjectId, ...ObjectId[]];
+  factKind:
+    | "normalized-object"
+    | "axis-aligned-bounds"
+    | "top-surface"
+    | "transition-input";
   geometryHash: ContentHash;
+  reproduction?: EvidenceReproduction;
+}
+export interface EvidenceReproduction {
+  methodId: StableId;
+  /**
+   * @maxItems 64
+   */
+  inputHashes: ContentHash[];
+}
+export interface RouteGraphPayload {
+  kind: "route-graph";
+  routeId: StableId;
+  /**
+   * @minItems 1
+   * @maxItems 128
+   */
+  stageIds: [StableId, ...StableId[]];
+  /**
+   * @minItems 2
+   * @maxItems 10000
+   */
+  orderedNodeIds: [ObjectId, ObjectId, ...ObjectId[]];
+  /**
+   * @minItems 1
+   * @maxItems 10000
+   */
+  orderedTransitionIds: [RouteTransitionId, ...RouteTransitionId[]];
+  spawnObjectId: ObjectId;
+  /**
+   * @maxItems 1000
+   */
+  checkpointObjectIds: ObjectId[];
+  finishObjectId: ObjectId;
+  structuralState: "connected" | "disconnected";
+  reproduction: EvidenceReproduction;
 }
 export interface RouteTransitionPayload {
   kind: "route-transition";
-  transitionId: OpaqueId;
-  fromObjectId: StableId;
-  toObjectId: StableId;
+  transitionId: RouteTransitionId;
+  fromObjectId: ObjectId;
+  toObjectId: ObjectId;
+  fromGlobalIndex: number;
+  toGlobalIndex: number;
+  sourceGeometryHash: ContentHash;
+  destinationGeometryHash: ContentHash;
+  /**
+   * @minItems 1
+   * @maxItems 64
+   */
+  measurementSourceEvidenceHashes: [ContentHash, ...ContentHash[]];
   normalizationHash: ContentHash;
+  reproduction: EvidenceReproduction;
+}
+export interface CoarseTransitionStatePayload {
+  kind: "coarse-transition-state";
+  metricId: "playability.coarse-transition-state";
+  resultId: StableId;
+  transitionId: RouteTransitionId;
+  fromObjectId: ObjectId;
+  toObjectId: ObjectId;
+  controllerProfileId: StableId;
+  controllerProfileVersion: SemanticVersion;
+  controllerProfileHash: ContentHash;
+  /**
+   * @minItems 1
+   * @maxItems 64
+   */
+  inputEvidenceHashes: [ContentHash, ...ContentHash[]];
+  normalizedInputHash: ContentHash;
+  state: "feasible-under-model" | "infeasible-under-model" | "indeterminate";
+  /**
+   * @maxItems 16
+   */
+  reasonCodes: (
+    | "missing-horizontal-separation"
+    | "missing-vertical-rise"
+    | "missing-downward-drop"
+    | "unsupported-surface-measurement"
+    | "insufficient-landing-evidence"
+    | "landing-region-too-small"
+    | "horizontal-gap-exceeds-profile"
+    | "vertical-rise-exceeds-profile"
+    | "downward-drop-exceeds-profile"
+  )[];
+  horizontalGapStuds: number;
+  verticalRiseStuds: number;
+  downwardDropStuds: number;
+  landingRegion: LandingRegionEvidence;
+  sourceSurfaceKind: StableId;
+  destinationSurfaceKind: StableId;
+  approximationMethod: StableId;
+  geometryToleranceStuds: number;
+  confidenceBasis: "deterministic-model-rule-bounded-inputs";
+  reproduction: EvidenceReproduction;
+}
+export interface RoutePlayabilitySummaryPayload {
+  kind: "route-playability-summary";
+  routeId: StableId;
+  transitionCount: number;
+  feasibleUnderModelCount: number;
+  coarseInfeasibleTransitionCount: number;
+  coarseIndeterminateTransitionCount: number;
+  excessiveDropTransitionCount: number;
+  clearanceEstimateState: "indeterminate-no-overhead-route-metadata";
+  reproduction: EvidenceReproduction;
+}
+export interface TransitionEvidenceConflictPayload {
+  kind: "transition-evidence-conflict";
+  transitionId: RouteTransitionId;
+  coarseEvidenceHash: ContentHash;
+  runtimeEvidenceHash: ContentHash;
+  conflictState:
+    | "agree"
+    | "runtime-success-vs-coarse-infeasible"
+    | "runtime-failure-vs-coarse-feasible"
+    | "insufficient-runtime"
+    | "incompatible";
+  reproduction: EvidenceReproduction;
+}
+export interface CheckpointTopologyPayload {
+  kind: "checkpoint-topology";
+  checkpointObjectId: ObjectId;
+  routeId: StableId;
+  stageId: StableId;
+  stageIndex: number;
+  routeIndex: number;
+  checkpointOrder: number;
+  spawnReachable: boolean;
+  finishReachableAfterCheckpoint: boolean;
+  gameplayAuthoritative: boolean;
+  progressionDirection: "forward" | "backward" | "indeterminate";
+  progressionStateScope: "per-player";
+  runtimeIsolationState: "not-evaluated";
+  reproduction: EvidenceReproduction;
+}
+export interface FinishTopologyPayload {
+  kind: "finish-topology";
+  finishObjectId: ObjectId;
+  routeId: StableId;
+  routeIndex: number;
+  requiredFinishCount: number;
+  onRequiredRoute: boolean;
+  afterAllCheckpoints: boolean;
+  structurallyReachable: boolean;
+  coarsePathState:
+    | "feasible-under-model"
+    | "contains-infeasible-under-model"
+    | "indeterminate";
+  gameplayAuthoritative: boolean;
+  reproduction: EvidenceReproduction;
+}
+export interface HazardRelationshipPayload {
+  kind: "hazard-relationship";
+  hazardObjectId: ObjectId;
+  routeObjectId?: ObjectId;
+  relationship:
+    | "landing-surface-overlap"
+    | "landing-surface-fully-consumed"
+    | "route-envelope-overlap"
+    | "kill-floor-bounds"
+    | "structural-enclosure";
+  assessment: "candidate" | "not-detected" | "indeterminate";
+  geometryMethod: StableId;
+  approximationKind: "conservative-bounds";
+  geometryToleranceStuds: number;
+  hazardGameplayAuthoritative: boolean;
+  reproduction: EvidenceReproduction;
+}
+export interface SkipCandidatePayload {
+  kind: "skip-candidate";
+  candidateId: StableId;
+  fromObjectId: ObjectId;
+  toObjectId: ObjectId;
+  fromRouteIndex: number;
+  toRouteIndex: number;
+  /**
+   * @minItems 1
+   * @maxItems 5
+   */
+  candidateKinds: [
+    (
+      | "non-adjacent-route-edge"
+      | "checkpoint-bypass"
+      | "spawn-to-late-stage"
+      | "checkpoint-to-finish"
+      | "required-stage-skip"
+    ),
+    ...(
+      | "non-adjacent-route-edge"
+      | "checkpoint-bypass"
+      | "spawn-to-late-stage"
+      | "checkpoint-to-finish"
+      | "required-stage-skip"
+    )[],
+  ];
+  /**
+   * @maxItems 1000
+   */
+  skippedStageIndexes: number[];
+  modelState: "candidate";
+  geometryMethod: StableId;
+  reproduction: EvidenceReproduction;
 }
 export interface RuntimeObservationReferencePayload {
   kind: "runtime-observation";
@@ -684,7 +1010,11 @@ export interface AvailabilityRecord {
   policy: VersionRef;
   successor?: AvailabilitySubject;
   impactScope: {
-    scopeKind: "subject-only" | "subject-and-derived" | "reference-snapshot" | "dataset-release";
+    scopeKind:
+      | "subject-only"
+      | "subject-and-derived"
+      | "reference-snapshot"
+      | "dataset-release";
     /**
      * @minItems 1
      * @maxItems 4096
@@ -697,6 +1027,46 @@ export interface AvailabilitySubject {
   kind: "evidence" | "artifact" | "reference";
   stableId: OpaqueId;
   contentHash: ContentHash;
+}
+export interface ControllerProfile {
+  schemaVersion: SchemaVersion;
+  profileId: StableId;
+  profileVersion: SemanticVersion;
+  modelId: "e1-coarse-surface-transition-v1";
+  maximumHorizontalGap: ProfileDistanceConstant;
+  maximumRise: ProfileDistanceConstant;
+  maximumDownwardDrop: ProfileDistanceConstant;
+  avatarDimensions: {
+    width: number;
+    depth: number;
+    unit: "studs";
+    classification: ProfileConstantClassification;
+  };
+  requiredLandingMargin: ProfileDistanceConstant;
+  /**
+   * @minItems 1
+   * @maxItems 4
+   */
+  supportedSurfaceKinds: [
+    "planar-face" | "circular-endcap" | "wedge-slope" | "curved-surface",
+    ...("planar-face" | "circular-endcap" | "wedge-slope" | "curved-surface")[],
+  ];
+  tolerancePolicy: {
+    comparisonToleranceStuds: number;
+    boundaryRule: "inclusive-with-tolerance";
+    classification: ProfileConstantClassification;
+  };
+  /**
+   * @minItems 1
+   * @maxItems 64
+   */
+  limitations: [string, ...string[]];
+  controllerProfileHash: ContentHash;
+}
+export interface ProfileDistanceConstant {
+  value: number;
+  unit: "studs";
+  classification: ProfileConstantClassification;
 }
 export interface Finding {
   schemaVersion: SchemaVersion;
@@ -731,7 +1101,7 @@ export interface Finding {
 }
 export interface GeometryObjectInput {
   schemaVersion: SchemaVersion;
-  objectId: StableId;
+  objectId: ObjectId;
   shape: "Block" | "Ball" | "Cylinder" | "Wedge";
   authority: "native-gameplay" | "decorative";
   collision: {
@@ -757,10 +1127,10 @@ export interface PositiveVector3 {
 }
 export interface TransitionInput {
   schemaVersion: SchemaVersion;
-  transitionId: string;
+  transitionId: RouteTransitionId;
   routeId: StableId;
-  fromObjectId: StableId;
-  toObjectId: StableId;
+  fromObjectId: ObjectId;
+  toObjectId: ObjectId;
   fromGlobalIndex: number;
   toGlobalIndex: number;
   controllerProfileRef: StableId;
