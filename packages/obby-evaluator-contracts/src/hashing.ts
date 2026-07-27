@@ -209,6 +209,10 @@ function evidencePayload(evidence: EvidenceRecord): Record<string, unknown> {
     return {
       ...payload,
       objectIds: strings(evidence.payload.objectIds),
+      gameplayAuthoritativeObjectIds: strings(
+        evidence.payload.gameplayAuthoritativeObjectIds,
+      ),
+      decorativeObjectIds: strings(evidence.payload.decorativeObjectIds),
       ...(reproduction === undefined ? {} : { reproduction }),
     };
   }
@@ -322,6 +326,20 @@ export function hashMetricCalculation(input: unknown): NamedHashResult {
       payload.limitations,
       (limitation) => `${limitation.code}:${limitation.text}`,
     ),
+    reproduction: {
+      ...payload.reproduction,
+      inputEvidenceHashes: strings(payload.reproduction.inputEvidenceHashes),
+    },
+    ...(payload.blockedBy === undefined
+      ? {}
+      : {
+          blockedBy: {
+            ...payload.blockedBy,
+            evidenceContentHashes: strings(
+              payload.blockedBy.evidenceContentHashes,
+            ),
+          },
+        }),
   });
 }
 
@@ -349,6 +367,44 @@ export function hashReportPayload(input: unknown): NamedHashResult {
         (category) => category.categoryId,
       ),
     },
+    calculations: records(
+      payload.calculations,
+      (calculation) =>
+        `${calculation.metricId}:${calculation.calculationHash ?? ""}`,
+    ),
+    invariantGates: records(
+      payload.invariantGates.map((gate) => ({
+        ...gate,
+        evidenceIds: strings(gate.evidenceIds),
+        evidenceContentHashes: strings(gate.evidenceContentHashes),
+        findingIds: strings(gate.findingIds),
+        blockedMetricIds: strings(gate.blockedMetricIds),
+      })),
+      (gate) => gate.invariantId,
+    ),
+    profileGates: records(
+      payload.profileGates.map((gate) => ({
+        ...gate,
+        evidenceContentHashes: strings(gate.evidenceContentHashes),
+        findingIds: strings(gate.findingIds),
+      })),
+      (gate) => gate.gateId,
+    ),
+    completeness: {
+      ...payload.completeness,
+      requestedMetricIds: strings(payload.completeness.requestedMetricIds),
+      calculatedMetricIds: strings(payload.completeness.calculatedMetricIds),
+      missingMetricIds: strings(payload.completeness.missingMetricIds),
+      missingEvidenceKinds: strings(payload.completeness.missingEvidenceKinds),
+      unresolvedEvidenceHashes: strings(
+        payload.completeness.unresolvedEvidenceHashes,
+      ),
+      unresolvedFindingIds: strings(payload.completeness.unresolvedFindingIds),
+      unavailable: records(
+        payload.completeness.unavailable,
+        (entry) => `${entry.metricId}:${entry.reasonCode}`,
+      ),
+    },
     metrics: records(
       payload.metrics,
       (metric) => `${metric.category}:${metric.metricId}`,
@@ -373,8 +429,16 @@ export function hashReportPayload(input: unknown): NamedHashResult {
       (entry) =>
         `${entry.kind}:${entry.subjectKey}:${entry.evidenceId}:${entry.evidenceContentHash}`,
     ),
+    availabilityRecordHashes: strings(payload.availabilityRecordHashes),
     missingEvidence: records(
-      payload.missingEvidence,
+      payload.missingEvidence.map((entry) => ({
+        ...entry,
+        ...(entry.availabilityRecordHashes === undefined
+          ? {}
+          : {
+              availabilityRecordHashes: strings(entry.availabilityRecordHashes),
+            }),
+      })),
       (entry) =>
         `${entry.capability ?? ""}:${entry.metricId ?? ""}:${entry.reasonCode}`,
     ),

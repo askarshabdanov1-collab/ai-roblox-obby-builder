@@ -21,8 +21,12 @@ const hash = (digit: string): `sha256:${string}` =>
 
 const metricCalculation = (): MetricCalculationPreimage => ({
   schemaVersion: "0.1",
+  metricId: "playability.route-completeness",
+  metricVersion: "1.0.0",
   metricDefinitionHash: hash("1"),
+  calculationConfigurationHash: hash("2"),
   deterministicParametersHash: hash("2"),
+  calculationState: "calculated",
   evidence: [
     {
       kind: "route-transition",
@@ -44,6 +48,11 @@ const metricCalculation = (): MetricCalculationPreimage => ({
   ],
   confidence: { value: 1, basis: "deterministic-inputs", limitations: [] },
   limitations: [],
+  reproduction: {
+    method: { component: "route-completeness", version: "1.0.0" },
+    inputEvidenceHashes: [hash("3")],
+    deterministicParametersHash: hash("2"),
+  },
 });
 
 const report = (): ReportPayloadPreimage => ({
@@ -77,9 +86,37 @@ const report = (): ReportPayloadPreimage => ({
       },
     ],
   },
+  calculations: [
+    {
+      ...metricCalculation(),
+      calculationHash: hashMetricCalculation(metricCalculation()).hash,
+    },
+  ],
+  invariantGates: [
+    {
+      invariantId: "required-route-topology",
+      state: "pass",
+      evidenceIds: ["geometry:route"],
+      evidenceContentHashes: [hash("3")],
+      findingIds: [],
+      blockedMetricIds: [],
+    },
+  ],
+  profileGates: [],
+  completeness: {
+    state: "complete",
+    requestedMetricIds: ["playability.route-completeness"],
+    calculatedMetricIds: ["playability.route-completeness"],
+    missingMetricIds: [],
+    missingEvidenceKinds: [],
+    unresolvedEvidenceHashes: [],
+    unresolvedFindingIds: [],
+    unavailable: [],
+  },
   metrics: [],
   findings: [],
   evidenceIndex: [],
+  availabilityRecordHashes: [],
   missingEvidence: [],
   comparability: {
     compatibilityClass: "e1-static-v1",
@@ -102,6 +139,28 @@ describe("E1c deterministic identity contracts", () => {
     expect(parseMetricCalculationPreimage(finalized)).toEqual(finalized);
     expect(hashMetricCalculation(finalized)).toEqual(first);
     expect(verifyMetricCalculationIdentity(finalized)).toEqual(finalized);
+  });
+
+  it("rejects calculation states that overload a numeric value as unavailable", () => {
+    expect(() =>
+      parseMetricCalculationPreimage({
+        ...metricCalculation(),
+        calculationState: "unavailable",
+      }),
+    ).toThrow(/unavailable/i);
+  });
+
+  it("requires explicit gate and completeness records in finalized report payloads", () => {
+    const source = report();
+    const withoutGates = structuredClone(source) as Partial<typeof source>;
+    delete withoutGates.invariantGates;
+    const withoutCompleteness = structuredClone(source) as Partial<
+      typeof source
+    >;
+    delete withoutCompleteness.completeness;
+
+    expect(() => parseReportPayloadPreimage(withoutGates)).toThrow();
+    expect(() => parseReportPayloadPreimage(withoutCompleteness)).toThrow();
   });
 
   it("canonicalizes every set-like report collection before hashing", () => {

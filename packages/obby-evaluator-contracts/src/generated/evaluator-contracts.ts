@@ -637,7 +637,7 @@ export interface MetricResultBase {
    * @minItems 1
    * @maxItems 4096
    */
-  evidenceIds: [string, ...string[]];
+  evidenceIds: [OpaqueId, ...OpaqueId[]];
   /**
    * @maxItems 64
    */
@@ -734,6 +734,15 @@ export interface GeometryFactPayload {
    * @maxItems 2048
    */
   objectIds: [ObjectId, ...ObjectId[]];
+  /**
+   * @maxItems 2048
+   */
+  gameplayAuthoritativeObjectIds: ObjectId[];
+  /**
+   * @maxItems 2048
+   */
+  decorativeObjectIds: ObjectId[];
+  decorativeGameplayCollisionCount: number;
   factKind:
     | "normalized-object"
     | "axis-aligned-bounds"
@@ -1162,8 +1171,17 @@ export interface CalculationBundlePreimage {
 }
 export interface MetricCalculationPreimage {
   schemaVersion: SchemaVersion;
+  metricId: StableId;
+  metricVersion: SemanticVersion;
   metricDefinitionHash: ContentHash;
+  calculationConfigurationHash: ContentHash;
   deterministicParametersHash: ContentHash;
+  calculationState:
+    | "calculated"
+    | "unavailable"
+    | "not-applicable"
+    | "blocked-by-invariant"
+    | "indeterminate";
   /**
    * @maxItems 4096
    */
@@ -1193,6 +1211,19 @@ export interface MetricCalculationPreimage {
     matched: boolean;
   }[];
   confidence: Confidence;
+  unavailableReason?: {
+    reasonCode: StableId;
+    deferredCapability: Capability;
+    responsibleProducer?: StableId;
+  };
+  blockedBy?: {
+    invariantId: StableId;
+    /**
+     * @minItems 1
+     * @maxItems 4096
+     */
+    evidenceContentHashes: [ContentHash, ...ContentHash[]];
+  };
   /**
    * @maxItems 64
    */
@@ -1200,6 +1231,14 @@ export interface MetricCalculationPreimage {
     code: StableId;
     text: string;
   }[];
+  reproduction: {
+    method: VersionRef;
+    /**
+     * @maxItems 4096
+     */
+    inputEvidenceHashes: ContentHash[];
+    deterministicParametersHash: ContentHash;
+  };
   calculationHash?: ContentHash;
 }
 export interface ReportPayloadPreimage {
@@ -1241,6 +1280,19 @@ export interface ReportPayloadPreimage {
   /**
    * @maxItems 4096
    */
+  calculations: MetricCalculationPreimage[];
+  /**
+   * @maxItems 256
+   */
+  invariantGates: InvariantGateResult[];
+  /**
+   * @maxItems 256
+   */
+  profileGates: ProfileGateResult[];
+  completeness: EvaluationCompleteness;
+  /**
+   * @maxItems 4096
+   */
   metrics: EvaluationMetric[];
   /**
    * @maxItems 4096
@@ -1262,10 +1314,18 @@ export interface ReportPayloadPreimage {
   /**
    * @maxItems 4096
    */
+  availabilityRecordHashes: ContentHash[];
+  /**
+   * @maxItems 4096
+   */
   missingEvidence: {
     capability?: Capability;
     metricId?: StableId;
     reasonCode: StableId;
+    /**
+     * @maxItems 128
+     */
+    availabilityRecordHashes?: ContentHash[];
     consequence: string;
   }[];
   comparability: {
@@ -1308,6 +1368,76 @@ export interface ReportCategoryResult {
   metricIds: StableId[];
   confidence?: Confidence;
   classification: ProfileConstantClassification;
+}
+export interface InvariantGateResult {
+  invariantId: StableId;
+  state: "pass" | "fail" | "missing-evidence";
+  /**
+   * @maxItems 4096
+   */
+  evidenceIds: OpaqueId[];
+  /**
+   * @maxItems 4096
+   */
+  evidenceContentHashes: ContentHash[];
+  /**
+   * @maxItems 4096
+   */
+  findingIds: StableId[];
+  /**
+   * @maxItems 4096
+   */
+  blockedMetricIds: StableId[];
+}
+export interface ProfileGateResult {
+  gateId: StableId;
+  metricId: StableId;
+  state: "pass" | "fail" | "missing-evidence" | "not-applicable";
+  classification: "provisional" | "calibration-required";
+  /**
+   * @maxItems 4096
+   */
+  evidenceContentHashes: ContentHash[];
+  /**
+   * @maxItems 4096
+   */
+  findingIds: StableId[];
+}
+export interface EvaluationCompleteness {
+  state: "complete" | "incomplete" | "blocked";
+  /**
+   * @maxItems 4096
+   */
+  requestedMetricIds: StableId[];
+  /**
+   * @maxItems 4096
+   */
+  calculatedMetricIds: StableId[];
+  /**
+   * @maxItems 4096
+   */
+  missingMetricIds: StableId[];
+  /**
+   * @maxItems 64
+   */
+  missingEvidenceKinds: EvidenceKind[];
+  /**
+   * @maxItems 4096
+   */
+  unresolvedEvidenceHashes: ContentHash[];
+  /**
+   * @maxItems 4096
+   */
+  unresolvedFindingIds: StableId[];
+  /**
+   * @maxItems 4096
+   */
+  unavailable: {
+    metricId: StableId;
+    reasonCode: StableId;
+    deferredCapability: Capability;
+    responsibleProducer?: StableId;
+  }[];
 }
 export interface ReportRenderPreimage {
   schemaVersion: SchemaVersion;

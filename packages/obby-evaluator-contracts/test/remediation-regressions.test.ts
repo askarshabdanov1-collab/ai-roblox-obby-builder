@@ -121,6 +121,9 @@ function evidence(
     payload: {
       kind: "geometry-fact",
       objectIds: ["platform-a"],
+      gameplayAuthoritativeObjectIds: ["platform-a"],
+      decorativeObjectIds: [],
+      decorativeGameplayCollisionCount: 0,
       factKind: "normalized-object",
       geometryHash: TEST_IDENTITIES.geometryHash,
     },

@@ -72,7 +72,22 @@ describe("generated evaluator fixtures", () => {
     const definitions = (await fixture(
       "e1-metric-definitions.json",
     )) as unknown[];
-    expect(definitions.map(verifyMetricDefinitionIdentity)).toHaveLength(2);
+    expect(
+      definitions
+        .map(verifyMetricDefinitionIdentity)
+        .map((definition) => definition.metricId),
+    ).toEqual([
+      "playability.route-completeness",
+      "playability.required-transition-feasibility",
+      "checkpoint.topology-validity",
+      "finish.topology-validity",
+      "hazard.relationship-candidate-count",
+      "playability.skip-candidate-count",
+      "policy.evidence-completeness",
+      "runtime.checkpoint-isolation-availability",
+      "policy.decorative-collision-violations",
+      "performance.native-part-count",
+    ]);
     expect(
       verifyMetricCatalogIdentity(await fixture("e1-metric-catalog.json"))
         .catalogId,
@@ -83,12 +98,15 @@ describe("generated evaluator fixtures", () => {
     expect(profile.aggregateScore).toBe(false);
     expect(
       profile.categories.every(
-        (category) => category.availability === "planned",
+        (category) => category.availability === "available",
       ),
     ).toBe(true);
     expect(profile.categories.map((category) => category.categoryId)).toEqual([
       "playability",
+      "checkpoint",
+      "hazard",
       "policy",
+      "performance",
     ]);
     const policy = definitions
       .map(verifyMetricDefinitionIdentity)
@@ -101,7 +119,7 @@ describe("generated evaluator fixtures", () => {
     expect(policy?.calculation.configurationHash).not.toBe(
       `sha256:${"0".repeat(64)}`,
     );
-    expect(policy?.calculationAvailability).toBe("unavailable-in-e1a");
+    expect(policy?.calculationAvailability).toBe("available");
   });
 
   it("fails closed when a content-addressed fixture is altered", async () => {

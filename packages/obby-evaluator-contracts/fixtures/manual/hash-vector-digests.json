@@ -2,14 +2,14 @@
   "note": "Manually pinned review vector. Canonical UTF-8 preimages are committed in ../generated/hash-vectors.json.",
   "algorithm": "obby-canonical-json-v1 + SHA-256",
   "generatedFixtureDigests": {
-    "MetricDefinitionPreimage": "sha256:62c16bb6c3983fd278ee9a09d0c88e0f0efe4bd6799bde87d724cd3d5cb4bdd1",
-    "MetricCatalogPreimage": "sha256:e4c0b9c973c1bb57a2a7011391fd9edbd8a96a0e4335400ebe3899fc0be36552",
-    "ScoringProfilePreimage": "sha256:0f0ff7cb0cad3c028b5b6549e8ea63ca86816fd5363783b072afb5356815f48a",
-    "EvaluationPlanConfigurationPreimage": "sha256:0f242fe1f3160c87e0a7623a2b58cbaf2206edaad4578ab44f62ff8a7fa9c66c",
-    "EvaluationRequestPreimage": "sha256:77007949d71efafd14833c8b9f6065105abc18d873565c7d91be0dc7948db50b",
-    "EvidenceContentPreimage": "sha256:f1b0a8dc695468ea124626065193117baa950e59e692164878a0946d6275b6b2",
-    "CalculationBundlePreimage": "sha256:41e4ce1e6d0fc068031d79b9ec88af0596ccbc997f95fbbd75f0089fda26053a",
-    "AvailabilityRecordPreimage": "sha256:696b33b01cfd2b7f45dd7e02966e9dd26a120b976f55096e4aff2e429d769f23"
+    "MetricDefinitionPreimage": "sha256:42fdf761b82da44849cbfc1189cef242e7e80569162ef48cf910449e422a39c6",
+    "MetricCatalogPreimage": "sha256:6792f022f5a928d890e6232d9eafdfe3df9fe910c9554845064a82a58aa24674",
+    "ScoringProfilePreimage": "sha256:b572d93ff5914032ccd16a144f4a9c8400e4c32eabf035bba49359e4a3ac71fd",
+    "EvaluationPlanConfigurationPreimage": "sha256:9aa0dd2962c76bff680896cfcb72cee7393ffb15b447170bcc3267fa3816a1cd",
+    "EvaluationRequestPreimage": "sha256:f6b59b9bdf6f9c5b1b1d70943039989959155adce8dc5f85fb2de9de6fd3726e",
+    "EvidenceContentPreimage": "sha256:2a7d5a0b3b9ee3167e19ee2c327e8912015258157c3c03796e4d1d99b5a713bf",
+    "CalculationBundlePreimage": "sha256:3db2e7b1f74e7695a7babd9031eaca87e8265d90836bdb61b8070afb6bb1caad",
+    "AvailabilityRecordPreimage": "sha256:d3aa9328d56e8cfb57da47edefb3d634cbc50732bfeb462395288ab293e98595"
   },
   "smallVectors": [
     {

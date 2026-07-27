@@ -88,18 +88,18 @@ const definitionBase = {
   schemaVersion: "0.1",
   metricVersion: "1.0.0",
   resultKind: "deterministic-fact",
-  implementationStatus: "planned",
-  calculationAvailability: "unavailable-in-e1a",
+  implementationStatus: "implemented",
+  calculationAvailability: "available",
   applicability: "required",
   zeroObservationBehavior: "missing-evidence",
   confidenceMethod: {
     methodId: "exact-input-coverage",
     version: "1.0.0",
   },
-  blockingEligibility: "invariant",
+  blockingEligibility: "none",
   normalizationRule: "identity",
   comparisonCompatibilityClass: "e1-static-v1",
-  calibrationStatus: "invariant",
+  calibrationStatus: "provisional",
   parentMetricIds: [],
   metricDefinitionHash: SELF_HASH_SENTINEL,
 } as const;
@@ -132,7 +132,35 @@ const semanticConfigurations = [
   semanticConfiguration("decorative-collision-audit-v1", {
     candidateOnCanCollide: true,
     candidateOnCanTouch: true,
-    finalFindingOutsidePhase: true,
+    evidenceAuthority: "validated-e1b-geometry",
+  }),
+  semanticConfiguration("required-transition-feasibility-v1", {
+    preserveModelRelativeStates: true,
+    indeterminateIsNotPass: true,
+  }),
+  semanticConfiguration("checkpoint-topology-v1", {
+    requireForwardOrdering: true,
+    zeroCheckpoints: "not-applicable",
+  }),
+  semanticConfiguration("finish-topology-v1", {
+    requireSingleReachableAuthoritativeFinish: true,
+  }),
+  semanticConfiguration("hazard-candidates-v1", {
+    candidateSemanticsOnly: true,
+  }),
+  semanticConfiguration("skip-candidates-v1", {
+    candidateSemanticsOnly: true,
+  }),
+  semanticConfiguration("evidence-completeness-v1", {
+    requireAllRequiredMetrics: true,
+    resolveEveryReference: true,
+  }),
+  semanticConfiguration("runtime-isolation-availability-v1", {
+    e1RuntimeCapability: "deferred",
+    zeroObservations: "missing-evidence",
+  }),
+  semanticConfiguration("native-part-count-v1", {
+    countGeometryEvidenceObjectIds: true,
   }),
 ];
 
@@ -150,7 +178,11 @@ const definitionSources = [
   {
     ...definitionBase,
     metricId: "playability.route-completeness",
-    requiredEvidenceKinds: ["route-transition", "geometry-fact"],
+    requiredEvidenceKinds: [
+      "route-graph",
+      "route-transition",
+      "finish-topology",
+    ],
     requiredCapabilities: ["route", "geometry"],
     valueDefinition: {
       kind: "number",
@@ -164,6 +196,8 @@ const definitionSources = [
       configurationHash: configurationHash("route-completeness-v1"),
     },
     invariantGateId: "required-route-topology",
+    blockingEligibility: "invariant",
+    calibrationStatus: "invariant",
     thresholds: [
       {
         thresholdId: "complete-route",
@@ -174,6 +208,195 @@ const definitionSources = [
       },
     ],
     limitationsTemplate: ["Does not assert physical feasibility."],
+  },
+  {
+    ...definitionBase,
+    metricId: "playability.required-transition-feasibility",
+    resultKind: "heuristic-estimate",
+    requiredEvidenceKinds: [
+      "coarse-transition-state",
+      "route-playability-summary",
+    ],
+    requiredCapabilities: ["route", "coarse-jump"],
+    valueDefinition: {
+      kind: "state",
+      allowedValues: [
+        "feasible-under-model",
+        "infeasible-under-model",
+        "indeterminate",
+      ],
+    },
+    calculation: {
+      methodId: "required-transition-feasibility",
+      version: "1.0.0",
+      configurationHash: configurationHash(
+        "required-transition-feasibility-v1",
+      ),
+    },
+    blockingEligibility: "profile",
+    thresholds: [
+      {
+        thresholdId: "all-required-transitions-feasible-under-model",
+        thresholdKind: "profile",
+        classification: "provisional",
+        operator: "eq",
+        value: "feasible-under-model",
+      },
+    ],
+    limitationsTemplate: [
+      "Model-relative feasibility is not universal Roblox physics proof.",
+    ],
+  },
+  {
+    ...definitionBase,
+    metricId: "checkpoint.topology-validity",
+    applicability: "conditional",
+    zeroObservationBehavior: "not-applicable",
+    requiredEvidenceKinds: ["route-graph", "checkpoint-topology"],
+    requiredCapabilities: ["route"],
+    valueDefinition: { kind: "boolean" },
+    calculation: {
+      methodId: "checkpoint-topology-validity",
+      version: "1.0.0",
+      configurationHash: configurationHash("checkpoint-topology-v1"),
+    },
+    invariantGateId: "checkpoint-ordering",
+    blockingEligibility: "invariant",
+    calibrationStatus: "invariant",
+    thresholds: [
+      {
+        thresholdId: "valid-checkpoint-ordering",
+        thresholdKind: "invariant",
+        classification: "invariant",
+        operator: "eq",
+        value: true,
+      },
+    ],
+    limitationsTemplate: [
+      "Static topology does not establish runtime player isolation.",
+    ],
+  },
+  {
+    ...definitionBase,
+    metricId: "finish.topology-validity",
+    requiredEvidenceKinds: ["finish-topology"],
+    requiredCapabilities: ["route"],
+    valueDefinition: { kind: "boolean" },
+    calculation: {
+      methodId: "finish-topology-validity",
+      version: "1.0.0",
+      configurationHash: configurationHash("finish-topology-v1"),
+    },
+    invariantGateId: "finish-topology",
+    blockingEligibility: "invariant",
+    calibrationStatus: "invariant",
+    thresholds: [
+      {
+        thresholdId: "valid-finish-topology",
+        thresholdKind: "invariant",
+        classification: "invariant",
+        operator: "eq",
+        value: true,
+      },
+    ],
+    limitationsTemplate: [
+      "Structural reachability does not prove physical reachability.",
+    ],
+  },
+  {
+    ...definitionBase,
+    metricId: "hazard.relationship-candidate-count",
+    resultKind: "heuristic-estimate",
+    applicability: "conditional",
+    zeroObservationBehavior: "exact-zero",
+    requiredEvidenceKinds: ["route-playability-summary"],
+    requiredCapabilities: ["geometry", "route"],
+    valueDefinition: {
+      kind: "integer",
+      unit: "candidates",
+      minimum: 0,
+      maximum: 100000,
+    },
+    calculation: {
+      methodId: "hazard-candidate-count",
+      version: "1.0.0",
+      configurationHash: configurationHash("hazard-candidates-v1"),
+    },
+    thresholds: [],
+    limitationsTemplate: [
+      "Broad-phase hazard candidates are not confirmed gameplay failures.",
+    ],
+  },
+  {
+    ...definitionBase,
+    metricId: "playability.skip-candidate-count",
+    resultKind: "heuristic-estimate",
+    applicability: "conditional",
+    zeroObservationBehavior: "exact-zero",
+    requiredEvidenceKinds: ["route-playability-summary"],
+    requiredCapabilities: ["geometry", "route", "coarse-jump"],
+    valueDefinition: {
+      kind: "integer",
+      unit: "candidates",
+      minimum: 0,
+      maximum: 100000,
+    },
+    calculation: {
+      methodId: "skip-candidate-count",
+      version: "1.0.0",
+      configurationHash: configurationHash("skip-candidates-v1"),
+    },
+    thresholds: [],
+    limitationsTemplate: [
+      "Conservative skip candidates are not confirmed executable skips.",
+    ],
+  },
+  {
+    ...definitionBase,
+    metricId: "policy.evidence-completeness",
+    requiredEvidenceKinds: ["route-graph"],
+    requiredCapabilities: ["geometry", "route"],
+    valueDefinition: { kind: "boolean" },
+    calculation: {
+      methodId: "evidence-completeness",
+      version: "1.0.0",
+      configurationHash: configurationHash("evidence-completeness-v1"),
+    },
+    invariantGateId: "required-metric-availability",
+    blockingEligibility: "invariant",
+    calibrationStatus: "invariant",
+    thresholds: [
+      {
+        thresholdId: "required-evidence-complete",
+        thresholdKind: "invariant",
+        classification: "invariant",
+        operator: "eq",
+        value: true,
+      },
+    ],
+    limitationsTemplate: [
+      "Optional deferred capabilities remain explicit and are not converted to pass.",
+    ],
+  },
+  {
+    ...definitionBase,
+    metricId: "runtime.checkpoint-isolation-availability",
+    applicability: "optional",
+    requiredEvidenceKinds: ["runtime-observation"],
+    requiredCapabilities: ["runtime"],
+    valueDefinition: {
+      kind: "state",
+      allowedValues: ["available", "unavailable"],
+    },
+    calculation: {
+      methodId: "runtime-isolation-availability",
+      version: "1.0.0",
+      configurationHash: configurationHash("runtime-isolation-availability-v1"),
+    },
+    thresholds: [],
+    limitationsTemplate: [
+      "Studio multiplayer isolation evidence is deferred beyond E1c.",
+    ],
   },
   {
     ...definitionBase,
@@ -192,6 +415,8 @@ const definitionSources = [
       configurationHash: configurationHash("decorative-collision-audit-v1"),
     },
     invariantGateId: "decorative-gameplay-collision",
+    blockingEligibility: "invariant",
+    calibrationStatus: "invariant",
     thresholds: [
       {
         thresholdId: "no-decorative-collision",
@@ -203,6 +428,28 @@ const definitionSources = [
     ],
     limitationsTemplate: [
       "Covers validated manifest geometry only; no Studio observation is collected in E1a.",
+    ],
+  },
+  {
+    ...definitionBase,
+    metricId: "performance.native-part-count",
+    zeroObservationBehavior: "exact-zero",
+    requiredEvidenceKinds: ["geometry-fact"],
+    requiredCapabilities: ["geometry"],
+    valueDefinition: {
+      kind: "integer",
+      unit: "objects",
+      minimum: 0,
+      maximum: 100000,
+    },
+    calculation: {
+      methodId: "native-part-count",
+      version: "1.0.0",
+      configurationHash: configurationHash("native-part-count-v1"),
+    },
+    thresholds: [],
+    limitationsTemplate: [
+      "Static native-Part count is not a runtime performance measurement.",
     ],
   },
 ];
@@ -230,6 +477,42 @@ const catalogSource = {
       requiredEvidenceKinds: ["route-transition"],
     },
     {
+      invariantId: "required-reference-resolution",
+      blocking: true,
+      outcomeEffect: "fail",
+      requiredEvidenceKinds: ["route-transition"],
+    },
+    {
+      invariantId: "checkpoint-ordering",
+      blocking: true,
+      outcomeEffect: "fail",
+      requiredEvidenceKinds: ["route-graph"],
+    },
+    {
+      invariantId: "finish-topology",
+      blocking: true,
+      outcomeEffect: "fail",
+      requiredEvidenceKinds: ["finish-topology"],
+    },
+    {
+      invariantId: "gameplay-route-authority",
+      blocking: true,
+      outcomeEffect: "fail",
+      requiredEvidenceKinds: ["geometry-fact", "route-graph"],
+    },
+    {
+      invariantId: "evidence-graph-integrity",
+      blocking: true,
+      outcomeEffect: "fail",
+      requiredEvidenceKinds: ["route-graph"],
+    },
+    {
+      invariantId: "required-metric-availability",
+      blocking: true,
+      outcomeEffect: "fail",
+      requiredEvidenceKinds: ["route-graph"],
+    },
+    {
       invariantId: "decorative-gameplay-collision",
       blocking: true,
       outcomeEffect: "fail",
@@ -242,6 +525,11 @@ const catalogSource = {
       versionRange: ">=0.1.0 <0.2.0",
     },
     { component: "geometry-evaluator", versionRange: ">=0.1.0 <0.2.0" },
+    {
+      component: "route-playability-evaluator",
+      versionRange: ">=0.1.0 <0.2.0",
+    },
+    { component: "scoring-engine", versionRange: ">=0.1.0 <0.2.0" },
   ],
   metricCatalogHash: SELF_HASH_SENTINEL,
 };
@@ -255,25 +543,60 @@ const profileSource = {
   profileId: "e1-static-default",
   profileVersion: "1.0.0",
   metricCatalogHash: metricCatalog.metricCatalogHash,
-  requiredMetricIds: metricDefinitions.map((definition) => definition.metricId),
-  optionalMetricIds: [],
-  invariantGateIds: [
-    "required-route-topology",
-    "decorative-gameplay-collision",
-  ],
+  requiredMetricIds: metricDefinitions
+    .filter((definition) => definition.applicability !== "optional")
+    .map((definition) => definition.metricId),
+  optionalMetricIds: ["runtime.checkpoint-isolation-availability"],
+  invariantGateIds: catalogSource.invariantGates.map(
+    (gate) => gate.invariantId,
+  ),
   categories: [
     {
       categoryId: "playability",
-      metricIds: ["playability.route-completeness"],
-      availability: "planned",
+      metricIds: [
+        "playability.route-completeness",
+        "playability.required-transition-feasibility",
+        "finish.topology-validity",
+        "playability.skip-candidate-count",
+      ],
+      availability: "available",
+    },
+    {
+      categoryId: "checkpoint",
+      metricIds: [
+        "checkpoint.topology-validity",
+        "runtime.checkpoint-isolation-availability",
+      ],
+      availability: "available",
+    },
+    {
+      categoryId: "hazard",
+      metricIds: ["hazard.relationship-candidate-count"],
+      availability: "available",
     },
     {
       categoryId: "policy",
-      metricIds: ["policy.decorative-collision-violations"],
-      availability: "planned",
+      metricIds: [
+        "policy.evidence-completeness",
+        "policy.decorative-collision-violations",
+      ],
+      availability: "available",
+    },
+    {
+      categoryId: "performance",
+      metricIds: ["performance.native-part-count"],
+      availability: "available",
     },
   ],
-  thresholds: [],
+  thresholds: [
+    {
+      thresholdId: "required-transition-feasibility",
+      metricId: "playability.required-transition-feasibility",
+      classification: "provisional",
+      operator: "eq",
+      value: "feasible-under-model",
+    },
+  ],
   evidenceCompleteness: "require-all-required",
   missingCategoryPolicy: "unavailable-no-renormalization",
   aggregateScore: false,
@@ -304,7 +627,7 @@ const plan = {
     catalogVersion: metricCatalog.catalogVersion,
     metricCatalogHash: metricCatalog.metricCatalogHash,
   },
-  requiredCapabilities: ["geometry", "route"],
+  requiredCapabilities: ["geometry", "route", "coarse-jump"],
   views: [],
   avatarProfiles: ["roblox-default-r15"],
   deviceProfiles: [],
@@ -336,8 +659,18 @@ const request = {
   profile: plan.profile,
   catalog: plan.catalog,
   requestedEvidenceRequirements: {
-    requiredCapabilityIds: ["geometry", "route"],
-    evidenceKindIds: ["geometry-fact", "route-transition"],
+    requiredCapabilityIds: ["geometry", "route", "coarse-jump"],
+    evidenceKindIds: [
+      "geometry-fact",
+      "route-graph",
+      "route-transition",
+      "coarse-transition-state",
+      "route-playability-summary",
+      "checkpoint-topology",
+      "finish-topology",
+      "hazard-relationship",
+      "skip-candidate",
+    ],
     coverageProfileIds: ["static-complete"],
   },
   deterministicRequestOptions: {
@@ -364,6 +697,9 @@ const evidence = {
   payload: {
     kind: "geometry-fact",
     objectIds: ["platform-a"],
+    gameplayAuthoritativeObjectIds: ["platform-a"],
+    decorativeObjectIds: [],
+    decorativeGameplayCollisionCount: 0,
     factKind: "normalized-object",
     geometryHash: GEOMETRY_HASH,
   },

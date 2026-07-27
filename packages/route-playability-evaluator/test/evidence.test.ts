@@ -46,6 +46,19 @@ describe("E1b evidence and findings", () => {
     expect(
       new Set(result.evidence.map((record) => record.evidenceId)).size,
     ).toBe(result.evidence.length);
+    const geometry = result.evidence.find(
+      (record) => record.kind === "geometry-fact",
+    );
+    expect(geometry?.payload.kind).toBe("geometry-fact");
+    if (geometry?.payload.kind !== "geometry-fact") {
+      throw new Error("missing geometry fact evidence");
+    }
+    expect(geometry.payload.gameplayAuthoritativeObjectIds).toContain("Spawn");
+    expect(geometry.payload.gameplayAuthoritativeObjectIds).toContain(
+      "FinishPlatform",
+    );
+    expect(geometry.payload.decorativeObjectIds).toEqual([]);
+    expect(geometry.payload.decorativeGameplayCollisionCount).toBe(0);
   });
 
   it("emits checkpoint and finish topology without claiming runtime isolation", () => {
