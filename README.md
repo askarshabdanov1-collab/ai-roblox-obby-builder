@@ -53,6 +53,18 @@ PlaceSpec + seed + generator version
 The checked fixture lives in `examples/vertical-slice/`. Its SceneManifest and Luau transport are
 generated from its PlaceSpec and must not be edited manually.
 
+## Generator G0
+
+Phase G0 adds an offline, deterministic planner from a structured request to an abstract,
+content-addressed `ObbySpec`. It stops before coordinates, geometry, Roblox assembly, runtime
+mechanics, or external asset work. See the
+[`G0 architecture`](docs/generator/g0-architecture.md),
+[`contract reference`](docs/generator/contracts.md), and
+[`G1 handoff`](docs/generator/g0-acceptance-and-g1-handoff.md).
+
+Focused non-mutating gates are `npm run generator:contracts:check`,
+`npm run generator:fixtures:check`, and `npm run generator:check`.
+
 ## Development
 
 See `CONTRIBUTING.md` and `docs/local-development.md`. The complete local gate is:
@@ -61,6 +73,7 @@ See `CONTRIBUTING.md` and `docs/local-development.md`. The complete local gate i
 npm ci
 npm run evaluator:contracts:check
 npm run evaluator:test
+npm run generator:check
 npm run validate
 git diff --check
 git status --short
