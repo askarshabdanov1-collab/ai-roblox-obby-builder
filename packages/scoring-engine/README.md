@@ -1,6 +1,6 @@
 # `@obby/scoring-engine`
 
-Phase E1c deterministic report assembly and rendering foundation.
+Phase E1c deterministic evidence-to-report assembly.
 
 The package applies result precedence in this order: catalog invariant failure, incomplete required
 evidence, profile-specific failure, warning, then pass. Every invariant declared by the verified
@@ -12,5 +12,30 @@ must remain present with the same metric set. E1 reports always declare `aggrega
 their own render hash. `applyAvailabilityRecords` preserves the original report and creates a new
 derived report linked to immutable availability-record hashes.
 
-This foundation does not yet expose the E1c CLI or an adapter that calculates E1 metrics from E1b
-evidence. It has no Studio, external model, analytics, cloud, or automatic-correction integration.
+`assembleE1Evaluation` validates the complete plan/request/catalog/profile graph, validates the E1b
+evidence DAG, calculates the ten E1 metrics, applies non-overridable catalog invariants, evaluates
+completeness, and only then assembles profile categories. Calculations bind definition,
+configuration, evidence, reproduction inputs, state, result/absence reason, limitations, and their
+own content hash. The trust boundary is validated E1b evidence; calculators do not reread manifest
+gameplay fields.
+
+The reference profile has no weights and no aggregate score. `infeasible-under-model` remains a
+profile-relative state, hazard/skip observations remain candidates, and optional runtime evidence
+remains explicitly unavailable with an immutable availability record. No missing value is encoded
+as a number or silently renormalized.
+
+`renderMarkdownReport` emits deterministic identity, outcome, gate, completeness, calculation,
+category, finding, evidence, deferred-capability, limitation, and reproduction sections. The render
+hash binds payload hash, renderer/template version, configuration, and exact bytes; it excludes
+paths and execution time.
+
+Focused checks:
+
+```text
+npm run evaluator:scoring:test
+npm run evaluator:scoring:check
+npm run evaluator:report:test
+```
+
+This package has no Studio, external model, analytics, cloud, automatic-correction, or network
+integration.

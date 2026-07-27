@@ -64,6 +64,9 @@ function assertBindings(input: E1ReportInput): void {
       return record.evidenceId;
     }),
   );
+  const evidenceHashes = new Set(
+    input.evidence.map((record) => record.evidenceContentHash),
+  );
   const findings = new Map(
     input.findings.map((item) => [item.findingId, item]),
   );
@@ -113,11 +116,11 @@ function assertBindings(input: E1ReportInput): void {
     );
   }
   for (const gate of input.profileGates) {
-    for (const evidenceId of gate.evidenceIds) {
-      if (!evidenceIds.has(evidenceId)) {
+    for (const evidenceHash of gate.evidenceContentHashes) {
+      if (!evidenceHashes.has(evidenceHash)) {
         throw new ScoringContractError(
           "unknown-profile-gate-evidence",
-          `profile gate ${gate.gateId} references unknown evidence ${evidenceId}`,
+          `profile gate ${gate.gateId} references unknown evidence ${evidenceHash}`,
         );
       }
     }
@@ -164,8 +167,7 @@ function outcome(input: E1ReportInput): ReportPayloadPreimage["outcome"] {
       (category) =>
         category.status === "missing-evidence" ||
         category.status === "incomplete",
-    ) ||
-    input.missingEvidence.length > 0
+    )
   ) {
     return "incomplete";
   }
@@ -234,6 +236,10 @@ export function finalizeE1Report(input: E1ReportInput): FinalizedE1Report {
       aggregateScore: false,
       categories: structuredClone([...input.categories]),
     },
+    calculations: structuredClone([...input.calculations]),
+    invariantGates: structuredClone([...input.invariantGates]),
+    profileGates: structuredClone([...input.profileGates]),
+    completeness: structuredClone(input.completeness),
     metrics: structuredClone([...input.metrics]),
     findings: input.findings.map(cleanFinding),
     evidenceIndex: input.evidence.map((record) => ({
@@ -245,6 +251,7 @@ export function finalizeE1Report(input: E1ReportInput): FinalizedE1Report {
         (artifact) => artifact.contentHash,
       ),
     })),
+    availabilityRecordHashes: unique(input.availabilityRecordHashes),
     missingEvidence: structuredClone(input.missingEvidence),
     comparability: {
       compatibilityClass: input.scoringProfile.compatibilityClass,
@@ -297,9 +304,14 @@ export function applyAvailabilityRecords(
       ...original.missingEvidence,
       ...unavailable.map((record) => ({
         reasonCode: `evidence-${record.availabilityState}`,
+        availabilityRecordHashes: [record.availabilityRecordHash],
         consequence: `Evidence ${record.subject.stableId} is ${record.availabilityState}; deterministic reproduction is ${reproduction}.`,
       })),
     ],
+    availabilityRecordHashes: unique([
+      ...original.availabilityRecordHashes,
+      ...availability.map((record) => record.availabilityRecordHash),
+    ]),
     limitations: [
       ...original.limitations,
       ...(affectedCount === 0

@@ -40,7 +40,9 @@ function report() {
       invariantId: gate.invariantId,
       state: "pass" as const,
       evidenceIds: ["geometry:scene"],
+      evidenceContentHashes: [hash("6")],
       findingIds: [],
+      blockedMetricIds: [],
     })),
     profileGates: [],
     categories: scoringProfile.categories.map((entry) => ({
@@ -54,6 +56,18 @@ function report() {
       },
       classification: "provisional" as const,
     })),
+    calculations: [],
+    completeness: {
+      state: "complete",
+      requestedMetricIds: [],
+      calculatedMetricIds: [],
+      missingMetricIds: [],
+      missingEvidenceKinds: [],
+      unresolvedEvidenceHashes: [],
+      unresolvedFindingIds: [],
+      unavailable: [],
+    },
+    availabilityRecordHashes: [],
     metrics: [],
     findings: [],
     evidence: [
@@ -67,6 +81,9 @@ function report() {
         payload: {
           kind: "geometry-fact",
           objectIds: ["Start"],
+          gameplayAuthoritativeObjectIds: ["Start"],
+          decorativeObjectIds: [],
+          decorativeGameplayCollisionCount: 0,
           factKind: "normalized-object",
           geometryHash: hash("5"),
         },

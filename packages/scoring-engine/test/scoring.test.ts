@@ -7,7 +7,6 @@ import type {
   EvidenceRecordContract,
   Finding,
   MetricCatalog,
-  ReportCategoryResult,
   ScoringProfile,
 } from "@obby/obby-evaluator-contracts";
 import { hashAvailabilityRecord } from "@obby/obby-evaluator-contracts";
@@ -61,18 +60,6 @@ const evidence = (id: string, digit: string): EvidenceRecordContract => ({
   evidenceContentHash: hash(digit),
 });
 
-const category = (): ReportCategoryResult => ({
-  categoryId: "playability",
-  status: "available",
-  metricIds: ["playability.route-completeness"],
-  confidence: {
-    value: 1,
-    basis: "required-evidence-complete",
-    limitations: [],
-  },
-  classification: "provisional",
-});
-
 const finding = (id: string, overrides: Partial<Finding> = {}): Finding => ({
   schemaVersion: "0.1",
   findingId: id,
@@ -102,35 +89,38 @@ const base = (): E1ReportInput => ({
   },
   catalog,
   scoringProfile,
-  invariantGates: [
-    {
-      invariantId: "required-route-topology",
-      state: "pass",
-      evidenceIds: ["e1c:route"],
-      findingIds: [],
-    },
-    {
-      invariantId: "decorative-gameplay-collision",
-      state: "pass",
-      evidenceIds: ["e1c:route"],
-      findingIds: [],
-    },
-  ],
+  invariantGates: catalog.invariantGates.map((gate) => ({
+    invariantId: gate.invariantId,
+    state: "pass" as const,
+    evidenceIds: ["e1c:route"],
+    evidenceContentHashes: [hash("7")],
+    findingIds: [],
+    blockedMetricIds: [],
+  })),
   profileGates: [],
-  categories: [
-    category(),
-    {
-      categoryId: "policy",
-      status: "available",
-      metricIds: ["policy.decorative-collision-violations"],
-      confidence: {
-        value: 1,
-        basis: "required-evidence-complete",
-        limitations: [],
-      },
-      classification: "invariant",
+  categories: scoringProfile.categories.map((entry) => ({
+    categoryId: entry.categoryId,
+    status: "available" as const,
+    metricIds: entry.metricIds,
+    confidence: {
+      value: 1,
+      basis: "required-evidence-complete",
+      limitations: [],
     },
-  ],
+    classification: "provisional" as const,
+  })),
+  calculations: [],
+  completeness: {
+    state: "complete",
+    requestedMetricIds: [],
+    calculatedMetricIds: [],
+    missingMetricIds: [],
+    missingEvidenceKinds: [],
+    unresolvedEvidenceHashes: [],
+    unresolvedFindingIds: [],
+    unavailable: [],
+  },
+  availabilityRecordHashes: [],
   metrics: [],
   findings: [],
   evidence: [evidence("e1c:route", "7")],
@@ -147,20 +137,11 @@ const base = (): E1ReportInput => ({
 describe("E1c scoring precedence", () => {
   it("never lets a category result clear an invariant failure", () => {
     const input = base();
-    input.invariantGates = [
-      {
-        invariantId: "required-route-topology",
-        state: "fail",
-        evidenceIds: ["e1c:route"],
-        findingIds: ["finding.required-route"],
-      },
-      {
-        invariantId: "decorative-gameplay-collision",
-        state: "pass",
-        evidenceIds: ["e1c:route"],
-        findingIds: [],
-      },
-    ];
+    input.invariantGates = input.invariantGates.map((gate) =>
+      gate.invariantId === "required-route-topology"
+        ? { ...gate, state: "fail", findingIds: ["finding.required-route"] }
+        : gate,
+    );
     input.findings = [finding("finding.required-route")];
 
     const report = finalizeE1Report(input);
@@ -175,9 +156,10 @@ describe("E1c scoring precedence", () => {
     input.profileGates = [
       {
         gateId: "coarse-route-feasibility",
+        metricId: "playability.required-transition-feasibility",
         state: "fail",
         classification: "provisional",
-        evidenceIds: ["e1c:route"],
+        evidenceContentHashes: [hash("7")],
         findingIds: ["finding.coarse"],
       },
     ];
@@ -195,20 +177,16 @@ describe("E1c scoring precedence", () => {
 
   it("fails closed as incomplete when an invariant lacks evidence", () => {
     const input = base();
-    input.invariantGates = [
-      {
-        invariantId: "required-route-topology",
-        state: "missing-evidence",
-        evidenceIds: [],
-        findingIds: [],
-      },
-      {
-        invariantId: "decorative-gameplay-collision",
-        state: "pass",
-        evidenceIds: ["e1c:route"],
-        findingIds: [],
-      },
-    ];
+    input.invariantGates = input.invariantGates.map((gate) =>
+      gate.invariantId === "required-route-topology"
+        ? {
+            ...gate,
+            state: "missing-evidence",
+            evidenceIds: [],
+            evidenceContentHashes: [],
+          }
+        : gate,
+    );
 
     expect(finalizeE1Report(input).outcome).toBe("incomplete");
   });
