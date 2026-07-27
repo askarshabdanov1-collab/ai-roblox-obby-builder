@@ -1,6 +1,7 @@
 import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { afterEach, describe, expect, it } from "vitest";
 
@@ -11,9 +12,7 @@ import {
   type EvaluateFileInputs,
 } from "../src/index.js";
 
-const repository = resolve(
-  new URL("../../..", import.meta.url).pathname.slice(1),
-);
+const repository = resolve(fileURLToPath(new URL("../../..", import.meta.url)));
 const generated = resolve(
   repository,
   "packages/scoring-engine/fixtures/generated/passing-structural-route",
