@@ -40,12 +40,17 @@ type Options = {
 
 function parseArguments(arguments_: readonly string[]): Options {
   if (arguments_[0] !== "generate")
-    throw new GeneratorContractError("schema", "expected command: generate");
+    throw new GeneratorContractError("usage", "expected command: generate");
   const values = new Map<string, string>();
   let jsonErrors = false;
   for (let index = 1; index < arguments_.length; index += 1) {
     const argument = arguments_[index];
     if (argument === "--json-errors") {
+      if (jsonErrors)
+        throw new GeneratorContractError(
+          "usage",
+          "duplicate option --json-errors",
+        );
       jsonErrors = true;
       continue;
     }
@@ -55,17 +60,16 @@ function parseArguments(arguments_: readonly string[]): Options {
       )
     )
       throw new GeneratorContractError(
-        "schema",
+        "usage",
         `unknown argument ${String(argument)}`,
       );
     if (argument === undefined)
-      throw new GeneratorContractError("schema", "missing argument name");
+      throw new GeneratorContractError("usage", "missing argument name");
+    if (values.has(argument))
+      throw new GeneratorContractError("usage", `duplicate option ${argument}`);
     const value = arguments_[index + 1];
     if (value === undefined || value.startsWith("--"))
-      throw new GeneratorContractError(
-        "schema",
-        `${argument} requires a value`,
-      );
+      throw new GeneratorContractError("usage", `${argument} requires a value`);
     values.set(argument, value);
     index += 1;
   }
@@ -73,7 +77,7 @@ function parseArguments(arguments_: readonly string[]): Options {
   const outputDirectory = values.get("--output");
   if (requestPath === undefined || outputDirectory === undefined)
     throw new GeneratorContractError(
-      "schema",
+      "usage",
       "--request and --output are required",
     );
   const configurationPath = values.get("--config");
@@ -85,6 +89,64 @@ function parseArguments(arguments_: readonly string[]): Options {
     ...(configurationPath === undefined ? {} : { configurationPath }),
     ...(catalogPath === undefined ? {} : { catalogPath }),
   };
+}
+
+function collisionKey(path: string): string {
+  const normalized = resolve(path).normalize("NFC");
+  return process.platform === "win32" ? normalized.toLowerCase() : normalized;
+}
+
+function safeInputPath(cwd: string, supplied: string): string {
+  const segments = supplied.split(/[\\/]/u).filter(Boolean);
+  const reserved = /^(?:con|prn|aux|nul|com[1-9]|lpt[1-9])(?:\..*)?$/iu;
+  if (
+    isAbsolute(supplied) ||
+    segments.includes("..") ||
+    segments.some(
+      (segment) =>
+        segment !== segment.normalize("NFC") ||
+        reserved.test(segment) ||
+        /[. ]$/u.test(segment),
+    )
+  )
+    throw new GeneratorContractError(
+      "path-safety",
+      "input must be a normalized relative path inside the working directory",
+    );
+  const target = resolve(cwd, supplied);
+  const relation = relative(cwd, target);
+  if (relation === "" || relation === ".." || relation.startsWith(`..${sep}`))
+    throw new GeneratorContractError(
+      "path-safety",
+      "input path is outside safe limits",
+    );
+  return target;
+}
+
+async function rejectInputReparseSegments(
+  cwd: string,
+  target: string,
+): Promise<void> {
+  const segments = relative(cwd, target).split(sep).filter(Boolean);
+  let current = cwd;
+  for (const [index, segment] of segments.entries()) {
+    current = resolve(current, segment);
+    try {
+      const info = await lstat(current);
+      const isFinal = index === segments.length - 1;
+      if (
+        info.isSymbolicLink() ||
+        (isFinal ? !info.isFile() : !info.isDirectory())
+      )
+        throw new GeneratorContractError(
+          "path-safety",
+          "input contains a non-regular or reparse-point segment",
+        );
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === "ENOENT") return;
+      throw error;
+    }
+  }
 }
 
 function safeOutputRoot(
@@ -134,7 +196,7 @@ async function readBoundedJson(
   } catch (error) {
     throw new GeneratorContractError(
       (error as NodeJS.ErrnoException).code === "ENOENT"
-        ? "schema"
+        ? "input"
         : "path-safety",
       `${label} cannot be opened`,
     );
@@ -160,7 +222,7 @@ async function readBoundedJson(
     try {
       return JSON.parse(bytes.toString("utf8")) as unknown;
     } catch {
-      throw new GeneratorContractError("schema", `${label} is not valid JSON`);
+      throw new GeneratorContractError("input", `${label} is not valid JSON`);
     }
   } finally {
     await handle.close();
@@ -198,10 +260,11 @@ async function rejectSymlinkSegments(
   for (const segment of relative(cwd, target).split(sep).filter(Boolean)) {
     current = resolve(current, segment);
     try {
-      if ((await lstat(current)).isSymbolicLink())
+      const info = await lstat(current);
+      if (info.isSymbolicLink() || !info.isDirectory())
         throw new GeneratorContractError(
           "path-safety",
-          "output contains a symbolic link or reparse point",
+          "output contains a non-directory or reparse-point segment",
         );
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
@@ -290,88 +353,113 @@ async function publish(
   content: Uint8Array,
   options: GeneratorCliOptions,
 ): Promise<string> {
-  await rejectSymlinkSegments(cwd, outputRoot);
-  await mkdir(outputRoot, { recursive: true });
-  await rejectSymlinkSegments(cwd, outputRoot);
-  const outputChain = await captureDirectoryChain(cwd, outputRoot);
-  const finalPath = resolve(outputRoot, directoryName);
-  if (
-    finalPath.length >
-    DEFAULT_GENERATOR_CONFIGURATION.limits.maxOutputPathLength
-  )
-    throw new GeneratorContractError(
-      "path-safety",
-      "semantic output path exceeds its configured limit",
-    );
   try {
-    await lstat(finalPath);
-    throw new GeneratorContractError(
-      "output-conflict",
-      `output already exists: ${directoryName}`,
-    );
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-  }
-  let stagingPath = "";
-  for (let counter = 0; counter < 32; counter += 1) {
-    const candidate = resolve(
-      outputRoot,
-      `.obby-generator-${directoryName.slice(5)}-${process.pid}-${counter}.tmp`,
-    );
+    await rejectSymlinkSegments(cwd, outputRoot);
+    await mkdir(outputRoot, { recursive: true });
+    await rejectSymlinkSegments(cwd, outputRoot);
+    const outputChain = await captureDirectoryChain(cwd, outputRoot);
+    const finalPath = resolve(outputRoot, directoryName);
+    if (
+      finalPath.length >
+      DEFAULT_GENERATOR_CONFIGURATION.limits.maxOutputPathLength
+    )
+      throw new GeneratorContractError(
+        "path-safety",
+        "semantic output path exceeds its configured limit",
+      );
     try {
-      await mkdir(candidate, { mode: 0o700 });
-      stagingPath = candidate;
-      break;
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
-    }
-  }
-  if (stagingPath === "")
-    throw new GeneratorContractError(
-      "work-limit",
-      "bounded staging acquisition exhausted",
-    );
-  let committed = false;
-  try {
-    await options.onAtomicStep?.("file-write");
-    const handle = await open(
-      resolve(stagingPath, "generation-bundle.json"),
-      "wx",
-      0o600,
-    );
-    try {
-      await handle.writeFile(content);
-      await options.onAtomicStep?.("file-sync");
-      await handle.sync();
-    } finally {
-      await handle.close();
-    }
-    await syncDirectory(
-      stagingPath,
-      "temporary-directory-sync",
-      options.onAtomicStep,
-    );
-    await options.beforeCommit?.(stagingPath);
-    await assertDirectoryChain(outputChain);
-    await options.onAtomicStep?.("rename");
-    await rename(stagingPath, finalPath);
-    committed = true;
-    await assertDirectoryChain(outputChain);
-    await syncDirectory(outputRoot, "final-parent-sync", options.onAtomicStep);
-    return finalPath;
-  } catch (error) {
-    if (!committed) {
-      try {
-        await assertDirectoryChain(outputChain);
-        await options.onAtomicStep?.("cleanup");
-        await rm(stagingPath, { force: true, recursive: true });
-      } catch {
+      const finalInfo = await lstat(finalPath);
+      if (finalInfo.isSymbolicLink())
         throw new GeneratorContractError(
-          "cleanup-failed",
-          "temporary output cleanup failed",
+          "path-safety",
+          "final output is a symbolic link or reparse point",
         );
+      throw new GeneratorContractError(
+        "output-conflict",
+        `output already exists: ${directoryName}`,
+      );
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+    }
+
+    let stagingPath = "";
+    for (let counter = 0; counter < 32; counter += 1) {
+      const candidate = resolve(
+        outputRoot,
+        `.obby-generator-${directoryName.slice(5)}-${process.pid}-${counter}.tmp`,
+      );
+      try {
+        await mkdir(candidate, { mode: 0o700 });
+        stagingPath = candidate;
+        break;
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
       }
     }
+    if (stagingPath === "")
+      throw new GeneratorContractError(
+        "work-limit",
+        "bounded staging acquisition exhausted",
+      );
+
+    let committed = false;
+    try {
+      await options.onAtomicStep?.("file-write");
+      const handle = await open(
+        resolve(stagingPath, "generation-bundle.json"),
+        "wx",
+        0o600,
+      );
+      try {
+        await handle.writeFile(content);
+        await options.onAtomicStep?.("file-sync");
+        await handle.sync();
+      } finally {
+        await handle.close();
+      }
+      await syncDirectory(
+        stagingPath,
+        "temporary-directory-sync",
+        options.onAtomicStep,
+      );
+      await options.beforeCommit?.(stagingPath);
+      await assertDirectoryChain(outputChain);
+      await options.onAtomicStep?.("rename");
+      await assertDirectoryChain(outputChain);
+      await rename(stagingPath, finalPath);
+      committed = true;
+      await assertDirectoryChain(outputChain);
+      await syncDirectory(
+        outputRoot,
+        "final-parent-sync",
+        options.onAtomicStep,
+      );
+      return finalPath;
+    } catch (error) {
+      if (!committed) {
+        try {
+          await assertDirectoryChain(outputChain);
+          await options.onAtomicStep?.("cleanup");
+          await rm(stagingPath, { force: true, recursive: true });
+        } catch {
+          if (
+            error instanceof GeneratorContractError &&
+            error.code === "path-safety"
+          )
+            throw error;
+          throw new GeneratorContractError(
+            "cleanup-failed",
+            "temporary output cleanup failed",
+          );
+        }
+      }
+      if (error instanceof GeneratorContractError) throw error;
+      throw new GeneratorContractError(
+        "output-publication",
+        "atomic output publication failed",
+      );
+    }
+  } catch (error) {
     if (error instanceof GeneratorContractError) throw error;
     throw new GeneratorContractError(
       "output-publication",
@@ -395,21 +483,35 @@ export async function runGeneratorCli(
       options.outputDirectory,
       DEFAULT_GENERATOR_CONFIGURATION.limits.maxOutputPathLength,
     );
-    const inputPaths = [
+    const suppliedInputPaths = [
       options.requestPath,
       options.configurationPath,
       options.catalogPath,
-    ]
-      .filter((value): value is string => value !== undefined)
-      .map((path) => resolve(cwd, path));
-    if (inputPaths.includes(outputRoot))
+    ].filter((value): value is string => value !== undefined);
+    const inputPaths = suppliedInputPaths.map((path) =>
+      safeInputPath(cwd, path),
+    );
+    for (const inputPath of inputPaths)
+      await rejectInputReparseSegments(cwd, inputPath);
+    const outputKey = collisionKey(outputRoot);
+    const inputKeys = inputPaths.map(collisionKey);
+    if (
+      inputKeys.includes(outputKey) ||
+      inputPaths.some((inputPath) => {
+        const relation = relative(outputRoot, inputPath);
+        return (
+          relation === "" ||
+          (relation !== ".." && !relation.startsWith(`..${sep}`))
+        );
+      })
+    )
       throw new GeneratorContractError(
         "path-safety",
         "output directory cannot also be an input file",
       );
     const request = await readBoundedJson(
       "request",
-      resolve(cwd, options.requestPath),
+      safeInputPath(cwd, options.requestPath),
       DEFAULT_GENERATOR_CONFIGURATION.limits.maxRequestBytes,
     );
     const configuration =
@@ -417,7 +519,7 @@ export async function runGeneratorCli(
         ? DEFAULT_GENERATOR_CONFIGURATION
         : ((await readBoundedJson(
             "configuration",
-            resolve(cwd, options.configurationPath),
+            safeInputPath(cwd, options.configurationPath),
             DEFAULT_GENERATOR_CONFIGURATION.limits.maxConfigurationBytes,
           )) as GeneratorConfiguration);
     const catalog =
@@ -425,7 +527,7 @@ export async function runGeneratorCli(
         ? DEFAULT_MECHANIC_CATALOG
         : ((await readBoundedJson(
             "catalog",
-            resolve(cwd, options.catalogPath),
+            safeInputPath(cwd, options.catalogPath),
             DEFAULT_GENERATOR_CONFIGURATION.limits.maxCatalogBytes,
           )) as MechanicCatalog);
     const bundle = generateObby(request, configuration, catalog);
@@ -450,10 +552,7 @@ export async function runGeneratorCli(
     const normalized =
       error instanceof GeneratorContractError
         ? error
-        : new GeneratorContractError(
-            "schema",
-            error instanceof Error ? error.message : "unknown failure",
-          );
+        : new GeneratorContractError("output-publication", "operation failed");
     streams.stderr.write(
       jsonErrors
         ? `${JSON.stringify({ error: { code: normalized.code, message: normalized.message } })}\n`
