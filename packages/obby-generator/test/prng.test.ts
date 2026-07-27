@@ -25,6 +25,18 @@ describe("deterministic random source", () => {
     ).toBe(3);
   });
 
+  it("uses unambiguous framed fields even when values contain NUL", () => {
+    expect(deriveDomainSeed("a\0b", "c")).not.toBe(
+      deriveDomainSeed("a", "b\0c"),
+    );
+  });
+
+  it("normalizes equivalent Unicode identity and domain values", () => {
+    expect(deriveDomainSeed("Cafe\u0301", "me\u0301chanics")).toBe(
+      deriveDomainSeed("Caf\u00e9", "m\u00e9chanics"),
+    );
+  });
+
   it("supports exact inclusive integer limits", () => {
     const random = new DeterministicRandom(1);
     expect(Array.from({ length: 10 }, () => random.integer(5, 5))).toEqual(

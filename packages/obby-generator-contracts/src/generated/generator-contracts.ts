@@ -129,7 +129,7 @@ export interface GeneratorLimits {
   maxAssetIntents: 128;
   maxOutputBytes: 4194304;
   maxOutputPathLength: 240;
-  maxWorkUnits: 25000;
+  maxWorkUnits: number;
 }
 export interface MechanicDefinition {
   schemaVersion: "0.1";
@@ -139,9 +139,25 @@ export interface MechanicDefinition {
   capability: "g1-static-supported" | "future-runtime-supported" | "deferred";
   minimumDifficulty: number;
   maximumDifficulty: number;
-  requiredCapabilities: StringSet;
+  /**
+   * @maxItems 2
+   */
+  requiredCapabilities: ("native-parts" | "runtime-mechanic")[];
+  /**
+   * @maxItems 5
+   */
+  compatibleHazardKinds: (
+    | "kill-floor"
+    | "kill-part"
+    | "fall-void"
+    | "timed-contact-intent"
+    | "moving-obstacle-intent"
+  )[];
   forbiddenAdjacentMechanicIds: StringSet;
-  accessibilityImplications: StringSet;
+  /**
+   * @maxItems 1
+   */
+  accessibilityImplications: "reduced-motion"[];
   repetitionLimit: number;
   selectionWeight: number;
   mechanicDefinitionHash: Hash;
@@ -169,7 +185,11 @@ export interface StageSpec {
     | "recovery"
     | "climax"
     | "finish-approach";
-  mechanicIntentIds: StringSet;
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  mechanicIntentIds: [Id, ...Id[]];
   difficultyBandId: Id;
   estimatedCompletionSeconds: {
     minimum: number;
@@ -278,6 +298,7 @@ export interface MechanicIntent {
   mechanicIntentId: Id;
   stageId: Id;
   mechanicId: Id;
+  mechanicVersion: "1";
   use: "introduce" | "practice" | "intensify" | "combine";
   mechanicIntentHash: Hash;
 }
@@ -285,7 +306,12 @@ export interface VisualStyleIntent {
   schemaVersion: "0.1";
   visualStyleIntentId: Id;
   themeFamily: "classic" | "sky" | "space" | "lava" | "jungle";
-  paletteIntent: string;
+  paletteIntent:
+    | "classic-high-contrast"
+    | "sky-high-contrast"
+    | "space-high-contrast"
+    | "lava-high-contrast"
+    | "jungle-high-contrast";
   materialFamily: "native-roblox-materials";
   lightingMoodIntent: "bright" | "dramatic" | "calm";
   shapeLanguage: "blocky-readable";
@@ -353,7 +379,10 @@ export interface GenerationLimitation {
 export interface GenerationFinding {
   schemaVersion: "0.1";
   findingId: Id;
-  code: "limited-mechanic-variety" | "deferred-capability-planned";
+  code:
+    | "limited-mechanic-variety"
+    | "deferred-capability-planned"
+    | "checkpoint-cadence-adjusted";
   severity: "information" | "warning";
   message: string;
   relatedIds: StringSet;

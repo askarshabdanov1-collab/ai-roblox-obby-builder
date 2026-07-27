@@ -1,3 +1,3 @@
 /* Generated from generator-contracts.schema.json. Do not edit. */
 export const GENERATOR_CONTRACT_SCHEMA_HASH =
-  "sha256:87e38ff6bf7d468dd8babd58e7e66cacdd4e96b696da66da64f7a8b516ecc5cb" as const;
+  "sha256:7962739481dd11fe448f9f1084ab18c5d42ea4fa4fea7690d9cdf9ce4a85c5ea" as const;

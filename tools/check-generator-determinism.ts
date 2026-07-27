@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 
 import { evaluatorCanonicalStringify } from "@obby/canonical-json";
 import {
+  DEFAULT_GENERATOR_CONFIGURATION,
   DEFAULT_MECHANIC_CATALOG,
   assertValidGenerationBundle,
   generateObby,
@@ -71,7 +72,11 @@ if (
   throw new Error("semantic-set ordering changed output bytes");
 
 const varied = generateObby({ ...request, seed: request.seed + 1 });
-assertValidGenerationBundle(varied, DEFAULT_MECHANIC_CATALOG);
+assertValidGenerationBundle(
+  varied,
+  DEFAULT_MECHANIC_CATALOG,
+  DEFAULT_GENERATOR_CONFIGURATION,
+);
 if (
   varied.obbySpec.obbySpecHash === first.obbySpec.obbySpecHash ||
   varied.obbySpec.game.title !== first.obbySpec.game.title ||

@@ -7,8 +7,11 @@ import {
 } from "@obby/obby-generator-contracts";
 import type {
   GenerationRequest,
+  MechanicCatalog,
   NormalizedGenerationRequest,
 } from "@obby/obby-generator-contracts";
+
+import { DEFAULT_MECHANIC_CATALOG } from "./catalog.js";
 
 const semanticSet = (values: readonly string[] | undefined): string[] =>
   [
@@ -17,6 +20,7 @@ const semanticSet = (values: readonly string[] | undefined): string[] =>
 
 export function normalizeGenerationRequest(
   input: unknown,
+  catalog: MechanicCatalog = DEFAULT_MECHANIC_CATALOG,
 ): NormalizedGenerationRequest {
   const request = parseGenerationRequest(input);
   const stageCount = request.stageCount ?? 15;
@@ -137,6 +141,6 @@ export function normalizeGenerationRequest(
       "normalizedRequestHash",
     ),
   };
-  assertValidNormalizedGenerationRequest(normalized);
+  assertValidNormalizedGenerationRequest(normalized, catalog);
   return normalized;
 }

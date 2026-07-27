@@ -32,6 +32,9 @@ export function assertContentHash(value: object, field: string): void {
 }
 
 export type GeneratorContractErrorCode =
+  | "usage"
+  | "input"
+  | "validation"
   | "schema"
   | "stage-count"
   | "checkpoint-frequency"

@@ -96,6 +96,12 @@ const seeds: MechanicSeed[] = [
       capability === "g1-static-supported"
         ? ["native-parts"]
         : ["runtime-mechanic"],
+    compatibleHazardKinds:
+      capability === "g1-static-supported"
+        ? ["fall-void", "kill-part"]
+        : mechanicId === "moving-platform"
+          ? ["moving-obstacle-intent"]
+          : ["timed-contact-intent"],
     forbiddenAdjacentMechanicIds:
       mechanicId === "balance-beam" ? ["narrow-platforms"] : [],
     accessibilityImplications:

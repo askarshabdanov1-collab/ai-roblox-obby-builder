@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  DEFAULT_GENERATOR_CONFIGURATION,
   DEFAULT_MECHANIC_CATALOG,
   assertValidGenerationBundle,
   generateObby,
@@ -26,9 +27,68 @@ function refresh(bundle: GenerationBundle): void {
     bundle.obbySpec,
     "obbySpecHash",
   );
+  bundle.generationBundleId = `bundle-${bundle.obbySpec.obbySpecHash.slice(7, 23)}`;
   bundle.generationBundleHash = hashGeneratorPreimage(
     bundle,
     "generationBundleHash",
+  );
+}
+
+function required<T>(value: T | undefined, label: string): T {
+  if (value === undefined) throw new Error(`missing ${label}`);
+  return value;
+}
+
+function refreshMechanicUses(bundle: GenerationBundle): void {
+  const intentById = new Map(
+    bundle.obbySpec.mechanicIntents.map((intent) => [
+      intent.mechanicIntentId,
+      intent,
+    ]),
+  );
+  const seen = new Set<string>();
+  for (const stage of bundle.obbySpec.stages) {
+    const intent = intentById.get(stage.mechanicIntentIds[0]);
+    if (intent === undefined) continue;
+    intent.use = seen.has(intent.mechanicId) ? "practice" : "introduce";
+    seen.add(intent.mechanicId);
+    intent.mechanicIntentHash = hashGeneratorPreimage(
+      intent,
+      "mechanicIntentHash",
+    );
+  }
+}
+
+function setStageMechanic(
+  bundle: GenerationBundle,
+  stageIndex: number,
+  mechanicId: string,
+): void {
+  const stage = required(bundle.obbySpec.stages.at(stageIndex), "stage");
+  const intent = required(
+    bundle.obbySpec.mechanicIntents.find(
+      (item) => item.mechanicIntentId === stage.mechanicIntentIds[0],
+    ),
+    "mechanic intent",
+  );
+  intent.mechanicId = mechanicId;
+  intent.mechanicVersion = "1";
+  for (const hazardId of stage.hazardIds) {
+    const hazard = required(
+      bundle.obbySpec.hazards.find((item) => item.hazardId === hazardId),
+      "hazard",
+    );
+    hazard.mechanicId = mechanicId;
+    hazard.kind = "kill-part";
+    hazard.hazardHash = hashGeneratorPreimage(hazard, "hazardHash");
+  }
+}
+
+function validate(bundle: GenerationBundle): void {
+  assertValidGenerationBundle(
+    bundle,
+    DEFAULT_MECHANIC_CATALOG,
+    DEFAULT_GENERATOR_CONFIGURATION,
   );
 }
 
@@ -38,7 +98,7 @@ describe("G0 graph validation", () => {
       generatedAt?: string;
     };
     bundle.generatedAt = "2026-01-01T00:00:00Z";
-    expect(() => assertValidGenerationBundle(bundle)).toThrow(
+    expect(() => validate(bundle)).toThrow(
       expect.objectContaining({ code: "schema" }),
     );
   });
@@ -52,7 +112,7 @@ describe("G0 graph validation", () => {
     second.stageId = first.stageId;
     second.stageHash = hashGeneratorPreimage(second, "stageHash");
     refresh(bundle);
-    expect(() => assertValidGenerationBundle(bundle)).toThrow(
+    expect(() => validate(bundle)).toThrow(
       expect.objectContaining({ code: "duplicate-id" }),
     );
   });
@@ -64,7 +124,7 @@ describe("G0 graph validation", () => {
     hazard.stageId = "stage-unknown";
     hazard.hazardHash = hashGeneratorPreimage(hazard, "hazardHash");
     refresh(bundle);
-    expect(() => assertValidGenerationBundle(bundle)).toThrow(
+    expect(() => validate(bundle)).toThrow(
       expect.objectContaining({ code: "invalid-reference" }),
     );
   });
@@ -81,7 +141,7 @@ describe("G0 graph validation", () => {
       "assetIntentHash",
     );
     refresh(bundle);
-    expect(() => assertValidGenerationBundle(bundle)).toThrow(
+    expect(() => validate(bundle)).toThrow(
       expect.objectContaining({ code: "invariant" }),
     );
   });
@@ -90,8 +150,8 @@ describe("G0 graph validation", () => {
     const bundle = structuredClone(generateObby(request));
     bundle.obbySpec.seed += 1;
     refresh(bundle);
-    expect(() => assertValidGenerationBundle(bundle)).toThrow(
-      expect.objectContaining({ code: "hash-mismatch" }),
+    expect(() => validate(bundle)).toThrow(
+      expect.objectContaining({ code: "invalid-reference" }),
     );
   });
 
@@ -106,8 +166,117 @@ describe("G0 graph validation", () => {
       "routeHash",
     );
     refresh(bundle);
-    expect(() => assertValidGenerationBundle(bundle)).toThrow(
+    expect(() => validate(bundle)).toThrow(
+      expect.objectContaining({ code: "invalid-reference" }),
+    );
+  });
+
+  it("rejects a playable stage without its required mechanic", () => {
+    const bundle = structuredClone(generateObby(request));
+    const stage = required(bundle.obbySpec.stages.at(0), "first stage");
+    stage.mechanicIntentIds = [] as unknown as [string];
+    stage.stageHash = hashGeneratorPreimage(stage, "stageHash");
+    refresh(bundle);
+    expect(() => validate(bundle)).toThrow(
+      expect.objectContaining({ code: "schema" }),
+    );
+  });
+
+  it("rejects an orphan mechanic intent", () => {
+    const bundle = structuredClone(generateObby(request));
+    const orphan = structuredClone(
+      required(bundle.obbySpec.mechanicIntents.at(0), "first mechanic intent"),
+    );
+    orphan.mechanicIntentId = "mechanic-intent-orphan";
+    orphan.mechanicIntentHash = hashGeneratorPreimage(
+      orphan,
+      "mechanicIntentHash",
+    );
+    bundle.obbySpec.mechanicIntents.push(orphan);
+    refresh(bundle);
+    expect(() => validate(bundle)).toThrow(
       expect.objectContaining({ code: "invariant" }),
+    );
+  });
+
+  it("rejects a checkpoint route node without its CheckpointSpec", () => {
+    const bundle = structuredClone(
+      generateObby({ ...request, checkpointFrequency: 3 }),
+    );
+    bundle.obbySpec.checkpoints.shift();
+    refresh(bundle);
+    expect(() => validate(bundle)).toThrow();
+  });
+
+  it("rejects an incompatible moving hazard on a static mechanic", () => {
+    const bundle = structuredClone(generateObby(request));
+    const hazard = required(bundle.obbySpec.hazards.at(0), "first hazard");
+    hazard.kind = "moving-obstacle-intent";
+    hazard.hazardHash = hashGeneratorPreimage(hazard, "hazardHash");
+    refresh(bundle);
+    expect(() => validate(bundle)).toThrow(
+      expect.objectContaining({ code: "invalid-reference" }),
+    );
+  });
+
+  it("rejects external asset policy under native-parts-only", () => {
+    const bundle = structuredClone(generateObby(request));
+    const asset = required(bundle.obbySpec.assetIntents.at(0), "first asset");
+    asset.preferredSourcePolicy = "external-assets-allowed-later";
+    asset.assetIntentHash = hashGeneratorPreimage(asset, "assetIntentHash");
+    refresh(bundle);
+    expect(() => validate(bundle)).toThrow(
+      expect.objectContaining({ code: "invariant" }),
+    );
+  });
+
+  it("accepts a repetition limit exactly met and rejects the next repeat", () => {
+    const exact = structuredClone(generateObby(request));
+    for (let index = 0; index < 3; index += 1)
+      setStageMechanic(exact, index, "static-jumps");
+    setStageMechanic(exact, 3, "height-changes");
+    refreshMechanicUses(exact);
+    refresh(exact);
+    expect(() => validate(exact)).not.toThrow();
+
+    const exceeded = structuredClone(exact);
+    setStageMechanic(exceeded, 3, "static-jumps");
+    refreshMechanicUses(exceeded);
+    refresh(exceeded);
+    expect(() => validate(exceeded)).toThrow(
+      expect.objectContaining({
+        code: "invariant",
+      }),
+    );
+  });
+
+  it("rejects a catalog-forbidden adjacency with fresh hashes", () => {
+    const bundle = structuredClone(generateObby(request));
+    setStageMechanic(bundle, 1, "balance-beam");
+    setStageMechanic(bundle, 2, "narrow-platforms");
+    refreshMechanicUses(bundle);
+    refresh(bundle);
+    expect(() => validate(bundle)).toThrow(
+      expect.objectContaining({
+        code: "invariant",
+      }),
+    );
+  });
+
+  it("rejects gameplay-authoritative assets without native-Part fallback", () => {
+    const bundle = structuredClone(generateObby(request));
+    const asset = required(
+      bundle.obbySpec.assetIntents.find(
+        (item) => item.authority === "gameplay-authoritative",
+      ),
+      "gameplay asset",
+    );
+    (asset as unknown as { nativePartFallback: boolean }).nativePartFallback =
+      false;
+    asset.assetIntentHash = hashGeneratorPreimage(asset, "assetIntentHash");
+    refresh(bundle);
+    expect(() => validate(bundle)).toThrow(
+      expect.objectContaining({ code: "schema" }),
     );
   });
 
@@ -176,13 +345,20 @@ describe("G0 planning boundaries", () => {
     expect(spec.checkpoints.map((item) => item.stageId)).toEqual(["stage-24"]);
   });
 
-  it("introduces mechanics before reuse and avoids immediate repetition when alternatives exist", () => {
+  it("marks first use as introduction and respects catalog repetition limits", () => {
     const intents = generateObby(request).obbySpec.mechanicIntents;
     const seen = new Set<string>();
-    for (const [index, intent] of intents.entries()) {
+    let previous: string | undefined;
+    let repeated = 0;
+    for (const intent of intents) {
       expect(intent.use === "introduce").toBe(!seen.has(intent.mechanicId));
-      if (index > 0 && index < intents.length - 1)
-        expect(intent.mechanicId).not.toBe(intents[index - 1]?.mechanicId);
+      repeated = intent.mechanicId === previous ? repeated + 1 : 1;
+      expect(repeated).toBeLessThanOrEqual(
+        DEFAULT_MECHANIC_CATALOG.mechanics.find(
+          (mechanic) => mechanic.mechanicId === intent.mechanicId,
+        )?.repetitionLimit ?? 0,
+      );
+      previous = intent.mechanicId;
       seen.add(intent.mechanicId);
     }
   });
@@ -201,7 +377,7 @@ describe("G0 planning boundaries", () => {
     expect(bundle.findings.map((item) => item.code)).toContain(
       "limited-mechanic-variety",
     );
-    assertValidGenerationBundle(bundle, DEFAULT_MECHANIC_CATALOG);
+    validate(bundle);
   });
 
   it("never places catalog-forbidden mechanics next to each other", () => {

@@ -40,6 +40,17 @@ import {
 import { normalizeGenerationRequest } from "./normalize.js";
 import { DeterministicRandom, deriveDomainSeed } from "./prng.js";
 
+const PALETTE_BY_THEME = {
+  classic: "classic-high-contrast",
+  sky: "sky-high-contrast",
+  space: "space-high-contrast",
+  lava: "lava-high-contrast",
+  jungle: "jungle-high-contrast",
+} as const satisfies Record<
+  VisualStyleIntent["themeFamily"],
+  VisualStyleIntent["paletteIntent"]
+>;
+
 function contentAddress<T extends object, K extends string>(
   value: T,
   hashField: K,
@@ -53,9 +64,11 @@ function contentAddress<T extends object, K extends string>(
 function difficultySequence(
   stageCount: number,
   target: "easy" | "medium" | "hard",
+  maximumLocalDelta: number,
 ): { band: DifficultyBandName; level: 1 | 2 | 3 | 4 | 5 }[] {
   const peak = target === "easy" ? 3 : target === "medium" ? 4 : 5;
   const result: { band: DifficultyBandName; level: 1 | 2 | 3 | 4 | 5 }[] = [];
+  let lastRecoveryOrdinal: number | undefined;
   for (let ordinal = 1; ordinal <= stageCount; ordinal += 1) {
     let level: 1 | 2 | 3 | 4 | 5;
     let band: DifficultyBandName;
@@ -65,10 +78,14 @@ function difficultySequence(
     } else if (ordinal === stageCount) {
       level = peak;
       band = "climax";
-    } else if (ordinal > 4 && ordinal % 8 === 0) {
+    } else if (
+      (result.at(-1)?.level ?? 1) >= peak &&
+      (lastRecoveryOrdinal === undefined || ordinal - lastRecoveryOrdinal >= 4)
+    ) {
       const previous = result.at(-1)?.level ?? 2;
-      level = Math.max(2, previous - 2) as 2 | 3;
+      level = Math.max(1, previous - maximumLocalDelta) as 1 | 2 | 3 | 4;
       band = "recovery";
+      lastRecoveryOrdinal = ordinal;
     } else {
       const progress = (ordinal - 1) / (stageCount - 1);
       level = Math.max(
@@ -78,8 +95,21 @@ function difficultySequence(
       band = level === 2 ? "easy" : level === 3 ? "medium" : "hard";
     }
     const previous = result.at(-1)?.level;
-    if (previous !== undefined && Math.abs(level - previous) > 2)
-      level = (previous + Math.sign(level - previous) * 2) as 1 | 2 | 3 | 4 | 5;
+    if (
+      previous !== undefined &&
+      Math.abs(level - previous) > maximumLocalDelta
+    )
+      level = (previous + Math.sign(level - previous) * maximumLocalDelta) as
+        1 | 2 | 3 | 4 | 5;
+    if (band !== "tutorial" && band !== "climax" && band !== "recovery")
+      band =
+        level === 1
+          ? "tutorial"
+          : level === 2
+            ? "easy"
+            : level === 3
+              ? "medium"
+              : "hard";
     result.push({ band, level });
   }
   return result;
@@ -129,26 +159,11 @@ function selectMechanics(
         "unknown-mechanic",
         `unknown excluded mechanic ${excluded}`,
       );
-  const source =
-    request.supportedMechanicPreferences.length > 0
-      ? request.supportedMechanicPreferences.map((id) => {
-          const mechanic = byId.get(id);
-          if (mechanic === undefined)
-            throw new GeneratorContractError(
-              "unknown-mechanic",
-              `unknown preferred mechanic ${id}`,
-            );
-          return mechanic;
-        })
-      : catalog.mechanics.filter(
-          (item) =>
-            item.capability === "g1-static-supported" &&
-            !["checkpoint-recovery", "finish-approach"].includes(
-              item.mechanicId,
-            ),
-        );
-  const candidates = source.filter(
+  const candidates = catalog.mechanics.filter(
     (item) =>
+      !["checkpoint-recovery", "finish-approach"].includes(item.mechanicId) &&
+      (item.capability === "g1-static-supported" ||
+        configuration.allowDeferredMechanics) &&
       !request.excludedMechanics.includes(item.mechanicId) &&
       !(
         request.accessibilityConstraints.includes("reduced-motion") &&
@@ -163,6 +178,30 @@ function selectMechanics(
   return candidates.sort((left, right) =>
     compareUnicodeScalars(left.mechanicId, right.mechanicId),
   );
+}
+
+export function estimateGenerationWorkUnits(
+  stageCount: number,
+  mechanicDefinitionCount: number,
+): number {
+  if (
+    !Number.isSafeInteger(stageCount) ||
+    stageCount < 0 ||
+    !Number.isSafeInteger(mechanicDefinitionCount) ||
+    mechanicDefinitionCount < 0
+  )
+    throw new GeneratorContractError(
+      "work-limit",
+      "work estimate inputs must be non-negative safe integers",
+    );
+  const units =
+    4_000 +
+    120 * stageCount +
+    100 * mechanicDefinitionCount +
+    4 * stageCount * mechanicDefinitionCount;
+  if (!Number.isSafeInteger(units))
+    throw new GeneratorContractError("work-limit", "work estimate overflow");
+  return units;
 }
 
 function weightedMechanicChoice(
@@ -196,9 +235,9 @@ export function generateObby(
 ): GenerationBundle {
   assertValidGeneratorConfiguration(configuration);
   assertValidMechanicCatalog(catalog);
-  const request = normalizeGenerationRequest(requestInput);
+  const request = normalizeGenerationRequest(requestInput, catalog);
   if (
-    request.stageCount * Math.max(1, catalog.mechanics.length) >
+    estimateGenerationWorkUnits(request.stageCount, catalog.mechanics.length) >
     configuration.limits.maxWorkUnits
   )
     throw new GeneratorContractError(
@@ -218,7 +257,11 @@ export function generateObby(
         item.mechanicId === "static-jumps" &&
         !request.excludedMechanics.includes(item.mechanicId),
     ) ?? fallbackMechanic;
-  const difficulty = difficultySequence(request.stageCount, request.difficulty);
+  const difficulty = difficultySequence(
+    request.stageCount,
+    request.difficulty,
+    configuration.difficultyDeltaLimit,
+  );
   const seedIdentity = hashGeneratorPreimage(
     {
       schemaVersion: "0.1",
@@ -234,6 +277,7 @@ export function generateObby(
     deriveDomainSeed(seedIdentity, "mechanics"),
   );
   const checkpointOrdinals = new Set<number>();
+  let checkpointCadenceAdjusted = false;
   for (
     let ordinal = request.checkpointFrequency;
     ordinal < request.stageCount;
@@ -248,14 +292,35 @@ export function generateObby(
       ordinal + 1 < request.stageCount
         ? ordinal + 1
         : ordinal;
-    checkpointOrdinals.add(adjustedOrdinal);
+    let availableOrdinal = adjustedOrdinal;
+    if (availableOrdinal !== ordinal) checkpointCadenceAdjusted = true;
+    if (checkpointOrdinals.has(availableOrdinal)) {
+      checkpointCadenceAdjusted = true;
+      const candidates: number[] = [];
+      for (let distance = 1; distance < request.stageCount; distance += 1) {
+        if (availableOrdinal + distance < request.stageCount)
+          candidates.push(availableOrdinal + distance);
+        if (availableOrdinal - distance >= 1)
+          candidates.push(availableOrdinal - distance);
+      }
+      const replacement = candidates.find(
+        (candidate) => !checkpointOrdinals.has(candidate),
+      );
+      if (replacement === undefined)
+        throw new GeneratorContractError(
+          "invariant",
+          "checkpoint cadence has no collision-free stage",
+        );
+      availableOrdinal = replacement;
+    }
+    checkpointOrdinals.add(availableOrdinal);
   }
 
   const visualPreimage = {
     schemaVersion: "0.1" as const,
     visualStyleIntentId: "visual-global",
     themeFamily: request.theme,
-    paletteIntent: `${request.theme}-high-contrast`,
+    paletteIntent: PALETTE_BY_THEME[request.theme],
     materialFamily: "native-roblox-materials" as const,
     lightingMoodIntent:
       request.theme === "lava" ? ("dramatic" as const) : ("bright" as const),
@@ -316,54 +381,68 @@ export function generateObby(
           : "required-before-use",
     },
   ];
-  const assetIntents = assetSeeds.map((item) =>
-    contentAddress(item, "assetIntentHash"),
-  );
+  const assetIntents = assetSeeds
+    .map((item) => contentAddress(item, "assetIntentHash"))
+    .sort((left, right) =>
+      compareUnicodeScalars(left.assetIntentId, right.assetIntentId),
+    );
 
   const mechanicIntents: MechanicIntent[] = [];
   const used = new Map<string, number>();
   const selectedMechanics: MechanicDefinition[] = [];
+  const preferredMechanics = new Set(request.supportedMechanicPreferences);
+  let consecutiveMechanicId: string | undefined;
+  let consecutiveMechanicCount = 0;
   for (let ordinal = 1; ordinal <= request.stageCount; ordinal += 1) {
     let mechanic: MechanicDefinition;
-    if (
-      ordinal === request.stageCount &&
-      !request.excludedMechanics.includes("finish-approach")
-    )
-      mechanic =
-        catalog.mechanics.find(
-          (item) => item.mechanicId === "finish-approach",
-        ) ?? fallbackMechanic;
+    const stageDifficulty = difficulty[ordinal - 1];
+    if (stageDifficulty === undefined)
+      throw new GeneratorContractError(
+        "invariant",
+        "difficulty sequence is incomplete",
+      );
+    const canUse = (
+      candidate: MechanicDefinition | undefined,
+    ): candidate is MechanicDefinition =>
+      candidate !== undefined &&
+      !request.excludedMechanics.includes(candidate.mechanicId) &&
+      candidate.minimumDifficulty <= stageDifficulty.level &&
+      candidate.maximumDifficulty >= stageDifficulty.level &&
+      candidate.requiredCapabilities.every(
+        (capability) =>
+          capability === "native-parts" || configuration.allowDeferredMechanics,
+      ) &&
+      (candidate.mechanicId !== consecutiveMechanicId ||
+        consecutiveMechanicCount < candidate.repetitionLimit);
+    const finishMechanic = catalog.mechanics.find(
+      (item) => item.mechanicId === "finish-approach",
+    );
+    const recoveryMechanic = catalog.mechanics.find(
+      (item) => item.mechanicId === "checkpoint-recovery",
+    );
+    if (ordinal === request.stageCount && canUse(finishMechanic))
+      mechanic = finishMechanic;
     else if (
       difficulty[ordinal - 1]?.band === "recovery" &&
-      !request.excludedMechanics.includes("checkpoint-recovery")
+      canUse(recoveryMechanic)
     )
-      mechanic =
-        catalog.mechanics.find(
-          (item) => item.mechanicId === "checkpoint-recovery",
-        ) ?? fallbackMechanic;
+      mechanic = recoveryMechanic;
     else {
       const previous = selectedMechanics.at(-1)?.mechanicId;
       const previousDefinition =
         previous === undefined
           ? undefined
           : catalog.mechanics.find((item) => item.mechanicId === previous);
-      const stageDifficulty = difficulty[ordinal - 1];
-      if (stageDifficulty === undefined)
-        throw new GeneratorContractError(
-          "invariant",
-          "difficulty sequence is incomplete",
-        );
       let eligible = candidates.filter(
         (candidate) =>
           candidate.minimumDifficulty <= stageDifficulty.level &&
-          candidate.maximumDifficulty >= stageDifficulty.level,
+          candidate.maximumDifficulty >= stageDifficulty.level &&
+          candidate.requiredCapabilities.every(
+            (capability) =>
+              capability === "native-parts" ||
+              configuration.allowDeferredMechanics,
+          ),
       );
-      if (ordinal >= request.stageCount - 1) {
-        const introduced = eligible.filter((candidate) =>
-          used.has(candidate.mechanicId),
-        );
-        if (introduced.length > 0) eligible = introduced;
-      }
       if (eligible.length === 0) eligible = [foundationMechanic];
       const compatible = eligible.filter(
         (candidate) =>
@@ -373,10 +452,16 @@ export function generateObby(
               candidate.mechanicId,
             )),
       );
-      const nonRepeating = compatible.filter(
-        (candidate) => candidate.mechanicId !== previous,
+      const withinRepetitionLimit = compatible.filter(
+        (candidate) =>
+          candidate.mechanicId !== consecutiveMechanicId ||
+          consecutiveMechanicCount < candidate.repetitionLimit,
       );
-      const available = nonRepeating.length > 0 ? nonRepeating : compatible;
+      const preferred = withinRepetitionLimit.filter((candidate) =>
+        preferredMechanics.has(candidate.mechanicId),
+      );
+      const available =
+        preferred.length > 0 ? preferred : withinRepetitionLimit;
       if (available.length === 0)
         throw new GeneratorContractError(
           "invariant",
@@ -384,6 +469,19 @@ export function generateObby(
         );
       mechanic = weightedMechanicChoice(mechanicRandom, available);
     }
+    if (
+      mechanic.mechanicId === consecutiveMechanicId &&
+      consecutiveMechanicCount >= mechanic.repetitionLimit
+    )
+      throw new GeneratorContractError(
+        "invariant",
+        `no catalog-compliant repetition is available for stage ${ordinal}`,
+      );
+    consecutiveMechanicCount =
+      mechanic.mechanicId === consecutiveMechanicId
+        ? consecutiveMechanicCount + 1
+        : 1;
+    consecutiveMechanicId = mechanic.mechanicId;
     selectedMechanics.push(mechanic);
     const count = used.get(mechanic.mechanicId) ?? 0;
     used.set(mechanic.mechanicId, count + 1);
@@ -392,6 +490,7 @@ export function generateObby(
       mechanicIntentId: `mechanic-intent-${String(ordinal).padStart(2, "0")}`,
       stageId: `stage-${String(ordinal).padStart(2, "0")}`,
       mechanicId: mechanic.mechanicId,
+      mechanicVersion: mechanic.mechanicVersion,
       use:
         count === 0
           ? ("introduce" as const)
@@ -574,7 +673,7 @@ export function generateObby(
       stageId,
       ordinal,
       role: stageRole(ordinal, request.stageCount, entry.band),
-      mechanicIntentIds: [mechanicIntent.mechanicIntentId],
+      mechanicIntentIds: [mechanicIntent.mechanicIntentId] as [string],
       difficultyBandId: difficultyBand.difficultyBandId,
       estimatedCompletionSeconds: {
         minimum: 20 + entry.level * 5,
@@ -677,7 +776,23 @@ export function generateObby(
     contentAddress(item, "limitationHash"),
   );
   const findingSeeds: Omit<GenerationFinding, "findingHash">[] = [];
-  if (candidates.length < 3)
+  if (checkpointCadenceAdjusted)
+    findingSeeds.push({
+      schemaVersion: "0.1",
+      findingId: "finding-checkpoint-cadence-adjusted",
+      code: "checkpoint-cadence-adjusted",
+      severity: "information",
+      message:
+        "Checkpoint cadence was deterministically adjusted to avoid a collision or follow a recovery peak.",
+      relatedIds: [...checkpointOrdinals]
+        .sort((left, right) => left - right)
+        .map((ordinal) => `stage-${String(ordinal).padStart(2, "0")}`),
+    });
+  const varietyCandidates =
+    request.supportedMechanicPreferences.length > 0
+      ? candidates.filter((item) => preferredMechanics.has(item.mechanicId))
+      : candidates;
+  if (varietyCandidates.length < 3)
     findingSeeds.push({
       schemaVersion: "0.1",
       findingId: "finding-low-variety",
@@ -685,7 +800,7 @@ export function generateObby(
       severity: "warning",
       message:
         "Request constraints leave fewer than three mechanics for variation.",
-      relatedIds: candidates.map((item) => item.mechanicId),
+      relatedIds: varietyCandidates.map((item) => item.mechanicId),
     });
   if (deferredIds.length > 0)
     findingSeeds.push({
@@ -732,12 +847,7 @@ export function generateObby(
     findings,
   };
   const obbySpec: ObbySpec = contentAddress(obbySpecSeed, "obbySpecHash");
-  assertValidObbySpec(
-    obbySpec,
-    catalog,
-    request.excludedMechanics,
-    configuration,
-  );
+  assertValidObbySpec(obbySpec, catalog, configuration, request);
   const bundleSeed = {
     schemaVersion: "0.1" as const,
     generationBundleId: `bundle-${obbySpec.obbySpecHash.slice(7, 23)}`,

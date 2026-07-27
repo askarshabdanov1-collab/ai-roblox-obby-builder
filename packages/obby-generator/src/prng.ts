@@ -1,14 +1,19 @@
 import { createHash } from "node:crypto";
 
+import { evaluatorCanonicalStringify } from "@obby/canonical-json";
+
 export const GENERATOR_PRNG_ALGORITHM = "mulberry32-v1" as const;
 
 export function deriveDomainSeed(identity: string, domain: string): number {
-  const digest = createHash("sha256")
-    .update(
-      `obby-generator-domain-v1\0${identity}\0${domain.normalize("NFC")}`,
-      "utf8",
-    )
-    .digest();
+  if (typeof identity !== "string" || typeof domain !== "string")
+    throw new TypeError("seed identity and domain must be strings");
+  const preimage = evaluatorCanonicalStringify({
+    derivationVersion: "obby-generator-domain-v2",
+    fieldCount: 2,
+    seedIdentity: identity.normalize("NFC"),
+    domainNamespace: domain.normalize("NFC"),
+  });
+  const digest = createHash("sha256").update(preimage, "utf8").digest();
   return digest.readUInt32BE(0);
 }
 

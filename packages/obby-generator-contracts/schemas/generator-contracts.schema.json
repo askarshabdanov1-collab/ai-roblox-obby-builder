@@ -101,6 +101,7 @@
     "StringSet": {
       "type": "array",
       "maxItems": 64,
+      "uniqueItems": true,
       "items": { "type": "string", "minLength": 1, "maxLength": 128 }
     },
     "NormalizedGenerationRequest": {
@@ -130,14 +131,22 @@
         "schemaVersion": { "const": "0.1" },
         "normalizedRequestId": { "$ref": "#/$defs/Id" },
         "generationRequestHash": { "$ref": "#/$defs/Hash" },
-        "workingName": { "type": "string" },
+        "workingName": { "type": "string", "minLength": 1, "maxLength": 120 },
         "genre": { "const": "obby" },
         "theme": { "enum": ["classic", "sky", "space", "lava", "jungle"] },
         "targetAudience": { "enum": ["all-ages", "general", "experienced"] },
-        "targetSessionDurationMinutes": { "type": "integer" },
+        "targetSessionDurationMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
         "stageCount": { "type": "integer", "minimum": 5, "maximum": 50 },
         "difficulty": { "enum": ["easy", "medium", "hard"] },
-        "checkpointFrequency": { "type": "integer" },
+        "checkpointFrequency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
         "supportedMechanicPreferences": { "$ref": "#/$defs/StringSet" },
         "excludedMechanics": { "$ref": "#/$defs/StringSet" },
         "visualStylePreferences": {
@@ -172,8 +181,8 @@
             ]
           }
         },
-        "seed": { "type": "integer" },
-        "brief": { "type": "string" },
+        "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "brief": { "type": "string", "minLength": 1, "maxLength": 2000 },
         "normalizedRequestHash": { "$ref": "#/$defs/Hash" }
       }
     },
@@ -240,7 +249,7 @@
         "maxAssetIntents": { "const": 128 },
         "maxOutputBytes": { "const": 4194304 },
         "maxOutputPathLength": { "const": 240 },
-        "maxWorkUnits": { "const": 25000 }
+        "maxWorkUnits": { "type": "integer", "minimum": 1, "maximum": 25000 }
       }
     },
     "MechanicDefinition": {
@@ -255,6 +264,7 @@
         "minimumDifficulty",
         "maximumDifficulty",
         "requiredCapabilities",
+        "compatibleHazardKinds",
         "forbiddenAdjacentMechanicIds",
         "accessibilityImplications",
         "repetitionLimit",
@@ -275,9 +285,33 @@
         },
         "minimumDifficulty": { "type": "integer", "minimum": 1, "maximum": 5 },
         "maximumDifficulty": { "type": "integer", "minimum": 1, "maximum": 5 },
-        "requiredCapabilities": { "$ref": "#/$defs/StringSet" },
+        "requiredCapabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 2,
+          "items": { "enum": ["native-parts", "runtime-mechanic"] }
+        },
+        "compatibleHazardKinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 5,
+          "items": {
+            "enum": [
+              "kill-floor",
+              "kill-part",
+              "fall-void",
+              "timed-contact-intent",
+              "moving-obstacle-intent"
+            ]
+          }
+        },
         "forbiddenAdjacentMechanicIds": { "$ref": "#/$defs/StringSet" },
-        "accessibilityImplications": { "$ref": "#/$defs/StringSet" },
+        "accessibilityImplications": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 1,
+          "items": { "const": "reduced-motion" }
+        },
         "repetitionLimit": { "type": "integer", "minimum": 1, "maximum": 10 },
         "selectionWeight": { "type": "integer", "minimum": 1, "maximum": 100 },
         "mechanicDefinitionHash": { "$ref": "#/$defs/Hash" }
@@ -338,7 +372,13 @@
             "finish-approach"
           ]
         },
-        "mechanicIntentIds": { "$ref": "#/$defs/StringSet" },
+        "mechanicIntentIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        },
         "difficultyBandId": { "$ref": "#/$defs/Id" },
         "estimatedCompletionSeconds": {
           "type": "object",
@@ -570,6 +610,7 @@
         "mechanicIntentId",
         "stageId",
         "mechanicId",
+        "mechanicVersion",
         "use",
         "mechanicIntentHash"
       ],
@@ -578,6 +619,7 @@
         "mechanicIntentId": { "$ref": "#/$defs/Id" },
         "stageId": { "$ref": "#/$defs/Id" },
         "mechanicId": { "$ref": "#/$defs/Id" },
+        "mechanicVersion": { "const": "1" },
         "use": { "enum": ["introduce", "practice", "intensify", "combine"] },
         "mechanicIntentHash": { "$ref": "#/$defs/Hash" }
       }
@@ -607,7 +649,15 @@
         "themeFamily": {
           "enum": ["classic", "sky", "space", "lava", "jungle"]
         },
-        "paletteIntent": { "type": "string" },
+        "paletteIntent": {
+          "enum": [
+            "classic-high-contrast",
+            "sky-high-contrast",
+            "space-high-contrast",
+            "lava-high-contrast",
+            "jungle-high-contrast"
+          ]
+        },
         "materialFamily": { "const": "native-roblox-materials" },
         "lightingMoodIntent": { "enum": ["bright", "dramatic", "calm"] },
         "shapeLanguage": { "const": "blocky-readable" },
@@ -766,7 +816,11 @@
         "schemaVersion": { "const": "0.1" },
         "findingId": { "$ref": "#/$defs/Id" },
         "code": {
-          "enum": ["limited-mechanic-variety", "deferred-capability-planned"]
+          "enum": [
+            "limited-mechanic-variety",
+            "deferred-capability-planned",
+            "checkpoint-cadence-adjusted"
+          ]
         },
         "severity": { "enum": ["information", "warning"] },
         "message": { "type": "string", "minLength": 1, "maxLength": 500 },

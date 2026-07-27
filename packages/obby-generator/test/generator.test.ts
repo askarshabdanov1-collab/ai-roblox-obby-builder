@@ -120,7 +120,11 @@ describe("reference Obby generator", () => {
       supportedMechanicPreferences: ["static-jumps", "turning-jumps"],
       visualStylePreferences: ["bright", "high-readability"],
     });
-    assertValidGenerationBundle(first);
+    assertValidGenerationBundle(
+      first,
+      DEFAULT_MECHANIC_CATALOG,
+      DEFAULT_GENERATOR_CONFIGURATION,
+    );
     expect(evaluatorCanonicalStringify(first)).toBe(
       evaluatorCanonicalStringify(second),
     );
@@ -173,9 +177,13 @@ describe("reference Obby generator", () => {
     const bundle = generateObby(request);
     const stale = structuredClone(bundle);
     stale.obbySpec.game.title = "Changed";
-    expect(() => assertValidGenerationBundle(stale)).toThrow(
-      expect.objectContaining({ code: "hash-mismatch" }),
-    );
+    expect(() =>
+      assertValidGenerationBundle(
+        stale,
+        DEFAULT_MECHANIC_CATALOG,
+        DEFAULT_GENERATOR_CONFIGURATION,
+      ),
+    ).toThrow(expect.objectContaining({ code: "invalid-reference" }));
     expect(() =>
       generateObby({
         ...request,
