@@ -8,8 +8,6 @@ import {
   type AvailabilityRecord,
 } from "@obby/obby-evaluator-contracts";
 import * as builtRoot from "@obby/scoring-engine";
-import * as builtMarkdown from "../dist/markdown.js";
-import * as builtReport from "../dist/report.js";
 
 import {
   deferredRuntimeAvailability,
@@ -57,6 +55,24 @@ function expectTrustBoundaryViolation(action: () => unknown): void {
   throw new Error("expected the report trust boundary to reject input");
 }
 
+async function directBuiltFunction(
+  modulePath: string,
+  exportName: string,
+): Promise<(...arguments_: unknown[]) => unknown> {
+  const module: unknown = await import(
+    new URL(modulePath, import.meta.url).href
+  );
+  if (typeof module !== "object" || module === null) {
+    throw new Error(`compiled module ${modulePath} is not an object`);
+  }
+  const candidate: unknown = Reflect.get(module, exportName);
+  if (typeof candidate !== "function") {
+    throw new Error(`compiled module ${modulePath} has no ${exportName}`);
+  }
+  return (...arguments_: unknown[]): unknown =>
+    Reflect.apply(candidate, undefined, arguments_) as unknown;
+}
+
 function deletionRecord(
   report: ReturnType<typeof assembledReport>["result"]["report"],
 ): AvailabilityRecord {
@@ -93,8 +109,16 @@ function deletionRecord(
 }
 
 describe("compiled validated-report trust boundary", () => {
-  it("rejects caller-rehashed raw reports through package-root and direct dist entry points", () => {
+  it("rejects caller-rehashed raw reports through package-root and direct dist entry points", async () => {
     const { result } = assembledReport();
+    const directRender = await directBuiltFunction(
+      "../dist/markdown.js",
+      "renderMarkdownReport",
+    );
+    const directAvailability = await directBuiltFunction(
+      "../dist/report.js",
+      "applyAvailabilityRecords",
+    );
     const nonexistentBundle = structuredClone(result.report);
     nonexistentBundle.calculationBundleHash = `sha256:${"c".repeat(64)}`;
     const staleCalculation = structuredClone(result.report);
@@ -123,15 +147,11 @@ describe("compiled validated-report trust boundary", () => {
       expectTrustBoundaryViolation(() =>
         builtRoot.renderMarkdownReport(report),
       );
-      expectTrustBoundaryViolation(() =>
-        builtMarkdown.renderMarkdownReport(report as never),
-      );
+      expectTrustBoundaryViolation(() => directRender(report));
       expectTrustBoundaryViolation(() =>
         builtRoot.applyAvailabilityRecords(report, []),
       );
-      expectTrustBoundaryViolation(() =>
-        builtReport.applyAvailabilityRecords(report as never, []),
-      );
+      expectTrustBoundaryViolation(() => directAvailability(report, []));
     }
   });
 
