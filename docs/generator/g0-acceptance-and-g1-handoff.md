@@ -8,9 +8,9 @@
 - [x] The versioned static-first mechanic catalog prevents unapproved deferred capabilities.
 - [x] Five through fifty abstract stages receive deterministic roles, mechanics, difficulty, route, checkpoints, hazards, visual/assets, progression, and retention intents.
 - [x] Exactly one acyclic required start-to-finish route covers every required stage.
-- [x] Full graph validation recomputes hashes and closes all references.
-- [x] Golden fixtures cover minimal easy, medium reference, hard long, restricted mechanics, deterministic rejection, same-seed equivalence, shuffled-set equivalence, and seed variation through tests.
-- [x] The offline CLI bounds input/work/output, protects paths, publishes atomically, and reports typed errors.
+- [x] Full graph validation requires catalog/configuration/request authority, recomputes hashes, and closes all bidirectional references.
+- [x] Committed fixtures cover exact typed rejection, same-seed bytes/filename, different-seed controlled variation, and implicit/explicit defaults.
+- [x] The offline CLI enforces the effective work model, protects aliases and reparse points on Ubuntu/Windows, publishes atomically, and reports path-redacted typed errors.
 - [x] Generated contract/fixture checks are non-mutating.
 - [x] Plain-Node built imports and the full repository validation suite include G0.
 - [x] No LLM, network, Studio, Toolbox, ML, analytics, desktop/cloud, or orchestration implementation is present.

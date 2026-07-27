@@ -2,66 +2,93 @@
 
 ## Scope and architecture
 
-G0 converts a structured `GenerationRequest` into a validated, content-addressed `GenerationBundle` and abstract `ObbySpec`. It describes what G1 should build; it does not contain coordinates, platform dimensions, jump distances, Roblox instances, place files, Lua gameplay code, screenshots, or runtime evidence.
-
-The dependency direction is:
+G0 converts a structured `GenerationRequest` into a validated, content-addressed `GenerationBundle` and abstract `ObbySpec`. It describes what G1 should build; it contains no coordinates, geometry, Roblox instances, runtime evidence, or external integration.
 
 ```text
 generator-cli -> obby-generator -> obby-generator-contracts -> canonical-json
 ```
 
-No evaluator package is a generator dependency. The implementation is offline and has no network-capable dependency or service configuration. It uses no LLM, Studio automation, Toolbox lookup, asset generation/download, ML, analytics, desktop UI, cloud infrastructure, or orchestration.
+The contracts package owns versioned shapes, hashes, errors, and full graph validation. The generator owns normalization, committed authorities, PRNG, and planning. The CLI owns bounded file IO and atomic publication. G0 is offline and has no LLM, network, Studio, Toolbox, ML, analytics, desktop/cloud, or orchestration dependency.
 
-`packages/obby-generator-contracts` owns the versioned shapes, named hash preimages, typed errors, and graph validation. `packages/obby-generator` owns normalization, the committed mechanic catalog/configuration, deterministic PRNG, and reference planner. `apps/generator-cli` owns bounded file IO and atomic publication only.
+## Normalization and identity
 
-## Normalization policy
+Input is copied. Text is NFC-normalized; working names are trimmed and whitespace-collapsed. Mechanic preferences/exclusions, accessibility constraints, and visual preferences are unique Unicode-scalar ordered semantic sets. Brief text is bounded metadata and is never interpreted. Defaults are `general`, 12 minutes, 15 stages, `medium`, checkpoint frequency 5, `classic`, empty sets, and `native-parts-only`.
 
-Input is copied before use. Text is NFC-normalized; the working name is trimmed and whitespace-collapsed. Mechanic preferences, exclusions, accessibility constraints, and visual preferences are semantic sets: values are NFC-normalized, deduplicated, and ordered by Unicode scalar value. The brief is preserved as bounded metadata and is never interpreted. Stage/route sequences retain semantic order.
+Normalization rejects empty names, unsupported enum/mechanic values, non-uint32 seeds, non-positive or excessive duration, stage counts outside 5–50, checkpoint frequency outside 1–stage count, noncanonical sets, and preference/exclusion or accessibility contradictions. The public normalized validator repeats these semantic checks before accepting hashes, so caller-rehashed invalid content fails closed and caller input is never mutated.
 
-Defaults are target audience `general`, 12 minutes, 15 stages, `medium` difficulty, checkpoint frequency 5, `classic` theme, empty preference/constraint sets, and `native-parts-only`. G0 never clamps user values. It rejects unsupported genre/schema, empty identities, stages outside 5–50, checkpoint frequency outside 1–stage count, invalid unsigned 32-bit seed, unknown enums/mechanics, and preference/exclusion overlap. There are no locale, clock, environment, host, filesystem-order, or caller-input mutation dependencies.
+All hashes use SHA-256 over NFC canonical JSON with `obby-canonical-json-v1`. Each named preimage includes its identity domain and excludes its result field. Request record IDs, execution/session identity, timestamps, paths, transport, retries, logs, and staging names are excluded. Defaults are expanded before `generationRequestHash`; semantic retries and explicit/implicit defaults are therefore byte-identical.
 
-## Hash and deterministic seed policy
+## PRNG framing
 
-All hashes are SHA-256 over NFC canonical JSON using `obby-canonical-json-v1`. Every named hash preimage includes the canonicalization algorithm and its identity-domain field, and excludes its own result field. The user-facing request record ID is excluded from `generationRequestHash`; omitted defaults are expanded before that hash is calculated; and the normalized stable ID is derived from that hash. Semantic retries with a new record ID, and requests that explicitly state the documented defaults, therefore remain byte-identical. Set-like fields are normalized before hashing. Execution IDs, timestamps, paths, CLI arguments, transport, logs, and staging names are absent from semantic objects.
+The semantic PRNG is `mulberry32-v1`. `seedIdentity` binds the uint32 seed, normalized request, configuration, catalog, and PRNG algorithm. Each subsystem seed is the first uint32 of SHA-256 over a canonical object containing:
 
-The PRNG is `mulberry32-v1` with an explicit unsigned 32-bit user seed. A named `seedIdentity` first binds the seed, normalized request, configuration, catalog, and PRNG algorithm. Each subsystem derives a 32-bit sub-seed by SHA-256 over `obby-generator-domain-v1`, that identity, and an NFC domain name. Current domains include mechanics; the policy reserves stages, difficulty, checkpoints, hazards, theme variation, and asset intents so later changes can remain isolated. Inclusive integer selection uses bounded rejection sampling rather than modulo-biased reduction, with at most 128 attempts. No `Math.random`, random UUID, time, or process entropy affects semantic output.
+- `derivationVersion: "obby-generator-domain-v2"`;
+- `fieldCount: 2`;
+- separately named NFC `seedIdentity`;
+- separately named NFC `domainNamespace`.
 
-## Mechanic catalog policy
+This unambiguously frames embedded separators and NULs. Inclusive selection uses bounded rejection sampling with at most 128 attempts. No time, UUID, `Math.random`, filesystem order, locale, or process entropy affects semantic output.
 
-The catalog is versioned and content-addressed. Static G1-supported mechanics are static jumps, narrow platforms, height changes, turning jumps, stepping stones, balance beam, hazard avoidance, checkpoint recovery, and finish approach. Disappearing platforms are future-runtime-supported; moving platforms, spinners, and timed doors are deferred. Each definition carries difficulty bounds, required capabilities, forbidden adjacency, accessibility implications, repetition limit, and deterministic selection weight.
+## Mechanic authority
 
-The reference configuration permits only static G1-supported mechanics. A requested unknown or deferred mechanic fails closed unless a separately hashed configuration explicitly permits deferred intent. Permitted deferred intent emits both a limitation and a finding and remains non-buildable. Exclusions and forbidden adjacency are enforced during generation and graph validation. Repetition limits are preference bounds when alternatives exist; an otherwise valid one-mechanic request may repeat and emits the limited-variety finding. Fewer than three available mechanics emits that deterministic finding.
+The content-addressed catalog declares version, capability class, required capabilities, difficulty range, compatible hazards, forbidden adjacency, accessibility implications, repetition limit, and weight. The default configuration exposes native Parts only; deferred intent requires explicit hashed permission and remains non-buildable.
 
-## Difficulty, stage, route, checkpoint, and hazard policies
+Capability availability, difficulty range, accessibility, adjacency, repetition, and hazard compatibility are hard constraints in generation and validation. Preferences are prioritized, but the planner deterministically falls back to another permitted mechanic before exceeding a repetition bound. Unknown, excluded, unavailable, conflicting, or incorrectly versioned mechanics fail closed.
 
-Difficulty is design intent, never empirical difficulty. Stage one is tutorial/onboarding; intent rises gradually toward the requested easy (peak 3), medium (peak 4), or hard (peak 5) target. Local level deltas are bounded at two, periodic recovery stages follow escalation, and the final stage is a climax-level finish approach. Roles use the controlled vocabulary in the contract. Mechanics are introduced on first use and practiced or intensified later; immediate repetition is avoided whenever more than one candidate exists.
+## Difficulty, route, checkpoint, and hazard policy
 
-The initial route is exactly one required acyclic chain: start, every playable stage in ordinal order, then finish. Consecutive nodes have exactly one required-safe-progression transition. Checkpoints start at frequency multiples strictly before finish; when a hard peak is immediately followed by a recovery stage, the checkpoint moves forward to that recovery stage. They refer to the corresponding stage/node and increase in route order. A five-stage request with frequency three therefore has one checkpoint. G0 stores no jump distance or position.
+Difficulty is design intent, not empirical evidence. Stage one is tutorial/onboarding; the requested easy/medium/hard peak is 3/4/5; the final stage is climax/finish-approach. Local deltas honor the hashed configuration value of one or two.
 
-Hazards are bounded abstract intents associated with existing stages and selected mechanics. Onboarding has no hazard. Static kinds are kill part and fall void; timed-contact or moving-obstacle intent can appear only with an explicitly permitted deferred mechanic. Hazards are native gameplay-authoritative intents and reset to the last checkpoint. Decorations can never become gameplay-authoritative hazards.
+Recovery is peak-triggered: it may occur only immediately after the requested target peak, with a deterministic cooldown before another recovery. `recoveryPacing: after-peaks` therefore describes implemented behavior rather than a periodic approximation.
 
-## Visual, asset, progression, and retention policies
+The route is one required acyclic chain: start, every stage exactly once in ordinal order, finish. Each consecutive pair has one required-safe transition. Checkpoints begin at frequency multiples before finish. A checkpoint immediately before a recovery moves to the recovery stage. If that shift collides, the planner searches forward then backward by increasing distance for the nearest unused non-finish stage. Requested checkpoint cardinality is preserved, order remains strict, and any shift/collision emits `checkpoint-cadence-adjusted` with final stage IDs.
 
-Visual intent uses controlled theme, palette, native material, lighting, blocky shape, density, readability, landmark cadence, decorative-motion, and UI-tone fields. Asset intent separates gameplay-authoritative route assets from non-colliding decoration. Gameplay collision always defaults to native Roblox Parts; external or local asset policies still require native fallback and audit before use. G0 performs no asset lookup.
+Every hazard binds exactly one stage and that stage's mechanic. Static mechanics allow only their declared native hazards. Deferred hazard kinds require the matching catalog capability and explicit configuration permission.
 
-Progression encodes onboarding clarity, early success, visible stage/checkpoint progress, and finish readability. Retention encodes checkpoint, novelty, recovery, landmark, and climax pacing as design intent only. It emits explicit limitations that player testing, runtime analytics, empirical difficulty, retention prediction, and CCU prediction are unavailable. There is no aggregate quality score.
+## Visual and asset policy
 
-## Validation and limits
+Controlled enums cover theme/palette, material, lighting, shape language, density, readability, decorative motion, and UI tone. Gameplay-authoritative intent uses native-Part collision and a native fallback; decoration is non-colliding and cannot own route authority. Under `native-parts-only`, asset intent cannot select external/local providers or require external audit. Structural `additionalProperties: false` rejects undeclared Toolbox IDs, URLs, and provider fields.
 
-Validation recomputes every nested and top-level hash; enforces global stable-ID uniqueness; continuous unique stage ordinals; exact route endpoints and transitions; increasing checkpoints; final finish placement; hazard, mechanic, visual, and asset references; excluded/deferred mechanic policy; and non-colliding decoration. Unknown references and conflicting identities fail closed through `GeneratorContractError` with stable codes.
+## Full validation boundary
 
-Default deterministic limits are 64 KiB request/configuration files, 512 KiB catalog, 50 stages, 52 route nodes, 51 transitions, 49 checkpoints, 50 hazards, 64 mechanic definitions/findings/limitations, 128 asset intents, 4 MiB canonical output, and 25,000 work units. Generation is iterative and O(stages × mechanic definitions), with bounded PRNG retries and no uncontrolled recursion.
+Full `ObbySpec` validation requires the exact catalog, configuration, and normalized request. Full bundle validation requires the exact catalog and configuration and validates its embedded normalized request. There is no weaker optional-context overload.
 
-## CLI and security policy
+Validation binds every duplicated request/spec/bundle semantic, recomputes all nested/top-level hashes, and enforces:
 
-Run:
+- one mechanic per playable stage and no orphan intent;
+- exact stage/route/checkpoint cardinality in both directions;
+- finish after the final stage;
+- exact hazard/stage/mechanic binding;
+- used and policy-consistent visual/asset intents;
+- exact catalog/configuration/request/generator/PRNG identities;
+- catalog capability, repetition, adjacency, difficulty, accessibility, and hazard rules.
+
+Unknown references, stale hashes, invalid normalized semantics with fresh hashes, policy conflicts, and missing authority context return stable typed errors.
+
+## Deterministic work model
+
+Default limits include 50 stages, 64 mechanic definitions, 52 route nodes, 51 transitions, 49 checkpoints, 50 hazards, 128 assets, 64 findings/limitations, 4 MiB output, and 25,000 work units. Before planning, work is charged as:
+
+```text
+4,000 + 120*stages + 100*mechanics + 4*stages*mechanics
+```
+
+The terms cover bounded normalization, schema/authority validation, sub-seed derivation, mechanic/difficulty/stage/route/checkpoint/hazard/asset/visual work, indexed graph correlation, hashing, full validation, canonical serialization, and CLI preparation. A 50-stage/50-mechanic input costs exactly 25,000. Arithmetic is safe-integer checked, and real generation has deterministic N−1/N/N+1 tests. Complexity is iterative `O(stages * mechanics)` for bounded candidate scans and otherwise linear indexed correlation, with no uncontrolled recursion.
+
+## CLI and filesystem security
 
 ```text
 npm run generator -- generate --request request.json --config generator-config.json --catalog mechanic-catalog.json --output output-directory
 ```
 
-Configuration and catalog flags may be omitted to use committed defaults. Input files are opened through bounded handles, checked as regular files, and size-checked before parsing. The relative output path rejects traversal and symbolic-link/reparse-point ancestors and is confined under a resolved root. The CLI writes one canonical `generation-bundle.json` into a sibling staging directory and atomically renames it to `obby-<64-hex-ObbySpec-hash>`. Existing destinations are conflicts and are never overwritten. Staging is cleaned on failure. Process ID is used only to acquire an execution-local staging directory and is never stored or hashed. `--json-errors` returns stable `{error:{code,message}}`; raw stacks are never printed.
+Config/catalog default to committed authorities. Unknown, duplicate, missing-value, and missing-required options return typed usage errors. Input handles enforce regular-file and byte bounds. Malformed input, schema, hash, and semantic failures retain stable codes.
 
-## Limitations
+Before output creation, the CLI rejects absolute/traversal paths, reserved Windows names, non-NFC segments, input/output aliases, case-insensitive Windows aliases, existing non-directory segments, symlinks, Windows junctions/reparse points, ancestor replacement, and final-output reparse points. Errors expose logical labels, never absolute host paths, native messages, or stacks.
 
-G0 supports only structured `obby` requests and deterministic abstract planning. Natural-language interpretation, geometry, physics feasibility, runtime mechanics, Roblox assembly, rendering, visual evaluation, player testing, analytics, experiments, and external services remain out of scope.
+Publication uses a sibling staging directory, exclusive file creation, file/directory sync attempts, directory-identity revalidation immediately before rename, atomic rename to `obby-<ObbySpec-hash>`, no overwrite, and safe cleanup. Ubuntu and Windows tests construct real symlink/junction ancestor and final-output probes.
+
+## Fixtures and limits of claim
+
+Committed fixtures cover same-seed bytes/filename, different-seed controlled variation, explicit/implicit defaults, and exact typed negative outcomes. Drift checks recompute in memory without writes and reject `ZERO_HASH`.
+
+G0 remains abstract planning only. Natural-language interpretation, physical reachability, geometry, runtime mechanics, Roblox assembly, rendering, visual evaluation, player testing, analytics, experiments, and external services remain out of scope.

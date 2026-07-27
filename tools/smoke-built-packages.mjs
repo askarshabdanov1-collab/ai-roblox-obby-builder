@@ -15,7 +15,14 @@ import {
   renderMarkdownReport,
 } from "@obby/scoring-engine";
 import { runEvaluatorCli } from "@obby/evaluator-cli";
-import { generateObby } from "@obby/obby-generator";
+import {
+  DEFAULT_GENERATOR_CONFIGURATION,
+  DEFAULT_MECHANIC_CATALOG,
+  assertValidGenerationBundle,
+  assertValidNormalizedGenerationRequest,
+  generateObby,
+  hashGeneratorPreimage,
+} from "@obby/obby-generator";
 import { runGeneratorCli } from "@obby/generator-cli";
 
 const spec = JSON.parse(
@@ -70,10 +77,108 @@ const generated = generateObby({
   workingName: "Built Smoke",
   genre: "obby",
   stageCount: 5,
+  checkpointFrequency: 3,
   seed: 1,
 });
 if (generated.obbySpec.stages.length !== 5)
   throw new Error("built generator returned an invalid stage plan");
+const expectGeneratorFailure = (label, action) => {
+  try {
+    action();
+  } catch {
+    return;
+  }
+  throw new Error(`built generator accepted ${label}`);
+};
+expectGeneratorFailure("missing full-validation context", () =>
+  assertValidGenerationBundle(generated),
+);
+const unknownWithoutContext = structuredClone(generated);
+unknownWithoutContext.obbySpec.mechanicIntents[0].mechanicId =
+  "unknown-mechanic";
+expectGeneratorFailure("unknown mechanic without authority context", () =>
+  assertValidGenerationBundle(unknownWithoutContext),
+);
+const invalidNormalized = structuredClone(generated.normalizedRequest);
+invalidNormalized.workingName = "";
+invalidNormalized.normalizedRequestHash = hashGeneratorPreimage(
+  invalidNormalized,
+  "normalizedRequestHash",
+);
+expectGeneratorFailure("fresh-hash invalid normalized semantics", () =>
+  assertValidNormalizedGenerationRequest(
+    invalidNormalized,
+    DEFAULT_MECHANIC_CATALOG,
+  ),
+);
+const graphCases = [
+  [
+    "unknown mechanic",
+    (bundle) => {
+      bundle.obbySpec.mechanicIntents[0].mechanicId = "unknown-mechanic";
+      bundle.obbySpec.mechanicIntents[0].mechanicIntentHash =
+        hashGeneratorPreimage(
+          bundle.obbySpec.mechanicIntents[0],
+          "mechanicIntentHash",
+        );
+    },
+  ],
+  [
+    "stage without mechanic",
+    (bundle) => {
+      bundle.obbySpec.stages[0].mechanicIntentIds = [];
+      bundle.obbySpec.stages[0].stageHash = hashGeneratorPreimage(
+        bundle.obbySpec.stages[0],
+        "stageHash",
+      );
+    },
+  ],
+  [
+    "checkpoint node without specification",
+    (bundle) => {
+      bundle.obbySpec.checkpoints = [];
+    },
+  ],
+  [
+    "external asset under native policy",
+    (bundle) => {
+      bundle.obbySpec.assetIntents[0].preferredSourcePolicy =
+        "external-assets-allowed-later";
+      bundle.obbySpec.assetIntents[0].assetIntentHash = hashGeneratorPreimage(
+        bundle.obbySpec.assetIntents[0],
+        "assetIntentHash",
+      );
+    },
+  ],
+  [
+    "incompatible hazard",
+    (bundle) => {
+      const hazard = bundle.obbySpec.hazards[0];
+      if (hazard === undefined) throw new Error("built smoke hazard missing");
+      hazard.kind = "moving-obstacle-intent";
+      hazard.hazardHash = hashGeneratorPreimage(hazard, "hazardHash");
+    },
+  ],
+];
+for (const [label, mutate] of graphCases) {
+  const invalid = structuredClone(generated);
+  mutate(invalid);
+  invalid.obbySpec.obbySpecHash = hashGeneratorPreimage(
+    invalid.obbySpec,
+    "obbySpecHash",
+  );
+  invalid.generationBundleHash = hashGeneratorPreimage(
+    invalid,
+    "generationBundleHash",
+  );
+  expectGeneratorFailure(label, () =>
+    assertValidGenerationBundle(
+      invalid,
+      DEFAULT_MECHANIC_CATALOG,
+      DEFAULT_GENERATOR_CONFIGURATION,
+    ),
+  );
+}
 if (typeof runGeneratorCli !== "function")
   throw new Error("built generator CLI library export is unavailable");
 

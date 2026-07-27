@@ -12,7 +12,8 @@ Producers and consumers are deliberately narrow:
 - Normalization produces `NormalizedGenerationRequest`; the reference planner and G1 consume it indirectly through ObbySpec identity.
 - Repository configuration and mechanic catalog constrain the planner and validator.
 - The planner produces stages, difficulty, mechanic intents, route, checkpoints, hazards, finish, visual/assets, progression/retention, findings, and limitations.
-- The graph validator consumes the complete ObbySpec and bundle before publication.
+- Full graph validators require the exact catalog, generator configuration, and normalized request authority; omitting context is an error.
+- The graph validator consumes the complete ObbySpec and bundle before publication and closes bidirectional stage/mechanic, route/checkpoint, hazard, asset, and visual references.
 - G1 consumes only validated ObbySpec, never request prose.
 
-The committed fixtures under `examples/generator` contain real hashes. `npm run generator:fixtures:check` recomputes them in memory, compares bytes without rewriting, and rejects `ZERO_HASH`.
+The committed fixtures under `examples/generator` contain real hashes plus same-seed, different-seed, and implicit/explicit-default evidence with content-addressed output names. Negative fixtures map to exact typed errors. `npm run generator:fixtures:check` recomputes artifacts in memory, verifies equality/controlled-variation relations without rewriting, and rejects `ZERO_HASH`.
