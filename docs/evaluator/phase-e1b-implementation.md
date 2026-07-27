@@ -71,7 +71,9 @@ controller profile has its dedicated hash field; normalized reproduction data ha
 deduplicated `evidenceHashes`. The selected route-transition payload declares the content-addressed
 permitted set in `measurementSourceEvidenceHashes`. Each source must be its direct parent on the
 expected manifest, be scene-scoped, and have kind `geometry-fact` or `route-graph`; the route source
-must name the selected route. Every evidence-backed available measurement must cite a non-empty
+must name the selected route. The invariant applies to every declared, cited, and additional direct
+route-graph parent; one mismatched `routeId` fails with `measurement-source-route-mismatch`. Every
+evidence-backed available measurement must cite a non-empty
 subset of this set. Standalone classification has no evidence graph, so every available
 `evidenceHashes` and unavailable `missingEvidenceHashes` list, including an unavailable landing
 region, is empty-only and its result returns an empty evidence-hash list.
@@ -195,6 +197,7 @@ are non-mutating.
 | Standalone accepted unverified hashes       | Standalone available and unavailable measurement hashes, including unavailable landing evidence, are empty-only and fail with typed deterministic validation errors otherwise.                                                                         |
 | Public helper bypassed hash validation      | `unavailableLandingRegion` now validates and canonically copies its hash list through the shared validator; the public classifier validates its complete graph and all embedded hash lists before classification.                                      |
 | Unrelated graph evidence affected trust     | Regression coverage proves unrelated valid graph records are byte-inert, while nonexistent, wrong-manifest, wrong-subject, wrong-kind, unrelated-parent, bad-scope, and cyclic evidence fail closed.                                                   |
+| Route matching used an existential check    | Every declared, cited, or additional direct-parent route graph must match the selected transition route; wrong-only and mixed correct/wrong sources fail deterministically.                                                                            |
 
 ## Deferred
 

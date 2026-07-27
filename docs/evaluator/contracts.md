@@ -118,7 +118,9 @@ uses `normalizedInputHash`. Gap/rise/drop measurements are closed, explicitly ta
 `evidenceHashes`. A route-transition payload records the permitted, content-addressed source set in
 `measurementSourceEvidenceHashes`. Each permitted source is a direct parent on the expected
 manifest, has a scene subject, and is either `geometry-fact` or the selected route's `route-graph`;
-every evidence-backed available measurement must cite a non-empty subset of that set. Standalone
+every declared, cited, or additional direct-parent route graph must match the selected transition's
+`routeId`, and one mismatch rejects the binding. Every evidence-backed available measurement must
+cite a non-empty subset of that set. Standalone
 classification has no evidence graph, so all available `evidenceHashes` and unavailable
 `missingEvidenceHashes` lists, including an unavailable landing region, must be empty, and its
 result carries an empty `inputEvidenceHashes`. Evidence-backed classification validates the

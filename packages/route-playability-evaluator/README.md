@@ -26,7 +26,9 @@ a typed deterministic error. Every available gap/rise/drop measurement requires 
 deduplicated `evidenceHashes`. The selected route-transition payload content-addresses its permitted
 sources in `measurementSourceEvidenceHashes`. Those sources must be direct parents for the expected
 manifest, use a scene subject, and have kind `geometry-fact` or `route-graph`; the route source must
-name the selected route. Evidence-backed measurement hashes must be a non-empty subset of that
+name the selected route. Every declared, cited, or additional direct-parent `route-graph` must have
+the selected transition's `routeId`; a single mismatched route source fails the entire binding.
+Evidence-backed measurement hashes must be a non-empty subset of that
 declared set. Standalone classification is deliberately evidence-free, so every available
 `evidenceHashes` and unavailable `missingEvidenceHashes` list, including an unavailable landing
 region, must be empty. It returns an empty `inputEvidenceHashes` and records normalized input

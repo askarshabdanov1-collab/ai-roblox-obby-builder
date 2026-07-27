@@ -1,4 +1,5 @@
 import {
+  assertValidEvidenceGraph,
   hashControllerProfile,
   hashEvidenceContent,
   type EvidenceRecordContract,
@@ -128,6 +129,45 @@ function evidenceBindingFixture() {
     geometryRecord,
     routeRecord,
     manifestHash: expectedManifestHash(evaluated),
+  };
+}
+
+function wrongRouteEvidenceBindingFixture(declareWrongRoute = true) {
+  const fixture = evidenceBindingFixture();
+  const wrongRouteRecord = rehashEvidence({
+    ...fixture.routeRecord,
+    evidenceId: "e1b:route-graph:unrelated-route",
+    payload: {
+      ...fixture.routeRecord.payload,
+      routeId: "unrelated-route",
+    },
+  });
+  const transitionRecord = rehashEvidence({
+    ...fixture.transitionRecord,
+    parentEvidenceHashes: [
+      ...fixture.transitionRecord.parentEvidenceHashes,
+      wrongRouteRecord.evidenceContentHash,
+    ],
+    payload: {
+      ...fixture.transitionRecord.payload,
+      measurementSourceEvidenceHashes: [
+        ...fixture.transitionRecord.payload.measurementSourceEvidenceHashes,
+        ...(declareWrongRoute ? [wrongRouteRecord.evidenceContentHash] : []),
+      ] as [`sha256:${string}`, ...`sha256:${string}`[]],
+    },
+  });
+  const evidenceRecords = [
+    fixture.geometryRecord,
+    fixture.routeRecord,
+    wrongRouteRecord,
+    transitionRecord,
+  ];
+  expect(assertValidEvidenceGraph(evidenceRecords)).toHaveLength(4);
+  return {
+    ...fixture,
+    evidenceRecords,
+    transitionRecord,
+    wrongRouteRecord,
   };
 }
 
@@ -870,6 +910,127 @@ describe("coarse model-relative transition classification", () => {
     const reversedHash = hashEvidenceContent(reversed);
     expect(reversedHash.hash).toBe(baselineHash.hash);
     expect(reversedHash.canonicalBytes).toEqual(baselineHash.canonicalBytes);
+  });
+
+  it("rejects a declared direct-parent route graph for a different route", () => {
+    const fixture = wrongRouteEvidenceBindingFixture();
+    const transitionSnapshot = structuredClone(fixture.transition);
+    const evidenceSnapshot = structuredClone(fixture.evidenceRecords);
+
+    const firstIssues = issuesFrom(() =>
+      classifyCoarseTransitionWithEvidence(
+        fixture.transition,
+        createDefaultControllerProfile(),
+        {
+          evidenceRecords: fixture.evidenceRecords,
+          expectedManifestHash: fixture.manifestHash,
+        },
+      ),
+    );
+    const secondIssues = issuesFrom(() =>
+      classifyCoarseTransitionWithEvidence(
+        fixture.transition,
+        createDefaultControllerProfile(),
+        {
+          evidenceRecords: fixture.evidenceRecords,
+          expectedManifestHash: fixture.manifestHash,
+        },
+      ),
+    );
+
+    expect(secondIssues).toEqual(firstIssues);
+    expect(firstIssues).toHaveLength(1);
+    expect(firstIssues[0]?.code).toBe("measurement-source-route-mismatch");
+    expect(firstIssues[0]?.path).toMatch(
+      /^\/inputEvidenceRecords\/measurementSourceEvidenceHashes\/[0-9]+$/,
+    );
+    expect(firstIssues[0]?.message).toContain(fixture.transition.transitionId);
+    expect(firstIssues[0]?.message).toContain(fixture.transition.routeId);
+    expect(firstIssues[0]?.message).toContain("unrelated-route");
+    expect(firstIssues[0]?.message).toContain(
+      fixture.wrongRouteRecord.evidenceContentHash,
+    );
+    expect(fixture.transition).toEqual(transitionSnapshot);
+    expect(fixture.evidenceRecords).toEqual(evidenceSnapshot);
+  });
+
+  it("rejects an undeclared wrong-route graph in the selected transition parents", () => {
+    const fixture = wrongRouteEvidenceBindingFixture(false);
+
+    const issues = issuesFrom(() =>
+      classifyCoarseTransitionWithEvidence(
+        fixture.transition,
+        createDefaultControllerProfile(),
+        {
+          evidenceRecords: fixture.evidenceRecords,
+          expectedManifestHash: fixture.manifestHash,
+        },
+      ),
+    );
+    expect(issues).toHaveLength(1);
+    expect(issues[0]?.code).toBe("measurement-source-route-mismatch");
+    expect(issues[0]?.path).toMatch(
+      /^\/inputEvidenceRecords\/parentEvidenceHashes\/[0-9]+$/,
+    );
+  });
+
+  it.each([
+    ["only the wrong-route graph", false],
+    ["both the selected-route and wrong-route graphs", true],
+  ] as const)("rejects a measurement citing %s", (_label, includeCorrect) => {
+    const fixture = wrongRouteEvidenceBindingFixture();
+    if (fixture.transition.horizontalSeparation.status !== "available") {
+      throw new Error("fixture available measurement is missing");
+    }
+    const callerHashes = [
+      ...(includeCorrect ? [fixture.routeRecord.evidenceContentHash] : []),
+      fixture.wrongRouteRecord.evidenceContentHash,
+    ] as `sha256:${string}`[];
+    fixture.transition.horizontalSeparation.evidenceHashes = callerHashes;
+    const callerSnapshot = [...callerHashes];
+
+    const issues = issuesFrom(() =>
+      classifyCoarseTransitionWithEvidence(
+        fixture.transition,
+        createDefaultControllerProfile(),
+        {
+          evidenceRecords: fixture.evidenceRecords,
+          expectedManifestHash: fixture.manifestHash,
+        },
+      ),
+    );
+    expect(issues).toHaveLength(1);
+    expect(issues[0]?.code).toBe("measurement-source-route-mismatch");
+    expect(issues[0]?.path).toMatch(
+      /^\/inputEvidenceRecords\/measurementSourceEvidenceHashes\/[0-9]+$/,
+    );
+    expect(callerHashes).toEqual(callerSnapshot);
+  });
+
+  it("accepts selected-route graph and legitimate geometry measurement sources", () => {
+    const fixture = evidenceBindingFixture();
+    if (fixture.transition.horizontalSeparation.status !== "available") {
+      throw new Error("fixture available measurement is missing");
+    }
+    const callerHashes = [
+      fixture.routeRecord.evidenceContentHash,
+      fixture.geometryRecord.evidenceContentHash,
+      fixture.routeRecord.evidenceContentHash,
+    ] as `sha256:${string}`[];
+    fixture.transition.horizontalSeparation.evidenceHashes = callerHashes;
+    const callerSnapshot = [...callerHashes];
+
+    const result = classifyCoarseTransitionWithEvidence(
+      fixture.transition,
+      createDefaultControllerProfile(),
+      {
+        evidenceRecords: fixture.evidenceRecords,
+        expectedManifestHash: fixture.manifestHash,
+      },
+    );
+
+    expect(result.state).toBe("feasible-under-model");
+    expect(callerHashes).toEqual(callerSnapshot);
   });
 
   it("rejects invalid parent subject scope before transition matching", () => {

@@ -128,7 +128,18 @@ type VerifiedEvidenceBinding = {
   evidenceByHash: ReadonlyMap<string, EvidenceRecordContract>;
   measurementSourceHashes: ReadonlySet<string>;
   expectedManifestHash: `sha256:${string}`;
+  transitionId: string;
+  routeId: string;
 };
+
+function routeMismatchMessage(
+  transitionId: string,
+  expectedRouteId: string,
+  actualRouteId: string,
+  evidenceHash: string,
+): string {
+  return `transition ${transitionId} expects route ${expectedRouteId}; evidence ${evidenceHash} declares route ${actualRouteId}`;
+}
 
 function evidenceBinding(
   context: EvidenceBackedClassificationContext,
@@ -218,11 +229,12 @@ function evidenceBinding(
     selected.payload.measurementSourceEvidenceHashes,
     "/inputEvidenceRecords/measurementSourceEvidenceHashes",
   );
-  const measurementSources = measurementSourceHashes.map((hash) => {
+  const measurementSources = measurementSourceHashes.map((hash, index) => {
+    const path = `/inputEvidenceRecords/measurementSourceEvidenceHashes/${index}`;
     if (!parentHashes.has(hash)) {
       return validationFailure(
         "transition-evidence-measurement-sources",
-        "/inputEvidenceRecords/measurementSourceEvidenceHashes",
+        path,
         "every declared measurement source must be a direct transition parent",
       );
     }
@@ -230,40 +242,76 @@ function evidenceBinding(
     if (source === undefined) {
       return validationFailure(
         "transition-evidence-measurement-sources",
-        "/inputEvidenceRecords/measurementSourceEvidenceHashes",
+        path,
         "every declared measurement source must resolve in the evidence graph",
       );
     }
     if (source.manifestHash !== context.expectedManifestHash) {
       return validationFailure(
         "transition-evidence-measurement-sources",
-        "/inputEvidenceRecords/measurementSourceEvidenceHashes",
+        path,
         "every declared measurement source must belong to the expected manifest",
       );
     }
     if (source.kind !== "geometry-fact" && source.kind !== "route-graph") {
       return validationFailure(
         "transition-evidence-measurement-sources",
-        "/inputEvidenceRecords/measurementSourceEvidenceHashes",
+        path,
         "measurement sources must be geometry-fact or route-graph evidence",
       );
     }
     if (source.subject.kind !== "scene") {
       return validationFailure(
         "transition-evidence-measurement-sources",
-        "/inputEvidenceRecords/measurementSourceEvidenceHashes",
+        path,
         "measurement sources must use scene scope",
+      );
+    }
+    if (
+      source.kind === "route-graph" &&
+      source.payload.routeId !== transition.routeId
+    ) {
+      return validationFailure(
+        "measurement-source-route-mismatch",
+        path,
+        routeMismatchMessage(
+          transition.transitionId,
+          transition.routeId,
+          source.payload.routeId,
+          hash,
+        ),
       );
     }
     return source;
   });
+  const declaredMeasurementSources = new Set(measurementSourceHashes);
+  for (const [index, hash] of hashes(
+    selected.parentEvidenceHashes,
+    "/inputEvidenceRecords/parentEvidenceHashes",
+  ).entries()) {
+    if (declaredMeasurementSources.has(hash)) continue;
+    const parent = byHash.get(hash);
+    if (
+      parent?.kind === "route-graph" &&
+      parent.payload.routeId !== transition.routeId
+    ) {
+      return validationFailure(
+        "measurement-source-route-mismatch",
+        `/inputEvidenceRecords/parentEvidenceHashes/${index}`,
+        routeMismatchMessage(
+          transition.transitionId,
+          transition.routeId,
+          parent.payload.routeId,
+          hash,
+        ),
+      );
+    }
+  }
   const hasGeometryParent = measurementSources.some(
     (parent) => parent.kind === "geometry-fact",
   );
   const hasRouteParent = measurementSources.some(
-    (parent) =>
-      parent.kind === "route-graph" &&
-      parent.payload.routeId === transition.routeId,
+    (parent) => parent.kind === "route-graph",
   );
   if (!hasGeometryParent || !hasRouteParent) {
     return validationFailure(
@@ -280,6 +328,8 @@ function evidenceBinding(
     evidenceByHash: byHash,
     measurementSourceHashes: new Set(measurementSourceHashes),
     expectedManifestHash: context.expectedManifestHash,
+    transitionId: transition.transitionId,
+    routeId: transition.routeId,
   };
 }
 
@@ -493,6 +543,21 @@ function validateBoundMeasurementEvidence(
           "measurement-evidence-wrong-subject",
           path,
           "must reference scene-scoped measurement evidence",
+        );
+      }
+      if (
+        source.kind === "route-graph" &&
+        source.payload.routeId !== binding.routeId
+      ) {
+        validationFailure(
+          "measurement-source-route-mismatch",
+          path,
+          routeMismatchMessage(
+            binding.transitionId,
+            binding.routeId,
+            source.payload.routeId,
+            hash,
+          ),
         );
       }
       if (!binding.measurementSourceHashes.has(hash)) {
