@@ -500,6 +500,90 @@ describe("offline generator CLI", () => {
     "file",
     "junction",
   ] as const)(
+    "atomically preserves a final-path %s created in the no-replace syscall window",
+    async (kind) => {
+      const root = await mkdtemp(join(tmpdir(), "obby-generator-cli-"));
+      try {
+        await writeFile(join(root, "request.json"), JSON.stringify(minimal));
+        const finalName = `obby-${generateObby(minimal).obbySpec.obbySpecHash.slice(7)}`;
+        const finalPath = join(root, "out", finalName);
+        const target = join(root, "foreign-syscall-window-target");
+        const sentinel = "syscall-window-owner";
+        await mkdir(target);
+        const captured = streams();
+        let identityBefore: Awaited<ReturnType<typeof lstat>> | undefined;
+        expect(
+          await runGeneratorCli(
+            [
+              "generate",
+              "--request",
+              "request.json",
+              "--output",
+              "out",
+              "--json-errors",
+            ],
+            captured.io,
+            {
+              cwd: root,
+              onAtomicStep: async (step) => {
+                if (step !== "before-no-replace-commit") return;
+                if (kind === "file") await writeFile(finalPath, sentinel);
+                else if (kind === "junction")
+                  await symlink(
+                    target,
+                    finalPath,
+                    process.platform === "win32" ? "junction" : "dir",
+                  );
+                else {
+                  await mkdir(finalPath);
+                  if (kind === "nonempty-directory")
+                    await writeFile(join(finalPath, "owner.txt"), sentinel);
+                }
+                identityBefore = await lstat(finalPath);
+              },
+            },
+          ),
+        ).toBe(1);
+        expect(errorCode(captured.output().stderr)).toBe(
+          kind === "junction" ? "path-safety" : "output-conflict",
+        );
+        const identityAfter = await lstat(finalPath);
+        expect([
+          identityAfter.dev,
+          identityAfter.ino,
+          identityAfter.birthtimeMs,
+        ]).toEqual([
+          identityBefore?.dev,
+          identityBefore?.ino,
+          identityBefore?.birthtimeMs,
+        ]);
+        if (kind === "file")
+          expect(await readFile(finalPath, "utf8")).toBe(sentinel);
+        else if (kind === "junction") expect(await readdir(target)).toEqual([]);
+        else if (kind === "nonempty-directory") {
+          expect(await readdir(finalPath)).toEqual(["owner.txt"]);
+          expect(await readFile(join(finalPath, "owner.txt"), "utf8")).toBe(
+            sentinel,
+          );
+        } else expect(await readdir(finalPath)).toEqual([]);
+        expect(captured.output().stderr).not.toContain(root);
+        expect(
+          (await readdir(join(root, "out"))).some(
+            (name) => name.endsWith(".tmp") || name.endsWith(".lock"),
+          ),
+        ).toBe(false);
+      } finally {
+        await rm(root, { recursive: true, force: true });
+      }
+    },
+  );
+
+  it.each([
+    "empty-directory",
+    "nonempty-directory",
+    "file",
+    "junction",
+  ] as const)(
     "does not write through a replaced private destination lock: %s",
     async (kind) => {
       const root = await mkdtemp(join(tmpdir(), "obby-generator-cli-"));

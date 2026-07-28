@@ -1,13 +1,7 @@
-import {
-  lstat,
-  mkdir,
-  open,
-  realpath,
-  rename,
-  rmdir,
-  rm,
-} from "node:fs/promises";
+import { lstat, mkdir, open, realpath, rmdir, rm } from "node:fs/promises";
 import { isAbsolute, relative, resolve, sep } from "node:path";
+import { spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 import { evaluatorCanonicalStringify } from "@obby/canonical-json";
 import {
@@ -35,6 +29,7 @@ export type GeneratorCliOptions = {
       | "temporary-directory-sync"
       | "destination-claim"
       | "final-commit"
+      | "before-no-replace-commit"
       | "final-directory-sync"
       | "rename"
       | "final-parent-sync"
@@ -410,6 +405,105 @@ async function assertDestinationAbsent(
   }
 }
 
+async function throwDestinationConflict(
+  finalPath: string,
+  directoryName: string,
+): Promise<never> {
+  try {
+    const finalInfo = await lstat(finalPath);
+    if (finalInfo.isSymbolicLink())
+      throw new GeneratorContractError(
+        "path-safety",
+        "final output is a symbolic link or reparse point",
+      );
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  throw new GeneratorContractError(
+    "output-conflict",
+    `output already exists: ${directoryName}`,
+  );
+}
+
+const LINUX_NO_REPLACE_HELPER = fileURLToPath(
+  new URL("../native/rename-noreplace.py", import.meta.url),
+);
+const WINDOWS_NO_REPLACE_HELPER = fileURLToPath(
+  new URL("../native/move-noreplace.ps1", import.meta.url),
+);
+
+async function runNoReplaceHelper(
+  executable: string,
+  arguments_: readonly string[],
+): Promise<number> {
+  return new Promise((resolveExit, rejectExit) => {
+    const child = spawn(executable, arguments_, {
+      shell: false,
+      stdio: "ignore",
+      windowsHide: true,
+    });
+    let settled = false;
+    child.once("error", () => {
+      if (settled) return;
+      settled = true;
+      rejectExit(
+        new GeneratorContractError(
+          "output-publication",
+          "atomic no-replace publication is unavailable",
+        ),
+      );
+    });
+    child.once("exit", (code) => {
+      if (settled) return;
+      settled = true;
+      resolveExit(code ?? 30);
+    });
+  });
+}
+
+async function commitDirectoryNoReplace(
+  source: string,
+  destination: string,
+  directoryName: string,
+): Promise<void> {
+  if (process.platform === "linux") {
+    const exitCode = await runNoReplaceHelper("python3", [
+      LINUX_NO_REPLACE_HELPER,
+      source,
+      destination,
+    ]);
+    if (exitCode === 0) return;
+    if (exitCode === 10)
+      await throwDestinationConflict(destination, directoryName);
+    throw new GeneratorContractError(
+      "output-publication",
+      "atomic no-replace publication is unavailable",
+    );
+  }
+  if (process.platform === "win32") {
+    const exitCode = await runNoReplaceHelper("powershell.exe", [
+      "-NoLogo",
+      "-NoProfile",
+      "-NonInteractive",
+      "-File",
+      WINDOWS_NO_REPLACE_HELPER,
+      source,
+      destination,
+    ]);
+    if (exitCode === 0) return;
+    if (exitCode === 10)
+      await throwDestinationConflict(destination, directoryName);
+    throw new GeneratorContractError(
+      "output-publication",
+      "atomic no-replace publication is unavailable",
+    );
+  }
+  throw new GeneratorContractError(
+    "output-publication",
+    "atomic no-replace publication is unsupported on this platform",
+  );
+}
+
 async function claimPrivateLock(
   lockPath: string,
   directoryName: string,
@@ -526,17 +620,8 @@ async function publish(
       await assertOwnedDirectory(publicationLock);
       await assertDestinationAbsent(finalPath, directoryName);
       const stagingIdentity = await directoryIdentity(stagingPath);
-      try {
-        await rename(stagingPath, finalPath);
-      } catch (error) {
-        if (
-          ["EEXIST", "ENOTEMPTY", "EPERM", "EACCES"].includes(
-            (error as NodeJS.ErrnoException).code ?? "",
-          )
-        )
-          await assertDestinationAbsent(finalPath, directoryName);
-        throw error;
-      }
+      await options.onAtomicStep?.("before-no-replace-commit");
+      await commitDirectoryNoReplace(stagingPath, finalPath, directoryName);
       committed = true;
       await assertDirectoryChain(outputChain);
       const committedIdentity = await directoryIdentity(finalPath);
