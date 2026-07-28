@@ -1,4 +1,12 @@
-import { lstat, mkdir, open, realpath, rename, rm } from "node:fs/promises";
+import {
+  link,
+  lstat,
+  mkdir,
+  open,
+  realpath,
+  rmdir,
+  rm,
+} from "node:fs/promises";
 import { isAbsolute, relative, resolve, sep } from "node:path";
 
 import { evaluatorCanonicalStringify } from "@obby/canonical-json";
@@ -25,6 +33,8 @@ export type GeneratorCliOptions = {
       | "file-write"
       | "file-sync"
       | "temporary-directory-sync"
+      | "destination-claim"
+      | "final-directory-sync"
       | "rename"
       | "final-parent-sync"
       | "cleanup",
@@ -326,7 +336,8 @@ async function assertDirectoryChain(
 
 async function syncDirectory(
   path: string,
-  step: "temporary-directory-sync" | "final-parent-sync",
+  step:
+    "temporary-directory-sync" | "final-directory-sync" | "final-parent-sync",
   hook: GeneratorCliOptions["onAtomicStep"],
 ): Promise<void> {
   await hook?.(step);
@@ -344,6 +355,51 @@ async function syncDirectory(
   } finally {
     await handle?.close();
   }
+}
+
+async function assertDestinationAbsent(
+  finalPath: string,
+  directoryName: string,
+): Promise<void> {
+  try {
+    const finalInfo = await lstat(finalPath);
+    if (finalInfo.isSymbolicLink())
+      throw new GeneratorContractError(
+        "path-safety",
+        "final output is a symbolic link or reparse point",
+      );
+    throw new GeneratorContractError(
+      "output-conflict",
+      `output already exists: ${directoryName}`,
+    );
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+}
+
+async function claimDestination(
+  finalPath: string,
+  directoryName: string,
+): Promise<DirectoryIdentity> {
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    try {
+      await mkdir(finalPath, { mode: 0o700 });
+      return await directoryIdentity(finalPath);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
+      try {
+        await assertDestinationAbsent(finalPath, directoryName);
+      } catch (inspectionError) {
+        if ((inspectionError as NodeJS.ErrnoException).code === "ENOENT")
+          continue;
+        throw inspectionError;
+      }
+    }
+  }
+  throw new GeneratorContractError(
+    "output-conflict",
+    `output already exists: ${directoryName}`,
+  );
 }
 
 async function publish(
@@ -367,20 +423,7 @@ async function publish(
         "path-safety",
         "semantic output path exceeds its configured limit",
       );
-    try {
-      const finalInfo = await lstat(finalPath);
-      if (finalInfo.isSymbolicLink())
-        throw new GeneratorContractError(
-          "path-safety",
-          "final output is a symbolic link or reparse point",
-        );
-      throw new GeneratorContractError(
-        "output-conflict",
-        `output already exists: ${directoryName}`,
-      );
-    } catch (error) {
-      if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
-    }
+    await assertDestinationAbsent(finalPath, directoryName);
 
     let stagingPath = "";
     for (let counter = 0; counter < 32; counter += 1) {
@@ -403,6 +446,7 @@ async function publish(
       );
 
     let committed = false;
+    let destinationClaim: DirectoryIdentity | undefined;
     try {
       await options.onAtomicStep?.("file-write");
       const handle = await open(
@@ -426,9 +470,47 @@ async function publish(
       await assertDirectoryChain(outputChain);
       await options.onAtomicStep?.("rename");
       await assertDirectoryChain(outputChain);
-      await rename(stagingPath, finalPath);
-      committed = true;
+      destinationClaim = await claimDestination(finalPath, directoryName);
+      await options.onAtomicStep?.("destination-claim");
       await assertDirectoryChain(outputChain);
+      const stagingFile = resolve(stagingPath, "generation-bundle.json");
+      const finalFile = resolve(finalPath, "generation-bundle.json");
+      try {
+        await link(stagingFile, finalFile);
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === "EEXIST")
+          throw new GeneratorContractError(
+            "output-conflict",
+            `output already exists: ${directoryName}`,
+          );
+        throw error;
+      }
+      committed = true;
+      try {
+        await rm(stagingPath, { force: true, recursive: true });
+      } catch {
+        throw new GeneratorContractError(
+          "cleanup-failed",
+          "temporary output cleanup failed",
+        );
+      }
+      await assertDirectoryChain(outputChain);
+      const actualClaim = await directoryIdentity(finalPath);
+      if (
+        actualClaim.realPath !== destinationClaim.realPath ||
+        actualClaim.device !== destinationClaim.device ||
+        actualClaim.inode !== destinationClaim.inode ||
+        actualClaim.birthtimeMs !== destinationClaim.birthtimeMs
+      )
+        throw new GeneratorContractError(
+          "path-safety",
+          "final output identity changed during publication",
+        );
+      await syncDirectory(
+        finalPath,
+        "final-directory-sync",
+        options.onAtomicStep,
+      );
       await syncDirectory(
         outputRoot,
         "final-parent-sync",
@@ -441,6 +523,26 @@ async function publish(
           await assertDirectoryChain(outputChain);
           await options.onAtomicStep?.("cleanup");
           await rm(stagingPath, { force: true, recursive: true });
+          if (
+            destinationClaim !== undefined &&
+            !(
+              error instanceof GeneratorContractError &&
+              error.code === "output-conflict"
+            )
+          ) {
+            const actualClaim = await directoryIdentity(finalPath);
+            if (
+              actualClaim.realPath !== destinationClaim.realPath ||
+              actualClaim.device !== destinationClaim.device ||
+              actualClaim.inode !== destinationClaim.inode ||
+              actualClaim.birthtimeMs !== destinationClaim.birthtimeMs
+            )
+              throw new GeneratorContractError(
+                "path-safety",
+                "final output identity changed during cleanup",
+              );
+            await rmdir(finalPath);
+          }
         } catch {
           if (
             error instanceof GeneratorContractError &&
@@ -449,7 +551,7 @@ async function publish(
             throw error;
           throw new GeneratorContractError(
             "cleanup-failed",
-            "temporary output cleanup failed",
+            "publication cleanup failed",
           );
         }
       }

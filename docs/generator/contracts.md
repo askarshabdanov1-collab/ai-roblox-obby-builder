@@ -16,4 +16,8 @@ Producers and consumers are deliberately narrow:
 - The graph validator consumes the complete ObbySpec and bundle before publication and closes bidirectional stage/mechanic, route/checkpoint, hazard, asset, and visual references.
 - G1 consumes only validated ObbySpec, never request prose.
 
+Generation work admission is a separate constant-time structural boundary. It reads only the effective stage count, mechanic-array length, and configured maximum before reserving `4000 + 120S + 100M + 4SM`. `maximum-work-units` therefore precedes all semantic validation when budget is insufficient. Successful admission exposes required/admitted/available/unused accounting to the committed execution-order test seam.
+
+CLI publication reserves the content-addressed destination with exclusive directory creation and publishes the already synced payload with an atomic create-if-absent hard link. `output-conflict` identifies existing or late-created legitimate destinations; `path-safety` identifies reparse destinations; `output-publication` covers sanitized staging/link failures; and `cleanup-failed` covers sanitized cleanup failure. No error includes native paths or operating-system messages.
+
 The committed fixtures under `examples/generator` contain real hashes plus same-seed, different-seed, and implicit/explicit-default evidence with content-addressed output names. Negative fixtures map to exact typed errors. `npm run generator:fixtures:check` recomputes artifacts in memory, verifies equality/controlled-variation relations without rewriting, and rejects `ZERO_HASH`.

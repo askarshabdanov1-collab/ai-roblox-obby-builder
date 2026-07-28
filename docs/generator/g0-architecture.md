@@ -67,13 +67,17 @@ Unknown references, stale hashes, invalid normalized semantics with fresh hashes
 
 ## Deterministic work model
 
-Default limits include 50 stages, 64 mechanic definitions, 52 route nodes, 51 transitions, 49 checkpoints, 50 hazards, 128 assets, 64 findings/limitations, 4 MiB output, and 25,000 work units. Before planning, work is charged as:
+Default limits include 50 stages, 64 mechanic definitions, 52 route nodes, 51 transitions, 49 checkpoints, 50 hazards, 128 assets, 64 findings/limitations, 4 MiB output, and 25,000 work units. Work is reserved before the first covered operation as:
 
 ```text
 4,000 + 120*stages + 100*mechanics + 4*stages*mechanics
 ```
 
-The terms cover bounded normalization, schema/authority validation, sub-seed derivation, mechanic/difficulty/stage/route/checkpoint/hazard/asset/visual work, indexed graph correlation, hashing, full validation, canonical serialization, and CLI preparation. A 50-stage/50-mechanic input costs exactly 25,000. Arithmetic is safe-integer checked, and real generation has deterministic N−1/N/N+1 tests. Complexity is iterative `O(stages * mechanics)` for bounded candidate scans and otherwise linear indexed correlation, with no uncontrolled recursion.
+Preflight admission is deliberately narrower than semantic validation. Its only unmetered work is a constant-time object/readability check, reading the request's explicit `stageCount` or the documented default of 15, reading the catalog mechanic-array length without traversing it, reading `maxWorkUnits`, and safe-integer arithmetic for the formula. It performs no schema traversal, semantic validation, normalization, sorting, hashing, PRNG derivation, graph work, or serialization.
+
+The exact requirement is compared with `maxWorkUnits` before configuration validation, catalog validation, or request normalization. Insufficient budget fails with `maximum-work-units`; sufficient budget reserves exactly the required units and reports required, admitted, available, and unused units through the test seam. Only after reservation do covered operations begin.
+
+The terms cover bounded normalization, schema/authority validation, sub-seed derivation, mechanic/difficulty/stage/route/checkpoint/hazard/asset/visual work, indexed graph correlation, hashing, full validation, canonical serialization, and CLI preparation. A 50-stage/50-mechanic input costs exactly 25,000. Arithmetic is safe-integer checked, and near-maximum deterministic N−1/N/N+1 tests prove that N−1 invokes zero covered operations, N reserves exactly N, and N+1 reserves N with one unused unit. Complexity is iterative `O(stages * mechanics)` for bounded candidate scans and otherwise linear indexed correlation, with no uncontrolled recursion.
 
 ## CLI and filesystem security
 
@@ -85,7 +89,9 @@ Config/catalog default to committed authorities. Unknown, duplicate, missing-val
 
 Before output creation, the CLI rejects absolute/traversal paths, reserved Windows names, non-NFC segments, input/output aliases, case-insensitive Windows aliases, existing non-directory segments, symlinks, Windows junctions/reparse points, ancestor replacement, and final-output reparse points. Errors expose logical labels, never absolute host paths, native messages, or stacks.
 
-Publication uses a sibling staging directory, exclusive file creation, file/directory sync attempts, directory-identity revalidation immediately before rename, atomic rename to `obby-<ObbySpec-hash>`, no overwrite, and safe cleanup. Ubuntu and Windows tests construct real symlink/junction ancestor and final-output probes.
+Publication writes and syncs the complete canonical payload in a sibling staging directory first. At commit, an exclusive `mkdir` atomically claims the exact `obby-<ObbySpec-hash>` destination. An existing directory, file, or late-created legitimate destination returns `output-conflict` without replacement; an existing symlink, junction, or reparse destination remains a `path-safety` failure. Concurrent identical publishers stage independently, synchronize at the claim, and exactly one can create the destination.
+
+After claiming, the CLI revalidates the output ancestry and atomically hard-links the already complete, synced staging file into the claimed directory with create-if-absent semantics. The destination directory is a reservation until `generation-bundle.json` appears; consumers must not treat an empty claimed directory as a completed output. The payload itself is never partially visible, merged, renamed over another entry, or overwritten. Directory and parent sync attempts follow publication, staging is removed, and a pre-payload failure removes the CLI-owned empty claim after verifying its identity. A crash can leave an incomplete claim, which deliberately fails closed as `output-conflict` on retry rather than risking replacement. Ubuntu and Windows tests cover late empty-directory/file conflicts, concurrent publishers, cleanup, symlink/junction ancestors, and final-output reparse points.
 
 ## Fixtures and limits of claim
 

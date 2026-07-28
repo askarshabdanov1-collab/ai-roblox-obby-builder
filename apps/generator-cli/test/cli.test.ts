@@ -1,6 +1,7 @@
 import {
   mkdir,
   mkdtemp,
+  lstat,
   readFile,
   readdir,
   rm,
@@ -13,7 +14,13 @@ import { tmpdir } from "node:os";
 import { describe, expect, it } from "vitest";
 
 import { runGeneratorCli } from "../src/index.js";
-import { generateObby, type GenerationBundle } from "@obby/obby-generator";
+import {
+  DEFAULT_GENERATOR_CONFIGURATION,
+  DEFAULT_MECHANIC_CATALOG,
+  assertValidGenerationBundle,
+  generateObby,
+  type GenerationBundle,
+} from "@obby/obby-generator";
 
 const minimal = {
   schemaVersion: "0.1",
@@ -226,6 +233,170 @@ describe("offline generator CLI", () => {
       ).toBe(1);
       expect(errorCode(captured.output().stderr)).toBe("path-safety");
       expect(captured.output().stderr).not.toContain(root);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it.each(["empty-directory", "nonempty-directory", "file"] as const)(
+    "preserves a late-created conflicting %s with a typed conflict",
+    async (kind) => {
+      const root = await mkdtemp(join(tmpdir(), "obby-generator-cli-"));
+      try {
+        await writeFile(join(root, "request.json"), JSON.stringify(minimal));
+        const finalName = `obby-${generateObby(minimal).obbySpec.obbySpecHash.slice(7)}`;
+        const finalPath = join(root, "out", finalName);
+        const sentinel = "concurrent-owner-content";
+        const captured = streams();
+        let identityBefore: Awaited<ReturnType<typeof lstat>> | undefined;
+        expect(
+          await runGeneratorCli(
+            [
+              "generate",
+              "--request",
+              "request.json",
+              "--output",
+              "out",
+              "--json-errors",
+            ],
+            captured.io,
+            {
+              cwd: root,
+              beforeCommit: async () => {
+                if (kind !== "file") {
+                  await mkdir(finalPath);
+                  if (kind === "nonempty-directory")
+                    await writeFile(join(finalPath, "owner.txt"), sentinel);
+                } else await writeFile(finalPath, sentinel);
+                identityBefore = await lstat(finalPath);
+              },
+            },
+          ),
+        ).toBe(1);
+        expect(errorCode(captured.output().stderr)).toBe("output-conflict");
+        expect(captured.output().stderr).not.toContain(root);
+        const identityAfter = await lstat(finalPath);
+        expect([
+          identityAfter.dev,
+          identityAfter.ino,
+          identityAfter.birthtimeMs,
+        ]).toEqual([
+          identityBefore?.dev,
+          identityBefore?.ino,
+          identityBefore?.birthtimeMs,
+        ]);
+        if (kind === "nonempty-directory") {
+          expect(await readFile(join(finalPath, "owner.txt"), "utf8")).toBe(
+            sentinel,
+          );
+          expect(await readdir(finalPath)).toEqual(["owner.txt"]);
+        } else if (kind === "empty-directory")
+          expect(await readdir(finalPath)).toEqual([]);
+        else expect(await readFile(finalPath, "utf8")).toBe(sentinel);
+        expect(
+          (await readdir(join(root, "out"))).some((name) =>
+            name.endsWith(".tmp"),
+          ),
+        ).toBe(false);
+      } finally {
+        await rm(root, { recursive: true, force: true });
+      }
+    },
+  );
+
+  it("allows exactly one concurrent identical publisher and leaves no staging or claim debris", async () => {
+    const root = await mkdtemp(join(tmpdir(), "obby-generator-cli-"));
+    try {
+      await writeFile(join(root, "request.json"), JSON.stringify(minimal));
+      let arrivals = 0;
+      let release: (() => void) | undefined;
+      const barrier = new Promise<void>((resolve) => {
+        release = resolve;
+      });
+      const beforeCommit = async () => {
+        arrivals += 1;
+        if (arrivals === 2) release?.();
+        await barrier;
+      };
+      const first = streams();
+      const second = streams();
+      const arguments_ = [
+        "generate",
+        "--request",
+        "request.json",
+        "--output",
+        "out",
+        "--json-errors",
+      ] as const;
+      const results = await Promise.all([
+        runGeneratorCli(arguments_, first.io, { cwd: root, beforeCommit }),
+        runGeneratorCli(arguments_, second.io, { cwd: root, beforeCommit }),
+      ]);
+      expect(results.sort()).toEqual([0, 1]);
+      const failed = [first.output(), second.output()].find(
+        (output) => output.stderr.length > 0,
+      );
+      expect(errorCode(failed?.stderr ?? "")).toBe("output-conflict");
+      expect(failed?.stderr).not.toContain(root);
+      const entries = await readdir(join(root, "out"));
+      expect(entries).toHaveLength(1);
+      expect(entries[0]).toMatch(/^obby-[0-9a-f]{64}$/u);
+      const outputName = entries[0];
+      if (outputName === undefined) throw new Error("missing output");
+      const contents = await readdir(join(root, "out", outputName));
+      expect(contents).toEqual(["generation-bundle.json"]);
+      const finalBundle = bundleFrom(
+        await readFile(
+          join(root, "out", outputName, "generation-bundle.json"),
+          "utf8",
+        ),
+      );
+      assertValidGenerationBundle(
+        finalBundle,
+        DEFAULT_MECHANIC_CATALOG,
+        DEFAULT_GENERATOR_CONFIGURATION,
+      );
+      expect(entries.some((name) => name.endsWith(".tmp"))).toBe(false);
+
+      const retry = streams();
+      expect(await runGeneratorCli(arguments_, retry.io, { cwd: root })).toBe(
+        1,
+      );
+      expect(errorCode(retry.output().stderr)).toBe("output-conflict");
+      expect(await readdir(join(root, "out"))).toEqual(entries);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("removes its empty destination claim and staging after a post-claim failure", async () => {
+    const root = await mkdtemp(join(tmpdir(), "obby-generator-cli-"));
+    try {
+      await writeFile(join(root, "request.json"), JSON.stringify(minimal));
+      const captured = streams();
+      expect(
+        await runGeneratorCli(
+          [
+            "generate",
+            "--request",
+            "request.json",
+            "--output",
+            "out",
+            "--json-errors",
+          ],
+          captured.io,
+          {
+            cwd: root,
+            onAtomicStep: (step) => {
+              if (step === "destination-claim")
+                throw new Error(`private failure ${root}`);
+            },
+          },
+        ),
+      ).toBe(1);
+      expect(errorCode(captured.output().stderr)).toBe("output-publication");
+      expect(captured.output().stderr).not.toContain(root);
+      expect(await readdir(join(root, "out"))).toEqual([]);
     } finally {
       await rm(root, { recursive: true, force: true });
     }
