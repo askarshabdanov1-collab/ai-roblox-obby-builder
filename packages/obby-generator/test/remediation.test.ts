@@ -41,7 +41,7 @@ function configuration(
 ): GeneratorConfiguration {
   const preimage = {
     ...DEFAULT_GENERATOR_CONFIGURATION,
-    configurationId: `g0-delta-${difficultyDeltaLimit}-work-${maxWorkUnits}`,
+    configurationId: `g0-delta-${difficultyDeltaLimit}`,
     difficultyDeltaLimit,
     limits: {
       ...DEFAULT_GENERATOR_CONFIGURATION.limits,
@@ -385,6 +385,11 @@ describe("configuration, catalog, and deterministic work", () => {
       catalog,
       { onWorkAdmitted: (admission) => admissions.push(admission) },
     );
+    const larger = generateObby(
+      request,
+      configuration(2, requiredWorkUnits + 300),
+      catalog,
+    );
     expect(admissions).toEqual([
       {
         requiredWorkUnits,
@@ -400,6 +405,7 @@ describe("configuration, catalog, and deterministic work", () => {
       },
     ]);
     expect(exactOperations).toEqual([
+      "input-snapshot",
       "configuration-validation",
       "catalog-validation",
       "request-normalization",
@@ -416,11 +422,195 @@ describe("configuration, catalog, and deterministic work", () => {
         generateObby(request, configuration(2, requiredWorkUnits), catalog),
       ),
     ).toBe(evaluatorCanonicalStringify(exact));
-    expect(evaluatorCanonicalStringify(oneExtra)).not.toBe(
+    expect(evaluatorCanonicalStringify(oneExtra)).toBe(
       evaluatorCanonicalStringify(exact),
     );
+    expect(evaluatorCanonicalStringify(larger)).toBe(
+      evaluatorCanonicalStringify(exact),
+    );
+    expect(oneExtra.generationBundleHash).toBe(exact.generationBundleHash);
+    expect(larger.generationBundleHash).toBe(exact.generationBundleHash);
+    expect(oneExtra.obbySpec.obbySpecHash).toBe(exact.obbySpec.obbySpecHash);
+    expect(larger.obbySpec.obbySpecHash).toBe(exact.obbySpec.obbySpecHash);
     expect(oneExtra.obbySpec.stages).toHaveLength(50);
     expect(estimateGenerationWorkUnits(50, 50)).toBe(25_000);
+  });
+
+  it("rejects accessors, proxies, inherited fields, and coercion hooks without executing them before admission", () => {
+    const requiredWorkUnits = estimateGenerationWorkUnits(
+      baseRequest.stageCount,
+      DEFAULT_MECHANIC_CATALOG.mechanics.length,
+    );
+    const underfunded = configuration(2, requiredWorkUnits - 1);
+
+    const cases: {
+      label: string;
+      request?: unknown;
+      configuration?: unknown;
+      catalog?: unknown;
+      calls: () => number;
+    }[] = [];
+    const getterCase = (
+      label: string,
+      target: Record<string, unknown>,
+      field: string,
+      placement: "request" | "configuration" | "catalog",
+    ) => {
+      let calls = 0;
+      Object.defineProperty(target, field, {
+        enumerable: true,
+        get: () => {
+          calls += 1;
+          hashGeneratorPreimage(baseRequest);
+          return field === "stageCount" ? baseRequest.stageCount : undefined;
+        },
+      });
+      cases.push({
+        label,
+        [placement]: target,
+        calls: () => calls,
+      });
+    };
+
+    getterCase(
+      "request.stageCount",
+      { ...baseRequest },
+      "stageCount",
+      "request",
+    );
+    getterCase(
+      "configuration.limits",
+      { ...underfunded },
+      "limits",
+      "configuration",
+    );
+    const limits = { ...underfunded.limits };
+    getterCase("limits.maxWorkUnits", limits, "maxWorkUnits", "configuration");
+    const limitsCase = cases.at(-1);
+    if (limitsCase === undefined) throw new Error("missing limits getter case");
+    limitsCase.configuration = { ...underfunded, limits };
+    getterCase(
+      "catalog.mechanics",
+      { ...DEFAULT_MECHANIC_CATALOG },
+      "mechanics",
+      "catalog",
+    );
+
+    for (const testCase of cases) {
+      expect(() =>
+        generateObby(
+          testCase.request ?? baseRequest,
+          (testCase.configuration ?? underfunded) as GeneratorConfiguration,
+          (testCase.catalog ?? DEFAULT_MECHANIC_CATALOG) as MechanicCatalog,
+        ),
+      ).toThrow(expect.objectContaining({ code: "validation" }));
+      expect(testCase.calls(), testCase.label).toBe(0);
+    }
+
+    let inheritedCalls = 0;
+    const inheritedPrototype = Object.create(null) as Record<string, unknown>;
+    Object.defineProperty(inheritedPrototype, "stageCount", {
+      get: () => {
+        inheritedCalls += 1;
+        return baseRequest.stageCount;
+      },
+    });
+    const inheritedRequest = Object.create(inheritedPrototype) as Record<
+      string,
+      unknown
+    >;
+    const inheritedDescriptors = Object.getOwnPropertyDescriptors(baseRequest);
+    Reflect.deleteProperty(inheritedDescriptors, "stageCount");
+    Object.defineProperties(inheritedRequest, inheritedDescriptors);
+    expect(() => generateObby(inheritedRequest, underfunded)).toThrow(
+      expect.objectContaining({ code: "validation" }),
+    );
+    expect(inheritedCalls).toBe(0);
+
+    for (const field of ["request", "catalog"] as const) {
+      let traps = 0;
+      const value = new Proxy(
+        field === "request" ? baseRequest : DEFAULT_MECHANIC_CATALOG,
+        {
+          get: (target, key, receiver) => {
+            traps += 1;
+            return Reflect.get(target, key, receiver) as unknown;
+          },
+          getOwnPropertyDescriptor: (target, key) => {
+            traps += 1;
+            return Reflect.getOwnPropertyDescriptor(target, key);
+          },
+          getPrototypeOf: (target) => {
+            traps += 1;
+            return Reflect.getPrototypeOf(target);
+          },
+          ownKeys: (target) => {
+            traps += 1;
+            return Reflect.ownKeys(target);
+          },
+        },
+      );
+      expect(() =>
+        generateObby(
+          field === "request" ? value : baseRequest,
+          underfunded,
+          (field === "catalog"
+            ? value
+            : DEFAULT_MECHANIC_CATALOG) as MechanicCatalog,
+        ),
+      ).toThrow(expect.objectContaining({ code: "validation" }));
+      expect(traps, field).toBe(0);
+    }
+
+    let indexCalls = 0;
+    const mechanics = [...DEFAULT_MECHANIC_CATALOG.mechanics];
+    Object.defineProperty(mechanics, "0", {
+      enumerable: true,
+      get: () => {
+        indexCalls += 1;
+        return DEFAULT_MECHANIC_CATALOG.mechanics[0];
+      },
+    });
+    const accessorCatalog = { ...DEFAULT_MECHANIC_CATALOG, mechanics };
+    expect(() =>
+      generateObby(baseRequest, underfunded, accessorCatalog),
+    ).toThrow(expect.objectContaining({ code: "maximum-work-units" }));
+    expect(indexCalls).toBe(0);
+    expect(() =>
+      generateObby(
+        baseRequest,
+        configuration(2, requiredWorkUnits),
+        accessorCatalog,
+      ),
+    ).toThrow(expect.objectContaining({ code: "validation" }));
+    expect(indexCalls).toBe(0);
+
+    class MechanicArray extends Array<MechanicCatalog["mechanics"][number]> {}
+    const subclassCatalog = {
+      ...DEFAULT_MECHANIC_CATALOG,
+      mechanics: MechanicArray.from(DEFAULT_MECHANIC_CATALOG.mechanics),
+    };
+    expect(() =>
+      generateObby(baseRequest, underfunded, subclassCatalog),
+    ).toThrow(expect.objectContaining({ code: "validation" }));
+
+    for (const coercionKey of ["valueOf", Symbol.toPrimitive] as const) {
+      let coercions = 0;
+      const stageCount = {
+        [coercionKey]: () => {
+          coercions += 1;
+          return baseRequest.stageCount;
+        },
+      };
+      expect(() =>
+        generateObby({ ...baseRequest, stageCount }, underfunded),
+      ).toThrow(expect.objectContaining({ code: "validation" }));
+      expect(coercions).toBe(0);
+    }
+
+    expect(Object.getOwnPropertyDescriptor([], "length")?.configurable).toBe(
+      false,
+    );
   });
 
   it("gives budget admission precedence over semantic validation", () => {

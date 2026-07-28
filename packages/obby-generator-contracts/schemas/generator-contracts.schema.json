@@ -249,7 +249,12 @@
         "maxAssetIntents": { "const": 128 },
         "maxOutputBytes": { "const": 4194304 },
         "maxOutputPathLength": { "const": 240 },
-        "maxWorkUnits": { "type": "integer", "minimum": 1, "maximum": 25000 }
+        "maxWorkUnits": {
+          "description": "Execution-only work-admission budget excluded from configurationHash and all generated semantic identities.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 25000
+        }
       }
     },
     "MechanicDefinition": {

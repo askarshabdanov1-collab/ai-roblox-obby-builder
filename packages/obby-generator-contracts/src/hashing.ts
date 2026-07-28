@@ -12,6 +12,18 @@ export function hashGeneratorPreimage(
 ): ContentHash {
   const payload: Record<string, unknown> = { ...value };
   if (ownHashField !== undefined) Reflect.deleteProperty(payload, ownHashField);
+  if (ownHashField === "configurationHash") {
+    const limits = payload.limits;
+    if (
+      limits !== null &&
+      typeof limits === "object" &&
+      !Array.isArray(limits)
+    ) {
+      const semanticLimits = { ...(limits as Record<string, unknown>) };
+      Reflect.deleteProperty(semanticLimits, "maxWorkUnits");
+      payload.limits = semanticLimits;
+    }
+  }
   const canonical = evaluatorCanonicalize({
     canonicalizationAlgorithm: EVALUATOR_CANONICAL_JSON_ALGORITHM,
     identityDomain: ownHashField ?? "generation-request",

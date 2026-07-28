@@ -129,6 +129,9 @@ export interface GeneratorLimits {
   maxAssetIntents: 128;
   maxOutputBytes: 4194304;
   maxOutputPathLength: 240;
+  /**
+   * Execution-only work-admission budget excluded from configurationHash and all generated semantic identities.
+   */
   maxWorkUnits: number;
 }
 export interface MechanicDefinition {

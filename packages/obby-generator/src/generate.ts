@@ -38,9 +38,16 @@ import {
   DEFAULT_MECHANIC_CATALOG,
 } from "./catalog.js";
 import { normalizeGenerationRequest } from "./normalize.js";
+import {
+  ownDataValue,
+  plainArrayLength,
+  plainDataRecord,
+  snapshotPlainData,
+} from "./plain-data.js";
 import { DeterministicRandom, deriveDomainSeed } from "./prng.js";
 
 export type GenerationCoveredOperation =
+  | "input-snapshot"
   | "configuration-validation"
   | "catalog-validation"
   | "request-normalization"
@@ -227,34 +234,37 @@ export function estimateGenerationWorkUnits(
   return units;
 }
 
-function admissionRecord(
-  input: unknown,
-  label: string,
-): Record<string, unknown> {
-  if (input === null || typeof input !== "object" || Array.isArray(input))
-    throw new GeneratorContractError(
-      "validation",
-      `${label} is not structurally readable for work admission`,
-    );
-  return input as Record<string, unknown>;
-}
-
 export function preflightGenerationWorkAdmission(
   requestInput: unknown,
   configurationInput: unknown,
   catalogInput: unknown,
 ): GenerationWorkAdmission {
-  const request = admissionRecord(requestInput, "request");
-  const configuration = admissionRecord(configurationInput, "configuration");
-  const limits = admissionRecord(configuration.limits, "configuration limits");
-  const catalog = admissionRecord(catalogInput, "mechanic catalog");
-  const stageCount = request.stageCount === undefined ? 15 : request.stageCount;
-  const mechanics = catalog.mechanics;
-  const availableWorkUnits = limits.maxWorkUnits;
+  const request = plainDataRecord(requestInput, "request");
+  const configuration = plainDataRecord(configurationInput, "configuration");
+  const limits = plainDataRecord(
+    ownDataValue(configuration, "limits", "configuration"),
+    "configuration limits",
+  );
+  const catalog = plainDataRecord(catalogInput, "mechanic catalog");
+  const explicitStageCount = ownDataValue(
+    request,
+    "stageCount",
+    "request",
+    false,
+  );
+  const stageCount = explicitStageCount === undefined ? 15 : explicitStageCount;
+  const mechanicCount = plainArrayLength(
+    ownDataValue(catalog, "mechanics", "mechanic catalog"),
+    "mechanic catalog mechanics",
+  );
+  const availableWorkUnits = ownDataValue(
+    limits,
+    "maxWorkUnits",
+    "configuration limits",
+  );
   if (
     !Number.isSafeInteger(stageCount) ||
     (stageCount as number) < 0 ||
-    !Array.isArray(mechanics) ||
     !Number.isSafeInteger(availableWorkUnits) ||
     (availableWorkUnits as number) < 0
   )
@@ -264,7 +274,7 @@ export function preflightGenerationWorkAdmission(
     );
   const requiredWorkUnits = estimateGenerationWorkUnits(
     stageCount as number,
-    mechanics.length,
+    mechanicCount,
   );
   if (requiredWorkUnits > (availableWorkUnits as number))
     throw new GeneratorContractError(
@@ -305,22 +315,35 @@ function weightedMechanicChoice(
 
 export function generateObby(
   requestInput: unknown,
-  configuration: GeneratorConfiguration = DEFAULT_GENERATOR_CONFIGURATION,
-  catalog: MechanicCatalog = DEFAULT_MECHANIC_CATALOG,
+  configurationInput: unknown = DEFAULT_GENERATOR_CONFIGURATION,
+  catalogInput: unknown = DEFAULT_MECHANIC_CATALOG,
   options: GenerateObbyOptions = {},
 ): GenerationBundle {
   const admission = preflightGenerationWorkAdmission(
     requestInput,
-    configuration,
-    catalog,
+    configurationInput,
+    catalogInput,
   );
   options.onWorkAdmitted?.(admission);
+  options.onCoveredOperation?.("input-snapshot");
+  const requestSnapshot = snapshotPlainData(requestInput, "request") as Record<
+    string,
+    unknown
+  >;
+  const configuration = snapshotPlainData(
+    configurationInput,
+    "configuration",
+  ) as GeneratorConfiguration;
+  const catalog = snapshotPlainData(
+    catalogInput,
+    "mechanic catalog",
+  ) as MechanicCatalog;
   options.onCoveredOperation?.("configuration-validation");
   assertValidGeneratorConfiguration(configuration);
   options.onCoveredOperation?.("catalog-validation");
   assertValidMechanicCatalog(catalog);
   options.onCoveredOperation?.("request-normalization");
-  const request = normalizeGenerationRequest(requestInput, catalog);
+  const request = normalizeGenerationRequest(requestSnapshot, catalog);
   options.onCoveredOperation?.("planning");
   const candidates = selectMechanics(request, configuration, catalog);
   const fallbackMechanic = candidates[0];
