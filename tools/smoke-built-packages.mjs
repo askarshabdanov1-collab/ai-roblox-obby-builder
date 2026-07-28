@@ -1,6 +1,20 @@
-import { readFile } from "node:fs/promises";
+import {
+  lstat,
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
-import { canonicalStringify } from "@obby/canonical-json";
+import {
+  canonicalStringify,
+  evaluatorCanonicalStringify,
+} from "@obby/canonical-json";
 import { validatePlaceSpec, validateSceneManifest } from "@obby/contracts";
 import { normalizeGeometryObject } from "@obby/geometry-evaluator";
 import { compilePlaceSpec } from "@obby/obby-compiler";
@@ -20,6 +34,7 @@ import {
   DEFAULT_MECHANIC_CATALOG,
   assertValidGenerationBundle,
   assertValidNormalizedGenerationRequest,
+  estimateGenerationWorkUnits,
   generateObby,
   hashGeneratorPreimage,
 } from "@obby/obby-generator";
@@ -71,7 +86,7 @@ if (
   throw new Error("built scoring engine exports are unavailable");
 if (typeof runEvaluatorCli !== "function")
   throw new Error("built evaluator CLI library export is unavailable");
-const generated = generateObby({
+const builtRequest = {
   schemaVersion: "0.1",
   requestId: "built-smoke",
   workingName: "Built Smoke",
@@ -79,7 +94,8 @@ const generated = generateObby({
   stageCount: 5,
   checkpointFrequency: 3,
   seed: 1,
-});
+};
+const generated = generateObby(builtRequest);
 if (generated.obbySpec.stages.length !== 5)
   throw new Error("built generator returned an invalid stage plan");
 const expectGeneratorFailure = (label, action) => {
@@ -87,6 +103,15 @@ const expectGeneratorFailure = (label, action) => {
     action();
   } catch {
     return;
+  }
+  throw new Error(`built generator accepted ${label}`);
+};
+const expectGeneratorCode = (label, code, action) => {
+  try {
+    action();
+  } catch (error) {
+    if (error?.code === code) return;
+    throw new Error(`built generator returned the wrong code for ${label}`);
   }
   throw new Error(`built generator accepted ${label}`);
 };
@@ -181,6 +206,295 @@ for (const [label, mutate] of graphCases) {
 }
 if (typeof runGeneratorCli !== "function")
   throw new Error("built generator CLI library export is unavailable");
+
+const withWorkBudget = (maximum) => {
+  const preimage = {
+    ...DEFAULT_GENERATOR_CONFIGURATION,
+    limits: {
+      ...DEFAULT_GENERATOR_CONFIGURATION.limits,
+      maxWorkUnits: maximum,
+    },
+  };
+  return {
+    ...preimage,
+    configurationHash: hashGeneratorPreimage(preimage, "configurationHash"),
+  };
+};
+const workN = estimateGenerationWorkUnits(
+  builtRequest.stageCount,
+  DEFAULT_MECHANIC_CATALOG.mechanics.length,
+);
+const exactBudgetBundle = generateObby(builtRequest, withWorkBudget(workN));
+const extraBudgetBundle = generateObby(builtRequest, withWorkBudget(workN + 1));
+if (
+  evaluatorCanonicalStringify(exactBudgetBundle) !==
+  evaluatorCanonicalStringify(extraBudgetBundle)
+)
+  throw new Error("built generator made execution budget semantic");
+
+const underfundedConfiguration = withWorkBudget(workN - 1);
+const accessorCases = [];
+const accessorCase = (label, target, key, value, placement) => {
+  let calls = 0;
+  Object.defineProperty(target, key, {
+    enumerable: true,
+    get: () => {
+      calls += 1;
+      hashGeneratorPreimage(builtRequest);
+      return value;
+    },
+  });
+  accessorCases.push({ label, target, placement, calls: () => calls });
+};
+accessorCase(
+  "request.stageCount",
+  { ...builtRequest },
+  "stageCount",
+  builtRequest.stageCount,
+  "request",
+);
+accessorCase(
+  "configuration.limits",
+  { ...underfundedConfiguration },
+  "limits",
+  underfundedConfiguration.limits,
+  "configuration",
+);
+const accessorLimits = { ...underfundedConfiguration.limits };
+accessorCase(
+  "limits.maxWorkUnits",
+  accessorLimits,
+  "maxWorkUnits",
+  workN - 1,
+  "limits",
+);
+accessorCase(
+  "catalog.mechanics",
+  { ...DEFAULT_MECHANIC_CATALOG },
+  "mechanics",
+  DEFAULT_MECHANIC_CATALOG.mechanics,
+  "catalog",
+);
+for (const testCase of accessorCases) {
+  const configuration =
+    testCase.placement === "configuration"
+      ? testCase.target
+      : testCase.placement === "limits"
+        ? { ...underfundedConfiguration, limits: testCase.target }
+        : underfundedConfiguration;
+  expectGeneratorCode(testCase.label, "validation", () =>
+    generateObby(
+      testCase.placement === "request" ? testCase.target : builtRequest,
+      configuration,
+      testCase.placement === "catalog"
+        ? testCase.target
+        : DEFAULT_MECHANIC_CATALOG,
+    ),
+  );
+  if (testCase.calls() !== 0)
+    throw new Error(`built generator invoked ${testCase.label}`);
+}
+
+let inheritedCalls = 0;
+const inheritedPrototype = Object.create(null);
+Object.defineProperty(inheritedPrototype, "stageCount", {
+  get: () => {
+    inheritedCalls += 1;
+    return builtRequest.stageCount;
+  },
+});
+const inheritedRequest = Object.create(inheritedPrototype);
+const inheritedDescriptors = Object.getOwnPropertyDescriptors(builtRequest);
+Reflect.deleteProperty(inheritedDescriptors, "stageCount");
+Object.defineProperties(inheritedRequest, inheritedDescriptors);
+expectGeneratorCode("inherited stageCount", "validation", () =>
+  generateObby(inheritedRequest, underfundedConfiguration),
+);
+if (inheritedCalls !== 0)
+  throw new Error("built generator invoked an inherited accessor");
+
+for (const [label, target, placement] of [
+  ["request Proxy", builtRequest, "request"],
+  ["catalog Proxy", DEFAULT_MECHANIC_CATALOG, "catalog"],
+]) {
+  let proxyTraps = 0;
+  const proxy = new Proxy(target, {
+    get: (object, key, receiver) => {
+      proxyTraps += 1;
+      return Reflect.get(object, key, receiver);
+    },
+    getOwnPropertyDescriptor: (object, key) => {
+      proxyTraps += 1;
+      return Reflect.getOwnPropertyDescriptor(object, key);
+    },
+    getPrototypeOf: (object) => {
+      proxyTraps += 1;
+      return Reflect.getPrototypeOf(object);
+    },
+    ownKeys: (object) => {
+      proxyTraps += 1;
+      return Reflect.ownKeys(object);
+    },
+  });
+  expectGeneratorCode(label, "validation", () =>
+    generateObby(
+      placement === "request" ? proxy : builtRequest,
+      underfundedConfiguration,
+      placement === "catalog" ? proxy : DEFAULT_MECHANIC_CATALOG,
+    ),
+  );
+  if (proxyTraps !== 0)
+    throw new Error(`built generator invoked a trap on ${label}`);
+}
+
+let arrayAccessorCalls = 0;
+const accessorMechanics = [...DEFAULT_MECHANIC_CATALOG.mechanics];
+Object.defineProperty(accessorMechanics, "0", {
+  enumerable: true,
+  get: () => {
+    arrayAccessorCalls += 1;
+    return DEFAULT_MECHANIC_CATALOG.mechanics[0];
+  },
+});
+const accessorCatalog = {
+  ...DEFAULT_MECHANIC_CATALOG,
+  mechanics: accessorMechanics,
+};
+expectGeneratorCode("underfunded accessor array", "maximum-work-units", () =>
+  generateObby(builtRequest, underfundedConfiguration, accessorCatalog),
+);
+expectGeneratorCode("admitted accessor array", "validation", () =>
+  generateObby(builtRequest, withWorkBudget(workN), accessorCatalog),
+);
+if (arrayAccessorCalls !== 0)
+  throw new Error("built generator invoked a mechanics index accessor");
+
+let fakeLengthCalls = 0;
+const fakeArray = Object.create(Array.prototype);
+Object.defineProperty(fakeArray, "length", {
+  get: () => {
+    fakeLengthCalls += 1;
+    return DEFAULT_MECHANIC_CATALOG.mechanics.length;
+  },
+});
+expectGeneratorCode("array-like length accessor", "validation", () =>
+  generateObby(builtRequest, underfundedConfiguration, {
+    ...DEFAULT_MECHANIC_CATALOG,
+    mechanics: fakeArray,
+  }),
+);
+if (fakeLengthCalls !== 0)
+  throw new Error("built generator invoked an array-like length accessor");
+if (Object.getOwnPropertyDescriptor([], "length")?.configurable !== false)
+  throw new Error("built runtime unexpectedly permits Array length accessors");
+
+class MechanicArray extends Array {}
+expectGeneratorCode("array subclass", "validation", () =>
+  generateObby(builtRequest, underfundedConfiguration, {
+    ...DEFAULT_MECHANIC_CATALOG,
+    mechanics: MechanicArray.from(DEFAULT_MECHANIC_CATALOG.mechanics),
+  }),
+);
+for (const coercionKey of ["valueOf", Symbol.toPrimitive]) {
+  let coercionCalls = 0;
+  expectGeneratorCode("stage-count coercion hook", "validation", () =>
+    generateObby(
+      {
+        ...builtRequest,
+        stageCount: {
+          [coercionKey]: () => {
+            coercionCalls += 1;
+            return builtRequest.stageCount;
+          },
+        },
+      },
+      underfundedConfiguration,
+    ),
+  );
+  if (coercionCalls !== 0)
+    throw new Error("built generator invoked a stage-count coercion hook");
+}
+
+const pathExists = async (path) => {
+  try {
+    await lstat(path);
+    return true;
+  } catch (error) {
+    if (error.code === "ENOENT") return false;
+    throw error;
+  }
+};
+const nullStreams = {
+  stdout: { write: () => true },
+  stderr: { write: () => true },
+};
+const publicationRoot = await mkdtemp(join(tmpdir(), "g0-built-smoke-"));
+try {
+  await writeFile(
+    join(publicationRoot, "request.json"),
+    JSON.stringify(builtRequest),
+  );
+  const finalName = `obby-${generated.obbySpec.obbySpecHash.slice(7)}`;
+  const finalPath = join(publicationRoot, "out", finalName);
+  let observedAbsent = false;
+  const exit = await runGeneratorCli(
+    ["generate", "--request", "request.json", "--output", "out"],
+    nullStreams,
+    {
+      cwd: publicationRoot,
+      onAtomicStep: async (step) => {
+        if (step !== "final-commit") return;
+        observedAbsent = !(await pathExists(finalPath));
+      },
+    },
+  );
+  if (
+    exit !== 0 ||
+    !observedAbsent ||
+    (await readdir(finalPath)).join(",") !== "generation-bundle.json"
+  )
+    throw new Error("built generator CLI exposed incomplete public output");
+
+  await rm(finalPath, { recursive: true });
+  const foreignTarget = join(publicationRoot, "foreign-target");
+  await mkdir(foreignTarget);
+  const replacementExit = await runGeneratorCli(
+    [
+      "generate",
+      "--request",
+      "request.json",
+      "--output",
+      "out",
+      "--json-errors",
+    ],
+    nullStreams,
+    {
+      cwd: publicationRoot,
+      onAtomicStep: async (step) => {
+        if (step !== "destination-claim") return;
+        const lockName = (await readdir(join(publicationRoot, "out"))).find(
+          (name) => name.endsWith(".lock"),
+        );
+        if (lockName === undefined) throw new Error("built smoke lock missing");
+        const lockPath = join(publicationRoot, "out", lockName);
+        await rm(lockPath, { recursive: true });
+        await symlink(
+          foreignTarget,
+          lockPath,
+          process.platform === "win32" ? "junction" : "dir",
+        );
+      },
+    },
+  );
+  if (
+    replacementExit !== 1 ||
+    (await readdir(foreignTarget)).length !== 0 ||
+    (await pathExists(finalPath))
+  )
+    throw new Error("built generator CLI wrote through a replaced lock");
+} finally {
+  await rm(publicationRoot, { recursive: true, force: true });
+}
 
 const compiledReportModule = await import(
   new URL("../packages/scoring-engine/dist/report.js", import.meta.url)

@@ -10,8 +10,9 @@
 - [x] Exactly one acyclic required start-to-finish route covers every required stage.
 - [x] Full graph validation requires catalog/configuration/request authority, recomputes hashes, and closes all bidirectional references.
 - [x] Committed fixtures cover exact typed rejection, same-seed bytes/filename, different-seed controlled variation, and implicit/explicit defaults.
-- [x] Constant-time structural preflight reserves the exact work requirement before every covered semantic operation; N−1 invokes no validator, normalizer, PRNG, planner, hasher, graph validator, or serializer preparation.
-- [x] The offline CLI protects aliases and reparse points on Ubuntu/Windows, atomically claims destinations, publishes complete payload bytes create-if-absent, preserves late conflicts, serializes concurrent publishers, and reports path-redacted typed errors.
+- [x] Descriptor-only plain-data preflight rejects accessors, Proxies, inherited fields, custom arrays, and coercion hooks without invoking them; it reserves exact work before snapshot traversal or semantic operations, and N−1 performs no covered work.
+- [x] Available work is execution-only metadata excluded from semantic configuration identity; N, N+1, and larger sufficient budgets produce byte-identical bundles, hashes, and output names.
+- [x] The offline CLI protects aliases and reparse points on Ubuntu/Windows, holds a private destination-name lock, keeps the public path absent until atomic complete-directory commit, preserves foreign replacements, serializes conforming publishers, and reports path-redacted typed errors.
 - [x] Generated contract/fixture checks are non-mutating.
 - [x] Plain-Node built imports and the full repository validation suite include G0.
 - [x] No LLM, network, Studio, Toolbox, ML, analytics, desktop/cloud, or orchestration implementation is present.
