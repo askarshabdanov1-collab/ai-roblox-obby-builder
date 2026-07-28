@@ -345,11 +345,6 @@ export function generateObby(
   options: GenerateObbyOptions = {},
 ): GenerationBundle {
   const phases: GenerationPhase[] = ["safe-shape-check"];
-  preflightGenerationWorkAdmission(
-    requestInput,
-    configurationInput,
-    catalogInput,
-  );
   const requestSnapshot = snapshotPlainData(requestInput, "request") as Record<
     string,
     unknown

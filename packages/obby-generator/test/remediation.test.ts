@@ -575,7 +575,7 @@ describe("configuration, catalog, and deterministic work", () => {
     const accessorCatalog = { ...DEFAULT_MECHANIC_CATALOG, mechanics };
     expect(() =>
       generateObby(baseRequest, underfunded, accessorCatalog),
-    ).toThrow(expect.objectContaining({ code: "maximum-work-units" }));
+    ).toThrow(expect.objectContaining({ code: "validation" }));
     expect(indexCalls).toBe(0);
     expect(() =>
       generateObby(

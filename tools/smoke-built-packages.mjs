@@ -232,6 +232,69 @@ if (
 )
   throw new Error("built generator made execution budget semantic");
 
+for (const callbackSeam of ["onWorkAdmitted", "input-snapshot"]) {
+  const callbackRequest = structuredClone(builtRequest);
+  const callbackConfiguration = structuredClone(withWorkBudget(workN));
+  const callbackCatalog = structuredClone(DEFAULT_MECHANIC_CATALOG);
+  const control = generateObby(
+    structuredClone(callbackRequest),
+    structuredClone(callbackConfiguration),
+    structuredClone(callbackCatalog),
+  );
+  let callbackAdmission;
+  let callbackPhases;
+  const mutateCallerInputs = () => {
+    callbackRequest.stageCount = 50;
+    callbackRequest.difficulty = "hard";
+    callbackRequest.checkpointFrequency = 2;
+    callbackRequest.assetPolicy = "approved-local-assets";
+    callbackRequest.seed = 999;
+    callbackConfiguration.limits.maxWorkUnits = 1;
+    callbackCatalog.mechanics[0].label = "mutated caller mechanic";
+    callbackCatalog.mechanics.push(
+      structuredClone(callbackCatalog.mechanics[0]),
+    );
+  };
+  const callbackOutput = generateObby(
+    callbackRequest,
+    callbackConfiguration,
+    callbackCatalog,
+    {
+      onWorkAdmitted: (admission) => {
+        callbackAdmission = admission;
+        if (callbackSeam === "onWorkAdmitted") mutateCallerInputs();
+      },
+      onCoveredOperation: (operation) => {
+        if (callbackSeam === "input-snapshot" && operation === "input-snapshot")
+          mutateCallerInputs();
+      },
+      onPhaseTrace: (phases) => {
+        callbackPhases = phases;
+      },
+    },
+  );
+  if (
+    !Object.isFrozen(callbackAdmission) ||
+    callbackAdmission.requiredWorkUnits !== workN ||
+    callbackOutput.obbySpec.stages.length !== builtRequest.stageCount ||
+    evaluatorCanonicalStringify(callbackOutput) !==
+      evaluatorCanonicalStringify(control)
+  )
+    throw new Error(`built generator retained ${callbackSeam} caller input`);
+  if (
+    callbackPhases?.join(",") !==
+    "safe-shape-check,snapshot-complete,work-admission,callbacks,semantic-validation,normalization,generation"
+  )
+    throw new Error(`built generator misordered ${callbackSeam}`);
+}
+expectGeneratorCode("throwing callback", "callback-failed", () =>
+  generateObby(builtRequest, undefined, undefined, {
+    onWorkAdmitted: () => {
+      throw new Error("private callback detail");
+    },
+  }),
+);
+
 const underfundedConfiguration = withWorkBudget(workN - 1);
 const accessorCases = [];
 const accessorCase = (label, target, key, value, placement) => {
@@ -360,7 +423,7 @@ const accessorCatalog = {
   ...DEFAULT_MECHANIC_CATALOG,
   mechanics: accessorMechanics,
 };
-expectGeneratorCode("underfunded accessor array", "maximum-work-units", () =>
+expectGeneratorCode("underfunded accessor array", "validation", () =>
   generateObby(builtRequest, underfundedConfiguration, accessorCatalog),
 );
 expectGeneratorCode("admitted accessor array", "validation", () =>
@@ -455,6 +518,52 @@ try {
   )
     throw new Error("built generator CLI exposed incomplete public output");
 
+  await rm(finalPath, { recursive: true });
+  const syscallWindowSentinel = "foreign-syscall-window-owner";
+  let conflictStderr = "";
+  let foreignIdentity;
+  const syscallWindowExit = await runGeneratorCli(
+    [
+      "generate",
+      "--request",
+      "request.json",
+      "--output",
+      "out",
+      "--json-errors",
+    ],
+    {
+      stdout: { write: () => true },
+      stderr: {
+        write: (text) => {
+          conflictStderr += text;
+        },
+      },
+    },
+    {
+      cwd: publicationRoot,
+      onAtomicStep: async (step) => {
+        if (step !== "before-no-replace-commit") return;
+        await mkdir(finalPath);
+        await writeFile(join(finalPath, "owner.txt"), syscallWindowSentinel);
+        foreignIdentity = await lstat(finalPath);
+      },
+    },
+  );
+  const preservedIdentity = await lstat(finalPath);
+  if (
+    syscallWindowExit !== 1 ||
+    JSON.parse(conflictStderr).error.code !== "output-conflict" ||
+    preservedIdentity.dev !== foreignIdentity?.dev ||
+    preservedIdentity.ino !== foreignIdentity?.ino ||
+    preservedIdentity.birthtimeMs !== foreignIdentity?.birthtimeMs ||
+    (await readdir(finalPath)).join(",") !== "owner.txt" ||
+    (await readFile(join(finalPath, "owner.txt"), "utf8")) !==
+      syscallWindowSentinel ||
+    (await readdir(join(publicationRoot, "out"))).some(
+      (name) => name.endsWith(".tmp") || name.endsWith(".lock"),
+    )
+  )
+    throw new Error("built generator CLI replaced a syscall-window owner");
   await rm(finalPath, { recursive: true });
   const foreignTarget = join(publicationRoot, "foreign-target");
   await mkdir(foreignTarget);
