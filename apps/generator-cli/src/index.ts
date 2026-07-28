@@ -1,9 +1,9 @@
 import {
-  link,
   lstat,
   mkdir,
   open,
   realpath,
+  rename,
   rmdir,
   rm,
 } from "node:fs/promises";
@@ -34,6 +34,7 @@ export type GeneratorCliOptions = {
       | "file-sync"
       | "temporary-directory-sync"
       | "destination-claim"
+      | "final-commit"
       | "final-directory-sync"
       | "rename"
       | "final-parent-sync"
@@ -334,6 +335,38 @@ async function assertDirectoryChain(
   }
 }
 
+function sameDirectoryIdentity(
+  left: DirectoryIdentity,
+  right: DirectoryIdentity,
+  includePath = true,
+): boolean {
+  return (
+    (!includePath || left.realPath === right.realPath) &&
+    left.device === right.device &&
+    left.inode === right.inode &&
+    left.birthtimeMs === right.birthtimeMs
+  );
+}
+
+async function assertOwnedDirectory(
+  identity: DirectoryIdentity,
+): Promise<void> {
+  let actual: DirectoryIdentity;
+  try {
+    actual = await directoryIdentity(identity.path);
+  } catch {
+    throw new GeneratorContractError(
+      "path-safety",
+      "private publication lock identity changed",
+    );
+  }
+  if (!sameDirectoryIdentity(actual, identity))
+    throw new GeneratorContractError(
+      "path-safety",
+      "private publication lock identity changed",
+    );
+}
+
 async function syncDirectory(
   path: string,
   step:
@@ -377,18 +410,27 @@ async function assertDestinationAbsent(
   }
 }
 
-async function claimDestination(
-  finalPath: string,
+async function claimPrivateLock(
+  lockPath: string,
   directoryName: string,
 ): Promise<DirectoryIdentity> {
   for (let attempt = 0; attempt < 4; attempt += 1) {
     try {
-      await mkdir(finalPath, { mode: 0o700 });
-      return await directoryIdentity(finalPath);
+      await mkdir(lockPath, { mode: 0o700 });
+      return await directoryIdentity(lockPath);
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
       try {
-        await assertDestinationAbsent(finalPath, directoryName);
+        const info = await lstat(lockPath);
+        if (info.isSymbolicLink())
+          throw new GeneratorContractError(
+            "path-safety",
+            "private publication lock is a reparse point",
+          );
+        throw new GeneratorContractError(
+          "output-conflict",
+          `output publication is already claimed: ${directoryName}`,
+        );
       } catch (inspectionError) {
         if ((inspectionError as NodeJS.ErrnoException).code === "ENOENT")
           continue;
@@ -398,7 +440,7 @@ async function claimDestination(
   }
   throw new GeneratorContractError(
     "output-conflict",
-    `output already exists: ${directoryName}`,
+    `output publication is already claimed: ${directoryName}`,
   );
 }
 
@@ -415,6 +457,10 @@ async function publish(
     await rejectSymlinkSegments(cwd, outputRoot);
     const outputChain = await captureDirectoryChain(cwd, outputRoot);
     const finalPath = resolve(outputRoot, directoryName);
+    const lockPath = resolve(
+      outputRoot,
+      `.obby-generator-${directoryName.slice(5)}.lock`,
+    );
     if (
       finalPath.length >
       DEFAULT_GENERATOR_CONFIGURATION.limits.maxOutputPathLength
@@ -446,7 +492,7 @@ async function publish(
       );
 
     let committed = false;
-    let destinationClaim: DirectoryIdentity | undefined;
+    let publicationLock: DirectoryIdentity | undefined;
     try {
       await options.onAtomicStep?.("file-write");
       const handle = await open(
@@ -470,47 +516,43 @@ async function publish(
       await assertDirectoryChain(outputChain);
       await options.onAtomicStep?.("rename");
       await assertDirectoryChain(outputChain);
-      destinationClaim = await claimDestination(finalPath, directoryName);
+      publicationLock = await claimPrivateLock(lockPath, directoryName);
       await options.onAtomicStep?.("destination-claim");
       await assertDirectoryChain(outputChain);
-      const stagingFile = resolve(stagingPath, "generation-bundle.json");
-      const finalFile = resolve(finalPath, "generation-bundle.json");
+      await assertOwnedDirectory(publicationLock);
+      await assertDestinationAbsent(finalPath, directoryName);
+      await options.onAtomicStep?.("final-commit");
+      await assertDirectoryChain(outputChain);
+      await assertOwnedDirectory(publicationLock);
+      await assertDestinationAbsent(finalPath, directoryName);
+      const stagingIdentity = await directoryIdentity(stagingPath);
       try {
-        await link(stagingFile, finalFile);
+        await rename(stagingPath, finalPath);
       } catch (error) {
-        if ((error as NodeJS.ErrnoException).code === "EEXIST")
-          throw new GeneratorContractError(
-            "output-conflict",
-            `output already exists: ${directoryName}`,
-          );
+        if (
+          ["EEXIST", "ENOTEMPTY", "EPERM", "EACCES"].includes(
+            (error as NodeJS.ErrnoException).code ?? "",
+          )
+        )
+          await assertDestinationAbsent(finalPath, directoryName);
         throw error;
       }
       committed = true;
-      try {
-        await rm(stagingPath, { force: true, recursive: true });
-      } catch {
-        throw new GeneratorContractError(
-          "cleanup-failed",
-          "temporary output cleanup failed",
-        );
-      }
       await assertDirectoryChain(outputChain);
-      const actualClaim = await directoryIdentity(finalPath);
-      if (
-        actualClaim.realPath !== destinationClaim.realPath ||
-        actualClaim.device !== destinationClaim.device ||
-        actualClaim.inode !== destinationClaim.inode ||
-        actualClaim.birthtimeMs !== destinationClaim.birthtimeMs
-      )
+      const committedIdentity = await directoryIdentity(finalPath);
+      if (!sameDirectoryIdentity(committedIdentity, stagingIdentity, false))
         throw new GeneratorContractError(
           "path-safety",
-          "final output identity changed during publication",
+          "committed output identity changed during publication",
         );
       await syncDirectory(
         finalPath,
         "final-directory-sync",
         options.onAtomicStep,
       );
+      await assertOwnedDirectory(publicationLock);
+      await rmdir(lockPath);
+      publicationLock = undefined;
       await syncDirectory(
         outputRoot,
         "final-parent-sync",
@@ -518,42 +560,25 @@ async function publish(
       );
       return finalPath;
     } catch (error) {
-      if (!committed) {
-        try {
-          await assertDirectoryChain(outputChain);
-          await options.onAtomicStep?.("cleanup");
-          await rm(stagingPath, { force: true, recursive: true });
-          if (
-            destinationClaim !== undefined &&
-            !(
-              error instanceof GeneratorContractError &&
-              error.code === "output-conflict"
-            )
-          ) {
-            const actualClaim = await directoryIdentity(finalPath);
-            if (
-              actualClaim.realPath !== destinationClaim.realPath ||
-              actualClaim.device !== destinationClaim.device ||
-              actualClaim.inode !== destinationClaim.inode ||
-              actualClaim.birthtimeMs !== destinationClaim.birthtimeMs
-            )
-              throw new GeneratorContractError(
-                "path-safety",
-                "final output identity changed during cleanup",
-              );
-            await rmdir(finalPath);
-          }
-        } catch {
-          if (
-            error instanceof GeneratorContractError &&
-            error.code === "path-safety"
-          )
-            throw error;
-          throw new GeneratorContractError(
-            "cleanup-failed",
-            "publication cleanup failed",
-          );
+      try {
+        await assertDirectoryChain(outputChain);
+        await options.onAtomicStep?.("cleanup");
+        if (!committed) await rm(stagingPath, { force: true, recursive: true });
+        if (publicationLock !== undefined) {
+          await assertOwnedDirectory(publicationLock);
+          await rmdir(publicationLock.path);
+          publicationLock = undefined;
         }
+      } catch (cleanupError) {
+        if (
+          cleanupError instanceof GeneratorContractError &&
+          cleanupError.code === "path-safety"
+        )
+          throw cleanupError;
+        throw new GeneratorContractError(
+          "cleanup-failed",
+          "publication cleanup failed",
+        );
       }
       if (error instanceof GeneratorContractError) throw error;
       throw new GeneratorContractError(
