@@ -40,6 +40,29 @@ import {
 import { normalizeGenerationRequest } from "./normalize.js";
 import { DeterministicRandom, deriveDomainSeed } from "./prng.js";
 
+export type GenerationCoveredOperation =
+  | "configuration-validation"
+  | "catalog-validation"
+  | "request-normalization"
+  | "planning"
+  | "hashing"
+  | "prng-derivation"
+  | "graph-validation"
+  | "bundle-validation"
+  | "serialization-preparation";
+
+export type GenerationWorkAdmission = {
+  requiredWorkUnits: number;
+  admittedWorkUnits: number;
+  availableWorkUnits: number;
+  unusedWorkUnits: number;
+};
+
+export type GenerateObbyOptions = {
+  onWorkAdmitted?: (admission: GenerationWorkAdmission) => void;
+  onCoveredOperation?: (operation: GenerationCoveredOperation) => void;
+};
+
 const PALETTE_BY_THEME = {
   classic: "classic-high-contrast",
   sky: "sky-high-contrast",
@@ -204,6 +227,58 @@ export function estimateGenerationWorkUnits(
   return units;
 }
 
+function admissionRecord(
+  input: unknown,
+  label: string,
+): Record<string, unknown> {
+  if (input === null || typeof input !== "object" || Array.isArray(input))
+    throw new GeneratorContractError(
+      "validation",
+      `${label} is not structurally readable for work admission`,
+    );
+  return input as Record<string, unknown>;
+}
+
+export function preflightGenerationWorkAdmission(
+  requestInput: unknown,
+  configurationInput: unknown,
+  catalogInput: unknown,
+): GenerationWorkAdmission {
+  const request = admissionRecord(requestInput, "request");
+  const configuration = admissionRecord(configurationInput, "configuration");
+  const limits = admissionRecord(configuration.limits, "configuration limits");
+  const catalog = admissionRecord(catalogInput, "mechanic catalog");
+  const stageCount = request.stageCount === undefined ? 15 : request.stageCount;
+  const mechanics = catalog.mechanics;
+  const availableWorkUnits = limits.maxWorkUnits;
+  if (
+    !Number.isSafeInteger(stageCount) ||
+    (stageCount as number) < 0 ||
+    !Array.isArray(mechanics) ||
+    !Number.isSafeInteger(availableWorkUnits) ||
+    (availableWorkUnits as number) < 0
+  )
+    throw new GeneratorContractError(
+      "validation",
+      "work admission requires bounded stage, catalog, and budget facts",
+    );
+  const requiredWorkUnits = estimateGenerationWorkUnits(
+    stageCount as number,
+    mechanics.length,
+  );
+  if (requiredWorkUnits > (availableWorkUnits as number))
+    throw new GeneratorContractError(
+      "maximum-work-units",
+      "generation requires more work units than the configured maximum",
+    );
+  return {
+    requiredWorkUnits,
+    admittedWorkUnits: requiredWorkUnits,
+    availableWorkUnits: availableWorkUnits as number,
+    unusedWorkUnits: (availableWorkUnits as number) - requiredWorkUnits,
+  };
+}
+
 function weightedMechanicChoice(
   random: DeterministicRandom,
   candidates: readonly MechanicDefinition[],
@@ -232,18 +307,21 @@ export function generateObby(
   requestInput: unknown,
   configuration: GeneratorConfiguration = DEFAULT_GENERATOR_CONFIGURATION,
   catalog: MechanicCatalog = DEFAULT_MECHANIC_CATALOG,
+  options: GenerateObbyOptions = {},
 ): GenerationBundle {
+  const admission = preflightGenerationWorkAdmission(
+    requestInput,
+    configuration,
+    catalog,
+  );
+  options.onWorkAdmitted?.(admission);
+  options.onCoveredOperation?.("configuration-validation");
   assertValidGeneratorConfiguration(configuration);
+  options.onCoveredOperation?.("catalog-validation");
   assertValidMechanicCatalog(catalog);
+  options.onCoveredOperation?.("request-normalization");
   const request = normalizeGenerationRequest(requestInput, catalog);
-  if (
-    estimateGenerationWorkUnits(request.stageCount, catalog.mechanics.length) >
-    configuration.limits.maxWorkUnits
-  )
-    throw new GeneratorContractError(
-      "work-limit",
-      "generation work units exceed the configured bound",
-    );
+  options.onCoveredOperation?.("planning");
   const candidates = selectMechanics(request, configuration, catalog);
   const fallbackMechanic = candidates[0];
   if (fallbackMechanic === undefined)
@@ -262,6 +340,7 @@ export function generateObby(
     request.difficulty,
     configuration.difficultyDeltaLimit,
   );
+  options.onCoveredOperation?.("hashing");
   const seedIdentity = hashGeneratorPreimage(
     {
       schemaVersion: "0.1",
@@ -273,6 +352,7 @@ export function generateObby(
     },
     "seedIdentity",
   );
+  options.onCoveredOperation?.("prng-derivation");
   const mechanicRandom = new DeterministicRandom(
     deriveDomainSeed(seedIdentity, "mechanics"),
   );
@@ -847,6 +927,7 @@ export function generateObby(
     findings,
   };
   const obbySpec: ObbySpec = contentAddress(obbySpecSeed, "obbySpecHash");
+  options.onCoveredOperation?.("graph-validation");
   assertValidObbySpec(obbySpec, catalog, configuration, request);
   const bundleSeed = {
     schemaVersion: "0.1" as const,
@@ -863,6 +944,8 @@ export function generateObby(
     bundleSeed,
     "generationBundleHash",
   );
+  options.onCoveredOperation?.("bundle-validation");
   assertValidGenerationBundle(bundle, catalog, configuration);
+  options.onCoveredOperation?.("serialization-preparation");
   return bundle;
 }

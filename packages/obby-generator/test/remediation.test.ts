@@ -9,10 +9,12 @@ import {
   estimateGenerationWorkUnits,
   generateObby,
   hashGeneratorPreimage,
+  preflightGenerationWorkAdmission,
 } from "@obby/obby-generator";
 import type {
   GenerationBundle,
   GeneratorConfiguration,
+  MechanicCatalog,
   NormalizedGenerationRequest,
 } from "@obby/obby-generator";
 import { describe, expect, it } from "vitest";
@@ -66,6 +68,41 @@ function refreshBundle(bundle: GenerationBundle): void {
 function required<T>(value: T | undefined, label: string): T {
   if (value === undefined) throw new Error(`missing ${label}`);
   return value;
+}
+
+function nearMaximumCatalog(mechanicCount: number): MechanicCatalog {
+  const template = required(
+    DEFAULT_MECHANIC_CATALOG.mechanics.find(
+      (mechanic) => mechanic.mechanicId === "static-jumps",
+    ),
+    "static mechanic template",
+  );
+  const mechanics = Array.from({ length: mechanicCount }, (_, index) => {
+    const mechanic = {
+      ...structuredClone(template),
+      mechanicId: `audit-static-${String(index).padStart(2, "0")}`,
+      label: `Audit static ${index}`,
+      forbiddenAdjacentMechanicIds: [],
+      repetitionLimit: 10,
+    };
+    return {
+      ...mechanic,
+      mechanicDefinitionHash: hashGeneratorPreimage(
+        mechanic,
+        "mechanicDefinitionHash",
+      ),
+    };
+  });
+  const catalog = {
+    schemaVersion: "0.1" as const,
+    catalogId: `audit-static-${mechanicCount}`,
+    catalogVersion: "g0-v1" as const,
+    mechanics,
+  };
+  return {
+    ...catalog,
+    catalogHash: hashGeneratorPreimage(catalog, "catalogHash"),
+  };
 }
 
 describe("fail-closed normalized request validation", () => {
@@ -310,21 +347,122 @@ describe("configuration, catalog, and deterministic work", () => {
     30_000,
   );
 
-  it("enforces real generator work at N-1, N, and N+1", () => {
-    const required = estimateGenerationWorkUnits(
+  it("admits work before every covered operation and reports N-1/N/N+1 exactly", () => {
+    const catalog = nearMaximumCatalog(49);
+    const request = { ...baseRequest, stageCount: 50, excludedMechanics: [] };
+    const requiredWorkUnits = estimateGenerationWorkUnits(50, 49);
+    expect(requiredWorkUnits).toBe(24_700);
+
+    const coveredOperations: string[] = [];
+    let underfundedResult: GenerationBundle | undefined;
+    expect(() => {
+      underfundedResult = generateObby(
+        request,
+        configuration(2, requiredWorkUnits - 1),
+        catalog,
+        {
+          onCoveredOperation: (operation) => coveredOperations.push(operation),
+        },
+      );
+    }).toThrow(expect.objectContaining({ code: "maximum-work-units" }));
+    expect(coveredOperations).toEqual([]);
+    expect(underfundedResult).toBeUndefined();
+
+    const admissions: object[] = [];
+    const exactOperations: string[] = [];
+    const exact = generateObby(
+      request,
+      configuration(2, requiredWorkUnits),
+      catalog,
+      {
+        onWorkAdmitted: (admission) => admissions.push(admission),
+        onCoveredOperation: (operation) => exactOperations.push(operation),
+      },
+    );
+    const oneExtra = generateObby(
+      request,
+      configuration(2, requiredWorkUnits + 1),
+      catalog,
+      { onWorkAdmitted: (admission) => admissions.push(admission) },
+    );
+    expect(admissions).toEqual([
+      {
+        requiredWorkUnits,
+        admittedWorkUnits: requiredWorkUnits,
+        availableWorkUnits: requiredWorkUnits,
+        unusedWorkUnits: 0,
+      },
+      {
+        requiredWorkUnits,
+        admittedWorkUnits: requiredWorkUnits,
+        availableWorkUnits: requiredWorkUnits + 1,
+        unusedWorkUnits: 1,
+      },
+    ]);
+    expect(exactOperations).toEqual([
+      "configuration-validation",
+      "catalog-validation",
+      "request-normalization",
+      "planning",
+      "hashing",
+      "prng-derivation",
+      "graph-validation",
+      "bundle-validation",
+      "serialization-preparation",
+    ]);
+    expect(exact.obbySpec.stages).toHaveLength(50);
+    expect(
+      evaluatorCanonicalStringify(
+        generateObby(request, configuration(2, requiredWorkUnits), catalog),
+      ),
+    ).toBe(evaluatorCanonicalStringify(exact));
+    expect(evaluatorCanonicalStringify(oneExtra)).not.toBe(
+      evaluatorCanonicalStringify(exact),
+    );
+    expect(oneExtra.obbySpec.stages).toHaveLength(50);
+    expect(estimateGenerationWorkUnits(50, 50)).toBe(25_000);
+  });
+
+  it("gives budget admission precedence over semantic validation", () => {
+    const invalidRequest = { ...baseRequest, workingName: "   " };
+    const requiredWorkUnits = estimateGenerationWorkUnits(
       baseRequest.stageCount,
       DEFAULT_MECHANIC_CATALOG.mechanics.length,
     );
+    const coveredOperations: string[] = [];
+    const invalidConfiguration = configuration(2, requiredWorkUnits - 1);
+    invalidConfiguration.generatorVersion = "invalid" as "g0-reference-v1";
+    const invalidCatalog = structuredClone(DEFAULT_MECHANIC_CATALOG);
+    invalidCatalog.mechanics.reverse();
     expect(() =>
-      generateObby(baseRequest, configuration(2, required - 1)),
-    ).toThrow(expect.objectContaining({ code: "work-limit" }));
+      generateObby(invalidRequest, invalidConfiguration, invalidCatalog, {
+        onCoveredOperation: (operation) => coveredOperations.push(operation),
+      }),
+    ).toThrow(expect.objectContaining({ code: "maximum-work-units" }));
+    expect(coveredOperations).toEqual([]);
+
     expect(() =>
-      generateObby(baseRequest, configuration(2, required)),
-    ).not.toThrow();
-    expect(() =>
-      generateObby(baseRequest, configuration(2, required + 1)),
-    ).not.toThrow();
-    expect(estimateGenerationWorkUnits(50, 50)).toBe(25_000);
+      generateObby(
+        invalidRequest,
+        configuration(2, requiredWorkUnits),
+        DEFAULT_MECHANIC_CATALOG,
+      ),
+    ).toThrow(expect.objectContaining({ code: "schema" }));
+
+    const ordered = preflightGenerationWorkAdmission(
+      baseRequest,
+      configuration(2, requiredWorkUnits),
+      DEFAULT_MECHANIC_CATALOG,
+    );
+    const reversed = preflightGenerationWorkAdmission(
+      {
+        ...baseRequest,
+        excludedMechanics: [...baseRequest.excludedMechanics].reverse(),
+      },
+      configuration(2, requiredWorkUnits),
+      DEFAULT_MECHANIC_CATALOG,
+    );
+    expect(reversed).toEqual(ordered);
   });
 
   it("preserves checkpoint cardinality and reports deterministic frequency-one collision adjustment", () => {

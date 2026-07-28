@@ -47,6 +47,7 @@ export type GeneratorContractErrorCode =
   | "invalid-reference"
   | "invariant"
   | "work-limit"
+  | "maximum-work-units"
   | "path-safety"
   | "output-conflict"
   | "output-publication"
