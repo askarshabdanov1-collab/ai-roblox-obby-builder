@@ -13,6 +13,7 @@ import {
 } from "@obby/obby-generator";
 import type {
   GenerationBundle,
+  GenerationRequest,
   GeneratorConfiguration,
   MechanicCatalog,
   NormalizedGenerationRequest,
@@ -611,6 +612,98 @@ describe("configuration, catalog, and deterministic work", () => {
     expect(Object.getOwnPropertyDescriptor([], "length")?.configurable).toBe(
       false,
     );
+  });
+
+  it.each(["onWorkAdmitted", "input-snapshot"] as const)(
+    "snapshots all semantic input before the %s callback can mutate callers",
+    (seam) => {
+      const admittedStageCount = 5;
+      const request: GenerationRequest = {
+        ...baseRequest,
+        stageCount: admittedStageCount,
+        difficulty: "easy" as const,
+        checkpointFrequency: 3,
+        seed: 23,
+      };
+      const requiredWorkUnits = estimateGenerationWorkUnits(
+        admittedStageCount,
+        DEFAULT_MECHANIC_CATALOG.mechanics.length,
+      );
+      const config = configuration(2, requiredWorkUnits);
+      const catalog = structuredClone(DEFAULT_MECHANIC_CATALOG);
+      const control = generateObby(
+        structuredClone(request),
+        structuredClone(config),
+        structuredClone(catalog),
+      );
+      let admitted: object | undefined;
+      let phaseTrace: readonly string[] | undefined;
+      let mutationRan = false;
+      const mutateOriginals = () => {
+        mutationRan = true;
+        request.stageCount = 50;
+        request.difficulty = "hard";
+        request.checkpointFrequency = 2;
+        request.assetPolicy = "approved-local-assets";
+        request.seed = 999;
+        config.limits.maxWorkUnits = 1;
+        const firstMechanic = catalog.mechanics[0];
+        if (firstMechanic === undefined) throw new Error("missing mechanic");
+        firstMechanic.label = "Mutated after admission";
+        catalog.mechanics.push(structuredClone(firstMechanic));
+      };
+      const output = generateObby(request, config, catalog, {
+        onWorkAdmitted: (value) => {
+          admitted = value;
+          if (seam === "onWorkAdmitted") mutateOriginals();
+        },
+        onCoveredOperation: (operation) => {
+          if (seam === "input-snapshot" && operation === "input-snapshot")
+            mutateOriginals();
+        },
+        onPhaseTrace: (trace) => {
+          phaseTrace = trace;
+        },
+      });
+      expect(mutationRan).toBe(true);
+      expect(Object.isFrozen(admitted)).toBe(true);
+      expect(admitted).toEqual({
+        requiredWorkUnits,
+        admittedWorkUnits: requiredWorkUnits,
+        availableWorkUnits: requiredWorkUnits,
+        unusedWorkUnits: 0,
+      });
+      expect(output.obbySpec.stages).toHaveLength(5);
+      expect(evaluatorCanonicalStringify(output)).toBe(
+        evaluatorCanonicalStringify(control),
+      );
+      expect(phaseTrace).toEqual([
+        "safe-shape-check",
+        "snapshot-complete",
+        "work-admission",
+        "callbacks",
+        "semantic-validation",
+        "normalization",
+        "generation",
+      ]);
+    },
+  );
+
+  it("maps callback exceptions to callback-failed without producing output", () => {
+    let output: GenerationBundle | undefined;
+    expect(() => {
+      output = generateObby(baseRequest, undefined, undefined, {
+        onWorkAdmitted: () => {
+          throw new Error("private callback detail");
+        },
+      });
+    }).toThrow(
+      expect.objectContaining({
+        code: "callback-failed",
+        message: "generation callback failed",
+      }),
+    );
+    expect(output).toBeUndefined();
   });
 
   it("gives budget admission precedence over semantic validation", () => {

@@ -65,10 +65,35 @@ export type GenerationWorkAdmission = {
   unusedWorkUnits: number;
 };
 
+export type GenerationPhase =
+  | "safe-shape-check"
+  | "snapshot-complete"
+  | "work-admission"
+  | "callbacks"
+  | "semantic-validation"
+  | "normalization"
+  | "generation";
+
 export type GenerateObbyOptions = {
-  onWorkAdmitted?: (admission: GenerationWorkAdmission) => void;
+  onWorkAdmitted?: (admission: Readonly<GenerationWorkAdmission>) => void;
   onCoveredOperation?: (operation: GenerationCoveredOperation) => void;
+  onPhaseTrace?: (phases: readonly GenerationPhase[]) => void;
 };
+
+function invokeGenerationCallback<T>(
+  callback: ((value: T) => void) | undefined,
+  value: T,
+): void {
+  if (callback === undefined) return;
+  try {
+    callback(value);
+  } catch {
+    throw new GeneratorContractError(
+      "callback-failed",
+      "generation callback failed",
+    );
+  }
+}
 
 const PALETTE_BY_THEME = {
   classic: "classic-high-contrast",
@@ -319,13 +344,12 @@ export function generateObby(
   catalogInput: unknown = DEFAULT_MECHANIC_CATALOG,
   options: GenerateObbyOptions = {},
 ): GenerationBundle {
-  const admission = preflightGenerationWorkAdmission(
+  const phases: GenerationPhase[] = ["safe-shape-check"];
+  preflightGenerationWorkAdmission(
     requestInput,
     configurationInput,
     catalogInput,
   );
-  options.onWorkAdmitted?.(admission);
-  options.onCoveredOperation?.("input-snapshot");
   const requestSnapshot = snapshotPlainData(requestInput, "request") as Record<
     string,
     unknown
@@ -338,13 +362,26 @@ export function generateObby(
     catalogInput,
     "mechanic catalog",
   ) as MechanicCatalog;
-  options.onCoveredOperation?.("configuration-validation");
+  phases.push("snapshot-complete");
+  const admission = Object.freeze(
+    preflightGenerationWorkAdmission(requestSnapshot, configuration, catalog),
+  );
+  phases.push("work-admission", "callbacks");
+  invokeGenerationCallback(options.onWorkAdmitted, admission);
+  invokeGenerationCallback(options.onCoveredOperation, "input-snapshot");
+  phases.push("semantic-validation");
+  invokeGenerationCallback(
+    options.onCoveredOperation,
+    "configuration-validation",
+  );
   assertValidGeneratorConfiguration(configuration);
-  options.onCoveredOperation?.("catalog-validation");
+  invokeGenerationCallback(options.onCoveredOperation, "catalog-validation");
   assertValidMechanicCatalog(catalog);
-  options.onCoveredOperation?.("request-normalization");
+  phases.push("normalization");
+  invokeGenerationCallback(options.onCoveredOperation, "request-normalization");
   const request = normalizeGenerationRequest(requestSnapshot, catalog);
-  options.onCoveredOperation?.("planning");
+  phases.push("generation");
+  invokeGenerationCallback(options.onCoveredOperation, "planning");
   const candidates = selectMechanics(request, configuration, catalog);
   const fallbackMechanic = candidates[0];
   if (fallbackMechanic === undefined)
@@ -363,7 +400,7 @@ export function generateObby(
     request.difficulty,
     configuration.difficultyDeltaLimit,
   );
-  options.onCoveredOperation?.("hashing");
+  invokeGenerationCallback(options.onCoveredOperation, "hashing");
   const seedIdentity = hashGeneratorPreimage(
     {
       schemaVersion: "0.1",
@@ -375,7 +412,7 @@ export function generateObby(
     },
     "seedIdentity",
   );
-  options.onCoveredOperation?.("prng-derivation");
+  invokeGenerationCallback(options.onCoveredOperation, "prng-derivation");
   const mechanicRandom = new DeterministicRandom(
     deriveDomainSeed(seedIdentity, "mechanics"),
   );
@@ -950,7 +987,7 @@ export function generateObby(
     findings,
   };
   const obbySpec: ObbySpec = contentAddress(obbySpecSeed, "obbySpecHash");
-  options.onCoveredOperation?.("graph-validation");
+  invokeGenerationCallback(options.onCoveredOperation, "graph-validation");
   assertValidObbySpec(obbySpec, catalog, configuration, request);
   const bundleSeed = {
     schemaVersion: "0.1" as const,
@@ -967,8 +1004,12 @@ export function generateObby(
     bundleSeed,
     "generationBundleHash",
   );
-  options.onCoveredOperation?.("bundle-validation");
+  invokeGenerationCallback(options.onCoveredOperation, "bundle-validation");
   assertValidGenerationBundle(bundle, catalog, configuration);
-  options.onCoveredOperation?.("serialization-preparation");
+  invokeGenerationCallback(
+    options.onCoveredOperation,
+    "serialization-preparation",
+  );
+  invokeGenerationCallback(options.onPhaseTrace, Object.freeze([...phases]));
   return bundle;
 }

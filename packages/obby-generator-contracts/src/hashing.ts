@@ -64,6 +64,7 @@ export type GeneratorContractErrorCode =
   | "output-conflict"
   | "output-publication"
   | "cleanup-failed"
+  | "callback-failed"
   | "input-too-large";
 
 export class GeneratorContractError extends Error {

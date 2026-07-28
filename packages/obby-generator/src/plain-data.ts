@@ -82,7 +82,7 @@ function snapshotArray(
   input: unknown[],
   label: string,
   active: WeakSet<object>,
-): unknown[] {
+): readonly unknown[] {
   const length = plainArrayLength(input, label);
   if (length > MAX_PLAIN_ARRAY_ITEMS)
     structuralError(label, `array length exceeds ${MAX_PLAIN_ARRAY_ITEMS}`);
@@ -111,7 +111,7 @@ function snapshotArray(
       snapshotPlainData(descriptor.value, `${label}[${key}]`, active),
     );
   }
-  return snapshot;
+  return Object.freeze(snapshot);
 }
 
 function snapshotRecord(
@@ -139,7 +139,7 @@ function snapshotRecord(
       active,
     );
   }
-  return snapshot;
+  return Object.freeze(snapshot);
 }
 
 export function snapshotPlainData(
