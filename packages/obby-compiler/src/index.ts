@@ -203,3 +203,5 @@ export function compilePlaceSpec(input: unknown): SceneManifest {
   };
   return assertValidSceneManifest(manifest);
 }
+
+export { compilePlaceSpecV03, GENERATOR_VERSION_V03 } from "./v03.js";

@@ -15,15 +15,23 @@ import {
   canonicalStringify,
   evaluatorCanonicalStringify,
 } from "@obby/canonical-json";
-import { validatePlaceSpec, validateSceneManifest } from "@obby/contracts";
+import {
+  validatePlaceSpec,
+  validatePlaceSpecV03,
+  validateSceneManifest,
+  validateSceneManifestV03,
+} from "@obby/contracts";
 import { normalizeGeometryObject } from "@obby/geometry-evaluator";
-import { compilePlaceSpec } from "@obby/obby-compiler";
+import { compilePlaceSpec, compilePlaceSpecV03 } from "@obby/obby-compiler";
 import { parseGeometryObjectInput } from "@obby/obby-evaluator-contracts";
 import {
   createDefaultControllerProfile,
   evaluateRoutePlayability,
 } from "@obby/route-playability-evaluator";
-import { emitManifestModule } from "@obby/roblox-emitter";
+import {
+  emitManifestModule,
+  emitManifestModuleV03,
+} from "@obby/roblox-emitter";
 import {
   assembleE1Evaluation,
   renderMarkdownReport,
@@ -45,6 +53,7 @@ import {
   DEFAULT_MECHANIC_LAYOUT_DEFINITIONS,
   generateLayout,
 } from "@obby/obby-layout-engine";
+import { projectLayoutBundle } from "@obby/obby-layout-projector";
 
 const spec = JSON.parse(
   await readFile(
@@ -222,6 +231,25 @@ if (
   DEFAULT_MECHANIC_LAYOUT_DEFINITIONS.length !== 9
 )
   throw new Error("built G1b layout engine returned an invalid bundle");
+const projectedPlaceSpec = projectLayoutBundle(
+  builtLayout,
+  generated,
+  DEFAULT_GENERATOR_CONFIGURATION,
+  DEFAULT_MECHANIC_CATALOG,
+  DEFAULT_LAYOUT_CONFIGURATION,
+  DEFAULT_MECHANIC_LAYOUT_DEFINITIONS,
+);
+if (!validatePlaceSpecV03(projectedPlaceSpec).ok)
+  throw new Error("built G1c projector returned an invalid PlaceSpec 0.3");
+const projectedManifest = compilePlaceSpecV03(projectedPlaceSpec);
+if (!validateSceneManifestV03(projectedManifest).ok)
+  throw new Error("built G1c compiler returned an invalid SceneManifest 0.3");
+if (
+  !emitManifestModuleV03(projectedManifest).startsWith(
+    "-- Generated SceneManifest 0.3 validation transport.",
+  )
+)
+  throw new Error("built G1c emitter returned invalid Luau transport");
 
 const withWorkBudget = (maximum) => {
   const preimage = {
@@ -635,4 +663,4 @@ if (compiledReportDeclaration.includes("finalizeValidatedE1Report"))
     "built scoring declaration exposes unchecked report finalization",
   );
 
-console.log("plain Node imported Phase 0, E1, G0, G1a, and G1b packages");
+console.log("plain Node imported Phase 0, E1, G0, G1a, G1b, and G1c packages");

@@ -5,6 +5,7 @@ node_modules/
 examples/vertical-slice/scene-manifest.json
 examples/generator/
 examples/layout/
+examples/layout-projection/
 packages/contracts/src/generated/
 packages/obby-evaluator-contracts/fixtures/generated/
 packages/obby-evaluator-contracts/src/generated/

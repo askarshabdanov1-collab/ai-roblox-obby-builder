@@ -1,4 +1,5 @@
 local ManifestValidator = require("../src/ReplicatedStorage/ObbyRuntime/ManifestValidator")
+local ManifestValidatorV03 = require("../src/ReplicatedStorage/ObbyRuntime/ManifestValidatorV03")
 local BuildPlan = require("../src/ReplicatedStorage/ObbyRuntime/BuildPlan")
 local CharacterPlacement = require("../src/ReplicatedStorage/ObbyRuntime/CharacterPlacement")
 local NativePartFactory = require("../src/ReplicatedStorage/ObbyRuntime/NativePartFactory")
@@ -7,6 +8,7 @@ local PlayerProgress = require("../src/ReplicatedStorage/ObbyRuntime/PlayerProgr
 local SafeRouteNavigator = require("../src/ReplicatedStorage/ObbyRuntime/SafeRouteNavigator")
 local SceneBuilderCore = require("../src/ReplicatedStorage/ObbyRuntime/SceneBuilderCore")
 local manifest = require("../generated/VerticalSliceManifest")
+local manifestV03 = require("../generated/G1cReferenceManifest")
 
 local passed = 0
 
@@ -626,6 +628,38 @@ test("preserves previous scene and destroys staging on failure", function()
     expect(root:FindFirstChild("PreviousValidScene") == old, "previous scene was not preserved")
     expect(not old.Destroyed, "previous scene was destroyed")
     expect(#folders == 1 and folders[1].Destroyed, "staging folder was not destroyed")
+end)
+
+test("accepts the generated SceneManifest 0.3 validation transport", function()
+    local valid, validationError = ManifestValidatorV03.validate(manifestV03)
+    expect(valid, validationError or "generated SceneManifest 0.3 was rejected")
+end)
+
+test("keeps SceneManifest 0.2 and 0.3 validators version-isolated", function()
+    local validV03 = ManifestValidatorV03.validate(manifest)
+    local validV02 = ManifestValidator.validate(manifestV03)
+    expect(not validV03, "0.3 validator accepted a 0.2 manifest")
+    expect(not validV02, "0.2 validator accepted a 0.3 manifest")
+end)
+
+test("rejects incomplete or unsafe SceneManifest 0.3 route evidence", function()
+    local hazardRoute = clone(manifestV03)
+    local hazardId = nil
+    for _, object in ipairs(hazardRoute.layers.gameplay.objects) do
+        if object.role == "kill" then
+            hazardId = object.id
+            break
+        end
+    end
+    expect(hazardId ~= nil, "reference manifest lacks a hazard test object")
+    hazardRoute.navigation.safeRouteObjectIds[1] = hazardId
+    local hazardValid = ManifestValidatorV03.validate(hazardRoute)
+    expect(not hazardValid, "0.3 validator accepted a hazard route endpoint")
+
+    local indeterminate = clone(manifestV03)
+    indeterminate.navigation.reachability.requiredTransitions[1].outcome = "indeterminate"
+    local evidenceValid = ManifestValidatorV03.validate(indeterminate)
+    expect(not evidenceValid, "0.3 validator accepted indeterminate required evidence")
 end)
 
 print(string.format("1..%d", passed))

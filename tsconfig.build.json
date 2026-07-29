@@ -21,6 +21,12 @@
       "@obby/obby-layout-contracts": [
         "./packages/obby-layout-contracts/src/index.ts"
       ],
+      "@obby/obby-layout-engine": [
+        "./packages/obby-layout-engine/src/index.ts"
+      ],
+      "@obby/obby-layout-projector": [
+        "./packages/obby-layout-projector/src/index.ts"
+      ],
       "@obby/route-playability-evaluator": [
         "./packages/route-playability-evaluator/src/index.ts"
       ],

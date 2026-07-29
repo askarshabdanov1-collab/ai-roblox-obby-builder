@@ -15,6 +15,11 @@ it does not mean a layout producer or Roblox runtime exists.
 | SceneManifest            | `0.2`                             | Legacy compiler output only                                                                    | Unchanged                                                    | Future `0.3` carries projected G1 provenance and full range     |
 | Luau runtime schema      | manifest `0.2`, generator `0.2.0` | Legacy generated vertical slice only                                                           | Unchanged                                                    | A later version-aware runtime change may add manifest `0.3`     |
 
+G1c now implements the approved additive `0.3` TypeScript projection, compiler, emitter, and
+validation-only Luau transport. The active Roblox construction path remains `0.2`; the new
+validator is not wired into scene construction or publication. See
+[`g1c-layout-projection.md`](./g1c-layout-projection.md).
+
 ## Compatibility rules
 
 - There is no implicit conversion from LayoutSpec `0.1` to PlaceSpec `0.2`.

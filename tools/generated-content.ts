@@ -7,14 +7,21 @@ import { compileFromFile } from "json-schema-to-typescript";
 
 export const generatedPaths = {
   placeSpecType: "packages/contracts/src/generated/place-spec.ts",
+  placeSpecV03Type: "packages/contracts/src/generated/place-spec-v0.3.ts",
   sceneManifestType: "packages/contracts/src/generated/scene-manifest.ts",
+  sceneManifestV03Type:
+    "packages/contracts/src/generated/scene-manifest-v0.3.ts",
   sceneManifestFixture: "examples/vertical-slice/scene-manifest.json",
   robloxManifest: "roblox/generated/VerticalSliceManifest.luau",
 } as const;
 
 const placeSpecSchemaPath = "packages/contracts/schemas/place-spec.schema.json";
+const placeSpecV03SchemaPath =
+  "packages/contracts/schemas/place-spec-v0.3.schema.json";
 const sceneManifestSchemaPath =
   "packages/contracts/schemas/scene-manifest.schema.json";
+const sceneManifestV03SchemaPath =
+  "packages/contracts/schemas/scene-manifest-v0.3.schema.json";
 const placeSpecFixturePath = "examples/vertical-slice/place-spec.json";
 
 const typeOptions = {
@@ -28,8 +35,16 @@ export async function expectedContractTypes(): Promise<Record<string, string>> {
       placeSpecSchemaPath,
       typeOptions,
     ),
+    [generatedPaths.placeSpecV03Type]: await compileFromFile(
+      placeSpecV03SchemaPath,
+      typeOptions,
+    ),
     [generatedPaths.sceneManifestType]: await compileFromFile(
       sceneManifestSchemaPath,
+      typeOptions,
+    ),
+    [generatedPaths.sceneManifestV03Type]: await compileFromFile(
+      sceneManifestV03SchemaPath,
       typeOptions,
     ),
   };

@@ -1,0 +1,640 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-roblox-obby-builder.local/schemas/0.3/place-spec.schema.json",
+  "title": "PlaceSpecV03",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "projectionVersion",
+    "specId",
+    "placeSpecHash",
+    "name",
+    "genre",
+    "seed",
+    "seedIdentity",
+    "provenance",
+    "coordinateSystem",
+    "worldBounds",
+    "characterPlacement",
+    "appearancePolicy",
+    "stages",
+    "route",
+    "reachability",
+    "objects",
+    "decorativeZones",
+    "checkpointPlan",
+    "finishCriteria",
+    "budgets",
+    "limitations",
+    "findings"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "0.3" },
+    "projectionVersion": { "const": "g1c-layout-projection-v1" },
+    "specId": { "$ref": "#/$defs/id" },
+    "placeSpecHash": { "$ref": "#/$defs/hash" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "genre": { "const": "obby" },
+    "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+    "seedIdentity": { "$ref": "#/$defs/hash" },
+    "provenance": { "$ref": "#/$defs/provenance" },
+    "coordinateSystem": { "$ref": "#/$defs/coordinateSystem" },
+    "worldBounds": { "$ref": "#/$defs/bounds" },
+    "characterPlacement": { "$ref": "#/$defs/characterPlacement" },
+    "appearancePolicy": { "$ref": "#/$defs/appearancePolicy" },
+    "stages": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 50,
+      "items": { "$ref": "#/$defs/stage" }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["routeId", "sourceRouteId", "orderedObjectIds"],
+      "properties": {
+        "routeId": { "$ref": "#/$defs/id" },
+        "sourceRouteId": { "$ref": "#/$defs/id" },
+        "orderedObjectIds": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 500,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/pascalId" }
+        }
+      }
+    },
+    "reachability": { "$ref": "#/$defs/reachability" },
+    "objects": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 501,
+      "items": { "$ref": "#/$defs/gameplayObject" }
+    },
+    "decorativeZones": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 128,
+      "items": { "$ref": "#/$defs/decorativeZone" }
+    },
+    "checkpointPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "checkpointObjectIds"],
+      "properties": {
+        "mode": { "const": "ordered" },
+        "checkpointObjectIds": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 49,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/pascalId" }
+        }
+      }
+    },
+    "finishCriteria": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "finishObjectId"],
+      "properties": {
+        "type": { "const": "touch-finish" },
+        "finishObjectId": { "const": "Finish" }
+      }
+    },
+    "budgets": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxStages",
+        "maxGameplayObjects",
+        "maxDecorativeZones",
+        "maxWorldExtent",
+        "maxPartSize",
+        "maxOutputBytes"
+      ],
+      "properties": {
+        "maxStages": { "const": 50 },
+        "maxGameplayObjects": { "const": 501 },
+        "maxDecorativeZones": { "const": 128 },
+        "maxWorldExtent": { "const": 2048 },
+        "maxPartSize": { "const": 256 },
+        "maxOutputBytes": { "const": 4194304 }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/messageRecord" }
+    },
+    "findings": {
+      "type": "array",
+      "maxItems": 64,
+      "items": { "$ref": "#/$defs/messageRecord" }
+    }
+  },
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$",
+      "maxLength": 120
+    },
+    "pascalId": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]*$",
+      "maxLength": 80
+    },
+    "sourceId": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "hexColor": { "type": "string", "pattern": "^#[0-9A-F]{6}$" },
+    "boundedNumber": { "type": "number", "minimum": -2048, "maximum": 2048 },
+    "vector3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "$ref": "#/$defs/boundedNumber" },
+        "y": { "$ref": "#/$defs/boundedNumber" },
+        "z": { "$ref": "#/$defs/boundedNumber" }
+      }
+    },
+    "rotation3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number", "minimum": -360, "maximum": 360 },
+        "y": { "type": "number", "minimum": -360, "maximum": 360 },
+        "z": { "type": "number", "minimum": -360, "maximum": 360 }
+      }
+    },
+    "positiveSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number", "exclusiveMinimum": 0, "maximum": 256 },
+        "y": { "type": "number", "exclusiveMinimum": 0, "maximum": 256 },
+        "z": { "type": "number", "exclusiveMinimum": 0, "maximum": 256 }
+      }
+    },
+    "transform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["position", "rotation"],
+      "properties": {
+        "position": { "$ref": "#/$defs/vector3" },
+        "rotation": { "$ref": "#/$defs/rotation3" }
+      }
+    },
+    "bounds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minimum", "maximum"],
+      "properties": {
+        "minimum": { "$ref": "#/$defs/vector3" },
+        "maximum": { "$ref": "#/$defs/vector3" }
+      }
+    },
+    "coordinateSystem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "units",
+        "handedness",
+        "upAxis",
+        "forwardAxis",
+        "rotationUnit",
+        "rotationOrder"
+      ],
+      "properties": {
+        "units": { "const": "studs" },
+        "handedness": { "const": "right-handed" },
+        "upAxis": { "const": "+Y" },
+        "forwardAxis": { "const": "-Z" },
+        "rotationUnit": { "const": "degrees" },
+        "rotationOrder": { "const": "XYZ" }
+      }
+    },
+    "characterPlacement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "orientationPolicy", "verticalOffset"],
+      "properties": {
+        "strategy": { "const": "humanoid-root-part-cframe-v1" },
+        "orientationPolicy": {
+          "enum": ["face-next-safe-route-object", "explicit-yaw"]
+        },
+        "verticalOffset": { "type": "number", "minimum": 2, "maximum": 20 }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generationBundleHash",
+        "obbySpecId",
+        "obbySpecHash",
+        "generatorConfigurationHash",
+        "mechanicCatalogHash",
+        "layoutBundleHash",
+        "layoutSpecId",
+        "layoutSpecHash",
+        "layoutConfigurationHash",
+        "mechanicLayoutDefinitionHashes"
+      ],
+      "properties": {
+        "generationBundleHash": { "$ref": "#/$defs/hash" },
+        "obbySpecId": { "$ref": "#/$defs/sourceId" },
+        "obbySpecHash": { "$ref": "#/$defs/hash" },
+        "generatorConfigurationHash": { "$ref": "#/$defs/hash" },
+        "mechanicCatalogHash": { "$ref": "#/$defs/hash" },
+        "layoutBundleHash": { "$ref": "#/$defs/hash" },
+        "layoutSpecId": { "$ref": "#/$defs/id" },
+        "layoutSpecHash": { "$ref": "#/$defs/hash" },
+        "layoutConfigurationHash": { "$ref": "#/$defs/hash" },
+        "mechanicLayoutDefinitionHashes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/hash" }
+        }
+      }
+    },
+    "appearancePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policyId",
+        "sourceVisualStyleIntentId",
+        "paletteIntent",
+        "primaryColor",
+        "secondaryColor",
+        "rewardColor",
+        "hazardColor",
+        "material",
+        "hazardMaterial"
+      ],
+      "properties": {
+        "policyId": { "const": "g1c-native-high-contrast-v1" },
+        "sourceVisualStyleIntentId": { "$ref": "#/$defs/sourceId" },
+        "paletteIntent": {
+          "enum": [
+            "classic-high-contrast",
+            "sky-high-contrast",
+            "space-high-contrast",
+            "lava-high-contrast",
+            "jungle-high-contrast"
+          ]
+        },
+        "primaryColor": { "$ref": "#/$defs/hexColor" },
+        "secondaryColor": { "$ref": "#/$defs/hexColor" },
+        "rewardColor": { "$ref": "#/$defs/hexColor" },
+        "hazardColor": { "$ref": "#/$defs/hexColor" },
+        "material": { "const": "SmoothPlastic" },
+        "hazardMaterial": { "const": "Neon" }
+      }
+    },
+    "sourceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceAssetIntentIds"],
+      "properties": {
+        "sourceStageId": { "$ref": "#/$defs/sourceId" },
+        "sourceMechanicIntentId": { "$ref": "#/$defs/sourceId" },
+        "sourceCheckpointId": { "$ref": "#/$defs/sourceId" },
+        "sourceHazardId": { "$ref": "#/$defs/sourceId" },
+        "sourceFinishId": { "$ref": "#/$defs/sourceId" },
+        "sourceAssetIntentIds": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/sourceId" }
+        }
+      }
+    },
+    "collision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["anchored", "canCollide", "canTouch", "canQuery"],
+      "properties": {
+        "anchored": { "const": true },
+        "canCollide": { "type": "boolean" },
+        "canTouch": { "type": "boolean" },
+        "canQuery": { "const": true }
+      }
+    },
+    "geometrySummary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "methodId",
+        "normalizedGeometryHash",
+        "axisAlignedBounds",
+        "topSurfaceMaximumY",
+        "surfaceKind"
+      ],
+      "properties": {
+        "methodId": { "const": "geometry-evaluator-v0.1" },
+        "normalizedGeometryHash": { "$ref": "#/$defs/hash" },
+        "axisAlignedBounds": { "$ref": "#/$defs/bounds" },
+        "topSurfaceMaximumY": { "$ref": "#/$defs/boundedNumber" },
+        "surfaceKind": {
+          "enum": [
+            "planar-face",
+            "wedge-slope",
+            "curved-surface",
+            "circular-endcap"
+          ]
+        }
+      }
+    },
+    "appearance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["color", "colorRole", "material"],
+      "properties": {
+        "color": { "$ref": "#/$defs/hexColor" },
+        "colorRole": { "enum": ["primary", "secondary", "reward", "hazard"] },
+        "material": { "enum": ["SmoothPlastic", "Neon"] }
+      }
+    },
+    "gameplayObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "order",
+        "sourceReferences",
+        "role",
+        "authority",
+        "shape",
+        "transform",
+        "size",
+        "collision",
+        "appearance",
+        "geometry"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/pascalId" },
+        "order": { "type": "integer", "minimum": 0, "maximum": 500 },
+        "sourceReferences": { "$ref": "#/$defs/sourceReferences" },
+        "role": {
+          "enum": ["spawn", "platform", "checkpoint", "kill", "finish"]
+        },
+        "authority": { "const": "native-gameplay" },
+        "shape": { "enum": ["Block", "Ball", "Cylinder", "Wedge"] },
+        "transform": { "$ref": "#/$defs/transform" },
+        "size": { "$ref": "#/$defs/positiveSize" },
+        "collision": { "$ref": "#/$defs/collision" },
+        "appearance": { "$ref": "#/$defs/appearance" },
+        "geometry": { "$ref": "#/$defs/geometrySummary" }
+      }
+    },
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stageId",
+        "sourceStageId",
+        "sourceRouteNodeId",
+        "sourceMechanicIntentId",
+        "mechanicLayoutDefinitionHash",
+        "order",
+        "difficulty",
+        "routeObjectIds",
+        "hazardObjectIds",
+        "decorativeZoneIds"
+      ],
+      "properties": {
+        "stageId": { "$ref": "#/$defs/id" },
+        "sourceStageId": { "$ref": "#/$defs/sourceId" },
+        "sourceRouteNodeId": { "$ref": "#/$defs/sourceId" },
+        "sourceMechanicIntentId": { "$ref": "#/$defs/sourceId" },
+        "mechanicLayoutDefinitionHash": { "$ref": "#/$defs/hash" },
+        "order": { "type": "integer", "minimum": 1, "maximum": 50 },
+        "difficulty": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "routeObjectIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 500,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/pascalId" }
+        },
+        "checkpointObjectId": { "$ref": "#/$defs/pascalId" },
+        "hazardObjectIds": {
+          "type": "array",
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/pascalId" }
+        },
+        "decorativeZoneIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        }
+      }
+    },
+    "measurement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "value",
+        "method",
+        "approximationKind",
+        "toleranceStuds",
+        "limitations",
+        "applicability"
+      ],
+      "properties": {
+        "status": { "const": "available" },
+        "value": { "type": "number", "minimum": 0 },
+        "method": {
+          "enum": [
+            "surface-envelope-height-delta",
+            "world-aabb-horizontal-separation"
+          ]
+        },
+        "approximationKind": {
+          "enum": ["conservative-bounds-delta", "conservative-lower-bound"]
+        },
+        "toleranceStuds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.000001
+        },
+        "limitations": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "type": "string", "minLength": 1, "maxLength": 500 }
+        },
+        "applicability": { "const": "broad-phase-only" }
+      }
+    },
+    "landingRegion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "method",
+        "approximationKind",
+        "spanAStuds",
+        "spanBStuds",
+        "toleranceStuds",
+        "limitations"
+      ],
+      "properties": {
+        "status": { "const": "available" },
+        "method": { "const": "exact-planar-intrinsic-edge-spans-v1" },
+        "approximationKind": { "const": "exact-native-primitive" },
+        "spanAStuds": { "type": "number", "minimum": 0 },
+        "spanBStuds": { "type": "number", "minimum": 0 },
+        "toleranceStuds": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.000001
+        },
+        "limitations": {
+          "type": "array",
+          "maxItems": 32,
+          "items": { "type": "string", "minLength": 1, "maxLength": 500 }
+        }
+      }
+    },
+    "transitionEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transitionId",
+        "fromObjectId",
+        "toObjectId",
+        "fromGlobalOrder",
+        "toGlobalOrder",
+        "outcome",
+        "normalizedInputHash",
+        "horizontalSeparation",
+        "verticalRise",
+        "downwardDrop",
+        "landingRegion",
+        "sourceSurfaceKind",
+        "destinationSurfaceKind",
+        "limitations"
+      ],
+      "properties": {
+        "transitionId": { "$ref": "#/$defs/id" },
+        "fromObjectId": { "$ref": "#/$defs/pascalId" },
+        "toObjectId": { "$ref": "#/$defs/pascalId" },
+        "fromGlobalOrder": { "type": "integer", "minimum": 0, "maximum": 500 },
+        "toGlobalOrder": { "type": "integer", "minimum": 1, "maximum": 501 },
+        "outcome": { "const": "feasible-under-model" },
+        "normalizedInputHash": { "$ref": "#/$defs/hash" },
+        "horizontalSeparation": { "$ref": "#/$defs/measurement" },
+        "verticalRise": { "$ref": "#/$defs/measurement" },
+        "downwardDrop": { "$ref": "#/$defs/measurement" },
+        "landingRegion": { "$ref": "#/$defs/landingRegion" },
+        "sourceSurfaceKind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "destinationSurfaceKind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": { "type": "string", "minLength": 1, "maxLength": 500 }
+        }
+      }
+    },
+    "reachability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modelId",
+        "methodId",
+        "methodVersion",
+        "controllerProfileRef",
+        "overallOutcome",
+        "requiredTransitions"
+      ],
+      "properties": {
+        "modelId": { "const": "e1-coarse-surface-transition-v1" },
+        "methodId": { "const": "coarse-transition-classifier" },
+        "methodVersion": { "const": "2.0.0" },
+        "controllerProfileRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["profileId", "profileVersion", "controllerProfileHash"],
+          "properties": {
+            "profileId": { "$ref": "#/$defs/sourceId" },
+            "profileVersion": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 40
+            },
+            "controllerProfileHash": { "$ref": "#/$defs/hash" }
+          }
+        },
+        "overallOutcome": { "const": "feasible-under-model" },
+        "requiredTransitions": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 500,
+          "items": { "$ref": "#/$defs/transitionEvidence" }
+        }
+      }
+    },
+    "decorativeZone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "zoneId",
+        "sourceStageId",
+        "sourceVisualStyleIntentId",
+        "sourceAssetIntentIds",
+        "bounds",
+        "collisionPolicy",
+        "nativePartFallback"
+      ],
+      "properties": {
+        "zoneId": { "$ref": "#/$defs/id" },
+        "sourceStageId": { "$ref": "#/$defs/sourceId" },
+        "sourceVisualStyleIntentId": { "$ref": "#/$defs/sourceId" },
+        "sourceAssetIntentIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/sourceId" }
+        },
+        "bounds": { "$ref": "#/$defs/bounds" },
+        "collisionPolicy": { "const": "non-colliding-only" },
+        "nativePartFallback": { "const": true }
+      }
+    },
+    "messageRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "message", "relatedSourceIds"],
+      "properties": {
+        "code": { "$ref": "#/$defs/id" },
+        "severity": { "enum": ["information", "warning"] },
+        "message": { "type": "string", "minLength": 1, "maxLength": 1000 },
+        "relatedSourceIds": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/sourceId" }
+        }
+      }
+    }
+  }
+}
