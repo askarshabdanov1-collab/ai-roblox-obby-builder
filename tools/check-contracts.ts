@@ -4,7 +4,9 @@ import { Ajv2020 } from "ajv/dist/2020.js";
 
 const schemaPaths = [
   "packages/contracts/schemas/place-spec.schema.json",
+  "packages/contracts/schemas/place-spec-v0.3.schema.json",
   "packages/contracts/schemas/scene-manifest.schema.json",
+  "packages/contracts/schemas/scene-manifest-v0.3.schema.json",
 ];
 const ajv = new Ajv2020({ allErrors: true, strict: true, strictNumbers: true });
 
