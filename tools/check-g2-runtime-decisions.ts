@@ -146,6 +146,7 @@ function checkScope(): void {
     { encoding: "utf8" },
   );
   const allowedFiles = new Set([
+    "apps/generator-cli/test/layout-workflow.test.ts",
     "package.json",
     "tools/check-g2-runtime-decisions.ts",
   ]);
@@ -156,7 +157,7 @@ function checkScope(): void {
   if (unexpected.length > 0)
     throw new Error(`G2a scope violation: ${unexpected.join(", ")}`);
   console.log(
-    "G2a diff is documentation/check-only; active runtime is unchanged",
+    "G2a diff is documentation/test/check-only; active runtime is unchanged",
   );
 }
 
