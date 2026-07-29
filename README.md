@@ -77,6 +77,16 @@ change, or Roblox runtime behavior. See the
 Focused non-mutating gates are `npm run layout:contracts:check` and
 `npm run layout:contracts:test`.
 
+## Generator G1b
+
+Phase G1b adds the pure deterministic native-Part layout engine, reviewed numeric recipe
+authorities for every currently supported static mechanic, bounded serpentine packing, coarse
+reachability evidence, and complete validated `LayoutBundle` fixtures. It does not publish files or
+change PlaceSpec, SceneManifest, either CLI, the compiler, emitter, or Roblox runtime. See the
+[`G1b engine reference`](docs/generator/g1b-layout-engine.md).
+
+The focused non-mutating gate is `npm run layout:check`.
+
 ## Development
 
 See `CONTRIBUTING.md` and `docs/local-development.md`. The complete local gate is:

@@ -40,6 +40,11 @@ import {
 } from "@obby/obby-generator";
 import { runGeneratorCli } from "@obby/generator-cli";
 import { hashLayoutConfiguration } from "@obby/obby-layout-contracts";
+import {
+  DEFAULT_LAYOUT_CONFIGURATION,
+  DEFAULT_MECHANIC_LAYOUT_DEFINITIONS,
+  generateLayout,
+} from "@obby/obby-layout-engine";
 
 const spec = JSON.parse(
   await readFile(
@@ -209,6 +214,14 @@ if (typeof runGeneratorCli !== "function")
   throw new Error("built generator CLI library export is unavailable");
 if (typeof hashLayoutConfiguration !== "function")
   throw new Error("built G1a layout contracts export is unavailable");
+const builtLayout = generateLayout(generated);
+if (
+  !builtLayout.layoutBundleHash.startsWith("sha256:") ||
+  builtLayout.layoutSpec.stages.length !== 5 ||
+  DEFAULT_LAYOUT_CONFIGURATION.limits.maxStages !== 50 ||
+  DEFAULT_MECHANIC_LAYOUT_DEFINITIONS.length !== 9
+)
+  throw new Error("built G1b layout engine returned an invalid bundle");
 
 const withWorkBudget = (maximum) => {
   const preimage = {
@@ -622,4 +635,4 @@ if (compiledReportDeclaration.includes("finalizeValidatedE1Report"))
     "built scoring declaration exposes unchecked report finalization",
   );
 
-console.log("plain Node imported Phase 0, E1, G0, and G1a packages");
+console.log("plain Node imported Phase 0, E1, G0, G1a, and G1b packages");
