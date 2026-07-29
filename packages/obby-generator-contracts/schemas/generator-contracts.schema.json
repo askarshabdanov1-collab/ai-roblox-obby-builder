@@ -1,0 +1,980 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-roblox-obby-builder.invalid/schemas/generator-contracts/0.1",
+  "title": "GeneratorContract",
+  "oneOf": [
+    { "$ref": "#/$defs/GenerationRequest" },
+    { "$ref": "#/$defs/NormalizedGenerationRequest" },
+    { "$ref": "#/$defs/GeneratorConfiguration" },
+    { "$ref": "#/$defs/MechanicDefinition" },
+    { "$ref": "#/$defs/MechanicCatalog" },
+    { "$ref": "#/$defs/StageSpec" },
+    { "$ref": "#/$defs/RouteNodeSpec" },
+    { "$ref": "#/$defs/RouteTransitionSpec" },
+    { "$ref": "#/$defs/RouteSpec" },
+    { "$ref": "#/$defs/CheckpointSpec" },
+    { "$ref": "#/$defs/HazardSpec" },
+    { "$ref": "#/$defs/FinishSpec" },
+    { "$ref": "#/$defs/DifficultyBand" },
+    { "$ref": "#/$defs/DifficultyPlan" },
+    { "$ref": "#/$defs/MechanicIntent" },
+    { "$ref": "#/$defs/VisualStyleIntent" },
+    { "$ref": "#/$defs/AssetIntent" },
+    { "$ref": "#/$defs/ProgressionIntent" },
+    { "$ref": "#/$defs/RetentionIntent" },
+    { "$ref": "#/$defs/GenerationLimitation" },
+    { "$ref": "#/$defs/GenerationFinding" },
+    { "$ref": "#/$defs/ObbySpec" },
+    { "$ref": "#/$defs/GenerationBundle" }
+  ],
+  "$defs": {
+    "Hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "Id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$" },
+    "GenerationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "requestId",
+        "workingName",
+        "genre",
+        "seed"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "requestId": { "$ref": "#/$defs/Id" },
+        "generationRequestHash": { "$ref": "#/$defs/Hash" },
+        "workingName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "genre": { "const": "obby" },
+        "theme": { "enum": ["classic", "sky", "space", "lava", "jungle"] },
+        "targetAudience": { "enum": ["all-ages", "general", "experienced"] },
+        "targetSessionDurationMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "stageCount": { "type": "integer", "minimum": 5, "maximum": 50 },
+        "difficulty": { "enum": ["easy", "medium", "hard"] },
+        "checkpointFrequency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "supportedMechanicPreferences": { "$ref": "#/$defs/StringSet" },
+        "excludedMechanics": { "$ref": "#/$defs/StringSet" },
+        "visualStylePreferences": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "enum": [
+              "animated-decor",
+              "bright",
+              "high-readability",
+              "minimal",
+              "saturated"
+            ]
+          }
+        },
+        "assetPolicy": {
+          "enum": [
+            "native-parts-only",
+            "approved-local-assets",
+            "external-assets-allowed-later"
+          ]
+        },
+        "accessibilityConstraints": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "enum": [
+              "color-independent-cues",
+              "high-readability",
+              "reduced-motion",
+              "motion-required"
+            ]
+          }
+        },
+        "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "brief": { "type": "string", "maxLength": 2000 }
+      }
+    },
+    "StringSet": {
+      "type": "array",
+      "maxItems": 64,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 128 }
+    },
+    "NormalizedGenerationRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "normalizedRequestId",
+        "generationRequestHash",
+        "workingName",
+        "genre",
+        "theme",
+        "targetAudience",
+        "targetSessionDurationMinutes",
+        "stageCount",
+        "difficulty",
+        "checkpointFrequency",
+        "supportedMechanicPreferences",
+        "excludedMechanics",
+        "visualStylePreferences",
+        "assetPolicy",
+        "accessibilityConstraints",
+        "seed",
+        "normalizedRequestHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "normalizedRequestId": { "$ref": "#/$defs/Id" },
+        "generationRequestHash": { "$ref": "#/$defs/Hash" },
+        "workingName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "genre": { "const": "obby" },
+        "theme": { "enum": ["classic", "sky", "space", "lava", "jungle"] },
+        "targetAudience": { "enum": ["all-ages", "general", "experienced"] },
+        "targetSessionDurationMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 120
+        },
+        "stageCount": { "type": "integer", "minimum": 5, "maximum": 50 },
+        "difficulty": { "enum": ["easy", "medium", "hard"] },
+        "checkpointFrequency": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "supportedMechanicPreferences": { "$ref": "#/$defs/StringSet" },
+        "excludedMechanics": { "$ref": "#/$defs/StringSet" },
+        "visualStylePreferences": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "enum": [
+              "animated-decor",
+              "bright",
+              "high-readability",
+              "minimal",
+              "saturated"
+            ]
+          }
+        },
+        "assetPolicy": {
+          "enum": [
+            "native-parts-only",
+            "approved-local-assets",
+            "external-assets-allowed-later"
+          ]
+        },
+        "accessibilityConstraints": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "enum": [
+              "color-independent-cues",
+              "high-readability",
+              "reduced-motion",
+              "motion-required"
+            ]
+          }
+        },
+        "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "brief": { "type": "string", "minLength": 1, "maxLength": 2000 },
+        "normalizedRequestHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "GeneratorConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "configurationId",
+        "generatorVersion",
+        "prngAlgorithm",
+        "allowDeferredMechanics",
+        "difficultyDeltaLimit",
+        "limits",
+        "configurationHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "configurationId": { "$ref": "#/$defs/Id" },
+        "generatorVersion": { "const": "g0-reference-v1" },
+        "prngAlgorithm": { "const": "mulberry32-v1" },
+        "allowDeferredMechanics": { "type": "boolean" },
+        "difficultyDeltaLimit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2
+        },
+        "limits": { "$ref": "#/$defs/GeneratorLimits" },
+        "configurationHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "GeneratorLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxRequestBytes",
+        "maxConfigurationBytes",
+        "maxCatalogBytes",
+        "maxStageCount",
+        "maxRouteNodes",
+        "maxTransitions",
+        "maxCheckpoints",
+        "maxHazards",
+        "maxMechanicDefinitions",
+        "maxFindings",
+        "maxLimitations",
+        "maxAssetIntents",
+        "maxOutputBytes",
+        "maxOutputPathLength",
+        "maxWorkUnits"
+      ],
+      "properties": {
+        "maxRequestBytes": { "const": 65536 },
+        "maxConfigurationBytes": { "const": 65536 },
+        "maxCatalogBytes": { "const": 524288 },
+        "maxStageCount": { "const": 50 },
+        "maxRouteNodes": { "const": 52 },
+        "maxTransitions": { "const": 51 },
+        "maxCheckpoints": { "const": 49 },
+        "maxHazards": { "const": 50 },
+        "maxMechanicDefinitions": { "const": 64 },
+        "maxFindings": { "const": 64 },
+        "maxLimitations": { "const": 64 },
+        "maxAssetIntents": { "const": 128 },
+        "maxOutputBytes": { "const": 4194304 },
+        "maxOutputPathLength": { "const": 240 },
+        "maxWorkUnits": {
+          "description": "Execution-only work-admission budget excluded from configurationHash and all generated semantic identities.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 25000
+        }
+      }
+    },
+    "MechanicDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "mechanicId",
+        "mechanicVersion",
+        "label",
+        "capability",
+        "minimumDifficulty",
+        "maximumDifficulty",
+        "requiredCapabilities",
+        "compatibleHazardKinds",
+        "forbiddenAdjacentMechanicIds",
+        "accessibilityImplications",
+        "repetitionLimit",
+        "selectionWeight",
+        "mechanicDefinitionHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "mechanicId": { "$ref": "#/$defs/Id" },
+        "mechanicVersion": { "const": "1" },
+        "label": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "capability": {
+          "enum": [
+            "g1-static-supported",
+            "future-runtime-supported",
+            "deferred"
+          ]
+        },
+        "minimumDifficulty": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "maximumDifficulty": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "requiredCapabilities": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 2,
+          "items": { "enum": ["native-parts", "runtime-mechanic"] }
+        },
+        "compatibleHazardKinds": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 5,
+          "items": {
+            "enum": [
+              "kill-floor",
+              "kill-part",
+              "fall-void",
+              "timed-contact-intent",
+              "moving-obstacle-intent"
+            ]
+          }
+        },
+        "forbiddenAdjacentMechanicIds": { "$ref": "#/$defs/StringSet" },
+        "accessibilityImplications": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 1,
+          "items": { "const": "reduced-motion" }
+        },
+        "repetitionLimit": { "type": "integer", "minimum": 1, "maximum": 10 },
+        "selectionWeight": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "mechanicDefinitionHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "MechanicCatalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "catalogId",
+        "catalogVersion",
+        "mechanics",
+        "catalogHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "catalogId": { "$ref": "#/$defs/Id" },
+        "catalogVersion": { "const": "g0-v1" },
+        "mechanics": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/MechanicDefinition" }
+        },
+        "catalogHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "StageSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "stageId",
+        "ordinal",
+        "role",
+        "mechanicIntentIds",
+        "difficultyBandId",
+        "estimatedCompletionSeconds",
+        "failureReset",
+        "hazardIds",
+        "assetIntentIds",
+        "visualStyleIntentId",
+        "stageHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "stageId": { "$ref": "#/$defs/Id" },
+        "ordinal": { "type": "integer", "minimum": 1, "maximum": 50 },
+        "role": {
+          "enum": [
+            "onboarding",
+            "practice",
+            "escalation",
+            "variation",
+            "challenge",
+            "recovery",
+            "climax",
+            "finish-approach"
+          ]
+        },
+        "mechanicIntentIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        },
+        "difficultyBandId": { "$ref": "#/$defs/Id" },
+        "estimatedCompletionSeconds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["minimum", "maximum"],
+          "properties": {
+            "minimum": { "type": "integer", "minimum": 1 },
+            "maximum": { "type": "integer", "minimum": 1 }
+          }
+        },
+        "failureReset": { "enum": ["stage-start", "last-checkpoint"] },
+        "hazardIds": { "$ref": "#/$defs/StringSet" },
+        "checkpointId": { "$ref": "#/$defs/Id" },
+        "assetIntentIds": { "$ref": "#/$defs/StringSet" },
+        "visualStyleIntentId": { "$ref": "#/$defs/Id" },
+        "stageHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "RouteNodeSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "routeNodeId",
+        "kind",
+        "required",
+        "routeNodeHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "routeNodeId": { "$ref": "#/$defs/Id" },
+        "kind": { "enum": ["start", "stage", "checkpoint", "finish"] },
+        "stageId": { "$ref": "#/$defs/Id" },
+        "required": { "const": true },
+        "routeNodeHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "RouteTransitionSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "routeTransitionId",
+        "fromNodeId",
+        "toNodeId",
+        "intent",
+        "required",
+        "routeTransitionHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "routeTransitionId": { "$ref": "#/$defs/Id" },
+        "fromNodeId": { "$ref": "#/$defs/Id" },
+        "toNodeId": { "$ref": "#/$defs/Id" },
+        "intent": { "const": "required-safe-progression" },
+        "required": { "const": true },
+        "routeTransitionHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "RouteSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "routeId",
+        "startNodeId",
+        "finishNodeId",
+        "orderedNodeIds",
+        "nodes",
+        "transitions",
+        "routeHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "routeId": { "$ref": "#/$defs/Id" },
+        "startNodeId": { "$ref": "#/$defs/Id" },
+        "finishNodeId": { "$ref": "#/$defs/Id" },
+        "orderedNodeIds": {
+          "type": "array",
+          "maxItems": 52,
+          "items": { "$ref": "#/$defs/Id" }
+        },
+        "nodes": {
+          "type": "array",
+          "maxItems": 52,
+          "items": { "$ref": "#/$defs/RouteNodeSpec" }
+        },
+        "transitions": {
+          "type": "array",
+          "maxItems": 51,
+          "items": { "$ref": "#/$defs/RouteTransitionSpec" }
+        },
+        "routeHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "CheckpointSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "checkpointId",
+        "stageId",
+        "routeNodeId",
+        "routeOrder",
+        "respawnIntent",
+        "checkpointHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "checkpointId": { "$ref": "#/$defs/Id" },
+        "stageId": { "$ref": "#/$defs/Id" },
+        "routeNodeId": { "$ref": "#/$defs/Id" },
+        "routeOrder": { "type": "integer", "minimum": 1, "maximum": 50 },
+        "respawnIntent": { "const": "center-safe-platform" },
+        "checkpointHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "HazardSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "hazardId",
+        "kind",
+        "stageId",
+        "mechanicId",
+        "gameplayAuthority",
+        "failureReset",
+        "severity",
+        "visualStyleIntentId",
+        "hazardHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "hazardId": { "$ref": "#/$defs/Id" },
+        "kind": {
+          "enum": [
+            "kill-floor",
+            "kill-part",
+            "fall-void",
+            "timed-contact-intent",
+            "moving-obstacle-intent"
+          ]
+        },
+        "stageId": { "$ref": "#/$defs/Id" },
+        "mechanicId": { "$ref": "#/$defs/Id" },
+        "gameplayAuthority": { "const": "native-gameplay" },
+        "failureReset": { "const": "last-checkpoint" },
+        "severity": { "enum": ["low", "medium", "high"] },
+        "visualStyleIntentId": { "$ref": "#/$defs/Id" },
+        "hazardHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "FinishSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "finishId",
+        "routeNodeId",
+        "afterStageId",
+        "readability",
+        "finishHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "finishId": { "$ref": "#/$defs/Id" },
+        "routeNodeId": { "$ref": "#/$defs/Id" },
+        "afterStageId": { "$ref": "#/$defs/Id" },
+        "readability": { "const": "high" },
+        "finishHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "DifficultyBand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "difficultyBandId",
+        "stageId",
+        "ordinal",
+        "band",
+        "intentLevel",
+        "difficultyBandHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "difficultyBandId": { "$ref": "#/$defs/Id" },
+        "stageId": { "$ref": "#/$defs/Id" },
+        "ordinal": { "type": "integer", "minimum": 1, "maximum": 50 },
+        "band": {
+          "enum": ["tutorial", "easy", "medium", "hard", "climax", "recovery"]
+        },
+        "intentLevel": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "difficultyBandHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "DifficultyPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "difficultyPlanId",
+        "targetDifficulty",
+        "maximumLocalDelta",
+        "empiricalStatus",
+        "bands",
+        "difficultyPlanHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "difficultyPlanId": { "$ref": "#/$defs/Id" },
+        "targetDifficulty": { "enum": ["easy", "medium", "hard"] },
+        "maximumLocalDelta": { "type": "integer", "minimum": 1, "maximum": 2 },
+        "empiricalStatus": { "const": "design-intent-not-validated" },
+        "bands": {
+          "type": "array",
+          "maxItems": 50,
+          "items": { "$ref": "#/$defs/DifficultyBand" }
+        },
+        "difficultyPlanHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "MechanicIntent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "mechanicIntentId",
+        "stageId",
+        "mechanicId",
+        "mechanicVersion",
+        "use",
+        "mechanicIntentHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "mechanicIntentId": { "$ref": "#/$defs/Id" },
+        "stageId": { "$ref": "#/$defs/Id" },
+        "mechanicId": { "$ref": "#/$defs/Id" },
+        "mechanicVersion": { "const": "1" },
+        "use": { "enum": ["introduce", "practice", "intensify", "combine"] },
+        "mechanicIntentHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "VisualStyleIntent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "visualStyleIntentId",
+        "themeFamily",
+        "paletteIntent",
+        "materialFamily",
+        "lightingMoodIntent",
+        "shapeLanguage",
+        "density",
+        "readabilityPriority",
+        "landmarkCadenceStages",
+        "decorativeMotionIntent",
+        "uiTone",
+        "styleTags",
+        "visualStyleIntentHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "visualStyleIntentId": { "$ref": "#/$defs/Id" },
+        "themeFamily": {
+          "enum": ["classic", "sky", "space", "lava", "jungle"]
+        },
+        "paletteIntent": {
+          "enum": [
+            "classic-high-contrast",
+            "sky-high-contrast",
+            "space-high-contrast",
+            "lava-high-contrast",
+            "jungle-high-contrast"
+          ]
+        },
+        "materialFamily": { "const": "native-roblox-materials" },
+        "lightingMoodIntent": { "enum": ["bright", "dramatic", "calm"] },
+        "shapeLanguage": { "const": "blocky-readable" },
+        "density": { "enum": ["low", "medium", "high"] },
+        "readabilityPriority": { "const": "high" },
+        "landmarkCadenceStages": { "type": "integer", "minimum": 1 },
+        "decorativeMotionIntent": { "enum": ["none", "deferred"] },
+        "uiTone": { "const": "clear-encouraging" },
+        "styleTags": { "$ref": "#/$defs/StringSet" },
+        "visualStyleIntentHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "AssetIntent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "assetIntentId",
+        "semanticRole",
+        "scope",
+        "authority",
+        "preferredSourcePolicy",
+        "nativePartFallback",
+        "collisionPolicy",
+        "scaleIntent",
+        "styleTags",
+        "prohibitedContentTags",
+        "requiredAuditStatus",
+        "assetIntentHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "assetIntentId": { "$ref": "#/$defs/Id" },
+        "semanticRole": {
+          "enum": [
+            "gameplay-route",
+            "checkpoint",
+            "hazard",
+            "finish",
+            "decoration"
+          ]
+        },
+        "scope": { "enum": ["global", "stage"] },
+        "stageId": { "$ref": "#/$defs/Id" },
+        "authority": { "enum": ["gameplay-authoritative", "decorative"] },
+        "preferredSourcePolicy": {
+          "enum": [
+            "native-parts-only",
+            "approved-local-assets",
+            "external-assets-allowed-later"
+          ]
+        },
+        "nativePartFallback": { "const": true },
+        "collisionPolicy": {
+          "enum": ["native-parts-colliding", "non-colliding"]
+        },
+        "scaleIntent": { "const": "readable-player-scale" },
+        "styleTags": { "$ref": "#/$defs/StringSet" },
+        "prohibitedContentTags": { "$ref": "#/$defs/StringSet" },
+        "requiredAuditStatus": {
+          "enum": ["not-required-native", "required-before-use"]
+        },
+        "assetIntentHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "ProgressionIntent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "progressionIntentId",
+        "onboardingClarity",
+        "earlySuccess",
+        "visibleProgress",
+        "finishReadability",
+        "progressionIntentHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "progressionIntentId": { "$ref": "#/$defs/Id" },
+        "onboardingClarity": { "const": "high" },
+        "earlySuccess": { "const": "prioritized" },
+        "visibleProgress": { "const": "stage-and-checkpoint" },
+        "finishReadability": { "const": "high" },
+        "progressionIntentHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "RetentionIntent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "retentionIntentId",
+        "status",
+        "checkpointCadence",
+        "mechanicNoveltyCadence",
+        "recoveryPacing",
+        "landmarkCadence",
+        "climaxTiming",
+        "replayVariationAllowance",
+        "retentionIntentHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "retentionIntentId": { "$ref": "#/$defs/Id" },
+        "status": { "const": "design-intent-not-prediction" },
+        "checkpointCadence": { "type": "integer", "minimum": 1 },
+        "mechanicNoveltyCadence": { "type": "integer", "minimum": 1 },
+        "recoveryPacing": { "const": "after-peaks" },
+        "landmarkCadence": { "type": "integer", "minimum": 1 },
+        "climaxTiming": { "const": "late" },
+        "replayVariationAllowance": { "const": "seeded-only" },
+        "retentionIntentHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "GenerationLimitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "limitationId",
+        "code",
+        "message",
+        "relatedIds",
+        "limitationHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "limitationId": { "$ref": "#/$defs/Id" },
+        "code": {
+          "enum": [
+            "abstract-plan-only",
+            "no-runtime-evidence",
+            "retention-not-predicted",
+            "deferred-mechanic"
+          ]
+        },
+        "message": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "relatedIds": { "$ref": "#/$defs/StringSet" },
+        "limitationHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "GenerationFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "findingId",
+        "code",
+        "severity",
+        "message",
+        "relatedIds",
+        "findingHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "findingId": { "$ref": "#/$defs/Id" },
+        "code": {
+          "enum": [
+            "limited-mechanic-variety",
+            "deferred-capability-planned",
+            "checkpoint-cadence-adjusted"
+          ]
+        },
+        "severity": { "enum": ["information", "warning"] },
+        "message": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "relatedIds": { "$ref": "#/$defs/StringSet" },
+        "findingHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "ObbySpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "obbySpecId",
+        "normalizedRequestHash",
+        "configurationHash",
+        "catalogHash",
+        "generatorVersion",
+        "prngAlgorithm",
+        "seed",
+        "seedIdentity",
+        "game",
+        "stages",
+        "mechanicIntents",
+        "route",
+        "checkpoints",
+        "hazards",
+        "finish",
+        "difficultyPlan",
+        "visualStyleIntents",
+        "assetIntents",
+        "progressionIntent",
+        "retentionIntent",
+        "limitations",
+        "findings",
+        "obbySpecHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "obbySpecId": { "$ref": "#/$defs/Id" },
+        "normalizedRequestHash": { "$ref": "#/$defs/Hash" },
+        "configurationHash": { "$ref": "#/$defs/Hash" },
+        "catalogHash": { "$ref": "#/$defs/Hash" },
+        "generatorVersion": { "const": "g0-reference-v1" },
+        "prngAlgorithm": { "const": "mulberry32-v1" },
+        "seed": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "seedIdentity": { "$ref": "#/$defs/Hash" },
+        "game": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "title",
+            "genre",
+            "targetAudience",
+            "targetSessionDurationMinutes"
+          ],
+          "properties": {
+            "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+            "genre": { "const": "obby" },
+            "targetAudience": {
+              "enum": ["all-ages", "general", "experienced"]
+            },
+            "targetSessionDurationMinutes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120
+            }
+          }
+        },
+        "stages": {
+          "type": "array",
+          "maxItems": 50,
+          "items": { "$ref": "#/$defs/StageSpec" }
+        },
+        "mechanicIntents": {
+          "type": "array",
+          "maxItems": 50,
+          "items": { "$ref": "#/$defs/MechanicIntent" }
+        },
+        "route": { "$ref": "#/$defs/RouteSpec" },
+        "checkpoints": {
+          "type": "array",
+          "maxItems": 49,
+          "items": { "$ref": "#/$defs/CheckpointSpec" }
+        },
+        "hazards": {
+          "type": "array",
+          "maxItems": 50,
+          "items": { "$ref": "#/$defs/HazardSpec" }
+        },
+        "finish": { "$ref": "#/$defs/FinishSpec" },
+        "difficultyPlan": { "$ref": "#/$defs/DifficultyPlan" },
+        "visualStyleIntents": {
+          "type": "array",
+          "maxItems": 16,
+          "items": { "$ref": "#/$defs/VisualStyleIntent" }
+        },
+        "assetIntents": {
+          "type": "array",
+          "maxItems": 128,
+          "items": { "$ref": "#/$defs/AssetIntent" }
+        },
+        "progressionIntent": { "$ref": "#/$defs/ProgressionIntent" },
+        "retentionIntent": { "$ref": "#/$defs/RetentionIntent" },
+        "limitations": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/GenerationLimitation" }
+        },
+        "findings": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/GenerationFinding" }
+        },
+        "obbySpecHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "GenerationBundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "generationBundleId",
+        "generationRequestHash",
+        "normalizedRequest",
+        "configurationHash",
+        "catalogHash",
+        "obbySpec",
+        "limitations",
+        "findings",
+        "generationBundleHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "generationBundleId": { "$ref": "#/$defs/Id" },
+        "generationRequestHash": { "$ref": "#/$defs/Hash" },
+        "normalizedRequest": { "$ref": "#/$defs/NormalizedGenerationRequest" },
+        "configurationHash": { "$ref": "#/$defs/Hash" },
+        "catalogHash": { "$ref": "#/$defs/Hash" },
+        "obbySpec": { "$ref": "#/$defs/ObbySpec" },
+        "limitations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/GenerationLimitation" }
+        },
+        "findings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/GenerationFinding" }
+        },
+        "generationBundleHash": { "$ref": "#/$defs/Hash" }
+      }
+    }
+  }
+}

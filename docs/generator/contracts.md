@@ -1,0 +1,23 @@
+# G0 generator contract reference
+
+Schema version `0.1` and the JSON Schema at `packages/obby-generator-contracts/schemas/generator-contracts.schema.json` define the structural boundary. Cross-field and graph rules live in the semantic validator. `npm run generator:contracts:check` compiles the Draft 2020-12 schema and checks its generated schema fingerprint without modifying files.
+
+The graph contains `GenerationRequest`, `NormalizedGenerationRequest`, `GeneratorConfiguration`, `MechanicDefinition`, `MechanicCatalog`, `ObbySpec`, `StageSpec`, `RouteSpec`, `RouteNodeSpec`, `RouteTransitionSpec`, `CheckpointSpec`, `HazardSpec`, `FinishSpec`, `DifficultyPlan`, `DifficultyBand`, `MechanicIntent`, `AssetIntent`, `VisualStyleIntent`, `ProgressionIntent`, `RetentionIntent`, `GenerationLimitation`, `GenerationFinding`, and `GenerationBundle`.
+
+Every produced semantic record carries `schemaVersion`, a type-specific stable ID, and a type-specific content hash. `GenerationRequest` can supply `generationRequestHash`; otherwise normalization calculates it. `NormalizedGenerationRequest`, configuration, catalog/definitions, every nested ObbySpec record, ObbySpec, and bundle always carry hashes. ObbySpec also carries `seedIdentity`, which binds the explicit seed to normalized-request, configuration, catalog, and PRNG identities. Hash result fields exclude themselves. The GeneratorConfiguration semantic preimage additionally excludes `limits.maxWorkUnits`, which is execution admission metadata rather than game-generation identity. Ordered route/stage sequences stay ordered; semantic sets use Unicode-scalar ordering.
+
+Producers and consumers are deliberately narrow:
+
+- The CLI/user produces `GenerationRequest`; normalization consumes it.
+- Normalization produces `NormalizedGenerationRequest`; the reference planner and G1 consume it indirectly through ObbySpec identity.
+- Repository configuration and mechanic catalog constrain the planner and validator.
+- The planner produces stages, difficulty, mechanic intents, route, checkpoints, hazards, finish, visual/assets, progression/retention, findings, and limitations.
+- Full graph validators require the exact catalog, generator configuration, and normalized request authority; omitting context is an error.
+- The graph validator consumes the complete ObbySpec and bundle before publication and closes bidirectional stage/mechanic, route/checkpoint, hazard, asset, and visual references.
+- G1 consumes only validated ObbySpec, never request prose.
+
+Generation work admission follows a descriptor-based structural boundary. It accepts only non-Proxy plain records and standard plain arrays and copies the complete input graph into deeply frozen arrays and null-prototype records. No getter, inherited accessor, Proxy trap, iterator, or coercion hook is invoked. Effective stage count, mechanic-array length, and configured maximum are then read from this snapshot to reserve `4000 + 120S + 100M + 4SM`. Only successful admission can invoke public callbacks; all validation, normalization, planning, hashing, and serialization continue from the same snapshot. Successful admission exposes a frozen required/admitted/available/unused record only through the execution seam, and `callback-failed` sanitizes callback exceptions. These values never enter semantic payloads.
+
+CLI publication builds a complete synced private directory, acquires a separate private destination-name lock, revalidates lock/parent identity and final absence, and commits the complete directory with Linux `renameat2(RENAME_NOREPLACE)` or Windows `MoveFileW`. The fixed-argument helpers are silent, use no shell or network, and have no unsafe ordinary-rename fallback; missing or unsupported primitives fail closed. The public path is absent until that commit and is never used as a claim. `output-conflict` identifies existing or late-created legitimate destinations or a conforming competing publisher; `path-safety` identifies reparse or replaced identities; `output-publication` covers sanitized helper/platform/commit failures; and `cleanup-failed` covers sanitized cleanup failure. No error includes native paths, private names, identity values, native codes, or operating-system messages.
+
+The committed fixtures under `examples/generator` contain real hashes plus same-seed, different-seed, and implicit/explicit-default evidence with content-addressed output names. Negative fixtures map to exact typed errors. `npm run generator:fixtures:check` recomputes artifacts in memory, verifies equality/controlled-variation relations without rewriting, and rejects `ZERO_HASH`.

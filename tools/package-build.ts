@@ -11,6 +11,11 @@ const outputs = [
     "dist/packages/obby-evaluator-contracts/src",
     "packages/obby-evaluator-contracts/dist",
   ],
+  [
+    "dist/packages/obby-generator-contracts/src",
+    "packages/obby-generator-contracts/dist",
+  ],
+  ["dist/packages/obby-generator/src", "packages/obby-generator/dist"],
   ["dist/packages/roblox-emitter/src", "packages/roblox-emitter/dist"],
   [
     "dist/packages/route-playability-evaluator/src",
@@ -18,6 +23,7 @@ const outputs = [
   ],
   ["dist/packages/scoring-engine/src", "packages/scoring-engine/dist"],
   ["dist/apps/evaluator-cli/src", "apps/evaluator-cli/dist"],
+  ["dist/apps/generator-cli/src", "apps/generator-cli/dist"],
   ["dist/apps/orchestrator/src", "apps/orchestrator/dist"],
 ] as const;
 
