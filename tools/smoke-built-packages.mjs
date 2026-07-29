@@ -10,6 +10,8 @@ import {
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { spawn } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 import {
   canonicalStringify,
@@ -46,7 +48,11 @@ import {
   generateObby,
   hashGeneratorPreimage,
 } from "@obby/obby-generator";
-import { runGeneratorCli } from "@obby/generator-cli";
+import {
+  G1_ARTIFACT_FILENAMES,
+  buildG1ArtifactSet,
+  runGeneratorCli,
+} from "@obby/generator-cli";
 import { hashLayoutConfiguration } from "@obby/obby-layout-contracts";
 import {
   DEFAULT_LAYOUT_CONFIGURATION,
@@ -250,6 +256,19 @@ if (
   )
 )
   throw new Error("built G1c emitter returned invalid Luau transport");
+const builtArtifactSet = buildG1ArtifactSet({
+  sourceGenerationBundle: generated,
+  generatorConfiguration: DEFAULT_GENERATOR_CONFIGURATION,
+  mechanicCatalog: DEFAULT_MECHANIC_CATALOG,
+  layoutConfiguration: DEFAULT_LAYOUT_CONFIGURATION,
+  mechanicLayoutDefinitions: DEFAULT_MECHANIC_LAYOUT_DEFINITIONS,
+});
+if (
+  !builtArtifactSet.artifactSetHash.startsWith("sha256:") ||
+  Object.keys(builtArtifactSet.files).sort().join(",") !==
+    Object.values(G1_ARTIFACT_FILENAMES).sort().join(",")
+)
+  throw new Error("built G1d workflow returned an invalid artifact set");
 
 const withWorkBudget = (maximum) => {
   const preimage = {
@@ -535,6 +554,29 @@ const nullStreams = {
   stdout: { write: () => true },
   stderr: { write: () => true },
 };
+const runBuiltGeneratorCli = (arguments_, cwd) =>
+  new Promise((resolve, reject) => {
+    const child = spawn(
+      process.execPath,
+      [
+        fileURLToPath(
+          new URL("../apps/generator-cli/dist/bin.js", import.meta.url),
+        ),
+        ...arguments_,
+      ],
+      { cwd, shell: false, windowsHide: true },
+    );
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on("data", (chunk) => {
+      stderr += chunk.toString();
+    });
+    child.once("error", reject);
+    child.once("exit", (code) => resolve({ code, stdout, stderr }));
+  });
 const publicationRoot = await mkdtemp(join(tmpdir(), "g0-built-smoke-"));
 try {
   await writeFile(
@@ -561,6 +603,24 @@ try {
     (await readdir(finalPath)).join(",") !== "generation-bundle.json"
   )
     throw new Error("built generator CLI exposed incomplete public output");
+
+  await writeFile(
+    join(publicationRoot, "bundle.json"),
+    evaluatorCanonicalStringify(generated),
+  );
+  const builtCliResult = await runBuiltGeneratorCli(
+    ["layout", "--bundle", "bundle.json", "--output", "g1-out"],
+    publicationRoot,
+  );
+  if (builtCliResult.code !== 0)
+    throw new Error(`built G1d CLI failed: ${builtCliResult.stderr}`);
+  const builtCliDirectory = builtCliResult.stdout.trim();
+  if (
+    !builtCliDirectory.endsWith(builtArtifactSet.directoryName) ||
+    (await readdir(builtCliDirectory)).sort().join(",") !==
+      Object.values(G1_ARTIFACT_FILENAMES).sort().join(",")
+  )
+    throw new Error("plain-Node built G1d CLI emitted an invalid artifact set");
 
   await rm(finalPath, { recursive: true });
   const syscallWindowSentinel = "foreign-syscall-window-owner";
@@ -663,4 +723,6 @@ if (compiledReportDeclaration.includes("finalizeValidatedE1Report"))
     "built scoring declaration exposes unchecked report finalization",
   );
 
-console.log("plain Node imported Phase 0, E1, G0, G1a, G1b, and G1c packages");
+console.log(
+  "plain Node imported Phase 0, E1, G0, G1a, G1b, G1c, and G1d packages and invoked the built G1d CLI",
+);
