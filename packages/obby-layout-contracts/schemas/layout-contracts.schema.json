@@ -1,0 +1,728 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-roblox-obby-builder.local/schemas/layout-contracts.schema.json",
+  "title": "G1 layout contracts",
+  "oneOf": [
+    { "$ref": "#/$defs/LayoutConfiguration" },
+    { "$ref": "#/$defs/MechanicLayoutDefinition" },
+    { "$ref": "#/$defs/LayoutSpec" },
+    { "$ref": "#/$defs/LayoutBundle" }
+  ],
+  "$defs": {
+    "Hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "Id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{0,127}$"
+    },
+    "PascalId": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Za-z0-9]{0,79}$"
+    },
+    "Vector3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number", "minimum": -2048, "maximum": 2048 },
+        "y": { "type": "number", "minimum": -2048, "maximum": 2048 },
+        "z": { "type": "number", "minimum": -2048, "maximum": 2048 }
+      }
+    },
+    "Rotation3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number", "minimum": -360, "maximum": 360 },
+        "y": { "type": "number", "minimum": -360, "maximum": 360 },
+        "z": { "type": "number", "minimum": -360, "maximum": 360 }
+      }
+    },
+    "PositiveSize": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number", "exclusiveMinimum": 0, "maximum": 256 },
+        "y": { "type": "number", "exclusiveMinimum": 0, "maximum": 256 },
+        "z": { "type": "number", "exclusiveMinimum": 0, "maximum": 256 }
+      }
+    },
+    "Transform": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["position", "rotationDegrees"],
+      "properties": {
+        "position": { "$ref": "#/$defs/Vector3" },
+        "rotationDegrees": { "$ref": "#/$defs/Rotation3" }
+      }
+    },
+    "LayoutConfiguration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "configurationId",
+        "configurationVersion",
+        "layoutAlgorithm",
+        "numericPolicy",
+        "numericParameters",
+        "reachabilityPolicy",
+        "limits",
+        "configurationHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "configurationId": { "$ref": "#/$defs/Id" },
+        "configurationVersion": { "const": "g1a-layout-contract-v1" },
+        "layoutAlgorithm": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "algorithmId",
+            "routePackingStrategy",
+            "routePackingVersion",
+            "derivedIdStrategy"
+          ],
+          "properties": {
+            "algorithmId": { "const": "g1-layout-v1" },
+            "routePackingStrategy": {
+              "const": "bounded-serpentine-grid-v1"
+            },
+            "routePackingVersion": { "const": "1" },
+            "derivedIdStrategy": { "const": "source-ordinal-pascal-v1" }
+          }
+        },
+        "numericPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "units",
+            "coordinatePrecisionDecimalPlaces",
+            "measurementToleranceStuds"
+          ],
+          "properties": {
+            "units": { "const": "studs" },
+            "coordinatePrecisionDecimalPlaces": { "const": 6 },
+            "measurementToleranceStuds": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 0.000001
+            }
+          }
+        },
+        "numericParameters": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/NumericParameter" }
+        },
+        "reachabilityPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "requiredTransitionOutcome",
+            "indeterminatePolicy",
+            "controllerProfileRef"
+          ],
+          "properties": {
+            "requiredTransitionOutcome": {
+              "const": "feasible-under-model"
+            },
+            "indeterminatePolicy": { "const": "block" },
+            "controllerProfileRef": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "profileId",
+                "profileVersion",
+                "controllerProfileHash"
+              ],
+              "properties": {
+                "profileId": { "$ref": "#/$defs/Id" },
+                "profileVersion": {
+                  "type": "string",
+                  "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+                },
+                "controllerProfileHash": { "$ref": "#/$defs/Hash" }
+              }
+            }
+          }
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maxStages",
+            "maxGameplayObjects",
+            "maxDecorativeZones",
+            "maxWorldExtent",
+            "maxPartSize",
+            "maxOutputBytes",
+            "maxWorkUnits"
+          ],
+          "properties": {
+            "maxStages": { "const": 50 },
+            "maxGameplayObjects": { "const": 501 },
+            "maxDecorativeZones": { "const": 128 },
+            "maxWorldExtent": { "const": 2048 },
+            "maxPartSize": { "const": 256 },
+            "maxOutputBytes": { "const": 4194304 },
+            "maxWorkUnits": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000000
+            }
+          }
+        },
+        "configurationHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "NumericParameter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parameterId", "unit", "minimum", "maximum", "value"],
+      "properties": {
+        "parameterId": { "$ref": "#/$defs/Id" },
+        "unit": { "enum": ["studs", "degrees", "count", "ratio"] },
+        "minimum": { "type": "number", "minimum": -2048, "maximum": 2048 },
+        "maximum": { "type": "number", "minimum": -2048, "maximum": 2048 },
+        "value": { "type": "number", "minimum": -2048, "maximum": 2048 }
+      }
+    },
+    "DifficultyParameterProfile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["difficultyLevel", "parameters"],
+      "properties": {
+        "difficultyLevel": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "parameters": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 32,
+          "items": { "$ref": "#/$defs/NumericParameter" }
+        }
+      }
+    },
+    "MechanicLayoutDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "mechanicLayoutDefinitionId",
+        "definitionVersion",
+        "sourceMechanic",
+        "capability",
+        "layoutAlgorithmId",
+        "routeObjectBudget",
+        "supportedShapes",
+        "difficultyProfiles",
+        "mechanicLayoutDefinitionHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "mechanicLayoutDefinitionId": { "$ref": "#/$defs/Id" },
+        "definitionVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "sourceMechanic": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mechanicId",
+            "mechanicVersion",
+            "mechanicDefinitionHash"
+          ],
+          "properties": {
+            "mechanicId": { "$ref": "#/$defs/Id" },
+            "mechanicVersion": { "const": "1" },
+            "mechanicDefinitionHash": { "$ref": "#/$defs/Hash" }
+          }
+        },
+        "capability": { "const": "g1-static-supported" },
+        "layoutAlgorithmId": { "const": "g1-layout-v1" },
+        "routeObjectBudget": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["minimum", "maximum"],
+          "properties": {
+            "minimum": { "type": "integer", "minimum": 1, "maximum": 20 },
+            "maximum": { "type": "integer", "minimum": 1, "maximum": 20 }
+          }
+        },
+        "supportedShapes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": { "enum": ["Block", "Ball", "Cylinder", "Wedge"] }
+        },
+        "difficultyProfiles": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": { "$ref": "#/$defs/DifficultyParameterProfile" }
+        },
+        "mechanicLayoutDefinitionHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "SourceReferences": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceAssetIntentIds"],
+      "properties": {
+        "sourceStageId": { "$ref": "#/$defs/Id" },
+        "sourceMechanicIntentId": { "$ref": "#/$defs/Id" },
+        "sourceCheckpointId": { "$ref": "#/$defs/Id" },
+        "sourceHazardId": { "$ref": "#/$defs/Id" },
+        "sourceFinishId": { "$ref": "#/$defs/Id" },
+        "sourceAssetIntentIds": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        }
+      }
+    },
+    "LayoutObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "objectId",
+        "sourceReferences",
+        "role",
+        "authority",
+        "shape",
+        "transform",
+        "size",
+        "collision"
+      ],
+      "properties": {
+        "objectId": { "$ref": "#/$defs/PascalId" },
+        "sourceReferences": { "$ref": "#/$defs/SourceReferences" },
+        "role": {
+          "enum": ["spawn", "platform", "checkpoint", "kill", "finish"]
+        },
+        "authority": { "const": "native-gameplay" },
+        "shape": { "enum": ["Block", "Ball", "Cylinder", "Wedge"] },
+        "transform": { "$ref": "#/$defs/Transform" },
+        "size": { "$ref": "#/$defs/PositiveSize" },
+        "collision": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["anchored", "canCollide", "canTouch", "canQuery"],
+          "properties": {
+            "anchored": { "const": true },
+            "canCollide": { "type": "boolean" },
+            "canTouch": { "type": "boolean" },
+            "canQuery": { "const": true }
+          }
+        },
+        "routePlacement": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["globalOrder", "stageOrder"],
+          "properties": {
+            "globalOrder": { "type": "integer", "minimum": 1, "maximum": 500 },
+            "stageOrder": { "type": "integer", "minimum": 1, "maximum": 20 }
+          }
+        }
+      }
+    },
+    "LayoutStage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stageLayoutId",
+        "sourceStageId",
+        "sourceRouteNodeId",
+        "ordinal",
+        "sourceMechanicIntentId",
+        "mechanicLayoutDefinitionHash",
+        "routeObjectIds",
+        "hazardObjectIds",
+        "decorativeZoneIds"
+      ],
+      "properties": {
+        "stageLayoutId": { "$ref": "#/$defs/Id" },
+        "sourceStageId": { "$ref": "#/$defs/Id" },
+        "sourceRouteNodeId": { "$ref": "#/$defs/Id" },
+        "ordinal": { "type": "integer", "minimum": 1, "maximum": 50 },
+        "sourceMechanicIntentId": { "$ref": "#/$defs/Id" },
+        "mechanicLayoutDefinitionHash": { "$ref": "#/$defs/Hash" },
+        "routeObjectIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/PascalId" }
+        },
+        "checkpointObjectId": { "$ref": "#/$defs/PascalId" },
+        "hazardObjectIds": {
+          "type": "array",
+          "maxItems": 20,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/PascalId" }
+        },
+        "decorativeZoneIds": {
+          "type": "array",
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        }
+      }
+    },
+    "DecorativeZone": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "zoneId",
+        "sourceVisualStyleIntentId",
+        "sourceAssetIntentIds",
+        "bounds",
+        "collisionPolicy",
+        "nativePartFallback"
+      ],
+      "properties": {
+        "zoneId": { "$ref": "#/$defs/Id" },
+        "sourceStageId": { "$ref": "#/$defs/Id" },
+        "sourceVisualStyleIntentId": { "$ref": "#/$defs/Id" },
+        "sourceAssetIntentIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 128,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        },
+        "bounds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["minimum", "maximum"],
+          "properties": {
+            "minimum": { "$ref": "#/$defs/Vector3" },
+            "maximum": { "$ref": "#/$defs/Vector3" }
+          }
+        },
+        "collisionPolicy": { "const": "non-colliding-only" },
+        "nativePartFallback": { "const": true }
+      }
+    },
+    "LayoutLimitation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message", "relatedSourceIds"],
+      "properties": {
+        "code": {
+          "enum": [
+            "contract-only",
+            "unsupported-mechanic",
+            "reachability-indeterminate",
+            "world-packing-limit"
+          ]
+        },
+        "message": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "relatedSourceIds": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        }
+      }
+    },
+    "LayoutFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "severity", "message", "relatedSourceIds"],
+      "properties": {
+        "code": {
+          "enum": [
+            "native-fallback-selected",
+            "route-row-wrapped",
+            "model-relative-reachability"
+          ]
+        },
+        "severity": { "enum": ["information", "warning"] },
+        "message": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "relatedSourceIds": {
+          "type": "array",
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Id" }
+        }
+      }
+    },
+    "ReachabilityTransition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transitionLayoutId",
+        "fromObjectId",
+        "toObjectId",
+        "fromGlobalOrder",
+        "toGlobalOrder",
+        "outcome",
+        "normalizedInputHash"
+      ],
+      "properties": {
+        "transitionLayoutId": { "$ref": "#/$defs/Id" },
+        "fromObjectId": { "$ref": "#/$defs/PascalId" },
+        "toObjectId": { "$ref": "#/$defs/PascalId" },
+        "fromGlobalOrder": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 499
+        },
+        "toGlobalOrder": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "outcome": { "const": "feasible-under-model" },
+        "normalizedInputHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "ReachabilityAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "modelId",
+        "methodId",
+        "methodVersion",
+        "controllerProfileRef",
+        "overallOutcome",
+        "requiredTransitions"
+      ],
+      "properties": {
+        "modelId": { "const": "e1-coarse-surface-transition-v1" },
+        "methodId": { "const": "coarse-transition-classifier" },
+        "methodVersion": { "const": "2.0.0" },
+        "controllerProfileRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["profileId", "profileVersion", "controllerProfileHash"],
+          "properties": {
+            "profileId": { "$ref": "#/$defs/Id" },
+            "profileVersion": {
+              "type": "string",
+              "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+            },
+            "controllerProfileHash": { "$ref": "#/$defs/Hash" }
+          }
+        },
+        "overallOutcome": { "const": "feasible-under-model" },
+        "requiredTransitions": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 500,
+          "items": { "$ref": "#/$defs/ReachabilityTransition" }
+        }
+      }
+    },
+    "LayoutSpec": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "layoutSpecId",
+        "layoutVersion",
+        "source",
+        "layoutConfigurationHash",
+        "mechanicLayoutDefinitionHashes",
+        "layoutSeedIdentity",
+        "coordinateSystem",
+        "characterPlacement",
+        "worldBounds",
+        "stages",
+        "route",
+        "reachability",
+        "objects",
+        "decorativeZones",
+        "limitations",
+        "findings",
+        "layoutSpecHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "layoutSpecId": { "$ref": "#/$defs/Id" },
+        "layoutVersion": { "const": "g1-layout-v1" },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "generationBundleHash",
+            "obbySpecId",
+            "obbySpecHash",
+            "generatorConfigurationHash",
+            "mechanicCatalogHash"
+          ],
+          "properties": {
+            "generationBundleHash": { "$ref": "#/$defs/Hash" },
+            "obbySpecId": { "$ref": "#/$defs/Id" },
+            "obbySpecHash": { "$ref": "#/$defs/Hash" },
+            "generatorConfigurationHash": { "$ref": "#/$defs/Hash" },
+            "mechanicCatalogHash": { "$ref": "#/$defs/Hash" }
+          }
+        },
+        "layoutConfigurationHash": { "$ref": "#/$defs/Hash" },
+        "mechanicLayoutDefinitionHashes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/Hash" }
+        },
+        "layoutSeedIdentity": { "$ref": "#/$defs/Hash" },
+        "coordinateSystem": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "units",
+            "handedness",
+            "upAxis",
+            "forwardAxis",
+            "rotationUnit",
+            "rotationOrder"
+          ],
+          "properties": {
+            "units": { "const": "studs" },
+            "handedness": { "const": "right-handed" },
+            "upAxis": { "const": "+Y" },
+            "forwardAxis": { "const": "-Z" },
+            "rotationUnit": { "const": "degrees" },
+            "rotationOrder": { "const": "XYZ" }
+          }
+        },
+        "characterPlacement": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["strategy", "orientationPolicy", "verticalOffset"],
+          "properties": {
+            "strategy": { "const": "humanoid-root-part-cframe-v1" },
+            "orientationPolicy": {
+              "enum": ["face-next-safe-route-object", "explicit-yaw"]
+            },
+            "verticalOffset": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 20
+            }
+          }
+        },
+        "worldBounds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["minimum", "maximum"],
+          "properties": {
+            "minimum": { "$ref": "#/$defs/Vector3" },
+            "maximum": { "$ref": "#/$defs/Vector3" }
+          }
+        },
+        "stages": {
+          "type": "array",
+          "minItems": 5,
+          "maxItems": 50,
+          "items": { "$ref": "#/$defs/LayoutStage" }
+        },
+        "route": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["routeLayoutId", "sourceRouteId", "orderedObjectIds"],
+          "properties": {
+            "routeLayoutId": { "$ref": "#/$defs/Id" },
+            "sourceRouteId": { "$ref": "#/$defs/Id" },
+            "orderedObjectIds": {
+              "type": "array",
+              "minItems": 6,
+              "maxItems": 500,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/PascalId" }
+            }
+          }
+        },
+        "reachability": { "$ref": "#/$defs/ReachabilityAssessment" },
+        "objects": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 501,
+          "items": { "$ref": "#/$defs/LayoutObject" }
+        },
+        "decorativeZones": {
+          "type": "array",
+          "maxItems": 128,
+          "items": { "$ref": "#/$defs/DecorativeZone" }
+        },
+        "limitations": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/LayoutLimitation" }
+        },
+        "findings": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "$ref": "#/$defs/LayoutFinding" }
+        },
+        "layoutSpecHash": { "$ref": "#/$defs/Hash" }
+      }
+    },
+    "LayoutBundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "layoutBundleId",
+        "sourceGenerationBundleHash",
+        "layoutConfigurationRef",
+        "mechanicLayoutDefinitionRefs",
+        "layoutSpec",
+        "layoutBundleHash"
+      ],
+      "properties": {
+        "schemaVersion": { "const": "0.1" },
+        "layoutBundleId": { "$ref": "#/$defs/Id" },
+        "sourceGenerationBundleHash": { "$ref": "#/$defs/Hash" },
+        "layoutConfigurationRef": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "configurationId",
+            "configurationVersion",
+            "configurationHash"
+          ],
+          "properties": {
+            "configurationId": { "$ref": "#/$defs/Id" },
+            "configurationVersion": { "const": "g1a-layout-contract-v1" },
+            "configurationHash": { "$ref": "#/$defs/Hash" }
+          }
+        },
+        "mechanicLayoutDefinitionRefs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "mechanicLayoutDefinitionId",
+              "definitionVersion",
+              "mechanicLayoutDefinitionHash"
+            ],
+            "properties": {
+              "mechanicLayoutDefinitionId": { "$ref": "#/$defs/Id" },
+              "definitionVersion": {
+                "type": "string",
+                "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+              },
+              "mechanicLayoutDefinitionHash": { "$ref": "#/$defs/Hash" }
+            }
+          }
+        },
+        "layoutSpec": { "$ref": "#/$defs/LayoutSpec" },
+        "layoutBundleHash": { "$ref": "#/$defs/Hash" }
+      }
+    }
+  }
+}

@@ -16,6 +16,10 @@ const outputs = [
     "packages/obby-generator-contracts/dist",
   ],
   ["dist/packages/obby-generator/src", "packages/obby-generator/dist"],
+  [
+    "dist/packages/obby-layout-contracts/src",
+    "packages/obby-layout-contracts/dist",
+  ],
   ["dist/packages/roblox-emitter/src", "packages/roblox-emitter/dist"],
   [
     "dist/packages/route-playability-evaluator/src",
