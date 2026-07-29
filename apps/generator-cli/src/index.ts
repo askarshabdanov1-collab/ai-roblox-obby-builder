@@ -14,6 +14,17 @@ import type {
   GeneratorConfiguration,
   MechanicCatalog,
 } from "@obby/obby-generator";
+import type { GenerationBundle } from "@obby/obby-generator-contracts";
+import type {
+  LayoutConfiguration,
+  MechanicLayoutDefinition,
+} from "@obby/obby-layout-contracts";
+import {
+  DEFAULT_LAYOUT_CONFIGURATION,
+  DEFAULT_MECHANIC_LAYOUT_DEFINITIONS,
+} from "@obby/obby-layout-engine";
+
+import { buildG1ArtifactSet } from "./layout-workflow.js";
 
 export type GeneratorCliStreams = {
   stdout: { write(text: string): unknown };
@@ -21,6 +32,7 @@ export type GeneratorCliStreams = {
 };
 export type GeneratorCliOptions = {
   cwd?: string;
+  platform?: NodeJS.Platform;
   beforeCommit?: (temporaryDirectory: string) => void | Promise<void>;
   onAtomicStep?: (
     step:
@@ -36,17 +48,33 @@ export type GeneratorCliOptions = {
       | "cleanup",
   ) => void | Promise<void>;
 };
-type Options = {
+type GenerateOptions = {
+  command: "generate";
   requestPath: string;
   configurationPath?: string;
   catalogPath?: string;
   outputDirectory: string;
   jsonErrors: boolean;
 };
+type LayoutOptions = {
+  command: "layout";
+  bundlePath: string;
+  generatorConfigurationPath?: string;
+  catalogPath?: string;
+  layoutConfigurationPath?: string;
+  layoutDefinitionsPath?: string;
+  outputDirectory: string;
+  jsonErrors: boolean;
+};
+type Options = GenerateOptions | LayoutOptions;
 
 function parseArguments(arguments_: readonly string[]): Options {
-  if (arguments_[0] !== "generate")
-    throw new GeneratorContractError("usage", "expected command: generate");
+  const command = arguments_[0];
+  if (command !== "generate" && command !== "layout")
+    throw new GeneratorContractError(
+      "usage",
+      "expected command: generate or layout",
+    );
   const values = new Map<string, string>();
   let jsonErrors = false;
   for (let index = 1; index < arguments_.length; index += 1) {
@@ -60,11 +88,18 @@ function parseArguments(arguments_: readonly string[]): Options {
       jsonErrors = true;
       continue;
     }
-    if (
-      !["--request", "--config", "--catalog", "--output"].includes(
-        argument ?? "",
-      )
-    )
+    const allowed =
+      command === "generate"
+        ? ["--request", "--config", "--catalog", "--output"]
+        : [
+            "--bundle",
+            "--generator-config",
+            "--catalog",
+            "--layout-config",
+            "--layout-definitions",
+            "--output",
+          ];
+    if (!allowed.includes(argument ?? ""))
       throw new GeneratorContractError(
         "usage",
         `unknown argument ${String(argument)}`,
@@ -79,21 +114,44 @@ function parseArguments(arguments_: readonly string[]): Options {
     values.set(argument, value);
     index += 1;
   }
-  const requestPath = values.get("--request");
   const outputDirectory = values.get("--output");
-  if (requestPath === undefined || outputDirectory === undefined)
-    throw new GeneratorContractError(
-      "usage",
-      "--request and --output are required",
-    );
-  const configurationPath = values.get("--config");
+  if (outputDirectory === undefined)
+    throw new GeneratorContractError("usage", "--output is required");
+  if (command === "generate") {
+    const requestPath = values.get("--request");
+    if (requestPath === undefined)
+      throw new GeneratorContractError("usage", "--request is required");
+    const configurationPath = values.get("--config");
+    const catalogPath = values.get("--catalog");
+    return {
+      command,
+      requestPath,
+      outputDirectory,
+      jsonErrors,
+      ...(configurationPath === undefined ? {} : { configurationPath }),
+      ...(catalogPath === undefined ? {} : { catalogPath }),
+    };
+  }
+  const bundlePath = values.get("--bundle");
+  if (bundlePath === undefined)
+    throw new GeneratorContractError("usage", "--bundle is required");
+  const generatorConfigurationPath = values.get("--generator-config");
   const catalogPath = values.get("--catalog");
+  const layoutConfigurationPath = values.get("--layout-config");
+  const layoutDefinitionsPath = values.get("--layout-definitions");
   return {
-    requestPath,
+    command,
+    bundlePath,
     outputDirectory,
     jsonErrors,
-    ...(configurationPath === undefined ? {} : { configurationPath }),
+    ...(generatorConfigurationPath === undefined
+      ? {}
+      : { generatorConfigurationPath }),
     ...(catalogPath === undefined ? {} : { catalogPath }),
+    ...(layoutConfigurationPath === undefined
+      ? {}
+      : { layoutConfigurationPath }),
+    ...(layoutDefinitionsPath === undefined ? {} : { layoutDefinitionsPath }),
   };
 }
 
@@ -465,8 +523,9 @@ async function commitDirectoryNoReplace(
   source: string,
   destination: string,
   directoryName: string,
+  platform: NodeJS.Platform,
 ): Promise<void> {
-  if (process.platform === "linux") {
+  if (platform === "linux") {
     const exitCode = await runNoReplaceHelper("python3", [
       LINUX_NO_REPLACE_HELPER,
       source,
@@ -480,7 +539,7 @@ async function commitDirectoryNoReplace(
       "atomic no-replace publication is unavailable",
     );
   }
-  if (process.platform === "win32") {
+  if (platform === "win32") {
     const exitCode = await runNoReplaceHelper("powershell.exe", [
       "-NoLogo",
       "-NoProfile",
@@ -542,7 +601,7 @@ async function publish(
   cwd: string,
   outputRoot: string,
   directoryName: string,
-  content: Uint8Array,
+  files: Readonly<Record<string, Uint8Array>>,
   options: GeneratorCliOptions,
 ): Promise<string> {
   try {
@@ -553,7 +612,7 @@ async function publish(
     const finalPath = resolve(outputRoot, directoryName);
     const lockPath = resolve(
       outputRoot,
-      `.obby-generator-${directoryName.slice(5)}.lock`,
+      `.obby-generator-${directoryName}.lock`,
     );
     if (
       finalPath.length >
@@ -569,7 +628,7 @@ async function publish(
     for (let counter = 0; counter < 32; counter += 1) {
       const candidate = resolve(
         outputRoot,
-        `.obby-generator-${directoryName.slice(5)}-${process.pid}-${counter}.tmp`,
+        `.obby-generator-${directoryName}-${process.pid}-${counter}.tmp`,
       );
       try {
         await mkdir(candidate, { mode: 0o700 });
@@ -588,18 +647,40 @@ async function publish(
     let committed = false;
     let publicationLock: DirectoryIdentity | undefined;
     try {
-      await options.onAtomicStep?.("file-write");
-      const handle = await open(
-        resolve(stagingPath, "generation-bundle.json"),
-        "wx",
-        0o600,
-      );
-      try {
-        await handle.writeFile(content);
-        await options.onAtomicStep?.("file-sync");
-        await handle.sync();
-      } finally {
-        await handle.close();
+      const filenames = Object.keys(files).sort();
+      if (filenames.length === 0)
+        throw new GeneratorContractError(
+          "output-publication",
+          "publication artifact set is empty",
+        );
+      for (const filename of filenames) {
+        if (
+          filename === "" ||
+          filename !== filename.normalize("NFC") ||
+          filename.includes("/") ||
+          filename.includes("\\") ||
+          filename === "." ||
+          filename === ".."
+        )
+          throw new GeneratorContractError(
+            "path-safety",
+            "publication artifact name is unsafe",
+          );
+        const content = files[filename];
+        if (content === undefined)
+          throw new GeneratorContractError(
+            "output-publication",
+            "publication artifact content is missing",
+          );
+        await options.onAtomicStep?.("file-write");
+        const handle = await open(resolve(stagingPath, filename), "wx", 0o600);
+        try {
+          await handle.writeFile(content);
+          await options.onAtomicStep?.("file-sync");
+          await handle.sync();
+        } finally {
+          await handle.close();
+        }
       }
       await syncDirectory(
         stagingPath,
@@ -621,7 +702,12 @@ async function publish(
       await assertDestinationAbsent(finalPath, directoryName);
       const stagingIdentity = await directoryIdentity(stagingPath);
       await options.onAtomicStep?.("before-no-replace-commit");
-      await commitDirectoryNoReplace(stagingPath, finalPath, directoryName);
+      await commitDirectoryNoReplace(
+        stagingPath,
+        finalPath,
+        directoryName,
+        options.platform ?? process.platform,
+      );
       committed = true;
       await assertDirectoryChain(outputChain);
       const committedIdentity = await directoryIdentity(finalPath);
@@ -695,11 +781,20 @@ export async function runGeneratorCli(
       options.outputDirectory,
       DEFAULT_GENERATOR_CONFIGURATION.limits.maxOutputPathLength,
     );
-    const suppliedInputPaths = [
-      options.requestPath,
-      options.configurationPath,
-      options.catalogPath,
-    ].filter((value): value is string => value !== undefined);
+    const suppliedInputPaths =
+      options.command === "generate"
+        ? [
+            options.requestPath,
+            options.configurationPath,
+            options.catalogPath,
+          ].filter((value): value is string => value !== undefined)
+        : [
+            options.bundlePath,
+            options.generatorConfigurationPath,
+            options.catalogPath,
+            options.layoutConfigurationPath,
+            options.layoutDefinitionsPath,
+          ].filter((value): value is string => value !== undefined);
     const inputPaths = suppliedInputPaths.map((path) =>
       safeInputPath(cwd, path),
     );
@@ -721,50 +816,121 @@ export async function runGeneratorCli(
         "path-safety",
         "output directory cannot also be an input file",
       );
-    const request = await readBoundedJson(
-      "request",
-      safeInputPath(cwd, options.requestPath),
-      DEFAULT_GENERATOR_CONFIGURATION.limits.maxRequestBytes,
-    );
-    const configuration =
-      options.configurationPath === undefined
-        ? DEFAULT_GENERATOR_CONFIGURATION
-        : ((await readBoundedJson(
-            "configuration",
-            safeInputPath(cwd, options.configurationPath),
-            DEFAULT_GENERATOR_CONFIGURATION.limits.maxConfigurationBytes,
-          )) as GeneratorConfiguration);
-    const catalog =
-      options.catalogPath === undefined
-        ? DEFAULT_MECHANIC_CATALOG
-        : ((await readBoundedJson(
-            "catalog",
-            safeInputPath(cwd, options.catalogPath),
-            DEFAULT_GENERATOR_CONFIGURATION.limits.maxCatalogBytes,
-          )) as MechanicCatalog);
-    const bundle = generateObby(request, configuration, catalog);
-    const output = new TextEncoder().encode(
-      `${evaluatorCanonicalStringify(bundle)}\n`,
-    );
-    if (output.byteLength > configuration.limits.maxOutputBytes)
-      throw new GeneratorContractError(
-        "work-limit",
-        "canonical output exceeds configured byte limit",
+    let directoryName: string;
+    let publicationFiles: Readonly<Record<string, Uint8Array>>;
+    if (options.command === "generate") {
+      const request = await readBoundedJson(
+        "request",
+        safeInputPath(cwd, options.requestPath),
+        DEFAULT_GENERATOR_CONFIGURATION.limits.maxRequestBytes,
       );
+      const configuration =
+        options.configurationPath === undefined
+          ? DEFAULT_GENERATOR_CONFIGURATION
+          : ((await readBoundedJson(
+              "configuration",
+              safeInputPath(cwd, options.configurationPath),
+              DEFAULT_GENERATOR_CONFIGURATION.limits.maxConfigurationBytes,
+            )) as GeneratorConfiguration);
+      const catalog =
+        options.catalogPath === undefined
+          ? DEFAULT_MECHANIC_CATALOG
+          : ((await readBoundedJson(
+              "catalog",
+              safeInputPath(cwd, options.catalogPath),
+              DEFAULT_GENERATOR_CONFIGURATION.limits.maxCatalogBytes,
+            )) as MechanicCatalog);
+      const bundle = generateObby(request, configuration, catalog);
+      const output = new TextEncoder().encode(
+        `${evaluatorCanonicalStringify(bundle)}\n`,
+      );
+      if (output.byteLength > configuration.limits.maxOutputBytes)
+        throw new GeneratorContractError(
+          "work-limit",
+          "canonical output exceeds configured byte limit",
+        );
+      directoryName = `obby-${bundle.obbySpec.obbySpecHash.slice(7)}`;
+      publicationFiles = { "generation-bundle.json": output };
+    } else {
+      const generatorConfiguration =
+        options.generatorConfigurationPath === undefined
+          ? DEFAULT_GENERATOR_CONFIGURATION
+          : ((await readBoundedJson(
+              "generator configuration",
+              safeInputPath(cwd, options.generatorConfigurationPath),
+              DEFAULT_GENERATOR_CONFIGURATION.limits.maxConfigurationBytes,
+            )) as GeneratorConfiguration);
+      const catalog =
+        options.catalogPath === undefined
+          ? DEFAULT_MECHANIC_CATALOG
+          : ((await readBoundedJson(
+              "mechanic catalog",
+              safeInputPath(cwd, options.catalogPath),
+              DEFAULT_GENERATOR_CONFIGURATION.limits.maxCatalogBytes,
+            )) as MechanicCatalog);
+      const layoutConfiguration =
+        options.layoutConfigurationPath === undefined
+          ? DEFAULT_LAYOUT_CONFIGURATION
+          : ((await readBoundedJson(
+              "layout configuration",
+              safeInputPath(cwd, options.layoutConfigurationPath),
+              DEFAULT_GENERATOR_CONFIGURATION.limits.maxConfigurationBytes,
+            )) as LayoutConfiguration);
+      const layoutDefinitions =
+        options.layoutDefinitionsPath === undefined
+          ? DEFAULT_MECHANIC_LAYOUT_DEFINITIONS
+          : ((await readBoundedJson(
+              "mechanic layout definitions",
+              safeInputPath(cwd, options.layoutDefinitionsPath),
+              DEFAULT_GENERATOR_CONFIGURATION.limits.maxCatalogBytes,
+            )) as readonly MechanicLayoutDefinition[]);
+      const sourceGenerationBundle = (await readBoundedJson(
+        "generation bundle",
+        safeInputPath(cwd, options.bundlePath),
+        DEFAULT_LAYOUT_CONFIGURATION.limits.maxOutputBytes,
+      )) as GenerationBundle;
+      const artifactSet = buildG1ArtifactSet({
+        sourceGenerationBundle,
+        generatorConfiguration,
+        mechanicCatalog: catalog,
+        layoutConfiguration,
+        mechanicLayoutDefinitions: layoutDefinitions,
+      });
+      directoryName = artifactSet.directoryName;
+      publicationFiles = artifactSet.files;
+    }
     const path = await publish(
       cwd,
       outputRoot,
-      `obby-${bundle.obbySpec.obbySpecHash.slice(7)}`,
-      output,
+      directoryName,
+      publicationFiles,
       executionOptions,
     );
     streams.stdout.write(`${path}\n`);
     return 0;
   } catch (error) {
+    const tagged = error as { name?: unknown; code?: unknown };
+    const workflowErrorNames = new Set([
+      "LayoutContractError",
+      "LayoutEngineError",
+      "LayoutProjectionError",
+      "G1WorkflowError",
+    ]);
     const normalized =
       error instanceof GeneratorContractError
         ? error
-        : new GeneratorContractError("output-publication", "operation failed");
+        : workflowErrorNames.has(String(tagged.name)) &&
+            typeof tagged.code === "string" &&
+            /^[a-z][a-z-]*$/u.test(tagged.code)
+          ? {
+              code: tagged.code,
+              message:
+                "G1 artifact workflow rejected the supplied contract graph",
+            }
+          : new GeneratorContractError(
+              "output-publication",
+              "operation failed",
+            );
     streams.stderr.write(
       jsonErrors
         ? `${JSON.stringify({ error: { code: normalized.code, message: normalized.message } })}\n`
@@ -773,3 +939,5 @@ export async function runGeneratorCli(
     return 1;
   }
 }
+
+export * from "./layout-workflow.js";
