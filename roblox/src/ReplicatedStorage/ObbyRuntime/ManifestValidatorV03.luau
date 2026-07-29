@@ -105,6 +105,11 @@ local function validateObject(object, index, expectedCheckpointOrder)
     then
         return false
     end
+    local expectedCollision = object.role ~= "kill"
+    local expectedTouch = object.role == "checkpoint" or object.role == "kill" or object.role == "finish"
+    if object.collision.canCollide ~= expectedCollision or object.collision.canTouch ~= expectedTouch then
+        return false
+    end
     if
         (object.role == "spawn" or object.role == "checkpoint")
         and (object.transform.rotation.x ~= 0 or object.transform.rotation.z ~= 0)
@@ -157,16 +162,39 @@ local function validateNavigation(manifest, objects)
         return fail("safe route has invalid bounds or finish order")
     end
     local routed = {}
+    local checkpoints = {}
     for index, id in ipairs(route) do
         local object = objects[id]
         if object == nil or object.role == "spawn" or object.role == "kill" or routed[id] then
             return fail(string.format("safe route endpoint %d is invalid", index))
         end
         routed[id] = true
+        if object.role == "checkpoint" then
+            table.insert(checkpoints, id)
+        end
         local entry = navigation.routeEntries[index]
         if type(entry) ~= "table" or entry.globalOrder ~= index or entry.objectId ~= id then
             return fail(string.format("route entry %d is invalid", index))
         end
+    end
+    if type(navigation.checkpointObjectIds) ~= "table" or #navigation.checkpointObjectIds ~= #checkpoints then
+        return fail("checkpoint navigation sequence is invalid")
+    end
+    for index, id in ipairs(checkpoints) do
+        if navigation.checkpointObjectIds[index] ~= id then
+            return fail("checkpoint navigation order is invalid")
+        end
+    end
+    local placement = navigation.characterPlacement
+    if
+        type(placement) ~= "table"
+        or placement.strategy ~= "humanoid-root-part-cframe-v1"
+        or (placement.orientationPolicy ~= "face-next-safe-route-object" and placement.orientationPolicy ~= "explicit-yaw")
+        or type(placement.verticalOffset) ~= "number"
+        or placement.verticalOffset < 2
+        or placement.verticalOffset > 20
+    then
+        return fail("character placement policy is invalid")
     end
     for id, object in pairs(objects) do
         local shouldRoute = object.role == "platform" or object.role == "checkpoint" or object.role == "finish"

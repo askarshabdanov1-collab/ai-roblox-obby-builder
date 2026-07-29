@@ -40,7 +40,7 @@ const PALETTES = Object.freeze({
   "jungle-high-contrast": ["#2A9D8F", "#588157", "#F4A261", "#E63946"],
 } as const);
 
-function safeSnapshot<T>(input: unknown, label: string): T {
+function safeSnapshot(input: unknown, label: string): unknown {
   try {
     return snapshotEvaluatorInput(input, {
       maxArrayLength: 4_096,
@@ -48,7 +48,7 @@ function safeSnapshot<T>(input: unknown, label: string): T {
       maxDepth: 64,
       maxObjectProperties: 4_096,
       maxTotalNodes: 100_000,
-    }) as T;
+    });
   } catch {
     throw new LayoutProjectionError(
       "input-snapshot",
@@ -115,8 +115,7 @@ function usedDefinitions(
   return bundle.mechanicLayoutDefinitionRefs.map((reference) => {
     const definition = byHash.get(reference.mechanicLayoutDefinitionHash);
     if (
-      definition === undefined ||
-      definition.mechanicLayoutDefinitionId !==
+      definition?.mechanicLayoutDefinitionId !==
         reference.mechanicLayoutDefinitionId ||
       definition.definitionVersion !== reference.definitionVersion
     )
@@ -137,38 +136,39 @@ export function projectLayoutBundle(
   definitionInputs: unknown,
   options: ProjectLayoutOptions = {},
 ): PlaceSpecV03 {
-  const layoutBundle = safeSnapshot<LayoutBundle>(
+  const layoutBundleSnapshot = safeSnapshot(
     layoutBundleInput,
     "LayoutBundle",
-  );
-  const source = safeSnapshot<GenerationBundle>(
-    sourceInput,
-    "GenerationBundle",
-  );
-  const generatorConfiguration = safeSnapshot<GeneratorConfiguration>(
-    generatorConfigurationInput,
-    "GeneratorConfiguration",
-  );
-  const catalog = safeSnapshot<MechanicCatalog>(
-    catalogInput,
-    "MechanicCatalog",
-  );
-  const layoutConfiguration = safeSnapshot<LayoutConfiguration>(
-    layoutConfigurationInput,
-    "LayoutConfiguration",
-  );
-  const definitions = safeSnapshot<readonly MechanicLayoutDefinition[]>(
-    definitionInputs,
-    "MechanicLayoutDefinition authorities",
-  );
+  ) as { schemaVersion?: unknown; layoutSpec?: { layoutVersion?: unknown } };
   if (
-    layoutBundle.schemaVersion !== "0.1" ||
-    layoutBundle.layoutSpec.layoutVersion !== "g1-layout-v1"
+    layoutBundleSnapshot.schemaVersion !== "0.1" ||
+    layoutBundleSnapshot.layoutSpec?.layoutVersion !== "g1-layout-v1"
   )
     throw new LayoutProjectionError(
       "unsupported-version",
       "G1c supports only LayoutBundle 0.1 with g1-layout-v1",
     );
+  const layoutBundle = layoutBundleSnapshot as LayoutBundle;
+  const source = safeSnapshot(
+    sourceInput,
+    "GenerationBundle",
+  ) as GenerationBundle;
+  const generatorConfiguration = safeSnapshot(
+    generatorConfigurationInput,
+    "GeneratorConfiguration",
+  ) as GeneratorConfiguration;
+  const catalog = safeSnapshot(
+    catalogInput,
+    "MechanicCatalog",
+  ) as MechanicCatalog;
+  const layoutConfiguration = safeSnapshot(
+    layoutConfigurationInput,
+    "LayoutConfiguration",
+  ) as LayoutConfiguration;
+  const definitions = safeSnapshot(
+    definitionInputs,
+    "MechanicLayoutDefinition authorities",
+  ) as readonly MechanicLayoutDefinition[];
   const admission = admitWork(
     layoutBundle,
     definitions,
@@ -297,9 +297,7 @@ export function projectLayoutBundle(
   }) as PlaceSpecV03["stages"];
   const checkpointObjectIds = objects
     .filter((object) => object.role === "checkpoint")
-    .map(
-      (object) => object.id,
-    ) as PlaceSpecV03["checkpointPlan"]["checkpointObjectIds"];
+    .map((object) => object.id);
   const reachability = buildReachabilityEvidence(
     layout,
     geometryById,

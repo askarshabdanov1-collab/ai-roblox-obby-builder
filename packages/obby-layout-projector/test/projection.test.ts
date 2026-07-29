@@ -55,6 +55,9 @@ describe("deterministic LayoutBundle to PlaceSpec 0.3 projection", () => {
     expect(placeSpec.objects.map((object) => object.id)).toEqual(
       layout.layoutSpec.objects.map((object) => object.objectId),
     );
+    expect(placeSpec.objects.map((object) => object.sourceReferences)).toEqual(
+      layout.layoutSpec.objects.map((object) => object.sourceReferences),
+    );
     expect(placeSpec.placeSpecHash).toBe(computePlaceSpecV03Hash(placeSpec));
   });
 
@@ -67,8 +70,8 @@ describe("deterministic LayoutBundle to PlaceSpec 0.3 projection", () => {
   it("normalizes every native gameplay primitive and binds full transition evidence", () => {
     const { placeSpec } = projectionFor({ stageCount: 5 });
     expect(
-      placeSpec.objects.every(
-        (object) => object.geometry.methodId === "geometry-evaluator-v0.1",
+      placeSpec.objects.every((object) =>
+        /^sha256:[0-9a-f]{64}$/.test(object.geometry.normalizedGeometryHash),
       ),
     ).toBe(true);
     expect(placeSpec.reachability.requiredTransitions).toHaveLength(

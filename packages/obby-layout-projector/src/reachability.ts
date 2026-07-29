@@ -166,8 +166,7 @@ export function buildReachabilityEvidence(
         );
       const sourceTransition = layout.reachability.requiredTransitions[index];
       if (
-        sourceTransition === undefined ||
-        sourceTransition.transitionLayoutId !== transitionId ||
+        sourceTransition?.transitionLayoutId !== transitionId ||
         sourceTransition.normalizedInputHash !==
           result.reproduction.normalizedInputHash
       )
@@ -189,7 +188,8 @@ export function buildReachabilityEvidence(
       const withoutHashes = <T extends { evidenceHashes: readonly string[] }>(
         measurement: T,
       ): Omit<T, "evidenceHashes"> => {
-        const { evidenceHashes: _excluded, ...value } = measurement;
+        const value = { ...measurement };
+        Reflect.deleteProperty(value, "evidenceHashes");
         return value;
       };
       return {

@@ -90,14 +90,16 @@ export type SceneManifestV03Preimage = Omit<SceneManifestV03, "manifestHash">;
 export function placeSpecV03Preimage(
   value: PlaceSpecV03 | PlaceSpecV03Preimage,
 ): PlaceSpecV03Preimage {
-  const { placeSpecHash: _excluded, ...preimage } = value as PlaceSpecV03;
+  const preimage = { ...value };
+  Reflect.deleteProperty(preimage, "placeSpecHash");
   return preimage;
 }
 
 export function sceneManifestV03Preimage(
   value: SceneManifestV03 | SceneManifestV03Preimage,
 ): SceneManifestV03Preimage {
-  const { manifestHash: _excluded, ...preimage } = value as SceneManifestV03;
+  const preimage = { ...value };
+  Reflect.deleteProperty(preimage, "manifestHash");
   return preimage;
 }
 
@@ -186,6 +188,14 @@ export function semanticPlaceSpecV03Issues(
         "Finish must be the final route object",
       ),
     );
+  if (spec.objects.at(-1)?.id !== "Finish")
+    issues.push(
+      semantic(
+        "finish-order",
+        "/objects",
+        "Finish must be the final gameplay object",
+      ),
+    );
 
   const routedGameplay = spec.objects
     .filter(
@@ -253,12 +263,21 @@ export function semanticPlaceSpecV03Issues(
   const zoneIds = new Set(spec.decorativeZones.map((zone) => zone.zoneId));
   for (const [stageIndex, stage] of spec.stages.entries()) {
     for (const id of [...stage.routeObjectIds, ...stage.hazardObjectIds]) {
-      if (!objects.has(id))
+      const object = objects.get(id);
+      if (!object)
         issues.push(
           semantic(
             "reference",
             `/stages/${stageIndex}`,
             `unknown object reference ${id}`,
+          ),
+        );
+      else if (object.sourceReferences.sourceStageId !== stage.sourceStageId)
+        issues.push(
+          semantic(
+            "source-reference",
+            `/stages/${stageIndex}`,
+            `object ${id} is bound to a different source stage`,
           ),
         );
     }
@@ -311,6 +330,47 @@ export function semanticPlaceSpecV03Issues(
   }
 
   for (const [index, object] of spec.objects.entries()) {
+    if (
+      (object.role === "spawn" || object.role === "checkpoint") &&
+      (object.transform.rotation.x !== 0 || object.transform.rotation.z !== 0)
+    )
+      issues.push(
+        semantic(
+          "placement-tilt",
+          `/objects/${index}/transform/rotation`,
+          "spawn and checkpoint pitch and roll must be zero",
+        ),
+      );
+    const expectedCollision = object.role !== "kill";
+    const expectedTouch = ["checkpoint", "kill", "finish"].includes(
+      object.role,
+    );
+    if (
+      object.collision.canCollide !== expectedCollision ||
+      object.collision.canTouch !== expectedTouch
+    )
+      issues.push(
+        semantic(
+          "collision-policy",
+          `/objects/${index}/collision`,
+          "native collision and touch flags must match the gameplay role",
+        ),
+      );
+    if (
+      (object.role === "checkpoint" &&
+        object.sourceReferences.sourceCheckpointId === undefined) ||
+      (object.role === "kill" &&
+        object.sourceReferences.sourceHazardId === undefined) ||
+      (object.role === "finish" &&
+        object.sourceReferences.sourceFinishId === undefined)
+    )
+      issues.push(
+        semantic(
+          "source-reference",
+          `/objects/${index}/sourceReferences`,
+          "role-specific G0 source reference is required",
+        ),
+      );
     const bounds = object.geometry.axisAlignedBounds;
     if (
       bounds.minimum.x < spec.worldBounds.minimum.x ||
@@ -384,7 +444,7 @@ export function semanticSceneManifestV03Issues(
         "gameplay order must be contiguous from zero",
       ),
     );
-  if (objects[0]?.id !== "Spawn" || objects[0].role !== "spawn")
+  if (objects[0].id !== "Spawn" || objects[0].role !== "spawn")
     issues.push(
       semantic(
         "spawn",
@@ -392,6 +452,90 @@ export function semanticSceneManifestV03Issues(
         "Spawn must be the first gameplay object",
       ),
     );
+  if (objects.at(-1)?.id !== "Finish")
+    issues.push(
+      semantic(
+        "finish-order",
+        "/layers/gameplay/objects",
+        "Finish must be the final gameplay object",
+      ),
+    );
+  const manifestCheckpoints = objects
+    .filter((object) => object.role === "checkpoint")
+    .map((object) => object.id);
+  if (
+    manifestCheckpoints.length !==
+      manifest.navigation.checkpointObjectIds.length ||
+    manifestCheckpoints.some(
+      (id, index) => id !== manifest.navigation.checkpointObjectIds[index],
+    )
+  )
+    issues.push(
+      semantic(
+        "checkpoint-order",
+        "/navigation/checkpointObjectIds",
+        "navigation checkpoints must exactly follow gameplay order",
+      ),
+    );
+  for (const [index, object] of objects.entries()) {
+    const expectedCollision = object.role !== "kill";
+    const expectedTouch = ["checkpoint", "kill", "finish"].includes(
+      object.role,
+    );
+    if (
+      object.collision.canCollide !== expectedCollision ||
+      object.collision.canTouch !== expectedTouch
+    )
+      issues.push(
+        semantic(
+          "collision-policy",
+          `/layers/gameplay/objects/${index}/collision`,
+          "native collision and touch flags must match the gameplay role",
+        ),
+      );
+    if (
+      (object.role === "spawn" || object.role === "checkpoint") &&
+      (object.transform.rotation.x !== 0 || object.transform.rotation.z !== 0)
+    )
+      issues.push(
+        semantic(
+          "placement-tilt",
+          `/layers/gameplay/objects/${index}/transform/rotation`,
+          "spawn and checkpoint pitch and roll must be zero",
+        ),
+      );
+    const behavior = object.behavior;
+    const behaviorValid =
+      (object.role === "checkpoint" && behavior.kind === "checkpoint") ||
+      (object.role === "kill" && behavior.kind === "kill") ||
+      (object.role === "finish" && behavior.kind === "finish") ||
+      ((object.role === "spawn" || object.role === "platform") &&
+        behavior.kind === "none");
+    if (!behaviorValid)
+      issues.push(
+        semantic(
+          "behavior-role",
+          `/layers/gameplay/objects/${index}/behavior`,
+          "gameplay behavior must match the object role",
+        ),
+      );
+    const bounds = object.geometry.axisAlignedBounds;
+    if (
+      bounds.minimum.x < manifest.worldBounds.minimum.x ||
+      bounds.minimum.y < manifest.worldBounds.minimum.y ||
+      bounds.minimum.z < manifest.worldBounds.minimum.z ||
+      bounds.maximum.x > manifest.worldBounds.maximum.x ||
+      bounds.maximum.y > manifest.worldBounds.maximum.y ||
+      bounds.maximum.z > manifest.worldBounds.maximum.z
+    )
+      issues.push(
+        semantic(
+          "world-bounds",
+          `/layers/gameplay/objects/${index}/geometry/axisAlignedBounds`,
+          "gameplay geometry must remain within world bounds",
+        ),
+      );
+  }
   if (manifest.navigation.safeRouteObjectIds.at(-1) !== "Finish")
     issues.push(
       semantic(
@@ -427,6 +571,59 @@ export function semanticSceneManifestV03Issues(
         "route entries must exactly index the safe route",
       ),
     );
+  if (
+    !contiguous(
+      manifest.navigation.stages.map((stage) => stage.order),
+      1,
+    )
+  )
+    issues.push(
+      semantic(
+        "stage-order",
+        "/navigation/stages",
+        "navigation stage order must be contiguous from one",
+      ),
+    );
+  const navigationRoute = manifest.navigation.stages.flatMap(
+    (stage) => stage.safeRouteObjectIds,
+  );
+  if (
+    navigationRoute.length !== manifest.navigation.safeRouteObjectIds.length ||
+    navigationRoute.some(
+      (id, index) => id !== manifest.navigation.safeRouteObjectIds[index],
+    )
+  )
+    issues.push(
+      semantic(
+        "stage-route",
+        "/navigation/stages",
+        "navigation stages must concatenate to the global safe route",
+      ),
+    );
+  const routeLocation = new Map<
+    string,
+    { stageId: string; stageOrder: number }
+  >();
+  for (const stage of manifest.navigation.stages)
+    for (const [index, id] of stage.safeRouteObjectIds.entries())
+      routeLocation.set(id, {
+        stageId: stage.stageId,
+        stageOrder: index + 1,
+      });
+  for (const [index, entry] of entries.entries()) {
+    const location = routeLocation.get(entry.objectId);
+    if (
+      location?.stageId !== entry.stageId ||
+      location.stageOrder !== entry.stageOrder
+    )
+      issues.push(
+        semantic(
+          "route-entry",
+          `/navigation/routeEntries/${index}`,
+          "route entry stage coordinates must match navigation stages",
+        ),
+      );
+  }
   const expectedPath = [
     manifest.navigation.spawnObjectId,
     ...manifest.navigation.safeRouteObjectIds,
@@ -455,18 +652,6 @@ export function semanticSceneManifestV03Issues(
         ),
       );
   for (const [index, object] of manifest.layers.decorative.objects.entries()) {
-    if (
-      object.collision.canCollide ||
-      object.collision.canTouch ||
-      object.collision.canQuery
-    )
-      issues.push(
-        semantic(
-          "decorative-collision",
-          `/layers/decorative/objects/${index}/collision`,
-          "decorative objects must remain non-colliding",
-        ),
-      );
     if (manifest.navigation.safeRouteObjectIds.includes(object.id))
       issues.push(
         semantic(
