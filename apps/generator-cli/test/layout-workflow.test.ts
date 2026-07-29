@@ -32,6 +32,9 @@ import {
 import { runGeneratorCli } from "../src/index.js";
 
 const decoder = new TextDecoder();
+// Isolated bounded runs complete in <=4.2s locally, while Windows CI suite contention exceeded
+// Vitest's 5s default. Keep finite, test-specific headroom without weakening workload or assertions.
+const BOUNDED_WORKFLOW_TEST_TIMEOUT = 15_000;
 const REQUEST = {
   schemaVersion: "0.1",
   requestId: "g1d-workflow-test",
@@ -118,26 +121,30 @@ describe("G1d deterministic offline artifact workflow", () => {
       expect(second.files[filename]).toEqual(first.files[filename]);
   }, 15_000);
 
-  it("changes its content address and layout identity for a controlled seed change", () => {
-    const first = artifacts({ seed: 42 });
-    const second = artifacts({ seed: 43 });
-    expect(second.directoryName).not.toBe(first.directoryName);
-    expect(
-      (
-        jsonArtifact(second, G1_ARTIFACT_FILENAMES.layoutBundle) as {
-          layoutBundleHash: string;
-        }
-      ).layoutBundleHash,
-    ).not.toBe(
-      (
-        jsonArtifact(first, G1_ARTIFACT_FILENAMES.layoutBundle) as {
-          layoutBundleHash: string;
-        }
-      ).layoutBundleHash,
-    );
-  });
+  it(
+    "changes its content address and layout identity for a controlled seed change",
+    () => {
+      const first = artifacts({ seed: 42 });
+      const second = artifacts({ seed: 43 });
+      expect(second.directoryName).not.toBe(first.directoryName);
+      expect(
+        (
+          jsonArtifact(second, G1_ARTIFACT_FILENAMES.layoutBundle) as {
+            layoutBundleHash: string;
+          }
+        ).layoutBundleHash,
+      ).not.toBe(
+        (
+          jsonArtifact(first, G1_ARTIFACT_FILENAMES.layoutBundle) as {
+            layoutBundleHash: string;
+          }
+        ).layoutBundleHash,
+      );
+    },
+    BOUNDED_WORKFLOW_TEST_TIMEOUT,
+  );
 
-  it.each([5, 20, 21, 50])(
+  it.each([5, 20, 21])(
     "terminates and preserves all %i stages",
     (stageCount) => {
       const result = artifacts({ stageCount });
@@ -149,6 +156,34 @@ describe("G1d deterministic offline artifact workflow", () => {
       };
       expect(layout.layoutSpec.stages).toHaveLength(stageCount);
     },
+  );
+
+  it(
+    "terminates and preserves all 50 stages",
+    () => {
+      const result = artifacts({ stageCount: 50 });
+      const layout = jsonArtifact(
+        result,
+        G1_ARTIFACT_FILENAMES.layoutBundle,
+      ) as {
+        layoutSpec: {
+          stages: readonly { ordinal: number; sourceStageId: string }[];
+        };
+      };
+      expect(layout.layoutSpec.stages).toHaveLength(50);
+      expect(layout.layoutSpec.stages.map((stage) => stage.ordinal)).toEqual(
+        Array.from({ length: 50 }, (_, index) => index + 1),
+      );
+      expect(
+        layout.layoutSpec.stages.map((stage) => stage.sourceStageId),
+      ).toEqual(
+        Array.from(
+          { length: 50 },
+          (_, index) => `stage-${String(index + 1).padStart(2, "0")}`,
+        ),
+      );
+    },
+    BOUNDED_WORKFLOW_TEST_TIMEOUT,
   );
 
   it("preserves the zero-checkpoint representation through every projection", () => {
