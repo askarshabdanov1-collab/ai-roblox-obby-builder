@@ -1,0 +1,24 @@
+{
+  "name": "@obby/obby-layout-projector",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@obby/canonical-json": "0.2.0",
+    "@obby/contracts": "0.2.0",
+    "@obby/geometry-evaluator": "0.1.0",
+    "@obby/obby-generator": "0.1.0",
+    "@obby/obby-generator-contracts": "0.1.0",
+    "@obby/obby-layout-contracts": "0.1.0",
+    "@obby/obby-layout-engine": "0.1.0",
+    "@obby/route-playability-evaluator": "0.1.0"
+  }
+}
