@@ -65,6 +65,18 @@ mechanics, or external asset work. See the
 Focused non-mutating gates are `npm run generator:contracts:check`,
 `npm run generator:fixtures:check`, and `npm run generator:check`.
 
+## Generator G1a
+
+Phase G1a decides and validates the boundary between the abstract G0 plan and future deterministic
+layout generation. It adds no geometry producer, layout recipes, PlaceSpec projection, compiler
+change, or Roblox runtime behavior. See the
+[`layout boundary ADR`](docs/decisions/0002-g1-layout-contract-boundary.md),
+[`contract reference`](docs/generator/g1a-layout-contracts.md), and
+[`compatibility matrix`](docs/generator/g1a-compatibility.md).
+
+Focused non-mutating gates are `npm run layout:contracts:check` and
+`npm run layout:contracts:test`.
+
 ## Development
 
 See `CONTRIBUTING.md` and `docs/local-development.md`. The complete local gate is:

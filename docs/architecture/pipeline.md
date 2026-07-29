@@ -1,11 +1,13 @@
 # Architecture
 
-The repository is an npm workspace with four library/application boundaries:
+The repository is an npm workspace with these library/application boundaries:
 
 - `packages/contracts`: authoritative schemas, generated static types, and semantic validation;
 - `packages/canonical-json`: deterministic serialization, number normalization, and hashing;
 - `packages/obby-compiler`: pure PlaceSpec-to-SceneManifest compilation;
 - `packages/roblox-emitter`: deterministic Luau transport generation;
+- `packages/obby-layout-contracts`: G1 layout schema, hashes, and full authority/reference
+  validation, with no layout producer;
 - `apps/orchestrator`: loopback-only process health boundary reserved for later orchestration.
 
 Roblox contains a server-only generated manifest, a runtime validator, a build plan, an instance

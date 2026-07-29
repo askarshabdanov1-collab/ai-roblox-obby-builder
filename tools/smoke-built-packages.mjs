@@ -39,6 +39,7 @@ import {
   hashGeneratorPreimage,
 } from "@obby/obby-generator";
 import { runGeneratorCli } from "@obby/generator-cli";
+import { hashLayoutConfiguration } from "@obby/obby-layout-contracts";
 
 const spec = JSON.parse(
   await readFile(
@@ -206,6 +207,8 @@ for (const [label, mutate] of graphCases) {
 }
 if (typeof runGeneratorCli !== "function")
   throw new Error("built generator CLI library export is unavailable");
+if (typeof hashLayoutConfiguration !== "function")
+  throw new Error("built G1a layout contracts export is unavailable");
 
 const withWorkBudget = (maximum) => {
   const preimage = {
@@ -619,4 +622,4 @@ if (compiledReportDeclaration.includes("finalizeValidatedE1Report"))
     "built scoring declaration exposes unchecked report finalization",
   );
 
-console.log("plain Node imported Phase 0, E1, and G0 packages");
+console.log("plain Node imported Phase 0, E1, G0, and G1a packages");

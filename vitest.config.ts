@@ -35,6 +35,12 @@ export default defineConfig({
       "@obby/generator-cli": fileURLToPath(
         new URL("./apps/generator-cli/src/index.ts", import.meta.url),
       ),
+      "@obby/obby-layout-contracts": fileURLToPath(
+        new URL(
+          "./packages/obby-layout-contracts/src/index.ts",
+          import.meta.url,
+        ),
+      ),
       "@obby/roblox-emitter": fileURLToPath(
         new URL("./packages/roblox-emitter/src/index.ts", import.meta.url),
       ),

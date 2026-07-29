@@ -17,6 +17,9 @@
       ],
       "@obby/obby-generator": ["./packages/obby-generator/src/index.ts"],
       "@obby/generator-cli": ["./apps/generator-cli/src/index.ts"],
+      "@obby/obby-layout-contracts": [
+        "./packages/obby-layout-contracts/src/index.ts"
+      ],
       "@obby/route-playability-evaluator": [
         "./packages/route-playability-evaluator/src/index.ts"
       ],
