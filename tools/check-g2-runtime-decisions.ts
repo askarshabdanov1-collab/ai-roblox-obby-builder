@@ -50,7 +50,7 @@ const documents = Object.freeze({
     "## Measurement environment",
     "## Logging format",
     "no millisecond pass threshold",
-    "manual Studio execution",
+    "Manual Studio execution",
   ],
   "docs/generator/g2a-acceptance.md": [
     "## Ten decisions",
@@ -93,7 +93,8 @@ async function checkDecisions(): Promise<void> {
       await access(path);
       throw new Error(`G2b production module must not exist in G2a: ${path}`);
     } catch (error) {
-      if (error instanceof Error && error.message.startsWith("G2b")) throw error;
+      if (error instanceof Error && error.message.startsWith("G2b"))
+        throw error;
     }
   }
 
@@ -101,7 +102,9 @@ async function checkDecisions(): Promise<void> {
     const content = await readFile(path, "utf8");
     for (const marker of markers) {
       if (!content.includes(marker))
-        throw new Error(`${path} is missing required decision marker: ${marker}`);
+        throw new Error(
+          `${path} is missing required decision marker: ${marker}`,
+        );
     }
   }
 
@@ -114,17 +117,22 @@ async function checkDecisions(): Promise<void> {
   )
     throw new Error("the authoritative G1d drift-check command changed");
 
-  const expected = expectedG1WorkflowFixtures()[g1WorkflowFixturePaths.robloxModule];
+  const expected =
+    expectedG1WorkflowFixtures()[g1WorkflowFixturePaths.robloxModule];
   const actual = await readFile(g1WorkflowFixturePaths.robloxModule, "utf8");
   if (actual !== expected)
-    throw new Error("the authoritative G2 runtime transport fixture has drifted");
+    throw new Error(
+      "the authoritative G2 runtime transport fixture has drifted",
+    );
 
   const defaultProject = await readFile("roblox/default.project.json", "utf8");
   if (
     !defaultProject.includes("VerticalSliceManifest") ||
     defaultProject.includes("G1dReferenceManifest")
   )
-    throw new Error("the active default project must remain on the 0.2 manifest in G2a");
+    throw new Error(
+      "the active default project must remain on the 0.2 manifest in G2a",
+    );
 
   console.log(
     `G2 runtime decisions complete (${Object.keys(documents).length} documents; authoritative transport matches G1d)`,
@@ -137,14 +145,19 @@ function checkScope(): void {
     ["diff", "--name-only", `${BASELINE}...HEAD`],
     { encoding: "utf8" },
   );
-  const allowedFiles = new Set(["package.json", "tools/check-g2-runtime-decisions.ts"]);
+  const allowedFiles = new Set([
+    "package.json",
+    "tools/check-g2-runtime-decisions.ts",
+  ]);
   const unexpected = output
     .split(/\r?\n/u)
     .filter(Boolean)
     .filter((path) => !path.startsWith("docs/") && !allowedFiles.has(path));
   if (unexpected.length > 0)
     throw new Error(`G2a scope violation: ${unexpected.join(", ")}`);
-  console.log("G2a diff is documentation/check-only; active runtime is unchanged");
+  console.log(
+    "G2a diff is documentation/check-only; active runtime is unchanged",
+  );
 }
 
 if (process.argv.includes("--scope")) checkScope();
