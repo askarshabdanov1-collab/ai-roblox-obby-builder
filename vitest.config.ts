@@ -41,6 +41,9 @@ export default defineConfig({
           import.meta.url,
         ),
       ),
+      "@obby/obby-layout-engine": fileURLToPath(
+        new URL("./packages/obby-layout-engine/src/index.ts", import.meta.url),
+      ),
       "@obby/roblox-emitter": fileURLToPath(
         new URL("./packages/roblox-emitter/src/index.ts", import.meta.url),
       ),

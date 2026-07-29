@@ -9,6 +9,7 @@ The following files are committed review artifacts but are never hand-edited:
 - `packages/obby-evaluator-contracts/fixtures/generated/*.json`;
 - `examples/vertical-slice/scene-manifest.json`;
 - `examples/generator/**/generation-bundle.json` and generator fixture inputs;
+- `examples/layout/**/layout-bundle.json` and layout authority fixture inputs;
 - `roblox/generated/VerticalSliceManifest.luau`;
 - `roblox.yml`, the Selene Roblox standard library snapshot.
 
@@ -20,6 +21,7 @@ npm run evaluator:contracts:generate
 npm run generator:contracts:generate
 npm run layout:contracts:generate
 npm run generator:fixtures:generate
+npm run layout:fixtures:generate
 npm run fixtures:generate
 ```
 
@@ -34,7 +36,9 @@ configuration, catalog, and bundles in memory without rewriting them.
 
 `npm run layout:contracts:check` compiles the G1a contract schema and checks its schema-derived
 declarations and fingerprint without modifying files. G1a has no generated layout fixture or
-production recipe.
+production recipe. `npm run layout:fixtures:check` separately regenerates the G1b layout
+authorities and complete bundles in memory, then checks committed bytes and controlled seed
+variation without modifying files.
 
 Files under `build/`, `dist/`, `coverage/`, and generated local artifact/model directories are
 disposable and ignored. Generated artifacts must contain no credentials, local absolute paths, or
