@@ -68,3 +68,46 @@ successfully:
 This recorded result is engine evidence for the committed Phase 0 reference slice. It does not turn
 the Studio procedure into an automated CI test and must be rerun after relevant runtime, manifest,
 or Roblox engine changes.
+
+## G1d generated multi-stage validation smoke
+
+This is a separate, validation-only procedure for
+`examples/g1-workflow/reference/scene-manifest-v0.3.luau`. G1d does not implement SceneManifest 0.3
+construction, so this procedure must not call the 0.2 builder or claim that the generated 0.3 Obby
+is playable.
+
+1. Run `npm ci`, `npm run layout:workflow:fixtures:check`, and `npm run roblox:build`.
+2. Open `build/AIObbyBuilder.rbxlx` in Studio. In `ServerStorage`, create a ModuleScript named
+   `G1dReferenceManifest` and replace its source with the exact contents of
+   `examples/g1-workflow/reference/scene-manifest-v0.3.luau`.
+3. In the server Command Bar, run:
+
+   ```lua
+   local manifest = require(game.ServerStorage.G1dReferenceManifest)
+   local validator = require(game.ReplicatedStorage.ObbyRuntime.ManifestValidatorV03)
+   local before = workspace:FindFirstChild("GeneratedObby")
+   local valid, reason = validator.validate(manifest)
+   assert(valid, reason)
+   assert(manifest.schemaVersion == "0.3")
+   assert(manifest.layers.gameplay.objects[1].role == "spawn")
+   assert(manifest.navigation.stages[1].order == 1)
+   assert(manifest.navigation.stages[#manifest.navigation.stages].order == #manifest.navigation.stages)
+   assert(manifest.navigation.safeRouteObjectIds[#manifest.navigation.safeRouteObjectIds] == "Finish")
+   assert(manifest.layers.gameplay.objects[#manifest.layers.gameplay.objects].role == "finish")
+   assert(workspace:FindFirstChild("GeneratedObby") == before)
+   print("G1d validation-only smoke passed", manifest.manifestHash)
+   ```
+
+4. Inspect `manifest.navigation.routeEntries` and confirm `globalOrder` is exactly `1..N`, each
+   entry refers to the matching stage, no gameplay object with role `kill` appears in
+   `safeRouteObjectIds`, and the final route entry is `Finish`.
+5. Inspect `manifest.navigation.checkpointObjectIds`; confirm its order matches the checkpoint
+   objects and their `behavior.checkpointOrder`, with no duplicate ID.
+6. Confirm `Workspace.GeneratedObby` was neither created nor replaced. This is the G1d scene
+   isolation guarantee: loading and validating the offline transport has no construction side
+   effect.
+
+Record Studio version, operating system, the printed manifest hash, every assertion result, and any
+Output errors. This G1d Studio procedure has **not been executed for the automated implementation**;
+it remains manual engine evidence because Studio is unavailable in the repository validation
+environment.

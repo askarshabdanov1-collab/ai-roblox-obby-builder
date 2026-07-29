@@ -10,6 +10,7 @@ The following files are committed review artifacts but are never hand-edited:
 - `examples/vertical-slice/scene-manifest.json`;
 - `examples/generator/**/generation-bundle.json` and generator fixture inputs;
 - `examples/layout/**/layout-bundle.json` and layout authority fixture inputs;
+- `examples/g1-workflow/**` offline workflow fixture indexes and reference artifacts;
 - `roblox/generated/VerticalSliceManifest.luau`;
 - `roblox.yml`, the Selene Roblox standard library snapshot.
 
@@ -22,6 +23,7 @@ npm run generator:contracts:generate
 npm run layout:contracts:generate
 npm run generator:fixtures:generate
 npm run layout:fixtures:generate
+npm run layout:workflow:fixtures:generate
 npm run fixtures:generate
 ```
 
@@ -39,6 +41,9 @@ declarations and fingerprint without modifying files. G1a has no generated layou
 production recipe. `npm run layout:fixtures:check` separately regenerates the G1b layout
 authorities and complete bundles in memory, then checks committed bytes and controlled seed
 variation without modifying files.
+
+`npm run layout:workflow:fixtures:check` reconstructs the G1d positive and negative fixture indexes
+and complete representative G0-to-Luau artifact set in memory, then compares every committed byte.
 
 Files under `build/`, `dist/`, `coverage/`, and generated local artifact/model directories are
 disposable and ignored. Generated artifacts must contain no credentials, local absolute paths, or
