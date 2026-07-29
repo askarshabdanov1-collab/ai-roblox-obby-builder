@@ -87,6 +87,17 @@ change PlaceSpec, SceneManifest, either CLI, the compiler, emitter, or Roblox ru
 
 The focused non-mutating gate is `npm run layout:check`.
 
+## Generator G1c and G1d
+
+G1c adds the pure validated LayoutBundle-to-PlaceSpec 0.3-to-SceneManifest 0.3 projection. G1d adds
+the final offline workflow and atomic, content-addressed publication of the LayoutBundle, PlaceSpec,
+SceneManifest, and deterministic Luau validation transport. Roblox runtime construction for 0.3
+remains intentionally unimplemented. See the
+[`G1c projection reference`](docs/generator/g1c-layout-projection.md) and
+[`G1d offline workflow`](docs/generator/g1d-offline-workflow.md).
+
+The focused G1d gate is `npm run layout:workflow:check`.
+
 ## Development
 
 See `CONTRIBUTING.md` and `docs/local-development.md`. The complete local gate is:

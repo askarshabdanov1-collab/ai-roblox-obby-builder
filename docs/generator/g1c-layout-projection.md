@@ -19,8 +19,8 @@ PlaceSpec and SceneManifest `0.2`, `compilePlaceSpec`, `emitManifestModule`, the
 slice, the Phase 0 Luau validator, and all current scene construction remain independent and byte
 compatible. G1c does not add version coercion: each validator and compiler entry point accepts only
 its declared version. The 0.3 Luau validator is exercised by tests but is not wired into
-`ObbyBootstrap`, `SceneBuilderCore`, either CLI, or filesystem publication. That activation remains
-future G1d work.
+`ObbyBootstrap` or `SceneBuilderCore`. G1d adds offline CLI publication of the validation transport;
+runtime construction and scene replacement remain intentionally unimplemented.
 
 ## Projection authority and identities
 
