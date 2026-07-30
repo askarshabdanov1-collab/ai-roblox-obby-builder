@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readdir, readFile } from "node:fs/promises";
 
 import { describe, expect, it } from "vitest";
 
@@ -33,6 +33,10 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
       "boundary-21",
       "maximum-50",
       "maximum-checkpoints",
+      "wedge",
+      "decorative",
+      "replacement-b",
+      "maximum-parts",
     ]);
     for (const fixture of index.fixtures) {
       const manifest = JSON.parse(
@@ -92,5 +96,38 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
       for (const token of forbidden)
         expect(source, `${module} contains ${token}`).not.toContain(token);
     }
+  });
+
+  it("keeps G2c construction isolated from behavior and G2d activation", async () => {
+    const runtimeDirectory = "roblox/src/ReplicatedStorage/ObbyRuntime";
+    const g2cModules = [
+      "BuildPlanV03.luau",
+      "NativePartFactoryV03.luau",
+      "SceneBuilderCoreV03.luau",
+    ];
+    const forbiddenBehaviorTokens = [
+      "Touched",
+      "CharacterAdded",
+      ":Connect(",
+      "task.wait",
+      "task.spawn",
+      "wait(",
+    ];
+    for (const module of g2cModules) {
+      const source = await readFile(`${runtimeDirectory}/${module}`, "utf8");
+      for (const token of forbiddenBehaviorTokens)
+        expect(source, `${module} contains ${token}`).not.toContain(token);
+    }
+
+    const planSource = await readFile(
+      `${runtimeDirectory}/BuildPlanV03.luau`,
+      "utf8",
+    );
+    expect(planSource).not.toContain("Instance.new");
+    expect(planSource).not.toContain("workspace");
+
+    const runtimeModules = await readdir(runtimeDirectory);
+    for (const deferredModule of ["RuntimeSessionV03.luau", "BuilderV03.luau"])
+      expect(runtimeModules).not.toContain(deferredModule);
   });
 });

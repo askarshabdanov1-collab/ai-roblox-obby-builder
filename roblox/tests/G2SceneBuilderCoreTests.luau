@@ -3,6 +3,14 @@ local SceneBuilderCoreV03 = require("../src/ReplicatedStorage/ObbyRuntime/SceneB
 local FakeInstanceV03 = require("./support/FakeInstanceV03")
 
 local reference = require("../generated/G2ReferenceManifestV03")
+local boundary20 = require("../generated/G2Boundary20ManifestV03")
+local boundary21 = require("../generated/G2Boundary21ManifestV03")
+local decorative = require("../generated/G2DecorativeManifestV03")
+local maximum50 = require("../generated/G2Maximum50ManifestV03")
+local maximumParts = require("../generated/G2MaximumPartsManifestV03")
+local replacement = require("../generated/G2ReplacementManifestV03")
+local wedge = require("../generated/G2WedgeManifestV03")
+local zeroCheckpoint = require("../generated/G2ZeroCheckpointManifestV03")
 
 local function admit(value)
     local admitted, admissionError = ManifestLoaderV03.load({}, value.manifestHash, {
@@ -72,6 +80,74 @@ return function(test, expect)
         expect(tracker.connections == 0, "candidate construction bound gameplay behavior")
     end)
 
+    test("constructs Wedge decoration and 0/20/21/50-stage fixtures exactly", function()
+        local _, runtime = harness()
+        local wedgeCandidate, wedgeError = SceneBuilderCoreV03.buildCandidate(admit(wedge), runtime)
+        expect(wedgeCandidate ~= nil, wedgeError and wedgeError.message or "Wedge fixture failed")
+        expect(wedgeCandidate.gameplayParts[2].ClassName == "WedgePart", "Wedge did not use WedgePart")
+
+        local decorativeCandidate, decorativeError = SceneBuilderCoreV03.buildCandidate(admit(decorative), runtime)
+        expect(decorativeCandidate ~= nil, decorativeError and decorativeError.message or "decoration fixture failed")
+        expect(#decorativeCandidate.decorativeParts == 1, "decoration count changed")
+        local decorativePart = decorativeCandidate.decorativeParts[1]
+        expect(
+            not decorativePart.CanCollide and not decorativePart.CanTouch and not decorativePart.CanQuery,
+            "decoration gained gameplay interaction"
+        )
+
+        for _, case in ipairs({
+            { manifest = zeroCheckpoint, stages = 5, checkpoints = 0 },
+            { manifest = boundary20, stages = 20, checkpoints = 3 },
+            { manifest = boundary21, stages = 21, checkpoints = 4 },
+            { manifest = maximum50, stages = 50, checkpoints = 9 },
+        }) do
+            local candidate, buildError = SceneBuilderCoreV03.buildCandidate(admit(case.manifest), runtime)
+            expect(candidate ~= nil, buildError and buildError.message or "boundary fixture failed")
+            expect(#case.manifest.navigation.stages == case.stages, "stage boundary changed")
+            expect(#case.manifest.navigation.checkpointObjectIds == case.checkpoints, "checkpoint boundary changed")
+            expect(
+                candidate.plan.counts.manifestParts
+                    == #case.manifest.layers.gameplay.objects + #case.manifest.layers.decorative.objects,
+                "boundary Part count changed"
+            )
+        end
+    end)
+
+    test("enforces N-1 N and N+1 construction budgets at the 757-Part contract maximum", function()
+        local admitted = admit(maximumParts)
+        local tracker, runtime = harness()
+        local expectedManifestParts = 757
+        local expectedTotalParts = 758
+        local expectedInstances = 764
+        local allocationStart = tracker.allocations
+        local rejected, budgetError = SceneBuilderCoreV03.buildCandidate(admitted, runtime, {
+            maxParts = expectedTotalParts - 1,
+            maxInstances = expectedInstances,
+        })
+        expect(rejected == nil and budgetError.code == "candidate-budget", "N-1 Part budget was admitted")
+        expect(tracker.allocations == allocationStart, "rejected work allocated Instances")
+
+        local exact, exactError = SceneBuilderCoreV03.buildCandidate(admitted, runtime, {
+            maxParts = expectedTotalParts,
+            maxInstances = expectedInstances,
+        })
+        expect(exact ~= nil, exactError and exactError.message or "N budget failed")
+        expect(exact.plan.counts.manifestParts == expectedManifestParts, "maximum manifest Part count changed")
+        expect(exact.plan.counts.totalParts == expectedTotalParts, "helper Part budget changed")
+        expect(exact.plan.counts.totalInstances == expectedInstances, "bounded container budget changed")
+        expect(tracker.allocations - allocationStart == expectedInstances, "N allocated the wrong Instance count")
+
+        local nextTracker = FakeInstanceV03.tracker()
+        local nextRuntime = FakeInstanceV03.runtime(nextTracker)
+        local plusOne, plusOneError = SceneBuilderCoreV03.buildCandidate(admitted, nextRuntime, {
+            maxParts = expectedTotalParts + 1,
+            maxInstances = expectedInstances + 1,
+        })
+        expect(plusOne ~= nil, plusOneError and plusOneError.message or "N+1 budget failed")
+        expect(plusOne.plan.structuralIdentity == exact.plan.structuralIdentity, "budget changed plan identity")
+        expect(nextTracker.allocations == expectedInstances, "N+1 changed actual work")
+    end)
+
     test("publishes the new root before destroying the previous root", function()
         local tracker, runtime, workspace = harness()
         local state, previous = publishReference(runtime, workspace)
@@ -92,6 +168,19 @@ return function(test, expect)
             "active root is partial or ambiguous"
         )
         expect(candidate.stagingContainer.Destroyed, "private staging survived commit")
+    end)
+
+    test("replaces a distinct admitted scene and records its exact manifest identity", function()
+        local _, runtime, workspace = harness()
+        local state, previous = publishReference(runtime, workspace)
+        local candidate, buildError = SceneBuilderCoreV03.buildCandidate(admit(replacement), runtime)
+        expect(candidate ~= nil, buildError and buildError.message or "replacement candidate failed")
+        local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+        expect(root ~= nil, commitError and commitError.message or "replacement commit failed")
+        expect(previous.Destroyed, "previous scene survived replacement")
+        expect(root:GetAttribute("ManifestHash") == replacement.manifestHash, "replacement hash changed")
+        expect(state.currentManifestHash == replacement.manifestHash, "root-state identity did not switch")
+        expect(#activeRoots(workspace) == 1 and activeRoots(workspace)[1] == root, "replacement was ambiguous")
     end)
 
     test("cleans candidates after every injected construction boundary", function()
@@ -174,6 +263,12 @@ return function(test, expect)
         root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
         expect(root == nil and commitError.code == "candidate-identity", "changed candidate identity was accepted")
         expect(state.currentRoot == previous and not previous.Destroyed, "identity rejection changed active root")
+
+        previous:SetAttribute("ManifestHash", "sha256:" .. string.rep("1", 64))
+        candidate = SceneBuilderCoreV03.buildCandidate(admit(replacement), runtime)
+        root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+        expect(root == nil and commitError.code == "active-root-pointer", "changed active identity was accepted")
+        expect(state.currentRoot == previous and not previous.Destroyed, "active identity rejection changed root")
     end)
 
     test("keeps the new root authoritative when retired-root cleanup fails", function()

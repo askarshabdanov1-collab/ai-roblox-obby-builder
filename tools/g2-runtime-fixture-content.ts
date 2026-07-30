@@ -1,4 +1,9 @@
-import { evaluatorCanonicalStringify } from "@obby/canonical-json";
+import { evaluatorCanonicalStringify, sha256 } from "@obby/canonical-json";
+import {
+  assertValidSceneManifestV03,
+  computeSceneManifestV03Hash,
+  type SceneManifestV03,
+} from "@obby/contracts";
 import {
   DEFAULT_GENERATOR_CONFIGURATION,
   DEFAULT_MECHANIC_CATALOG,
@@ -10,6 +15,7 @@ import {
   DEFAULT_MECHANIC_LAYOUT_DEFINITIONS,
 } from "@obby/obby-layout-engine";
 import { G1_ARTIFACT_FILENAMES, buildG1ArtifactSet } from "@obby/generator-cli";
+import { emitManifestModuleV03 } from "@obby/roblox-emitter";
 
 const decoder = new TextDecoder();
 const canonicalLine = (value: unknown): string =>
@@ -88,9 +94,22 @@ const FIXTURES = Object.freeze([
 export const g2RuntimeFixtureIndexPath =
   "examples/g2-runtime/fixture-index.json";
 
+function finalizedDerivedManifest(
+  base: SceneManifestV03,
+  mutate: (draft: SceneManifestV03) => void,
+): SceneManifestV03 {
+  const draft = structuredClone(base);
+  mutate(draft);
+  draft.manifestHash = computeSceneManifestV03Hash(draft);
+  return assertValidSceneManifestV03(draft);
+}
+
 export function expectedG2RuntimeFixtures(): Readonly<Record<string, string>> {
   const outputs: Record<string, string> = {};
   const index = [];
+  let referenceManifest: SceneManifestV03 | undefined;
+  let maximum50Manifest: SceneManifestV03 | undefined;
+  let referenceGenerationBundleHash: string | undefined;
   for (const fixture of FIXTURES) {
     const source = generateObby(
       fixture.request,
@@ -105,6 +124,11 @@ export function expectedG2RuntimeFixtures(): Readonly<Record<string, string>> {
       mechanicLayoutDefinitions: DEFAULT_MECHANIC_LAYOUT_DEFINITIONS,
     });
     const manifest = artifactSet.sceneManifest;
+    if (fixture.fixtureId === "reference") {
+      referenceManifest = manifest;
+      referenceGenerationBundleHash = source.generationBundleHash;
+    }
+    if (fixture.fixtureId === "maximum-50") maximum50Manifest = manifest;
     const json = decoder.decode(
       artifactSet.files[G1_ARTIFACT_FILENAMES.sceneManifest],
     );
@@ -127,6 +151,150 @@ export function expectedG2RuntimeFixtures(): Readonly<Record<string, string>> {
       routeCount: manifest.navigation.safeRouteObjectIds.length,
       transitionCount:
         manifest.navigation.reachability.requiredTransitions.length,
+    });
+  }
+
+  if (
+    referenceManifest === undefined ||
+    referenceGenerationBundleHash === undefined ||
+    maximum50Manifest === undefined
+  )
+    throw new Error("G2 reference fixture was not produced");
+
+  const derived = [
+    {
+      fixtureId: "wedge",
+      jsonPath: "examples/g2-runtime/wedge.json",
+      modulePath: "roblox/generated/G2WedgeManifestV03.luau",
+      manifest: finalizedDerivedManifest(referenceManifest, (draft) => {
+        const object = draft.layers.gameplay.objects[1];
+        object.shape = "Wedge";
+        object.geometry.surfaceKind = "wedge-slope";
+        object.geometry.normalizedGeometryHash = sha256({
+          domain: "g2c-wedge-geometry-v1",
+          objectId: object.id,
+          transform: object.transform,
+          size: object.size,
+        });
+        for (const transition of draft.navigation.reachability
+          .requiredTransitions) {
+          if (transition.fromObjectId === object.id)
+            transition.sourceSurfaceKind = "wedge-slope";
+          if (transition.toObjectId === object.id)
+            transition.destinationSurfaceKind = "wedge-slope";
+        }
+      }),
+    },
+    {
+      fixtureId: "decorative",
+      jsonPath: "examples/g2-runtime/decorative.json",
+      modulePath: "roblox/generated/G2DecorativeManifestV03.luau",
+      manifest: finalizedDerivedManifest(referenceManifest, (draft) => {
+        const zone = draft.decorativeZones[0];
+        draft.layers.decorative.objects.push({
+          id: "G2DecorativeBlock",
+          zoneId: zone.zoneId,
+          className: "Part",
+          shape: "Block",
+          transform: {
+            position: { x: 0, y: 7, z: -8 },
+            rotation: { x: 0, y: 0, z: 0 },
+          },
+          size: { x: 2, y: 2, z: 2 },
+          collision: {
+            anchored: true,
+            canCollide: false,
+            canTouch: false,
+            canQuery: false,
+          },
+          appearance: {
+            color: "#4895EF",
+            colorRole: "secondary",
+            material: "SmoothPlastic",
+          },
+        });
+      }),
+    },
+    {
+      fixtureId: "replacement-b",
+      jsonPath: "examples/g2-runtime/replacement-b.json",
+      modulePath: "roblox/generated/G2ReplacementManifestV03.luau",
+      manifest: finalizedDerivedManifest(referenceManifest, (draft) => {
+        draft.layers.gameplay.objects[1].appearance.color = "#F72585";
+      }),
+    },
+    {
+      fixtureId: "maximum-parts",
+      jsonPath: "examples/g2-runtime/maximum-parts.json",
+      modulePath: "roblox/generated/G2MaximumPartsManifestV03.luau",
+      manifest: finalizedDerivedManifest(maximum50Manifest, (draft) => {
+        const gameplay = draft.layers.gameplay.objects;
+        const finish = gameplay.pop();
+        const killTemplate = gameplay.find((object) => object.role === "kill");
+        if (finish === undefined || killTemplate === undefined)
+          throw new Error("maximum Part fixture templates are unavailable");
+
+        const additionalGameplayCount = 501 - gameplay.length - 1;
+        for (let index = 1; index <= additionalGameplayCount; index += 1) {
+          const object = structuredClone(killTemplate);
+          object.id = `G2MaxHazard${index.toString().padStart(3, "0")}`;
+          gameplay.push(object);
+        }
+        gameplay.push(finish);
+        gameplay.forEach((object, index) => {
+          object.order = index;
+        });
+
+        const zone = draft.decorativeZones[0];
+        for (let index = 1; index <= 256; index += 1) {
+          draft.layers.decorative.objects.push({
+            id: `G2MaxDecorative${index.toString().padStart(3, "0")}`,
+            zoneId: zone.zoneId,
+            className: "Part",
+            shape: "Block",
+            transform: {
+              position: {
+                x: (zone.bounds.minimum.x + zone.bounds.maximum.x) / 2,
+                y: (zone.bounds.minimum.y + zone.bounds.maximum.y) / 2,
+                z: (zone.bounds.minimum.z + zone.bounds.maximum.z) / 2,
+              },
+              rotation: { x: 0, y: 0, z: 0 },
+            },
+            size: { x: 1, y: 1, z: 1 },
+            collision: {
+              anchored: true,
+              canCollide: false,
+              canTouch: false,
+              canQuery: false,
+            },
+            appearance: {
+              color: "#BDE0FE",
+              colorRole: "secondary",
+              material: "SmoothPlastic",
+            },
+          });
+        }
+      }),
+    },
+  ] as const;
+
+  for (const fixture of derived) {
+    outputs[fixture.jsonPath] = canonicalLine(fixture.manifest);
+    outputs[fixture.modulePath] = emitManifestModuleV03(fixture.manifest);
+    index.push({
+      fixtureId: fixture.fixtureId,
+      jsonPath: fixture.jsonPath,
+      modulePath: fixture.modulePath,
+      generationBundleHash: referenceGenerationBundleHash,
+      manifestHash: fixture.manifest.manifestHash,
+      stageCount: fixture.manifest.navigation.stages.length,
+      checkpointCount: fixture.manifest.navigation.checkpointObjectIds.length,
+      gameplayObjectCount: fixture.manifest.layers.gameplay.objects.length,
+      decorativeObjectCount: fixture.manifest.layers.decorative.objects.length,
+      zoneCount: fixture.manifest.decorativeZones.length,
+      routeCount: fixture.manifest.navigation.safeRouteObjectIds.length,
+      transitionCount:
+        fixture.manifest.navigation.reachability.requiredTransitions.length,
     });
   }
   outputs[g2RuntimeFixtureIndexPath] = canonicalLine({
