@@ -21,7 +21,7 @@ G2b republishes those exact bytes at `roblox/generated/G2ReferenceManifestV03.lu
 fixture owner; it does not hand-copy or reinterpret the manifest. The historical
 `roblox/generated/G1cReferenceManifest.luau` remains validator coverage and is not the G2 oracle.
 
-## G2b fixture owner
+## G2 fixture owner
 
 `tools/g2-runtime-fixture-content.ts` is the single deterministic content owner. Use:
 
@@ -42,16 +42,20 @@ fixture identity, manifest/source hashes, and collection counts.
 | `boundary-21`             | `roblox/generated/G2Boundary21ManifestV03.luau`         | `examples/g2-runtime/boundary-21.json`             | 21-stage boundary                |
 | `maximum-50`              | `roblox/generated/G2Maximum50ManifestV03.luau`          | `examples/g2-runtime/maximum-50.json`              | Maximum 50-stage route           |
 | `maximum-checkpoints`     | `roblox/generated/G2MaximumCheckpointsManifestV03.luau` | `examples/g2-runtime/maximum-checkpoints.json`     | 49 checkpoints at 50 stages      |
+| `wedge`                   | `roblox/generated/G2WedgeManifestV03.luau`              | `examples/g2-runtime/wedge.json`                   | Native Wedge mapping             |
+| `decorative`              | `roblox/generated/G2DecorativeManifestV03.luau`         | `examples/g2-runtime/decorative.json`              | Decorative collision safety      |
+| `replacement-b`           | `roblox/generated/G2ReplacementManifestV03.luau`        | `examples/g2-runtime/replacement-b.json`           | Distinct valid replacement       |
+| `maximum-parts`           | `roblox/generated/G2MaximumPartsManifestV03.luau`       | `examples/g2-runtime/maximum-parts.json`           | 757 manifest Parts               |
 
 All inputs use the committed G0/G1 authorities and `buildG1ArtifactSet`. A fixture cannot be mutated
 after hashing. Any required contract change stops G2 for separate review.
 
-## G2c-owned evidence remains future work
+## G2c construction evidence
 
-G2b does not add construction fixtures, replacement execution, or failure injection. G2c may extend
-the same owner with independently valid, deterministic fixtures for native-shape/decorative
-construction and replacement, provided it preserves exact-byte drift and does not rewrite these
-G2b identities.
+G2c extends the same owner with independently valid, deterministic fixtures for native-shape,
+decorative, replacement, and maximum-Part construction. It preserves the exact bytes and identities
+of the merged G2b fixtures. Failure injection is runtime test configuration and never a hash-invalid
+fixture mutation.
 
 Scenario ownership remains:
 
@@ -59,8 +63,8 @@ Scenario ownership remains:
 | --------------------- | --------------------------------------------------------------------------- |
 | Replacement success   | Two independently valid generated manifests                                 |
 | Replacement failure   | Deterministic factory/session failure injector, never hash-invalid mutation |
-| Stale callbacks       | Runtime-session fake event scheduler                                        |
-| Two players           | Fake Players service plus manual two-client Studio run                      |
+| Stale callbacks       | Deferred to the G2d runtime-session fake event scheduler                    |
+| Two players           | Deferred to G2d fake Players service plus manual two-client Studio run      |
 | Same-manifest rebuild | One valid manifest loaded under distinct runtime generations                |
 
 ## Review rules
