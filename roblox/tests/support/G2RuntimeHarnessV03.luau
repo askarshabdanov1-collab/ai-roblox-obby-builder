@@ -24,10 +24,7 @@ local function signal(tracker)
             }
         end,
         Fire = function(_, ...)
-            local pending = {}
-            for id, callback in next, callbacks do
-                pending[id] = callback
-            end
+            local pending = table.clone(callbacks)
             for _, callback in next, pending do
                 callback(...)
             end
@@ -99,11 +96,7 @@ function G2RuntimeHarnessV03.new()
         end,
         cframe = partRuntime.cframe,
         getPlayers = function()
-            local result = {}
-            for index, current in ipairs(players) do
-                result[index] = current
-            end
-            return result
+            return table.clone(players)
         end,
         connectPlayerAdded = function(callback)
             return playerAdded:Connect(callback)
