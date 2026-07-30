@@ -126,8 +126,53 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
     expect(planSource).not.toContain("Instance.new");
     expect(planSource).not.toContain("workspace");
 
+    for (const module of g2cModules) {
+      const source = await readFile(`${runtimeDirectory}/${module}`, "utf8");
+      expect(source).not.toContain('require("./RuntimeSessionV03")');
+      expect(source).not.toContain('require("./BuilderV03")');
+    }
+  });
+
+  it("keeps G2d opt-in and excludes later-phase integrations", async () => {
+    const runtimeDirectory = "roblox/src/ReplicatedStorage/ObbyRuntime";
+    const bootstrap = await readFile(
+      "roblox/src/ServerScriptService/ObbyBootstrap.server.luau",
+      "utf8",
+    );
+    expect(bootstrap).not.toContain("BuilderV03");
+    expect(bootstrap).not.toContain("RuntimeSessionV03");
+    expect(bootstrap).not.toContain("G2ReferenceManifestV03");
+
+    const defaultProject = await readFile(
+      "roblox/default.project.json",
+      "utf8",
+    );
+    expect(defaultProject).toContain("VerticalSliceManifest");
+    expect(defaultProject).not.toContain("G2ReferenceManifestV03");
+
     const runtimeModules = await readdir(runtimeDirectory);
-    for (const deferredModule of ["RuntimeSessionV03.luau", "BuilderV03.luau"])
-      expect(runtimeModules).not.toContain(deferredModule);
+    expect(runtimeModules).toContain("RuntimeSessionV03.luau");
+    expect(runtimeModules).toContain("BuilderV03.luau");
+    for (const deferred of [
+      "StudioAcceptanceV03.luau",
+      "RuntimeSelectorV03.luau",
+      "BuilderV04.luau",
+    ])
+      expect(runtimeModules).not.toContain(deferred);
+
+    for (const module of ["RuntimeSessionV03.luau", "BuilderV03.luau"]) {
+      const source = await readFile(`${runtimeDirectory}/${module}`, "utf8");
+      for (const forbidden of [
+        "HttpService",
+        "GetAsync",
+        "PostAsync",
+        "os.clock",
+        "os.time",
+        "math.random",
+      ])
+        expect(source, `${module} contains ${forbidden}`).not.toContain(
+          forbidden,
+        );
+    }
   });
 });

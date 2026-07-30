@@ -1,9 +1,9 @@
 # G2 SceneManifest 0.3 scene replacement specification
 
-This specification defines the complete `0.3` replacement protocol. G2c implements the candidate
-construction and root-only transaction subset described below; G2d still owns runtime sessions,
-connections, player state, and production activation. The existing `0.2` `SceneBuilderCore`
-continues to own the active path.
+This specification defines the complete `0.3` replacement protocol. G2c implements candidate
+construction and the root-only transaction subset; G2d implements the opt-in runtime session,
+connections, player state, and session-aware orchestration. The existing `0.2` `SceneBuilderCore`
+and bootstrap continue to own the active path.
 
 ## G2c implemented subset
 
@@ -14,8 +14,18 @@ unowned, cross-version, ambiguous, pointer-inconsistent, and changed-identity ro
 pointer before old-root destruction; rolls back all tested pre-pointer failures; and quarantines a
 retired root when post-commit destruction fails.
 
-The primitive is not called by `ObbyBootstrap` and does not implement a runtime session or generation
-token. The session-aware activation steps and callback invalidation below remain normative G2d work.
+The primitive is not called by `ObbyBootstrap`. G2d composes it through `BuilderV03`, adds a
+generation token and session pointer, and defers retired-root destruction until the new session is
+active. The root-only G2c API remains compatible.
+
+## G2d implemented integration
+
+`BuilderV03` performs all fallible admission, construction, session preparation, progress adoption,
+and current-pointer checks before commit. `SceneBuilderCoreV03.commitCandidate` installs the new
+root/session/token pointer and returns a cleanup receipt. The coordinator then invalidates the old
+session, activates the new session, disposes old callbacks and state, and calls `finalizeCommit`.
+Callback generation and ownership checks remain authoritative even if a connection fires around
+replacement.
 
 ## Terms and invariants
 
@@ -63,7 +73,7 @@ touching Workspace.
 
 ## No-yield activation sequence
 
-The future implementation must place this sequence in one function containing no `wait`, task
+The implementation places the root transaction in one function containing no `wait`, task
 scheduling, event wait, network call, user callback, or other yield-capable operation. All names and
 references are prepared before entry.
 
@@ -108,7 +118,7 @@ return a fatal diagnostic rather than claim rollback success.
 
 ## Ownership and replacement eligibility
 
-The future builder may replace a root only when:
+The builder may replace a root only when:
 
 - the configured runtime version is `0.3` for the full server lifetime;
 - the root has `GeneratedBy = "AIObbyBuilder/0.3"`;
