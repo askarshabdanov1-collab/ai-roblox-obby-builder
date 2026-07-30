@@ -89,12 +89,11 @@ local function disconnect(connection)
 end
 
 local function destroyCandidate(candidate)
-    if candidate == nil or candidate.stagingContainer == nil or candidate.stagingContainer.Destroyed == true then
+    if candidate == nil then
         return true
     end
-    return pcall(function()
-        candidate.stagingContainer:Destroy()
-    end)
+    local disposed = SceneBuilderCoreV03.disposeCandidate(candidate)
+    return disposed == true
 end
 
 function BuilderV03:_deferPlacement(player, character)

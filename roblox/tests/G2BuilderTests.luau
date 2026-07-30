@@ -1,5 +1,6 @@
 local BuilderV03 = require("../src/ReplicatedStorage/ObbyRuntime/BuilderV03")
 local RuntimeSessionV03 = require("../src/ReplicatedStorage/ObbyRuntime/RuntimeSessionV03")
+local FakeInstanceV03 = require("./support/FakeInstanceV03")
 local G2RuntimeHarnessV03 = require("./support/G2RuntimeHarnessV03")
 
 local maximum50 = require("../generated/G2Maximum50ManifestV03")
@@ -65,7 +66,7 @@ return function(test, expect)
             expect(builder:currentSession() == first.session, "old session pointer changed at " .. boundary)
             expect(first.session:status() == "active", "old session was invalidated at " .. boundary)
             expect(
-                first.root.Parent == harness.workspace and not first.root.Destroyed,
+                first.root.Parent == harness.workspace and not FakeInstanceV03.isDestroyed(first.root),
                 "old scene was not preserved at " .. boundary
             )
         end
@@ -228,6 +229,9 @@ return function(test, expect)
         expect(builder:currentSession() == first.session, "connection failure changed current session")
         expect(first.session:status() == "active", "connection failure invalidated old session")
         expect(harness.tracker.activeConnections == activeBefore, "partial new-session connection leaked")
-        expect(first.root.Parent == harness.workspace and not first.root.Destroyed, "connection failure changed scene")
+        expect(
+            first.root.Parent == harness.workspace and not FakeInstanceV03.isDestroyed(first.root),
+            "connection failure changed scene"
+        )
     end)
 end

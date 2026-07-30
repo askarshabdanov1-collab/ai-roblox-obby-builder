@@ -133,6 +133,22 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
     }
   });
 
+  it("uses only Roblox Instance members in production destroyed-state checks", async () => {
+    const runtimeDirectory = "roblox/src/ReplicatedStorage/ObbyRuntime";
+    const runtimeModules = (await readdir(runtimeDirectory)).filter((name) =>
+      name.endsWith(".luau"),
+    );
+    const destroyedMemberRead = /\.Destroyed\b|\[\s*["']Destroyed["']\s*\]/u;
+
+    for (const module of runtimeModules) {
+      const source = await readFile(`${runtimeDirectory}/${module}`, "utf8");
+      expect(
+        destroyedMemberRead.test(source),
+        `${module} reads the fake-only Destroyed member`,
+      ).toBe(false);
+    }
+  });
+
   it("keeps G2d opt-in and excludes later-phase integrations", async () => {
     const runtimeDirectory = "roblox/src/ReplicatedStorage/ObbyRuntime";
     const bootstrap = await readFile(

@@ -5,6 +5,8 @@ local SceneBuilderCoreV03 = {}
 
 local OWNER_VALUE = "AIObbyBuilder/0.3"
 local ROOT_NAME = "GeneratedObby"
+local candidateLifecycleByEnvelope = setmetatable({}, { __mode = "k" })
+local receiptLifecycleByReceipt = setmetatable({}, { __mode = "k" })
 
 local function failure(code, message)
     return nil, table.freeze({
@@ -47,6 +49,45 @@ local function destroy(instance)
     return pcall(function()
         instance:Destroy()
     end)
+end
+
+local function registerCandidate(candidate)
+    candidateLifecycleByEnvelope[candidate] = {
+        state = "staged",
+        rootPending = true,
+        stagingPending = true,
+    }
+end
+
+local function disposeCandidate(candidate)
+    if type(candidate) ~= "table" then
+        return failure("candidate-identity", "candidate envelope is invalid")
+    end
+    local lifecycle = candidateLifecycleByEnvelope[candidate]
+    if lifecycle == nil then
+        return failure("candidate-identity", "candidate lifecycle is not owned by this runtime")
+    end
+    if lifecycle.state == "active" then
+        return failure("candidate-lifecycle", "active candidate cannot be disposed as staged work")
+    end
+    lifecycle.state = "disposed"
+
+    local root = candidate.root
+    local stagingContainer = candidate.stagingContainer
+    local rootOutsideStaging = root ~= nil and root.Parent ~= stagingContainer
+    if lifecycle.rootPending and rootOutsideStaging and destroy(root) then
+        lifecycle.rootPending = false
+    end
+    if lifecycle.stagingPending and destroy(stagingContainer) then
+        lifecycle.stagingPending = false
+        if not rootOutsideStaging then
+            lifecycle.rootPending = false
+        end
+    end
+    if lifecycle.rootPending or lifecycle.stagingPending then
+        return failure("candidate-cleanup", "candidate cleanup was incomplete")
+    end
+    return true, nil
 end
 
 local function abortCandidate(stagingContainer, code, message)
@@ -92,11 +133,13 @@ local function validateCandidate(candidate)
     if type(candidate) ~= "table" or not table.isfrozen(candidate) then
         return failure("candidate-identity", "candidate envelope is invalid")
     end
+    local lifecycle = candidateLifecycleByEnvelope[candidate]
+    if lifecycle == nil or lifecycle.state ~= "staged" then
+        return failure("candidate-identity", "candidate lifecycle is not staged")
+    end
     if
         candidate.root == nil
-        or candidate.root.Destroyed == true
         or candidate.stagingContainer == nil
-        or candidate.stagingContainer.Destroyed == true
         or candidate.root.Parent ~= candidate.stagingContainer
         or candidate.stagingContainer.Parent ~= nil
     then
@@ -315,16 +358,21 @@ function SceneBuilderCoreV03.buildCandidate(admitted, configuredRuntime, options
         helper = helper,
         plan = plan,
     })
+    registerCandidate(candidate)
     if injected(options, "before-validation") then
-        return abortCandidate(
-            staging,
-            "candidate-injected-failure",
-            "candidate construction failed at an injected boundary"
-        )
+        local cleaned, cleanupError = disposeCandidate(candidate)
+        if cleaned == nil then
+            return nil, cleanupError
+        end
+        return failure("candidate-injected-failure", "candidate construction failed at an injected boundary")
     end
     local valid, candidateError = validateCandidate(candidate)
     if valid == nil then
-        return abortCandidate(staging, candidateError.code, candidateError.message)
+        local cleaned, cleanupError = disposeCandidate(candidate)
+        if cleaned == nil then
+            return nil, cleanupError
+        end
+        return nil, candidateError
     end
     return candidate, nil
 end
@@ -349,10 +397,11 @@ local function activeRoots(workspace)
 end
 
 local function cleanupRejectedCandidate(candidate)
-    if not destroy(candidate.stagingContainer) then
-        return failure("candidate-cleanup", "rejected candidate cleanup was incomplete")
+    local cleaned, cleanupError = disposeCandidate(candidate)
+    if cleaned == nil then
+        return nil, cleanupError
     end
-    return nil
+    return true, nil
 end
 
 local function rollback(
@@ -387,9 +436,14 @@ local function rollback(
         pcall(function()
             candidate.root.Parent = nil
         end)
+        local lifecycle = candidateLifecycleByEnvelope[candidate]
+        if lifecycle ~= nil then
+            lifecycle.state = "disposed"
+        end
         return failure("commit-fatal", "root replacement rollback could not be proven")
     end
-    if not destroy(candidate.stagingContainer) then
+    local cleaned = cleanupRejectedCandidate(candidate)
+    if cleaned == nil then
         return failure("commit-fatal", "root replacement rollback cleanup was incomplete")
     end
     return failure(code, message)
@@ -398,9 +452,7 @@ end
 function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, options)
     local valid, candidateError = validateCandidate(candidate)
     if valid == nil then
-        if type(candidate) == "table" and candidate.stagingContainer ~= nil then
-            cleanupRejectedCandidate(candidate)
-        end
+        cleanupRejectedCandidate(candidate)
         return nil, candidateError
     end
     if type(workspace) ~= "table" or type(workspace.GetChildren) ~= "function" or type(state) ~= "table" then
@@ -550,15 +602,20 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
         state.currentGenerationToken = nextGenerationToken
     end
     candidate.root:SetAttribute("CandidateState", "active")
+    candidateLifecycleByEnvelope[candidate].state = "active"
     if options ~= nil and options.deferCleanup == true then
-        return candidate.root,
-            nil,
-            table.freeze({
-                receiptVersion = "g2d-deferred-cleanup-v1",
-                activeRoot = candidate.root,
-                retiredRoot = previousRoot,
-                stagingContainer = candidate.stagingContainer,
-            })
+        local receipt = table.freeze({
+            receiptVersion = "g2d-deferred-cleanup-v1",
+            activeRoot = candidate.root,
+            retiredRoot = previousRoot,
+            stagingContainer = candidate.stagingContainer,
+        })
+        receiptLifecycleByReceipt[receipt] = {
+            retiredRootPending = previousRoot ~= nil,
+            stagingPending = true,
+            finalized = false,
+        }
+        return candidate.root, nil, receipt
     end
     if previousRoot ~= nil and not destroy(previousRoot) then
         return candidate.root,
@@ -583,18 +640,31 @@ function SceneBuilderCoreV03.finalizeCommit(receipt)
         or receipt.receiptVersion ~= "g2d-deferred-cleanup-v1"
         or receipt.activeRoot == nil
         or receipt.stagingContainer == nil
+        or receiptLifecycleByReceipt[receipt] == nil
     then
         return failure("commit-cleanup", "deferred root cleanup receipt is invalid")
     end
-    if receipt.retiredRoot ~= nil and receipt.retiredRoot.Destroyed ~= true and not destroy(receipt.retiredRoot) then
-        return failure("commit-cleanup", "new root is active but retired-root cleanup is incomplete")
+    local lifecycle = receiptLifecycleByReceipt[receipt]
+    if lifecycle.finalized then
+        return true, nil
     end
-    if receipt.stagingContainer.Destroyed ~= true and not destroy(receipt.stagingContainer) then
-        return failure("commit-cleanup", "new root is active but private staging cleanup is incomplete")
+    if lifecycle.retiredRootPending then
+        if not destroy(receipt.retiredRoot) then
+            return failure("commit-cleanup", "new root is active but retired-root cleanup is incomplete")
+        end
+        lifecycle.retiredRootPending = false
     end
+    if lifecycle.stagingPending then
+        if not destroy(receipt.stagingContainer) then
+            return failure("commit-cleanup", "new root is active but private staging cleanup is incomplete")
+        end
+        lifecycle.stagingPending = false
+    end
+    lifecycle.finalized = true
     return true, nil
 end
 
 SceneBuilderCoreV03.validateCandidate = validateCandidate
+SceneBuilderCoreV03.disposeCandidate = disposeCandidate
 
 return table.freeze(SceneBuilderCoreV03)

@@ -183,7 +183,7 @@ function RuntimeSessionV03:checkCurrent(expected)
     if self.pointer.currentManifestHash ~= self.manifestHash then
         return failure("session-manifest", "runtime session manifest identity is stale")
     end
-    if self.pointer.currentRoot ~= root or root.Destroyed == true then
+    if self.pointer.currentRoot ~= root or root.Parent ~= self.runtime.workspace then
         return failure("session-root", "runtime session root is stale")
     end
     if

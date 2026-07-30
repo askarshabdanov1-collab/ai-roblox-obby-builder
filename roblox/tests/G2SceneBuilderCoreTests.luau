@@ -49,6 +49,14 @@ local function publishReference(runtime, workspace)
 end
 
 return function(test, expect)
+    test("rejects fake-only Destroyed member reads like Roblox Studio", function()
+        local instance = FakeInstanceV03.new("Model")
+        local readSucceeded = pcall(function()
+            return instance.Destroyed
+        end)
+        expect(not readSucceeded, "fake Instance accepted the non-Roblox Destroyed member")
+    end)
+
     test("builds a complete deterministic candidate outside Workspace", function()
         local tracker, runtime, workspace = harness()
         local candidate, buildError = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
@@ -162,12 +170,12 @@ return function(test, expect)
         expect(root ~= nil, commitError and commitError.message or "replacement failed")
         expect(root == candidate.root and state.currentRoot == root, "current root pointer did not switch")
         expect(pointerWasNewAtDestroy, "old root was destroyed before pointer switch")
-        expect(previous.Destroyed, "retired root was not destroyed")
+        expect(FakeInstanceV03.isDestroyed(previous), "retired root was not destroyed")
         expect(
             #activeRoots(workspace) == 1 and activeRoots(workspace)[1] == root,
             "active root is partial or ambiguous"
         )
-        expect(candidate.stagingContainer.Destroyed, "private staging survived commit")
+        expect(FakeInstanceV03.isDestroyed(candidate.stagingContainer), "private staging survived commit")
     end)
 
     test("replaces a distinct admitted scene and records its exact manifest identity", function()
@@ -177,7 +185,7 @@ return function(test, expect)
         expect(candidate ~= nil, buildError and buildError.message or "replacement candidate failed")
         local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
         expect(root ~= nil, commitError and commitError.message or "replacement commit failed")
-        expect(previous.Destroyed, "previous scene survived replacement")
+        expect(FakeInstanceV03.isDestroyed(previous), "previous scene survived replacement")
         expect(root:GetAttribute("ManifestHash") == replacement.manifestHash, "replacement hash changed")
         expect(state.currentManifestHash == replacement.manifestHash, "root-state identity did not switch")
         expect(#activeRoots(workspace) == 1 and activeRoots(workspace)[1] == root, "replacement was ambiguous")
@@ -207,7 +215,7 @@ return function(test, expect)
             expect(state.currentRoot == previous and previous.Parent == workspace, boundary .. " changed active root")
             expect(#activeRoots(workspace) == 1, boundary .. " left an ambiguous active root")
             for index = allocationStart + 1, #tracker.instances do
-                expect(tracker.instances[index].Destroyed, boundary .. " leaked candidate state")
+                expect(FakeInstanceV03.isDestroyed(tracker.instances[index]), boundary .. " leaked candidate state")
             end
         end
     end)
@@ -224,8 +232,11 @@ return function(test, expect)
             expect(root == nil and commitError.code == "commit-injected-failure", boundary .. " was not injected")
             expect(state.currentRoot == previous, boundary .. " changed the current pointer")
             expect(previous.Parent == workspace and previous.Name == "GeneratedObby", boundary .. " lost old root")
-            expect(not previous.Destroyed, boundary .. " destroyed old root")
-            expect(candidate.root.Destroyed and candidate.stagingContainer.Destroyed, boundary .. " leaked candidate")
+            expect(not FakeInstanceV03.isDestroyed(previous), boundary .. " destroyed old root")
+            expect(
+                FakeInstanceV03.isDestroyed(candidate.root) and FakeInstanceV03.isDestroyed(candidate.stagingContainer),
+                boundary .. " leaked candidate"
+            )
             expect(#activeRoots(workspace) == 1, boundary .. " left a partial active root")
         end
     end)
@@ -243,7 +254,10 @@ return function(test, expect)
             local candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
             local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
             expect(root == nil and commitError.code == "active-root-ownership", owner .. " root was replaced")
-            expect(existing.Parent == workspace and not existing.Destroyed, owner .. " root was changed")
+            expect(
+                existing.Parent == workspace and not FakeInstanceV03.isDestroyed(existing),
+                owner .. " root was changed"
+            )
         end
 
         local _, runtime, workspace = harness()
@@ -255,20 +269,53 @@ return function(test, expect)
         local candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
         local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
         expect(root == nil and commitError.code == "active-root-ambiguous", "duplicate active roots were accepted")
-        expect(not previous.Destroyed and not duplicate.Destroyed, "ambiguous roots were modified")
+        expect(
+            not FakeInstanceV03.isDestroyed(previous) and not FakeInstanceV03.isDestroyed(duplicate),
+            "ambiguous roots were modified"
+        )
 
         duplicate:Destroy()
         candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
         candidate.root:SetAttribute("ManifestHash", "sha256:" .. string.rep("0", 64))
         root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
         expect(root == nil and commitError.code == "candidate-identity", "changed candidate identity was accepted")
-        expect(state.currentRoot == previous and not previous.Destroyed, "identity rejection changed active root")
+        expect(
+            state.currentRoot == previous and not FakeInstanceV03.isDestroyed(previous),
+            "identity rejection changed active root"
+        )
 
         previous:SetAttribute("ManifestHash", "sha256:" .. string.rep("1", 64))
         candidate = SceneBuilderCoreV03.buildCandidate(admit(replacement), runtime)
         root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
         expect(root == nil and commitError.code == "active-root-pointer", "changed active identity was accepted")
-        expect(state.currentRoot == previous and not previous.Destroyed, "active identity rejection changed root")
+        expect(
+            state.currentRoot == previous and not FakeInstanceV03.isDestroyed(previous),
+            "active identity rejection changed root"
+        )
+    end)
+
+    test("rejects an explicitly disposed candidate without touching the active scene", function()
+        local _, runtime, workspace = harness()
+        local state, previous = publishReference(runtime, workspace)
+        local candidate = SceneBuilderCoreV03.buildCandidate(admit(replacement), runtime)
+        local disposed, disposeError = SceneBuilderCoreV03.disposeCandidate(candidate)
+        expect(disposed == true, disposeError and disposeError.message or "candidate disposal failed")
+        local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+        expect(root == nil and commitError.code == "candidate-identity", "disposed candidate was accepted")
+        expect(state.currentRoot == previous and previous.Parent == workspace, "disposed candidate changed old scene")
+        expect(FakeInstanceV03.isDestroyed(candidate.root), "disposed candidate root survived")
+    end)
+
+    test("rejects a candidate removed from its owned staging hierarchy", function()
+        local _, runtime, workspace = harness()
+        local state, previous = publishReference(runtime, workspace)
+        local candidate = SceneBuilderCoreV03.buildCandidate(admit(replacement), runtime)
+        candidate.root.Parent = nil
+        local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+        expect(root == nil and commitError.code == "candidate-identity", "removed candidate was accepted")
+        expect(state.currentRoot == previous and previous.Parent == workspace, "removed candidate changed old scene")
+        expect(FakeInstanceV03.isDestroyed(candidate.root), "removed candidate root survived cleanup")
+        expect(FakeInstanceV03.isDestroyed(candidate.stagingContainer), "removed candidate staging survived cleanup")
     end)
 
     test("keeps the new root authoritative when retired-root cleanup fails", function()
