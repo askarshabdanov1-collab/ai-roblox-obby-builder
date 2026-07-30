@@ -3,7 +3,7 @@ local BuildPlanV03 = {}
 local PLAN_VERSION = "g2c-build-plan-v1"
 local OWNER_VALUE = "AIObbyBuilder/0.3"
 local MAX_MANIFEST_PARTS = 757
-local CONTAINER_COUNT = 5
+local CONTAINER_COUNT = 6
 
 local function failure(code, message)
     return nil, table.freeze({
