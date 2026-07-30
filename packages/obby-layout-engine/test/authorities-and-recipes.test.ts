@@ -78,7 +78,7 @@ describe("G1b versioned recipe authorities", () => {
     for (const mechanic of staticMechanics) {
       const recipe = NATIVE_PART_RECIPE_REGISTRY[mechanic.mechanicId];
       expect(recipe).toMatchObject({
-        recipeVersion: "1.0.0",
+        recipeVersion: "2.0.0",
         gameplayAuthority: "native-gameplay",
         primitiveFamily: "native-parts",
       });
@@ -171,9 +171,7 @@ describe("G1b versioned recipe authorities", () => {
         seed: 42,
         precisionDecimalPlaces: 6,
       });
-      expect(objects).toHaveLength(
-        mechanic.mechanicId === "finish-approach" ? 1 : 3,
-      );
+      expect(objects).toHaveLength(3);
       expect(objects.every((object) => object.shape === "Block")).toBe(true);
     },
   );

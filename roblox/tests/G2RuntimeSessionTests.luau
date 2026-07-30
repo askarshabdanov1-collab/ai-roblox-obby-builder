@@ -214,6 +214,15 @@ return function(test, expect)
         harness:touch(candidate.partById.Checkpoint001, hit)
         expect(session:checkpointOrder(player) == 2, "checkpoint route regressed")
 
+        local hazardId = nil
+        for _, object in ipairs(admitted.manifest.layers.gameplay.objects) do
+            if object.role == "kill" then
+                hazardId = object.id
+                break
+            end
+        end
+        harness:touch(candidate.partById[hazardId], hit)
+
         local respawn = harness:newCharacter(player)
         local placed, placementError = session:placeCharacter(player, respawn)
         expect(placed, placementError and placementError.message or "checkpoint respawn failed")
@@ -221,6 +230,9 @@ return function(test, expect)
         expect(respawn.rootPart.CFrame.position.x == checkpoint.transform.position.x, "checkpoint X center changed")
         expect(respawn.rootPart.CFrame.position.z == checkpoint.transform.position.z, "checkpoint Z center changed")
         expect(approximately(respawn.rootPart.CFrame.rotation.y, 90), "checkpoint did not face its -X next route")
+        local snapshot = session:acceptanceSnapshot()
+        expect(snapshot.respawnsObserved == 1, "lethal respawn evidence was not retained")
+        expect(snapshot.checkpointRespawnsObserved == 1, "checkpoint respawn evidence was not retained")
     end)
 
     test("ignores stale checkpoint callbacks", function()
@@ -257,9 +269,44 @@ return function(test, expect)
         expect(harness.tracker.kills == 1 and characterA.humanoid.Health == 0, "hazard debounce failed")
         harness:touch(candidate.partById[hazardId], harness:hit(playerB, characterB))
         expect(harness.tracker.kills == 2 and characterB.humanoid.Health == 0, "player debounce leaked")
+        expect(session:acceptanceSnapshot().lethalPlayerCount == 2, "two-player lethal evidence leaked")
         local nextCharacter = harness:newCharacter(playerA)
         harness:touch(candidate.partById[hazardId], harness:hit(playerA, nextCharacter))
         expect(harness.tracker.kills == 3, "new character inherited old hazard debounce")
+    end)
+
+    test("kills through Roblox-shaped identity adapters without table-only assumptions", function()
+        local harness, _, candidate, _, session = sessionHarness("g2d-generation-v1:1")
+        activate(session)
+        local hazardId = nil
+        local hazardRecord = nil
+        for _, record in ipairs(candidate.plan.gameplayRecords) do
+            if record.role == "kill" then
+                hazardId = record.id
+                hazardRecord = record
+                break
+            end
+        end
+        local player = harness:newOpaquePlayer(303)
+        local character, humanoid = harness:newOpaqueCharacter(player)
+        local touched = session:_handleTouch(candidate.partById[hazardId], hazardRecord, {
+            player = player,
+            character = character,
+            humanoid = humanoid,
+        })
+        expect(touched == true, "opaque Roblox-shaped identities were rejected")
+        expect(harness:opaqueHumanoidHealth(humanoid) == 0, "valid adapted Humanoid was not killed")
+
+        local nextPlayer = harness:newOpaquePlayer(404)
+        local nextCharacter, nextHumanoid = harness:newOpaqueCharacter(nextPlayer)
+        harness:invalidateOpaqueHumanoid(nextHumanoid)
+        local rejected = session:_handleTouch(candidate.partById[hazardId], hazardRecord, {
+            player = nextPlayer,
+            character = nextCharacter,
+            humanoid = nextHumanoid,
+        })
+        expect(rejected == false, "invalid adapted Humanoid was accepted")
+        expect(harness.tracker.kills == 1, "invalid adapted Humanoid reached the kill action")
     end)
 
     test("ignores stale replaced-object and mismatched-character hazard callbacks", function()
@@ -284,6 +331,9 @@ return function(test, expect)
         pointer.currentGenerationToken = "g2d-generation-v1:2"
         session:_handleTouch(candidate.partById[hazardRecord.id], hazardRecord, hit)
         expect(harness.tracker.kills == 0, "stale hazard callback killed a character")
+        local snapshot = session:acceptanceSnapshot()
+        expect(snapshot.staleCallbackRejections >= 1, "stale callback rejection was not observed")
+        expect(snapshot.staleAcceptedActions == 0, "stale callback action was accepted")
     end)
 
     test("finishes idempotently per player only from the explicit finish", function()

@@ -9,27 +9,27 @@ local manifests = ServerStorage.G2eManifests
 local fixtures = table.freeze({
     reference = table.freeze({
         module = manifests.G2ReferenceManifestV03,
-        expectedHash = "sha256:8dc98269de8b816f3d91f43aef930a5b5cc002e69a6a44eb5464e9e87a130b9b",
+        expectedHash = "sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146",
     }),
     ["maximum-50"] = table.freeze({
         module = manifests.G2Maximum50ManifestV03,
-        expectedHash = "sha256:4aa20d8ab637e64fe9a86274ac6cb135987b2f169403f1f37d4dfb7b3036a12e",
+        expectedHash = "sha256:508ca29e776560a4a8919323555f481837687ae3504137b34574698245daad82",
     }),
     ["minimum-zero-checkpoint"] = table.freeze({
         module = manifests.G2ZeroCheckpointManifestV03,
-        expectedHash = "sha256:746bb14aa99ef4149e2b49fbe7ddf0dadc6f4504284fe38179475ee64021dad8",
+        expectedHash = "sha256:3aa06678bdf7d7d30e6eb15b1b11745659d041e4a4c983cac16d1f7bb87cc717",
     }),
     ["replacement-b"] = table.freeze({
         module = manifests.G2ReplacementManifestV03,
-        expectedHash = "sha256:9ad8d1f5188d23418b091ff0f90212d39c2a249e89a623e3ceb514de0ec1f58e",
+        expectedHash = "sha256:2a14a42cf7d9dfaea45a1f01e0a4624581aa484b6b7472af7471e24cc3475e0e",
     }),
     wedge = table.freeze({
         module = manifests.G2WedgeManifestV03,
-        expectedHash = "sha256:ed6065f9ae384cec965fa362292fadba74a9636f536482dea6ddce9c28a9756a",
+        expectedHash = "sha256:622588a04e957269e79319c0f6c94bcc2cf13088fd8a1b61d94580e572f645ee",
     }),
     decorative = table.freeze({
         module = manifests.G2DecorativeManifestV03,
-        expectedHash = "sha256:b172d42a1b717b82364ae5715c09a1fd34c6805749907074c357241deca917db",
+        expectedHash = "sha256:6b40484c8e8ba1de1460b1ddea72d9b676b63144df02ca6fbd45609304f0260f",
     }),
 })
 
@@ -47,6 +47,7 @@ local api = {
     environment = environment,
     fixtures = fixtures,
     measurements = {},
+    replacementCount = 0,
 }
 
 local function boundedText(value, fallback, maximum)
@@ -67,6 +68,7 @@ local function reportBuildFailure(buildError)
 end
 
 function api:build(fixtureId, runKind, runIndex, options)
+    local replacing = self.current ~= nil
     local fixture = fixtures[fixtureId]
     assert(fixture ~= nil, "unknown G2e fixture: " .. tostring(fixtureId))
     local manifest = require(fixture.module)
@@ -95,6 +97,9 @@ function api:build(fixtureId, runKind, runIndex, options)
     table.insert(self.measurements, measurement)
     self.current = result
     self.currentFixtureId = fixtureId
+    if replacing then
+        self.replacementCount += 1
+    end
     return result
 end
 
@@ -126,6 +131,18 @@ function api:runFailureBoundary(boundary)
     assert(builder:currentSession().candidate.root == previous, boundary .. " changed the active session")
     assert(G2eAcceptanceHarness.assertSingleActiveRoot() == previous, boundary .. " changed the active root")
     print("[G2 acceptance] failure boundary PASS", boundary, buildError.code)
+end
+
+function api:observeGameplay()
+    assert(self.current ~= nil, "a G2e fixture must be active")
+    local fixture = fixtures[self.currentFixtureId]
+    assert(fixture ~= nil, "active G2e fixture identity changed")
+    return G2eAcceptanceHarness.emitGameplayObservation(
+        self.currentFixtureId,
+        require(fixture.module),
+        self.current.session,
+        self.replacementCount
+    )
 end
 
 G2eAcceptanceHarness.bindControl(api)

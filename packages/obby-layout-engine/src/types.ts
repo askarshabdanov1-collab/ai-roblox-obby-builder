@@ -7,6 +7,7 @@ export type LayoutEngineErrorCode =
   | "unsupported-mechanic"
   | "deferred-mechanic"
   | "packing-limit"
+  | "geometry-integrity"
   | "reachability-infeasible"
   | "reachability-indeterminate"
   | "output-limit"
@@ -44,6 +45,7 @@ export type LayoutCoveredOperation =
   | "seed-derivation"
   | "route-packing"
   | "recipe-expansion"
+  | "geometry-integrity"
   | "reachability-classification"
   | "bundle-validation"
   | "serialization-preparation";
@@ -73,7 +75,7 @@ export type SerpentineCell = Readonly<{
 
 export type NativePartRecipeMetadata = Readonly<{
   recipeId: string;
-  recipeVersion: "1.0.0";
+  recipeVersion: "2.0.0";
   primitiveFamily: "native-parts";
   gameplayAuthority: "native-gameplay";
 }>;

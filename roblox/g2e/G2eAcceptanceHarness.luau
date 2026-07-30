@@ -1,10 +1,12 @@
 local HttpService = game:GetService("HttpService")
 local G2eObservationV03 = require("./G2eObservationV03")
+local G2eGameplayObservationV03 = require("./G2eGameplayObservationV03")
 
 local G2eAcceptanceHarness = {}
 
 local MEASUREMENT_PREFIX = "[G2 runtime measurement] "
 local OBSERVATION_PREFIX = "[G2 acceptance observation] "
+local GAMEPLAY_OBSERVATION_PREFIX = "[G2 gameplay observation] "
 
 local function approximately(actual, expected)
     return math.abs(actual - expected) < 0.00001
@@ -159,14 +161,29 @@ function G2eAcceptanceHarness.emitMeasurement(
     configuredCollections
 )
     local counts = G2eAcceptanceHarness.assertScene(result, manifest)
+    local geometry = G2eGameplayObservationV03.geometrySummary(manifest)
     local collections = configuredCollections
         or {
-            observations = { { id = "scene-assertions", status = "PASS" } },
+            observations = {
+                { id = "scene-assertions", status = "PASS" },
+                {
+                    id = "zero-unauthorized-geometry-intersections",
+                    status = if geometry.unauthorizedGeometryIntersections == 0 then "PASS" else "FAIL",
+                },
+                {
+                    id = "zero-coplanar-visible-surfaces",
+                    status = if geometry.coplanarVisibleSurfaces == 0 then "PASS" else "FAIL",
+                },
+            },
             warnings = {},
             errors = {},
-            evidence = { "scene-assertions" },
-            requiredObservationIds = { "scene-assertions" },
-            requiredEvidenceIds = { "scene-assertions" },
+            evidence = { "scene-assertions", "geometry-integrity" },
+            requiredObservationIds = {
+                "scene-assertions",
+                "zero-unauthorized-geometry-intersections",
+                "zero-coplanar-visible-surfaces",
+            },
+            requiredEvidenceIds = { "scene-assertions", "geometry-integrity" },
         }
     local observation = G2eObservationV03.build({
         fixtureId = fixtureId,
@@ -214,6 +231,19 @@ function G2eAcceptanceHarness.formatTypedDiagnostic(code, field, message)
     return G2eObservationV03.formatTypedDiagnostic(code, field, message)
 end
 
+function G2eAcceptanceHarness.emitGameplayObservation(fixtureId, manifest, session, replacementCount)
+    local snapshot = table.clone(session:acceptanceSnapshot())
+    snapshot.replacementCount = replacementCount
+    local observation = G2eGameplayObservationV03.build(fixtureId, manifest, snapshot)
+    print(GAMEPLAY_OBSERVATION_PREFIX .. HttpService:JSONEncode(observation))
+    if observation.status ~= "PASS" then
+        warn(
+            "[G2 acceptance diagnostic] code=gameplay-evidence-incomplete field=observations message=manual checks remain"
+        )
+    end
+    return observation
+end
+
 function G2eAcceptanceHarness.bindControl(api)
     local folder = Instance.new("Folder")
     folder.Name = "G2eControl"
@@ -230,6 +260,9 @@ function G2eAcceptanceHarness.bindControl(api)
         end,
         RunFailureBoundary = function(boundary)
             return api:runFailureBoundary(boundary)
+        end,
+        ObserveGameplay = function()
+            return api:observeGameplay()
         end,
     }) do
         local bindable = Instance.new("BindableFunction")

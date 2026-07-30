@@ -58,6 +58,11 @@ function G2RuntimeHarnessV03.new()
     tracker.placements = {}
     tracker.kills = 0
     tracker.touchConnectionAttempts = 0
+    tracker.playerUserIds = {}
+    tracker.playerCharacters = {}
+    tracker.playerAttributes = {}
+    tracker.characterRoots = {}
+    tracker.humanoids = {}
 
     local players = {}
     local playerAdded = signal(tracker)
@@ -95,6 +100,9 @@ function G2RuntimeHarnessV03.new()
         end,
         waitForRootPart = function(character, _timeoutSeconds)
             tracker.waits += 1
+            if tracker.characterRoots[character] ~= nil then
+                return tracker.characterRoots[character]
+            end
             if character.waitHook ~= nil then
                 local hook = character.waitHook
                 character.waitHook = nil
@@ -105,7 +113,30 @@ function G2RuntimeHarnessV03.new()
         cframe = partRuntime.cframe,
         killHumanoid = function(humanoid)
             tracker.kills += 1
-            humanoid.Health = 0
+            local state = tracker.humanoids[humanoid]
+            if state ~= nil then
+                state.health = 0
+            else
+                humanoid.Health = 0
+            end
+        end,
+        playerUserId = function(currentPlayer)
+            return tracker.playerUserIds[currentPlayer] or (currentPlayer and currentPlayer.UserId or nil)
+        end,
+        playerCharacter = function(currentPlayer)
+            return tracker.playerCharacters[currentPlayer] or (currentPlayer and currentPlayer.Character or nil)
+        end,
+        setPlayerAttribute = function(currentPlayer, name, value)
+            local attributes = tracker.playerAttributes[currentPlayer]
+            if attributes ~= nil then
+                attributes[name] = value
+            else
+                currentPlayer:SetAttribute(name, value)
+            end
+        end,
+        isHumanoid = function(value)
+            local state = tracker.humanoids[value]
+            return (state ~= nil and state.valid) or (type(value) == "table" and type(value.Health) == "number")
         end,
         getPlayers = function()
             return table.clone(players)
@@ -132,6 +163,36 @@ function G2RuntimeHarnessV03.new()
 
     function harness:newPlayer(userId)
         return player(tracker, userId)
+    end
+
+    function harness:newOpaquePlayer(userId)
+        local value = function() end
+        tracker.playerUserIds[value] = userId
+        tracker.playerAttributes[value] = {}
+        return value
+    end
+
+    function harness:newOpaqueCharacter(currentPlayer)
+        local character = function() end
+        local humanoid = function() end
+        local rootPart = FakeInstanceV03.new("Part", tracker)
+        rootPart.Name = "HumanoidRootPart"
+        tracker.characterRoots[character] = rootPart
+        tracker.humanoids[humanoid] = { valid = true, health = 100 }
+        tracker.playerCharacters[currentPlayer] = character
+        return character, humanoid, rootPart
+    end
+
+    function harness:invalidateOpaqueHumanoid(humanoid)
+        local state = tracker.humanoids[humanoid]
+        if state ~= nil then
+            state.valid = false
+        end
+    end
+
+    function harness:opaqueHumanoidHealth(humanoid)
+        local state = tracker.humanoids[humanoid]
+        return state and state.health or nil
     end
 
     function harness:addPlayer(currentPlayer)

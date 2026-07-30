@@ -196,6 +196,22 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
     expect(project).toContain("G2eObservationV03");
   });
 
+  it("uses runtime adapters instead of fake table types for Roblox identities", async () => {
+    const session = await readFile(
+      "roblox/src/ReplicatedStorage/ObbyRuntime/RuntimeSessionV03.luau",
+      "utf8",
+    );
+    const builder = await readFile(
+      "roblox/src/ReplicatedStorage/ObbyRuntime/BuilderV03.luau",
+      "utf8",
+    );
+    expect(session).not.toContain('type(expected.player) ~= "table"');
+    expect(session).not.toContain('type(humanoid) ~= "table"');
+    expect(session).toContain("self.runtime.playerUserId");
+    expect(session).toContain("self.runtime.isHumanoid");
+    expect(builder).toContain('typeof(player) ~= "Instance"');
+  });
+
   it("keeps G2d opt-in and excludes later-phase integrations", async () => {
     const runtimeDirectory = "roblox/src/ReplicatedStorage/ObbyRuntime";
     const bootstrap = await readFile(

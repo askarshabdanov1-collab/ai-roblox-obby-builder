@@ -51,6 +51,27 @@ local function defaultRuntime()
         killHumanoid = function(humanoid)
             humanoid.Health = 0
         end,
+        playerUserId = function(player)
+            if typeof(player) ~= "Instance" or not player:IsA("Player") then
+                return nil
+            end
+            return player.UserId
+        end,
+        playerCharacter = function(player)
+            if typeof(player) ~= "Instance" or not player:IsA("Player") then
+                return nil
+            end
+            return player.Character
+        end,
+        setPlayerAttribute = function(player, name, value)
+            if typeof(player) ~= "Instance" or not player:IsA("Player") then
+                error("player identity is invalid")
+            end
+            player:SetAttribute(name, value)
+        end,
+        isHumanoid = function(value)
+            return typeof(value) == "Instance" and value:IsA("Humanoid")
+        end,
         getPlayers = function()
             return Players:GetPlayers()
         end,
@@ -76,6 +97,10 @@ local function validRuntime(runtime)
         and type(runtime.waitForRootPart) == "function"
         and type(runtime.cframe) == "function"
         and type(runtime.killHumanoid) == "function"
+        and type(runtime.playerUserId) == "function"
+        and type(runtime.playerCharacter) == "function"
+        and type(runtime.setPlayerAttribute) == "function"
+        and type(runtime.isHumanoid) == "function"
         and type(runtime.getPlayers) == "function"
         and type(runtime.connectPlayerAdded) == "function"
         and type(runtime.connectPlayerRemoving) == "function"
@@ -127,7 +152,7 @@ function BuilderV03:_bindPlayer(player)
     end
     self.playerConnectionByPlayer[player] = connection
     table.insert(self.playerOrder, player)
-    local character = player.Character
+    local character = self.runtime.playerCharacter(player)
     if character ~= nil and self.rootState.currentSession ~= nil then
         self:_deferPlacement(player, character)
     end
@@ -308,7 +333,7 @@ function BuilderV03:build(moduleScript, expectedManifestHash, options)
 
     local cleaned, cleanupError = SceneBuilderCoreV03.finalizeCommit(cleanupReceipt)
     for _, player in ipairs(players) do
-        local character = player.Character
+        local character = self.runtime.playerCharacter(player)
         if character ~= nil then
             self:_deferPlacement(player, character)
         end

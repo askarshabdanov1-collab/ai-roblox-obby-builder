@@ -15,12 +15,12 @@ return {
                 ["maximum"] = {
                     ["x"] = 4,
                     ["y"] = 13,
-                    ["z"] = -4,
+                    ["z"] = 12,
                 },
                 ["minimum"] = {
                     ["x"] = -4,
                     ["y"] = 1,
-                    ["z"] = -12,
+                    ["z"] = 4,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -35,12 +35,12 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 20,
+                    ["x"] = 28,
                     ["y"] = 13,
                     ["z"] = -4,
                 },
                 ["minimum"] = {
-                    ["x"] = 12,
+                    ["x"] = 20,
                     ["y"] = 1,
                     ["z"] = -12,
                 },
@@ -57,14 +57,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 36,
+                    ["x"] = 52,
                     ["y"] = 13,
-                    ["z"] = -4,
+                    ["z"] = 12,
                 },
                 ["minimum"] = {
-                    ["x"] = 28,
+                    ["x"] = 44,
                     ["y"] = 1,
-                    ["z"] = -12,
+                    ["z"] = 4,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -79,14 +79,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 52,
+                    ["x"] = 76,
                     ["y"] = 13,
-                    ["z"] = -4,
+                    ["z"] = 12,
                 },
                 ["minimum"] = {
-                    ["x"] = 44,
+                    ["x"] = 68,
                     ["y"] = 1,
-                    ["z"] = -12,
+                    ["z"] = 4,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -101,14 +101,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 68,
+                    ["x"] = 100,
                     ["y"] = 13,
-                    ["z"] = -4,
+                    ["z"] = 12,
                 },
                 ["minimum"] = {
-                    ["x"] = 60,
+                    ["x"] = 92,
                     ["y"] = 1,
-                    ["z"] = -12,
+                    ["z"] = 4,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -123,14 +123,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 84,
+                    ["x"] = 124,
                     ["y"] = 13,
-                    ["z"] = 12,
+                    ["z"] = -4,
                 },
                 ["minimum"] = {
-                    ["x"] = 76,
+                    ["x"] = 116,
                     ["y"] = 1,
-                    ["z"] = 4,
+                    ["z"] = -12,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -145,12 +145,12 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 100,
+                    ["x"] = 148,
                     ["y"] = 13,
                     ["z"] = -4,
                 },
                 ["minimum"] = {
-                    ["x"] = 92,
+                    ["x"] = 140,
                     ["y"] = 1,
                     ["z"] = -12,
                 },
@@ -167,12 +167,12 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 124,
+                    ["x"] = 164,
                     ["y"] = 13,
                     ["z"] = 4,
                 },
                 ["minimum"] = {
-                    ["x"] = 116,
+                    ["x"] = 156,
                     ["y"] = 1,
                     ["z"] = -4,
                 },
@@ -189,14 +189,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 116,
+                    ["x"] = 172,
                     ["y"] = 13,
-                    ["z"] = 28,
+                    ["z"] = 36,
                 },
                 ["minimum"] = {
-                    ["x"] = 108,
+                    ["x"] = 164,
                     ["y"] = 1,
-                    ["z"] = 20,
+                    ["z"] = 28,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -211,14 +211,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 100,
+                    ["x"] = 148,
                     ["y"] = 13,
-                    ["z"] = 12,
+                    ["z"] = 36,
                 },
                 ["minimum"] = {
-                    ["x"] = 92,
+                    ["x"] = 140,
                     ["y"] = 1,
-                    ["z"] = 4,
+                    ["z"] = 28,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -233,14 +233,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 84,
+                    ["x"] = 124,
                     ["y"] = 13,
-                    ["z"] = 12,
+                    ["z"] = 20,
                 },
                 ["minimum"] = {
-                    ["x"] = 76,
+                    ["x"] = 116,
                     ["y"] = 1,
-                    ["z"] = 4,
+                    ["z"] = 12,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -255,14 +255,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 68,
+                    ["x"] = 100,
                     ["y"] = 13,
-                    ["z"] = 12,
+                    ["z"] = 20,
                 },
                 ["minimum"] = {
-                    ["x"] = 60,
+                    ["x"] = 92,
                     ["y"] = 1,
-                    ["z"] = 4,
+                    ["z"] = 12,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -277,14 +277,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 52,
+                    ["x"] = 76,
                     ["y"] = 13,
-                    ["z"] = 28,
+                    ["z"] = 20,
                 },
                 ["minimum"] = {
-                    ["x"] = 44,
+                    ["x"] = 68,
                     ["y"] = 1,
-                    ["z"] = 20,
+                    ["z"] = 12,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -299,14 +299,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 36,
+                    ["x"] = 52,
                     ["y"] = 13,
-                    ["z"] = 12,
+                    ["z"] = 36,
                 },
                 ["minimum"] = {
-                    ["x"] = 28,
+                    ["x"] = 44,
                     ["y"] = 1,
-                    ["z"] = 4,
+                    ["z"] = 28,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -321,14 +321,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 20,
+                    ["x"] = 28,
                     ["y"] = 13,
-                    ["z"] = 28,
+                    ["z"] = 20,
                 },
                 ["minimum"] = {
-                    ["x"] = 12,
+                    ["x"] = 20,
                     ["y"] = 1,
-                    ["z"] = 20,
+                    ["z"] = 12,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -394,18 +394,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = -10,
+                                ["x"] = -12,
                                 ["y"] = 2,
                                 ["z"] = 6,
                             },
                             ["minimum"] = {
-                                ["x"] = -22,
+                                ["x"] = -24,
                                 ["y"] = 0,
                                 ["z"] = -6,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:54a335a320c68cd334fd05528936c689ca97d08ec9b5db9747954c5cc481984b",
+                        ["normalizedGeometryHash"] = "sha256:d7b3bdc653b9bd2aa605fd821dc6e0837c25407e9c04d3e2757eca7084197533",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -425,7 +425,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = -16,
+                            ["x"] = -18,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -456,18 +456,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 0,
+                                ["x"] = -5.4,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = -8,
+                                ["x"] = -11.4,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:d9b25c75819c0325ff5a5f85df6ad0b3aa42bf87edcf74cf26551e7692ff6bc0",
+                        ["normalizedGeometryHash"] = "sha256:89f104c837a219588df9b509d0352406a0325b414dbfa68005b78e2db7e23a0a",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -476,9 +476,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -490,7 +490,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = -4,
+                            ["x"] = -8.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -521,18 +521,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 4,
+                                ["x"] = 3,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = -4,
+                                ["x"] = -3,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:6957f729f4cd7b0b79a2cd180abe5719d67dcd5f6c1fd292c3df275c03c28516",
+                        ["normalizedGeometryHash"] = "sha256:895c6468a9bfd48e3b0afae382365bafcd3fb293f52f041d7f1afd491b94f806",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -541,9 +541,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -586,18 +586,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 8,
+                                ["x"] = 11.4,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 0,
+                                ["x"] = 5.4,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:667d581f7e3cd9ba282ad5f0c01924e03d9ff1e5b7db9c1af583f68c6aa3ccec",
+                        ["normalizedGeometryHash"] = "sha256:71af17a6a8e687b84606bf56c22731df35d5fdeb8957d28e28dbd947d5f2935d",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -606,9 +606,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -620,7 +620,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 4,
+                            ["x"] = 8.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -651,18 +651,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 16,
+                                ["x"] = 18.6,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 8,
+                                ["x"] = 12.6,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:c3db48069365516e39aa7403efd608534fbc011a96a9d357dcf2698d1b45960f",
+                        ["normalizedGeometryHash"] = "sha256:8e39fefb294d3e220358b87dbf06bdc78e24995f0e2b7b7a5b7e1a0477a12969",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -671,9 +671,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -685,7 +685,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 12,
+                            ["x"] = 15.6,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -716,18 +716,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 20,
+                                ["x"] = 27,
                                 ["y"] = 4,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 12,
+                                ["x"] = 21,
                                 ["y"] = 2,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a400df07fb1d2884883e27c64224c995320feef2c7ff48a6ba7a4c379d5fb84f",
+                        ["normalizedGeometryHash"] = "sha256:69792038224a3bf73068d6b89df0175732182dd67eaa86e3f587e2f53349efc3",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 4,
                     },
@@ -736,9 +736,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -750,7 +750,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 16,
+                            ["x"] = 24,
                             ["y"] = 3,
                             ["z"] = 0,
                         },
@@ -781,18 +781,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 24,
+                                ["x"] = 35.4,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 16,
+                                ["x"] = 29.4,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:095e32ef23f864b42dc1114df0acfa058895fae8e941bf51f50e7115e76a9b0a",
+                        ["normalizedGeometryHash"] = "sha256:79138248026c99017bdbf086ed9fbb769cbe3385bfd67358d33531e905ff0119",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -801,9 +801,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -815,7 +815,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 20,
+                            ["x"] = 32.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -846,18 +846,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 32,
+                                ["x"] = 42.6,
                                 ["y"] = 2,
-                                ["z"] = 3.875,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 24,
+                                ["x"] = 36.6,
                                 ["y"] = 0,
-                                ["z"] = -3.875,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:3a98937c0654109157248acf9cabde431f0298ed7f428851ff846dfdf5e583d1",
+                        ["normalizedGeometryHash"] = "sha256:2ee98e87e8da138c57da511440264d542ab613ae821d8906a4db8116adacf5b1",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -866,269 +866,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.75,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-03",
-                        ["sourceStageId"] = "stage-03",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 28,
-                            ["y"] = 1,
-                            ["z"] = 0,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = -90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 36,
-                                ["y"] = 2,
-                                ["z"] = 3.875,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 28,
-                                ["y"] = 0,
-                                ["z"] = -3.875,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:3154e007e1413e5ccde8db434b71a900477e08706f0fd96f86e82512a894311e",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage03Route002",
-                    ["order"] = 8,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 7.75,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-03",
-                        ["sourceStageId"] = "stage-03",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 32,
-                            ["y"] = 1,
-                            ["z"] = 0,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = -90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 40,
-                                ["y"] = 2,
-                                ["z"] = 3.875,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 32,
-                                ["y"] = 0,
-                                ["z"] = -3.875,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:e81a3687eab213a0a31a6fc966eb826e24310e5f74ec33c5c495f78d5a3f0a3f",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage03Route003",
-                    ["order"] = 9,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 7.75,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-03",
-                        ["sourceStageId"] = "stage-03",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 36,
-                            ["y"] = 1,
-                            ["z"] = 0,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = -90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#F94144",
-                        ["colorRole"] = "hazard",
-                        ["material"] = "Neon",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["killMode"] = "touch",
-                        ["kind"] = "kill",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = false,
-                        ["canQuery"] = true,
-                        ["canTouch"] = true,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 48,
-                                ["y"] = -22.5,
-                                ["z"] = 16,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 16,
-                                ["y"] = -23.5,
-                                ["z"] = -16,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f81aa99cfbf2455d700209eb0fb023088940f8b7fca9f1d6a18350af2c654657",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = -22.5,
-                    },
-                    ["id"] = "Stage03Hazard001",
-                    ["order"] = 10,
-                    ["role"] = "kill",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 32,
-                        ["y"] = 1,
-                        ["z"] = 32,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceHazardId"] = "hazard-03",
-                        ["sourceMechanicIntentId"] = "mechanic-intent-03",
-                        ["sourceStageId"] = "stage-03",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 32,
-                            ["y"] = -23,
-                            ["z"] = 0,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = -90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 47,
-                                ["y"] = 2,
-                                ["z"] = 4,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 41,
-                                ["y"] = 0,
-                                ["z"] = -4,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f6ba4ad307a39f91851d45d4f32f6647643aa67a2106e410ceaf06f216b8487b",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage04Route001",
-                    ["order"] = 11,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -1137,12 +875,12 @@ return {
                             "asset-decoration",
                             "asset-gameplay-route",
                         },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-04",
-                        ["sourceStageId"] = "stage-04",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-03",
+                        ["sourceStageId"] = "stage-03",
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 44,
+                            ["x"] = 39.6,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1175,25 +913,25 @@ return {
                             ["maximum"] = {
                                 ["x"] = 51,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
                                 ["x"] = 45,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f077dd97cdff15783b95d259d7d9731b4dd834740333f98e416e361d51ce0fa4",
+                        ["normalizedGeometryHash"] = "sha256:5f268880104c207f117eaf1691963a7f4e03b9d7396710edfa67325865de6b8f",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
-                    ["id"] = "Stage04Route002",
-                    ["order"] = 12,
+                    ["id"] = "Stage03Route002",
+                    ["order"] = 8,
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -1202,8 +940,8 @@ return {
                             "asset-decoration",
                             "asset-gameplay-route",
                         },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-04",
-                        ["sourceStageId"] = "stage-04",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-03",
+                        ["sourceStageId"] = "stage-03",
                     },
                     ["transform"] = {
                         ["position"] = {
@@ -1238,27 +976,159 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 55,
+                                ["x"] = 59.4,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 49,
+                                ["x"] = 53.4,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:6019c4f5b6499a5ce0afe33ad006779f263a612ff9c28d1f71c3562a97df8433",
+                        ["normalizedGeometryHash"] = "sha256:311319eb2a9cd846b7cda5431b3391563b20e3ff8bed38904a28b7ccf08c0908",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
-                    ["id"] = "Stage04Route003",
-                    ["order"] = 13,
+                    ["id"] = "Stage03Route003",
+                    ["order"] = 9,
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-03",
+                        ["sourceStageId"] = "stage-03",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 56.4,
+                            ["y"] = 1,
+                            ["z"] = 0,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = -90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#F94144",
+                        ["colorRole"] = "hazard",
+                        ["material"] = "Neon",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["killMode"] = "touch",
+                        ["kind"] = "kill",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = false,
+                        ["canQuery"] = true,
+                        ["canTouch"] = true,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 59,
+                                ["y"] = -22.5,
+                                ["z"] = 11,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 37,
+                                ["y"] = -23.5,
+                                ["z"] = -11,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:5a9b86fe5f8d3ba6e3636c866ea9ec47141e74d2731acb234796c15edb29bdbe",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = -22.5,
+                    },
+                    ["id"] = "Stage03Hazard001",
+                    ["order"] = 10,
+                    ["role"] = "kill",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 22,
+                        ["y"] = 1,
+                        ["z"] = 22,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceHazardId"] = "hazard-03",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-03",
+                        ["sourceStageId"] = "stage-03",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 48,
+                            ["y"] = -23,
+                            ["z"] = 0,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = -90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 66.6,
+                                ["y"] = 2,
+                                ["z"] = 3,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 60.6,
+                                ["y"] = 0,
+                                ["z"] = -3,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:aaf31d3cd6e24cdbc1cab542a359ae5159fd91b36ce6cc8a5f9fac68b1fe998e",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage04Route001",
+                    ["order"] = 11,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -1272,7 +1142,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 52,
+                            ["x"] = 63.6,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1303,41 +1173,41 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 64,
+                                ["x"] = 75,
                                 ["y"] = 2,
-                                ["z"] = 3.875,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 56,
+                                ["x"] = 69,
                                 ["y"] = 0,
-                                ["z"] = -3.875,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:808047e97f93e2997c2e5302eb1530724ae3e7377a5a76078a08ac7e437462c5",
+                        ["normalizedGeometryHash"] = "sha256:e97aa250c32f0a82c7ea1083285d0f8d94c57e2d2242e3bbb5b9e9f1352b69dd",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
-                    ["id"] = "Stage05Route001",
-                    ["order"] = 14,
+                    ["id"] = "Stage04Route002",
+                    ["order"] = 12,
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.75,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
                             "asset-decoration",
                             "asset-gameplay-route",
                         },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-05",
-                        ["sourceStageId"] = "stage-05",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-04",
+                        ["sourceStageId"] = "stage-04",
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 60,
+                            ["x"] = 72,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1368,29 +1238,94 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 68,
+                                ["x"] = 83.4,
                                 ["y"] = 2,
-                                ["z"] = 3.875,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 60,
+                                ["x"] = 77.4,
                                 ["y"] = 0,
-                                ["z"] = -3.875,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:5f829a572c5417d0fdaf4596f1be6ff409d81e0e5d3a0eac6470f08f76f35821",
+                        ["normalizedGeometryHash"] = "sha256:51b4d297b7514db3af4a0f17f47e4aff3f226749d4627d05cb6141a5151e64c5",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
-                    ["id"] = "Stage05Route002",
-                    ["order"] = 15,
+                    ["id"] = "Stage04Route003",
+                    ["order"] = 13,
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.75,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-04",
+                        ["sourceStageId"] = "stage-04",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 80.4,
+                            ["y"] = 1,
+                            ["z"] = 0,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = -90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 90.6,
+                                ["y"] = 2,
+                                ["z"] = 3,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 84.6,
+                                ["y"] = 0,
+                                ["z"] = -3,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:9b557d68d26baf6aa65ea765276f53f7a0fe4e37991553045208503605c73e5e",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage05Route001",
+                    ["order"] = 14,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -1402,7 +1337,72 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 64,
+                            ["x"] = 87.6,
+                            ["y"] = 1,
+                            ["z"] = 0,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = -90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 99,
+                                ["y"] = 2,
+                                ["z"] = 3,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 93,
+                                ["y"] = 0,
+                                ["z"] = -3,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:6cc32450a9335c3c52aa523617121e684f145a1b0b84d3e566034b25549919a2",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage05Route002",
+                    ["order"] = 15,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-05",
+                        ["sourceStageId"] = "stage-05",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 96,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1434,18 +1434,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 72,
+                                ["x"] = 107.4,
                                 ["y"] = 2,
-                                ["z"] = 3.875,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 64,
+                                ["x"] = 101.4,
                                 ["y"] = 0,
-                                ["z"] = -3.875,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:2407b09376a2474362967523feb85cf246ba2cb3a936b4f73e9839867acc3027",
+                        ["normalizedGeometryHash"] = "sha256:7ea1a90788d7bd0636c355a26946ce5ff83cff011ff8890f9638602e4a504a60",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1454,9 +1454,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.75,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -1469,7 +1469,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 68,
+                            ["x"] = 104.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1500,18 +1500,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 79,
+                                ["x"] = 114.6,
                                 ["y"] = 2,
-                                ["z"] = 5,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 73,
+                                ["x"] = 108.6,
                                 ["y"] = 0,
-                                ["z"] = -5,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:285c2c1ca84b723a7982d74569c1a2296e4c09890f5c848598695af2f58d37a7",
+                        ["normalizedGeometryHash"] = "sha256:5b08ff1636ad12ff6407fbde36a8e898828389cb359f57a95b5d6a764561c61b",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1520,7 +1520,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -1534,7 +1534,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 76,
+                            ["x"] = 111.6,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1565,18 +1565,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 83,
+                                ["x"] = 123,
                                 ["y"] = 2,
-                                ["z"] = 5,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 77,
+                                ["x"] = 117,
                                 ["y"] = 0,
-                                ["z"] = -5,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:0e93ae6a98d903c6ae9ed327c4726c45a21c0869566c9565045b4925aa10333c",
+                        ["normalizedGeometryHash"] = "sha256:ccb77e96ddee681ea49b49318553bc7ec87220a605c3a56e7a95fadc1a1ce6c5",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1585,7 +1585,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -1599,7 +1599,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 80,
+                            ["x"] = 120,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1630,18 +1630,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 87,
+                                ["x"] = 131.4,
                                 ["y"] = 2,
-                                ["z"] = 5,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 81,
+                                ["x"] = 125.4,
                                 ["y"] = 0,
-                                ["z"] = -5,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:7937d45a707ea361a4c46916c40c4409ae8f77665471913003c4a1874163c6eb",
+                        ["normalizedGeometryHash"] = "sha256:db36c766102a79f9454fd1f8ddcaa3356e9c77367f9ec7d1716f14e0ff37405e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1650,7 +1650,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -1664,7 +1664,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 84,
+                            ["x"] = 128.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1696,20 +1696,20 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 83,
-                                ["y"] = 0.5,
-                                ["z"] = 8,
+                                ["x"] = 123,
+                                ["y"] = 3,
+                                ["z"] = 12,
                             },
                             ["minimum"] = {
-                                ["x"] = 77,
-                                ["y"] = -0.5,
-                                ["z"] = 2,
+                                ["x"] = 117,
+                                ["y"] = 2,
+                                ["z"] = 6,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:1428093f7045d32fff77695a78d3dd063bea642cddc5dfe683f80fc2a9b2fe99",
+                        ["normalizedGeometryHash"] = "sha256:5a79d9ef0a2ab5ce2e0c9ff8fe8ca47b2541d267e651e8673fe256013f54a98b",
                         ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
+                        ["topSurfaceMaximumY"] = 3,
                     },
                     ["id"] = "Stage06Hazard001",
                     ["order"] = 20,
@@ -1731,9 +1731,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 80,
-                            ["y"] = 0,
-                            ["z"] = 5,
+                            ["x"] = 120,
+                            ["y"] = 2.5,
+                            ["z"] = 9,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -1762,18 +1762,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 95,
+                                ["x"] = 138.6,
                                 ["y"] = 2,
                                 ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 89,
+                                ["x"] = 132.6,
                                 ["y"] = 0,
                                 ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:171cab28966865aa14d9fe9bc80774fe00fb873727196919098589f33dfed2fd",
+                        ["normalizedGeometryHash"] = "sha256:88e2f99a668ef2757697255a36f5875d2dc6980b53b42976094912d8aa54399d",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1796,13 +1796,1057 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 92,
+                            ["x"] = 135.6,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
                             ["y"] = -90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 147,
+                                ["y"] = 2,
+                                ["z"] = 3,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 141,
+                                ["y"] = 0,
+                                ["z"] = -3,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:f52deb8719294602466c772fe408e6986650c3e7b7edc6828eec51a751f744c2",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage07Route002",
+                    ["order"] = 22,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-07",
+                        ["sourceStageId"] = "stage-07",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 144,
+                            ["y"] = 1,
+                            ["z"] = 0,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = -90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 155.4,
+                                ["y"] = 2,
+                                ["z"] = 3,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 149.4,
+                                ["y"] = 0,
+                                ["z"] = -3,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:36194b0e01bf0c74c8e5d3609219b95d97582d0ff3053ce58afeaa366553f36c",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage07Route003",
+                    ["order"] = 23,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-07",
+                        ["sourceStageId"] = "stage-07",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 152.4,
+                            ["y"] = 1,
+                            ["z"] = 0,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = -90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 162.6,
+                                ["y"] = 2,
+                                ["z"] = 3,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 156.6,
+                                ["y"] = 0,
+                                ["z"] = -3,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:c2ff3d2f9437052f1eeaec40bb4347020bfd80522d093c03f38127176bafd4bf",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage08Route001",
+                    ["order"] = 24,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-08",
+                        ["sourceStageId"] = "stage-08",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 159.6,
+                            ["y"] = 1,
+                            ["z"] = 0,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = -90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 171,
+                                ["y"] = 2,
+                                ["z"] = 3,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 165,
+                                ["y"] = 0,
+                                ["z"] = -3,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:110f953db6a2c245d8f12f07d2422a3210f3d497ffa2e0d009b3c35f094d74ee",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage08Route002",
+                    ["order"] = 25,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-08",
+                        ["sourceStageId"] = "stage-08",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 168,
+                            ["y"] = 1,
+                            ["z"] = 0,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = -180,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 171,
+                                ["y"] = 2,
+                                ["z"] = 11.4,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 165,
+                                ["y"] = 0,
+                                ["z"] = 5.4,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:b26518f9225c9475def6718884ead6120ee4e86a6aeedfab1e07a8051c111976",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage08Route003",
+                    ["order"] = 26,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-08",
+                        ["sourceStageId"] = "stage-08",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 168,
+                            ["y"] = 1,
+                            ["z"] = 8.4,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = -180,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 171,
+                                ["y"] = 2,
+                                ["z"] = 18.6,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 165,
+                                ["y"] = 0,
+                                ["z"] = 12.6,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:c36f7a0d3ec1e9ddc0d4a7f7663d0bfaf17014fd7bd76f0c9f0b115bc8e84118",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage09Route001",
+                    ["order"] = 27,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-09",
+                        ["sourceStageId"] = "stage-09",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 168,
+                            ["y"] = 1,
+                            ["z"] = 15.6,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = -180,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 171,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 165,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:281f7d45da3f891094a823ca2736805238f83f8ef0d657de1b0e157e1ace1856",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage09Route002",
+                    ["order"] = 28,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-09",
+                        ["sourceStageId"] = "stage-09",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 168,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 162.6,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 156.6,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:e20b3a2b0fec78dd5cc0b3eb6602193f8071e37d945e418eaf026b7a8615b9a5",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage09Route003",
+                    ["order"] = 29,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-09",
+                        ["sourceStageId"] = "stage-09",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 159.6,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#F94144",
+                        ["colorRole"] = "hazard",
+                        ["material"] = "Neon",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["killMode"] = "touch",
+                        ["kind"] = "kill",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = false,
+                        ["canQuery"] = true,
+                        ["canTouch"] = true,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 179,
+                                ["y"] = -22.5,
+                                ["z"] = 35,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 157,
+                                ["y"] = -23.5,
+                                ["z"] = 13,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:5f209c2df567220a9507d01ea26f6cfb86e2270a36c8c8972934dc726ae63488",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = -22.5,
+                    },
+                    ["id"] = "Stage09Hazard001",
+                    ["order"] = 30,
+                    ["role"] = "kill",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 22,
+                        ["y"] = 1,
+                        ["z"] = 22,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceHazardId"] = "hazard-09",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-09",
+                        ["sourceStageId"] = "stage-09",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 168,
+                            ["y"] = -23,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 155.4,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 149.4,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:c7b4d66fe71c6e7c423b911d7524e9c10df34a831923479a4a5dbda66ee501c7",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage10Route001",
+                    ["order"] = 31,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-10",
+                        ["sourceStageId"] = "stage-10",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 152.4,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 147,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 141,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:6110e174f6a44b5c2c393028d70756cc1ab2cf932290d59e7d28ffb1a28f5d07",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage10Route002",
+                    ["order"] = 32,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-10",
+                        ["sourceStageId"] = "stage-10",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 144,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#F9C74F",
+                        ["colorRole"] = "reward",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["checkpointOrder"] = 2,
+                        ["kind"] = "checkpoint",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = true,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 138.6,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 132.6,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:f28ffcf0ba234f80aec214e23ec0b6bbd2c0b6c554167444ca49be90791533c1",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Checkpoint002",
+                    ["order"] = 33,
+                    ["role"] = "checkpoint",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceCheckpointId"] = "checkpoint-10",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-10",
+                        ["sourceStageId"] = "stage-10",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 135.6,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 131.4,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 125.4,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:b2c67f825a2c5ff873bf88c1e8c7f9222176c3b96dbba0c5c2c5abffbf1ecf90",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage11Route001",
+                    ["order"] = 34,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-11",
+                        ["sourceStageId"] = "stage-11",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 128.4,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 123,
+                                ["y"] = 6,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 117,
+                                ["y"] = 4,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:cd89f6ab7f75f5c2d0850101a1165a6b3cce3cff6dea52840efd0e9014a0b99f",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 6,
+                    },
+                    ["id"] = "Stage11Route002",
+                    ["order"] = 35,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-11",
+                        ["sourceStageId"] = "stage-11",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 120,
+                            ["y"] = 5,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 114.6,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 108.6,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:9441c4e077fddc7977e4c03d68d2c6cce63552124352e293e66689afd7154206",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage11Route003",
+                    ["order"] = 36,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-11",
+                        ["sourceStageId"] = "stage-11",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 111.6,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 107.4,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 101.4,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:908f9d4c989c3c01f69a1d435c3bc9d6f2ea54e6a076d89caea5c75c75525e77",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage12Route001",
+                    ["order"] = 37,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-12",
+                        ["sourceStageId"] = "stage-12",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 104.4,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
                             ["z"] = 0,
                         },
                     },
@@ -1829,1060 +2873,16 @@ return {
                             ["maximum"] = {
                                 ["x"] = 99,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
                                 ["x"] = 93,
                                 ["y"] = 0,
-                                ["z"] = -2,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:aa56edd422399600610af7ee022d2db3bc16139ed4a2c1b8d23f9019ac8c927a",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage07Route002",
-                    ["order"] = 22,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 6,
-                        ["y"] = 2,
-                        ["z"] = 6,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-07",
-                        ["sourceStageId"] = "stage-07",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 96,
-                            ["y"] = 1,
-                            ["z"] = 1,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = -90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 103,
-                                ["y"] = 2,
-                                ["z"] = 3,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 97,
-                                ["y"] = 0,
-                                ["z"] = -3,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f07d40c41858e60d1a18bc5a516726d82a9f1f0c8254f9c875d3f62c9687e6ae",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage07Route003",
-                    ["order"] = 23,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 6,
-                        ["y"] = 2,
-                        ["z"] = 6,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-07",
-                        ["sourceStageId"] = "stage-07",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 100,
-                            ["y"] = 1,
-                            ["z"] = 0,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = -90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 111,
-                                ["y"] = 2,
-                                ["z"] = 4,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 105,
-                                ["y"] = 0,
-                                ["z"] = -4,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:0843727852d929ace3d034ac19e59f98f538d9ddb588fee20c747e6f6e2db368",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage08Route001",
-                    ["order"] = 24,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
-                        ["y"] = 2,
-                        ["z"] = 6,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-08",
-                        ["sourceStageId"] = "stage-08",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 108,
-                            ["y"] = 1,
-                            ["z"] = 0,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = -90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 113,
-                                ["y"] = 2,
-                                ["z"] = 6,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 107,
-                                ["y"] = 0,
-                                ["z"] = -2,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:8c18c9e8d2c1efac72a43e4ca92136d9c0048a823e375deecc30906faffbda6b",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage08Route002",
-                    ["order"] = 25,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 6,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-08",
-                        ["sourceStageId"] = "stage-08",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 110,
-                            ["y"] = 1,
-                            ["z"] = 2,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = -180,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 115,
-                                ["y"] = 2,
-                                ["z"] = 8,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 109,
-                                ["y"] = 0,
-                                ["z"] = 0,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:c03b61bd4fbe07804a47d014e6cb5ed714fb9636817828aae80425d0beea7976",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage08Route003",
-                    ["order"] = 26,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 6,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-08",
-                        ["sourceStageId"] = "stage-08",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 112,
-                            ["y"] = 1,
-                            ["z"] = 4,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = -180,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 115,
-                                ["y"] = 2,
-                                ["z"] = 16,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 109,
-                                ["y"] = 0,
-                                ["z"] = 8,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a9ae2371bd48655d1c017451f1449317402a4cd993ababa9a17f9725b45ff0d1",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage09Route001",
-                    ["order"] = 27,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 6,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-09",
-                        ["sourceStageId"] = "stage-09",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 112,
-                            ["y"] = 1,
-                            ["z"] = 12,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = -180,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 113,
-                                ["y"] = 2,
-                                ["z"] = 18,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 107,
-                                ["y"] = 0,
-                                ["z"] = 10,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:8c333f1a95a888607730d9bdaba777a45a0240b7c7d585548f285e8326b63bc1",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage09Route002",
-                    ["order"] = 28,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
-                        ["y"] = 2,
-                        ["z"] = 6,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-09",
-                        ["sourceStageId"] = "stage-09",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 110,
-                            ["y"] = 1,
-                            ["z"] = 14,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 111,
-                                ["y"] = 2,
-                                ["z"] = 20,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 105,
-                                ["y"] = 0,
-                                ["z"] = 12,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:45bb0184a4c09b77dd84ca30caea937e44c7478d03d352888990c0d243fcbbe3",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage09Route003",
-                    ["order"] = 29,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
-                        ["y"] = 2,
-                        ["z"] = 6,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-09",
-                        ["sourceStageId"] = "stage-09",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 108,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#F94144",
-                        ["colorRole"] = "hazard",
-                        ["material"] = "Neon",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["killMode"] = "touch",
-                        ["kind"] = "kill",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = false,
-                        ["canQuery"] = true,
-                        ["canTouch"] = true,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 128,
-                                ["y"] = -22.5,
-                                ["z"] = 32,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 96,
-                                ["y"] = -23.5,
-                                ["z"] = 0,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:66ee35449a58614f6fbe89de8687141177669506a1fbec8647775bf59ba5499f",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = -22.5,
-                    },
-                    ["id"] = "Stage09Hazard001",
-                    ["order"] = 30,
-                    ["role"] = "kill",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 32,
-                        ["y"] = 1,
-                        ["z"] = 32,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceHazardId"] = "hazard-09",
-                        ["sourceMechanicIntentId"] = "mechanic-intent-09",
-                        ["sourceStageId"] = "stage-09",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 112,
-                            ["y"] = -23,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 103.5,
-                                ["y"] = 2,
-                                ["z"] = 19.5,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 96.5,
-                                ["y"] = 0,
-                                ["z"] = 12.5,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f20b78e1c2a072a71c13600ef4312c754a35f149261fe3d1b4bfc50ca204a42e",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage10Route001",
-                    ["order"] = 31,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 7,
-                        ["y"] = 2,
-                        ["z"] = 7,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-10",
-                        ["sourceStageId"] = "stage-10",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 100,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 100.286607049871,
-                                ["y"] = 2,
-                                ["z"] = 22.786607049871,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 91.713392950129,
-                                ["y"] = 0,
-                                ["z"] = 14.213392950129,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:75b96b915e37c40bc7ba4f0df7917e7bd3daed5da6a128453c6ae81781d8df07",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage10Route002",
-                    ["order"] = 32,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 7,
-                        ["y"] = 2,
-                        ["z"] = 7,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-10",
-                        ["sourceStageId"] = "stage-10",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 96,
-                            ["y"] = 1,
-                            ["z"] = 18.5,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 75,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#F9C74F",
-                        ["colorRole"] = "reward",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["checkpointOrder"] = 2,
-                        ["kind"] = "checkpoint",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = true,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 95.5,
-                                ["y"] = 2,
-                                ["z"] = 19.5,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 88.5,
-                                ["y"] = 0,
-                                ["z"] = 12.5,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:514108a4f4bd1c3556cb2d6b079ac5294b7dc7d33e9b2fb924477d1e55857fc7",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Checkpoint002",
-                    ["order"] = 33,
-                    ["role"] = "checkpoint",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 7,
-                        ["y"] = 2,
-                        ["z"] = 7,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceCheckpointId"] = "checkpoint-10",
-                        ["sourceMechanicIntentId"] = "mechanic-intent-10",
-                        ["sourceStageId"] = "stage-10",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 92,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 88,
-                                ["y"] = 2,
-                                ["z"] = 20,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 80,
-                                ["y"] = 0,
-                                ["z"] = 12,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:b490182841e12dfb6d77e11c0fa1cab34a31cb0aeefadcc382db882ed558059b",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage11Route001",
-                    ["order"] = 34,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-11",
-                        ["sourceStageId"] = "stage-11",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 84,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 84,
-                                ["y"] = 6,
-                                ["z"] = 20,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 76,
-                                ["y"] = 4,
-                                ["z"] = 12,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:abc84399675d0730a520f91e6a28bb1b3374d9946cadb241dcca92b577606bb2",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 6,
-                    },
-                    ["id"] = "Stage11Route002",
-                    ["order"] = 35,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-11",
-                        ["sourceStageId"] = "stage-11",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 80,
-                            ["y"] = 5,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 80,
-                                ["y"] = 2,
-                                ["z"] = 20,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 72,
-                                ["y"] = 0,
-                                ["z"] = 12,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:67c38b8cc6fb6a3a0d830ca556574e178236377296284b1bf9dbd3e6483dc608",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage11Route003",
-                    ["order"] = 36,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-11",
-                        ["sourceStageId"] = "stage-11",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 76,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 73,
-                                ["y"] = 2,
                                 ["z"] = 21,
                             },
-                            ["minimum"] = {
-                                ["x"] = 63,
-                                ["y"] = 0,
-                                ["z"] = 11,
-                            },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:2c4a2efc0de8b141fd84b9cc6c42411c67a72ac545947a442bbdf269bbc4d174",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage12Route001",
-                    ["order"] = 37,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 10,
-                        ["y"] = 2,
-                        ["z"] = 10,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-12",
-                        ["sourceStageId"] = "stage-12",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 68,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 69,
-                                ["y"] = 2,
-                                ["z"] = 21,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 59,
-                                ["y"] = 0,
-                                ["z"] = 11,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f1f1102bed2deb2d4215c03fb50dc42e0a0cf647162371e1831ebdc583662297",
+                        ["normalizedGeometryHash"] = "sha256:6c92e512d5b54449b717ea7d9e602f955b3e9eb82e17f71fa54916e0d3fb3240",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2891,9 +2891,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -2905,9 +2905,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 64,
+                            ["x"] = 96,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -2936,18 +2936,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 65,
+                                ["x"] = 90.6,
                                 ["y"] = 2,
-                                ["z"] = 21,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 55,
+                                ["x"] = 84.6,
                                 ["y"] = 0,
-                                ["z"] = 11,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:c892329168a14e66796d022bef32c7a097ac69d6e01071d3fa0bba6ff48bd3bc",
+                        ["normalizedGeometryHash"] = "sha256:f3b9120cc1d7a4269354970dcebb08464a1bea28b7d37e02d0624340cdd22edd",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2956,9 +2956,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -2970,9 +2970,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 60,
+                            ["x"] = 87.6,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3002,20 +3002,20 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 67,
-                                ["y"] = 0.5,
-                                ["z"] = 14,
+                                ["x"] = 99,
+                                ["y"] = 3,
+                                ["z"] = 36,
                             },
                             ["minimum"] = {
-                                ["x"] = 61,
-                                ["y"] = -0.5,
-                                ["z"] = 8,
+                                ["x"] = 93,
+                                ["y"] = 2,
+                                ["z"] = 30,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:7c3355031a99265cc1a4950c6ddf8b3fc80c5f13ade24ef2fc8c29237b7121a2",
+                        ["normalizedGeometryHash"] = "sha256:98a1e4015767719149739d79bd42e9d5e4e7c1d73951b627b5a692f5d86be1db",
                         ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
+                        ["topSurfaceMaximumY"] = 3,
                     },
                     ["id"] = "Stage12Hazard001",
                     ["order"] = 40,
@@ -3037,9 +3037,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 64,
-                            ["y"] = 0,
-                            ["z"] = 11,
+                            ["x"] = 96,
+                            ["y"] = 2.5,
+                            ["z"] = 33,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3068,18 +3068,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 56,
+                                ["x"] = 83.4,
                                 ["y"] = 2,
-                                ["z"] = 19.625,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 48,
+                                ["x"] = 77.4,
                                 ["y"] = 0,
-                                ["z"] = 12.375,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:695edbab19d2ea06f3a8b55ac32fbcba2526276665987df243a24dbf361b9bc8",
+                        ["normalizedGeometryHash"] = "sha256:6da201b627dca964f2e53549e11f02be0782f8eafb50900759a40fbe08a46a67",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -3088,9 +3088,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -3102,9 +3102,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 52,
+                            ["x"] = 80.4,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3133,18 +3133,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 52,
+                                ["x"] = 75,
                                 ["y"] = 2,
-                                ["z"] = 19.625,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 44,
+                                ["x"] = 69,
                                 ["y"] = 0,
-                                ["z"] = 12.375,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:7644fc985eab2bc1aa5457edd6a6cd50a373ba3027f13732521789b56b9e3288",
+                        ["normalizedGeometryHash"] = "sha256:cf9282627752c9c1e2cf827aeb439921afd2fdb8a301bb492fa0a09e79e45568",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -3153,9 +3153,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -3167,9 +3167,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 48,
+                            ["x"] = 72,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3198,18 +3198,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 48,
+                                ["x"] = 66.6,
                                 ["y"] = 2,
-                                ["z"] = 19.625,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 40,
+                                ["x"] = 60.6,
                                 ["y"] = 0,
-                                ["z"] = 12.375,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:15d5b4d0a6bc394bd15e268cef2e2a973be85bc8be34121c688d4c7c09768f84",
+                        ["normalizedGeometryHash"] = "sha256:f97f949233d370eff3caf49f03ce5abfc490ed6e2edb1ad132efb8de464e742f",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -3218,9 +3218,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -3232,9 +3232,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 44,
+                            ["x"] = 63.6,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3263,18 +3263,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 40,
+                                ["x"] = 59.4,
                                 ["y"] = 2,
-                                ["z"] = 20,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 32,
+                                ["x"] = 53.4,
                                 ["y"] = 0,
-                                ["z"] = 12,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:85cc80308699e7835cf2ae37265a7ee6afaa00e786e99a1e191beb2a59a1bfc1",
+                        ["normalizedGeometryHash"] = "sha256:dc3ac16e60b6287308e1b0a596ef7a3821d45607a5a7be1e52bccfb9660378e5",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -3283,9 +3283,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -3297,9 +3297,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 36,
+                            ["x"] = 56.4,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3328,18 +3328,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 36,
+                                ["x"] = 51,
                                 ["y"] = 2,
-                                ["z"] = 18,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 28,
+                                ["x"] = 45,
                                 ["y"] = 0,
-                                ["z"] = 10,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a6a708fcf68efdafc55f76864307c805bdc1f00ca1bbb640bff5a6d673ece56e",
+                        ["normalizedGeometryHash"] = "sha256:610a498310d64ea737475428e83ac20b149e8445c810d74d66ec1926ddf324a2",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -3348,9 +3348,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -3362,9 +3362,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 32,
+                            ["x"] = 48,
                             ["y"] = 1,
-                            ["z"] = 14,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3393,18 +3393,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 32,
+                                ["x"] = 42.6,
                                 ["y"] = 2,
-                                ["z"] = 20,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 24,
+                                ["x"] = 36.6,
                                 ["y"] = 0,
-                                ["z"] = 12,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:8458910942496077c67caac13ccca8c489a2504b4eac3ad5bc3e517d86c61855",
+                        ["normalizedGeometryHash"] = "sha256:98b4bd60119299a235eb26d8bebf191e8dc291f7e129e783a3b93889dc15cf15",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -3413,9 +3413,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -3427,9 +3427,271 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 28,
+                            ["x"] = 39.6,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#F94144",
+                        ["colorRole"] = "hazard",
+                        ["material"] = "Neon",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["killMode"] = "touch",
+                        ["kind"] = "kill",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = false,
+                        ["canQuery"] = true,
+                        ["canTouch"] = true,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 51,
+                                ["y"] = 3,
+                                ["z"] = 18,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 45,
+                                ["y"] = 2,
+                                ["z"] = 12,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:f49dc9f151ac9e3cbe00001de64beeb005a80b0a2329cad03f5d006a0b111086",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 3,
+                    },
+                    ["id"] = "Stage14Hazard001",
+                    ["order"] = 47,
+                    ["role"] = "kill",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 1,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceHazardId"] = "hazard-14",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-14",
+                        ["sourceStageId"] = "stage-14",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 48,
+                            ["y"] = 2.5,
+                            ["z"] = 15,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 35.4,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 29.4,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:22dd1757877432d7fd27924df95b8e962b07021f27e9080d86953e382f06c797",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage15Route001",
+                    ["order"] = 48,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-15",
+                        ["sourceStageId"] = "stage-15",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 32.4,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 27,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 21,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:e0f49049e4cb135e9833e0b78201688a935ca9eafb113d3ed64b7024c0466b11",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage15Route002",
+                    ["order"] = 49,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-15",
+                        ["sourceStageId"] = "stage-15",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 24,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 18.6,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 12.6,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:4039986ccdd65e84bd7bb8fdbb70f5cf09b6c0e9568b9308160145851cce9428",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage15Route003",
+                    ["order"] = 50,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-15",
+                        ["sourceStageId"] = "stage-15",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 15.6,
+                            ["y"] = 1,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3460,160 +3722,28 @@ return {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
                                 ["x"] = 35,
-                                ["y"] = 0.5,
-                                ["z"] = 24,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 29,
-                                ["y"] = -0.5,
-                                ["z"] = 18,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:9386e254bca3b0c8fc0eb8a5dbaa97fe21725e5f05aad6f75355eac258ccd7c0",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
-                    },
-                    ["id"] = "Stage14Hazard001",
-                    ["order"] = 47,
-                    ["role"] = "kill",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 6,
-                        ["y"] = 1,
-                        ["z"] = 6,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceHazardId"] = "hazard-14",
-                        ["sourceMechanicIntentId"] = "mechanic-intent-14",
-                        ["sourceStageId"] = "stage-14",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 32,
-                            ["y"] = 0,
-                            ["z"] = 21,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 22,
-                                ["y"] = 2,
-                                ["z"] = 22,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 10,
-                                ["y"] = 0,
-                                ["z"] = 10,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:de5a8d06ffb65e3cf3f427a8b7eac9c63ef42005f1e9142b6437518d9c12d262",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage15Route001",
-                    ["order"] = 48,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 12,
-                        ["y"] = 2,
-                        ["z"] = 12,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-15",
-                        ["sourceStageId"] = "stage-15",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 16,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#F94144",
-                        ["colorRole"] = "hazard",
-                        ["material"] = "Neon",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["killMode"] = "touch",
-                        ["kind"] = "kill",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = false,
-                        ["canQuery"] = true,
-                        ["canTouch"] = true,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 32,
                                 ["y"] = -22.5,
-                                ["z"] = 32,
+                                ["z"] = 35,
                             },
                             ["minimum"] = {
-                                ["x"] = 0,
+                                ["x"] = 13,
                                 ["y"] = -23.5,
-                                ["z"] = 0,
+                                ["z"] = 13,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:271876ad8407ac4edda348ec42510ebf15e9fce47f88e788a116b63b5533f3f8",
+                        ["normalizedGeometryHash"] = "sha256:9f82bd0bc5204f38d0e27095717978464c96ad59f09c44648be1803533f2bb14",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = -22.5,
                     },
                     ["id"] = "Stage15Hazard001",
-                    ["order"] = 49,
+                    ["order"] = 51,
                     ["role"] = "kill",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 32,
+                        ["x"] = 22,
                         ["y"] = 1,
-                        ["z"] = 32,
+                        ["z"] = 22,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -3626,9 +3756,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 16,
+                            ["x"] = 24,
                             ["y"] = -23,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3657,29 +3787,29 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 6,
+                                ["x"] = 11.4,
                                 ["y"] = 2,
-                                ["z"] = 22,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = -6,
+                                ["x"] = 5.4,
                                 ["y"] = 0,
-                                ["z"] = 10,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:ec5da6f84ec18b8adebfb820cd2d9e297a25b5f8c467fb50e9532c88b56a41bc",
+                        ["normalizedGeometryHash"] = "sha256:14fd2f47f9731b640cdbdb3aeaeba329d889a291c016ff596d1678e7254ab97e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
                     ["id"] = "Finish",
-                    ["order"] = 50,
+                    ["order"] = 52,
                     ["role"] = "finish",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 12,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 12,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -3692,9 +3822,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 0,
+                            ["x"] = 8.4,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3707,7 +3837,7 @@ return {
         },
     },
     ["limitations"] = {},
-    ["manifestHash"] = "sha256:6e3ee0d7495d3fabe3bb2305787573bd442f1f3bbba8294552a4cceb6c9c3c71",
+    ["manifestHash"] = "sha256:8bee7e9788898a64d75c166c87343f0debb274307ef39c977a29489dcb6bc307",
     ["navigation"] = {
         ["characterPlacement"] = {
             ["orientationPolicy"] = "face-next-safe-route-object",
@@ -3754,7 +3884,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 2,
+                        ["value"] = 0.6,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -3762,8 +3892,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -3773,7 +3903,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:58267963396dba00b6495edc63fac04b4f77120b681d202d84cb0c295be4237f",
+                    ["normalizedInputHash"] = "sha256:b15a0725c667ceb543d1db52ae7284efbab636c435d51a800832490fe13a385e",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 1,
@@ -3815,7 +3945,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -3823,8 +3953,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -3834,7 +3964,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:36de7e8972c71d0de1514d03efada0d3fee9a83229f81edf9444e363de22acaf",
+                    ["normalizedInputHash"] = "sha256:e817400e765204f697facac39bdcff6f2bd4f6bdc8871a37117b28c43514daab",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 2,
@@ -3876,7 +4006,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -3884,8 +4014,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -3895,7 +4025,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:f08e6bbae1c1b64fc4b3675d3702cdb3bbdb5053591fd0df55762ba256180488",
+                    ["normalizedInputHash"] = "sha256:4a7b2181c27a9443e3a9a04c67b1859577015adbb438b081dcc53fda6eabeba2",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 3,
@@ -3937,7 +4067,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -3945,8 +4075,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -3956,7 +4086,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:37bf8cb0474ce6d1498b5bbd38e0e62ca3e9574255394416c78f69de66a49c5d",
+                    ["normalizedInputHash"] = "sha256:45d4765bc43ffeef2a6257b4a823c9f252991e0482d2361698ae609f51c282e8",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 4,
@@ -3998,7 +4128,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4006,8 +4136,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4017,7 +4147,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:87a4ffa989e2b7566224baad0c6f3f2d6117136414e1893f9d2c30fb5639ed2f",
+                    ["normalizedInputHash"] = "sha256:3620e098d66eff272903cb0a8f33ee31371845267dc320e5e8657ad2d76f0970",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 5,
@@ -4059,7 +4189,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4067,8 +4197,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4078,7 +4208,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:69f8273ebf6e5f5da4ca6b965fbf65616c9c8f30ba5f710c85b1028b9e77154e",
+                    ["normalizedInputHash"] = "sha256:7db4f41fdd7ac2bd60a6ccdbe6ff8e61eb9ee89b28c13019bb2adc8cc164cb2b",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 6,
@@ -4120,7 +4250,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4128,8 +4258,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.75,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4139,7 +4269,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:6955248624b8f16cf7397d34418d09c941b20a8a874673bad12346cf44cfff94",
+                    ["normalizedInputHash"] = "sha256:0470640c9a3c72988c02eda84d71900c064cffd4c290831dfecd4b5e9c357557",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 7,
@@ -4181,7 +4311,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4189,8 +4319,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.75,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4200,7 +4330,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:e753ac13be2f125bab3da2046608931e4cc81b70404bf237fcee58e66e0f8634",
+                    ["normalizedInputHash"] = "sha256:dad0b5e1153ef95299042b2a95bfdc3d3abe644596fb1b6a4408794620836841",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 8,
@@ -4242,7 +4372,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4250,8 +4380,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.75,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4261,7 +4391,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:7b68151d6041e9708bce03af02d1156df0682d2fcaa49489f11a4bc80105076a",
+                    ["normalizedInputHash"] = "sha256:7160307e91fa54099706d0e134a89be2b46e5a7af7b1c8d11633ea28374734ad",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 9,
@@ -4303,7 +4433,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4312,7 +4442,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4322,7 +4452,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:b9daa797280b5b0b2a8e45b53907fc1daa21eaea88b121234d123c247ce927b0",
+                    ["normalizedInputHash"] = "sha256:8e5ed429b0794335dd97baeaee16e85141874ca1d83a242f412f095127ab8464",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 10,
@@ -4364,7 +4494,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4373,7 +4503,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4383,7 +4513,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:36e1bfda3163d7f201c4a9dca9399bf6d6761aac77327066989f0de4344af0cd",
+                    ["normalizedInputHash"] = "sha256:92fc8c2d07a41b58d31a25549897c9d89cf2ef1de3bccc1a576456ec99aa23b4",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 11,
@@ -4425,7 +4555,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4434,7 +4564,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4444,7 +4574,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:667b251c8e4e3491e47848f12552c2a6c70fbb90e327e6665552182f17fce737",
+                    ["normalizedInputHash"] = "sha256:9c8b129c9ca5ac011923226bb0648208d71173f4f581422cbc0afe5b79dc3789",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 12,
@@ -4486,7 +4616,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4494,8 +4624,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.75,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4505,7 +4635,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:29b3037025075a4a8d52a31d7cb63f53a6f892ad96469187c522578b31c76748",
+                    ["normalizedInputHash"] = "sha256:b3fd54c3c9036431cb8175484bbe6d3fc8151c358e3672117ba33b24647f1054",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 13,
@@ -4547,7 +4677,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4555,8 +4685,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.75,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4566,7 +4696,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:92e20589eaca0c49ef1ccce25d6e6a3e05c17c13e84175e4edfde752e1f5985f",
+                    ["normalizedInputHash"] = "sha256:223c2ae66bbf012291c90a4c3df7feb699cfd75b597a57c19c4517a62a4ace17",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 14,
@@ -4608,7 +4738,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4616,8 +4746,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.75,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4627,7 +4757,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:7260f992fc4b060802ca0178c89be8793f2a35a7eb8fce2561f43668107e345b",
+                    ["normalizedInputHash"] = "sha256:bd7d38f194710f56c7f628d446320a57018df5b47b660f09ad6d47afceefc22e",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 15,
@@ -4669,7 +4799,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4678,7 +4808,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4688,7 +4818,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:02134a04633e48d2949d8b0a3fbd5d9e3ceae767fa3359c6bba9851ebcffc512",
+                    ["normalizedInputHash"] = "sha256:a4c9eb448240a5bc2a726830461abb82c4797ee01ee44b6905b4fbd67e1fa0e9",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 16,
@@ -4730,7 +4860,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4739,7 +4869,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4749,7 +4879,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:f86bd81a854d6daf7a686923f402c29c61db8dcc3485e033b9f8b6abc2b28997",
+                    ["normalizedInputHash"] = "sha256:032786b6a0482593f71571ff467abc75df4f8fe15b59eff0bd29d9c2d920773b",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 17,
@@ -4791,7 +4921,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4800,7 +4930,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -4810,7 +4940,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:2a05ef5ad69377b037900c92826d09edd3599c2cde45c342bea151c561e049ce",
+                    ["normalizedInputHash"] = "sha256:0d220d20bff9829c75fe5d66a2b66aca51838a46719dbdc3f2e1c795fc671c12",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 18,
@@ -4852,7 +4982,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 2,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4871,7 +5001,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:27abf63aa4d4c1ce917eccb6a02c6cc1be2fc440d1dd081027fa07ac175b5422",
+                    ["normalizedInputHash"] = "sha256:5f6a7b7594b0c09f6ea46879b4b9bfada930a6659ba93ed7871dee76a3253ba9",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 19,
@@ -4913,7 +5043,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4932,7 +5062,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:6f19eb3b70ad1856861461047761de4e9e71d90e64cabd9c5fcecd35805ccc3b",
+                    ["normalizedInputHash"] = "sha256:1a5778b12f02ed86df35006bf901cf656ee77eb45a84b3c29a9cc974a4a6dbc2",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 20,
@@ -4974,7 +5104,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -4993,7 +5123,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:b1810d510175ff34aa2cecb13d9f87ee7723b1f26490c90def696b0c260f27bd",
+                    ["normalizedInputHash"] = "sha256:e0474a0ab2f05284c0e285f5198bd4b009d300569f98292c922bb9ca335abbb5",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 21,
@@ -5035,7 +5165,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 2,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5044,7 +5174,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5054,7 +5184,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:0e4b7696fb3bafb0a897787968e08e58962e6d1d35e068a06226c9db6bd1078b",
+                    ["normalizedInputHash"] = "sha256:cd9c21d0bdd5825b7371c6a1c3e1b3996e78bc148260ee80834e5fdebb58b40b",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 22,
@@ -5096,7 +5226,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5105,7 +5235,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5115,7 +5245,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:27c8ce4d1c64d8b31fd3f47c7af5af2d8e29a0b4d42f7d0be19a570a5e1f0860",
+                    ["normalizedInputHash"] = "sha256:8f34fe64136837bde18337893ce3a4856422b83d60ea1b18682e5cd34c209a87",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 23,
@@ -5157,7 +5287,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5166,7 +5296,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5176,7 +5306,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:d4abe8cd3df2a9e055879b4c595843b36fcc0e3e734b888cc01445e43b145a90",
+                    ["normalizedInputHash"] = "sha256:eac38a8378a010e83032fc5f08f29a0d0a5d184043e6a202b11a238bc965a0ec",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 24,
@@ -5218,7 +5348,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5227,7 +5357,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5237,7 +5367,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:ab448e93548c04a5332e29aefd3f705743fc112909c380f72cd7ff263b4f7493",
+                    ["normalizedInputHash"] = "sha256:0e55c9b644a9bfa583f6f569133150e4ba12d878cc08a3a892df132002956921",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 25,
@@ -5279,7 +5409,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5288,7 +5418,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5298,7 +5428,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:883ce72c431648dc069154b4d98bfa3849c615197fa95fee09559d6b41f13f8c",
+                    ["normalizedInputHash"] = "sha256:f57fc339f08e101cc5677bf295fbbf7cb914b257327025d05567c86aa4ccfd6d",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 26,
@@ -5340,7 +5470,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5349,7 +5479,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5359,7 +5489,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:38e087c4b8ddce94eef46dbf1678b61b761032e52fa7caaebad125a04d9904bd",
+                    ["normalizedInputHash"] = "sha256:18a18d0f021ccf79b7b8f73bc09af3650daa0d43082dd7e90a28f83113daef51",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 27,
@@ -5401,7 +5531,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5409,8 +5539,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5420,7 +5550,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:6c5828d0d0b0fc27811cc34c925b7b7b2b8ea68bb20d1624e11c61189453a234",
+                    ["normalizedInputHash"] = "sha256:00d57cef61d0f34bcb668c96eebeb12ef73431e26917c78d29c0bc3ec58b0454",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 28,
@@ -5462,7 +5592,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5470,8 +5600,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.000000000001,
-                        ["spanBStuds"] = 7.000000000001,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5481,7 +5611,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:8f0f55e1d83735e6066142dc76beeb1b3ac2f4369da40792733ecd6181f664bf",
+                    ["normalizedInputHash"] = "sha256:3386203337d11e87327afcc2461a6a078bcff404b59a0b7d4b50db321992bf50",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 29,
@@ -5523,7 +5653,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5531,8 +5661,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5542,7 +5672,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:ce0884f6d0f208d8b05e2db2f25feed37daeb043b4dda21e34f1d0868e19eba8",
+                    ["normalizedInputHash"] = "sha256:a755e3b81a5d41bbcb701a799d53d9076e74eb627940956e275e4932489d758e",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 30,
@@ -5584,7 +5714,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5592,8 +5722,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5603,7 +5733,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:634128e3d1535023da582018beb61c0d284bd83acb42fdbae47a16d023cfbcc0",
+                    ["normalizedInputHash"] = "sha256:0899163ebc81350b852e3d51853122acff964a51857b4ecfe7198182e14384e1",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 31,
@@ -5645,7 +5775,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5653,8 +5783,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5664,7 +5794,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:6ae9f7f5f8cec5a939e45c61725e6c23482ed364c0e1cc1d40b10739c95c561c",
+                    ["normalizedInputHash"] = "sha256:deb253e137dcb8f713c2a7c801cea8f6cccd318b65cee92af9cd6b47cbc9ce38",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 32,
@@ -5706,7 +5836,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5714,8 +5844,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5725,7 +5855,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:ff2b49c51c598482d923961f58c4d44df87028598f3ee4e52abfec1ef6d9fefe",
+                    ["normalizedInputHash"] = "sha256:85b975e42cd3d2d1334d6309256707f813e87008e1f1f6bfd2574138e0d170a8",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 33,
@@ -5767,7 +5897,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5775,8 +5905,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5786,7 +5916,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:1a54259381bf1c4726ed30045d448609a005b2e17242ba14e49c6db184b7f0ad",
+                    ["normalizedInputHash"] = "sha256:29f2190a4a67d713b5762ab0fc1c7fd56f7b68ad3ca3c0f22e5a177fad7d4370",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 34,
@@ -5828,7 +5958,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5836,8 +5966,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5847,7 +5977,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:1b9134a4a7c99281463da17ce2bc19c626cbc827755e329cdd2050b826407b9a",
+                    ["normalizedInputHash"] = "sha256:45539e0afe16a8f6b6a8e778d2a1d081710fcccb3c4501fe088c4be755464e74",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 35,
@@ -5889,7 +6019,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5897,8 +6027,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5908,7 +6038,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:87bafe629a01019ecc0f3552630fa232423e360e3c5a3f0e164ddc7023bfe71d",
+                    ["normalizedInputHash"] = "sha256:bf1caea06652868523b16e6dc4b704350825b5a9e5a75ab3fe4d0ce828fc97fc",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 36,
@@ -5950,7 +6080,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -5958,8 +6088,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -5969,7 +6099,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:52197aa9d2b82224cf8f6b9abd8c9d7ddafc535796f213c2813fbc3372f4627a",
+                    ["normalizedInputHash"] = "sha256:b2205ac53d057bb4903f74117e16ea37653c6f347bc7015c7432c4885be790c1",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 37,
@@ -6011,7 +6141,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -6019,8 +6149,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -6030,7 +6160,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:5cdde41702e61a09ac6bd2dcb8f8a135a065991e2d43758ceedddc487a835b86",
+                    ["normalizedInputHash"] = "sha256:f348c41f3da237b8a0300c714c1bc4949f7a5ff2f23da24a03d95ae07446c487",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 38,
@@ -6072,7 +6202,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -6080,8 +6210,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -6091,7 +6221,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:cab66cb27cbf18232deb70bfafe590556228dddff2258b893ebc102ebbd0b1a9",
+                    ["normalizedInputHash"] = "sha256:9cae7ad83c237afc559a4a68346c88365237b9cef06706a2ee356f97f1a5c17a",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 39,
@@ -6133,7 +6263,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -6141,8 +6271,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -6152,7 +6282,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:ce5fa703c23041ba3847d7fa1a52758cc208fd7b410ee7ac58de5b1b9cc5f411",
+                    ["normalizedInputHash"] = "sha256:f8f44e588c6543d59d6307bfa6156a3e82c30fd29351ab0472fd86138b368ace",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 40,
@@ -6194,7 +6324,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -6202,8 +6332,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -6213,7 +6343,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:de3a9134b96bebd1184b1a8cf3d16b9717155ff7b520d429c6e4344f701bf35f",
+                    ["normalizedInputHash"] = "sha256:f9f4bf93796f2a9bfc74eb5f8311a6d01f45dd6d5095d89548e168ffffd68ea3",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 41,
@@ -6255,7 +6385,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -6263,8 +6393,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -6274,7 +6404,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:3d0af1f7a2a249aabf52c33d4634fb6cd037007a08896d684b90d3e9fc4176f7",
+                    ["normalizedInputHash"] = "sha256:b75c521278120564fd39e2ac21a3003923f9bff724a860f8e07d41ab00bf03c7",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 42,
@@ -6316,7 +6446,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 2,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -6324,8 +6454,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 12,
-                        ["spanBStuds"] = 12,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -6335,7 +6465,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:3a8b67be8c8a738b81c43e1d7e139ecbd3c92f6ae50117c12cbbbce3eb6b9766",
+                    ["normalizedInputHash"] = "sha256:658f51a0bf972990a2ea6a6b480c6bc53ba3f04f30c66e5b082810a729e8aa10",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 43,
@@ -6377,7 +6507,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 4,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -6385,8 +6515,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 12,
-                        ["spanBStuds"] = 12,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -6396,12 +6526,134 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:54ca7c06311c36597f6ace473231f6119462e0dca947a745be6d32061d889ac4",
+                    ["normalizedInputHash"] = "sha256:c014aa5b46a2d20f72bf8b3e09a143aaaea365040323cf4f32e9f28e3a54e611",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 44,
-                    ["toObjectId"] = "Finish",
+                    ["toObjectId"] = "Stage15Route002",
                     ["transitionId"] = "layout-transition-044",
+                    ["verticalRise"] = {
+                        ["applicability"] = "broad-phase-only",
+                        ["approximationKind"] = "conservative-bounds-delta",
+                        ["limitations"] = {
+                            "Surface envelope maxima are not a character landing or feasibility test.",
+                        },
+                        ["method"] = "surface-envelope-height-delta",
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                        ["value"] = 0,
+                    },
+                },
+                {
+                    ["destinationSurfaceKind"] = "planar-face",
+                    ["downwardDrop"] = {
+                        ["applicability"] = "broad-phase-only",
+                        ["approximationKind"] = "conservative-bounds-delta",
+                        ["limitations"] = {
+                            "Surface envelope maxima are not a character landing or feasibility test.",
+                        },
+                        ["method"] = "surface-envelope-height-delta",
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                        ["value"] = 0,
+                    },
+                    ["fromGlobalOrder"] = 44,
+                    ["fromObjectId"] = "Stage15Route002",
+                    ["horizontalSeparation"] = {
+                        ["applicability"] = "broad-phase-only",
+                        ["approximationKind"] = "conservative-lower-bound",
+                        ["limitations"] = {
+                            "World AABB overlap does not prove native primitive surface contact.",
+                        },
+                        ["method"] = "world-aabb-horizontal-separation",
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                        ["value"] = 2.4,
+                    },
+                    ["landingRegion"] = {
+                        ["approximationKind"] = "exact-native-primitive",
+                        ["limitations"] = {
+                            "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
+                        },
+                        ["method"] = "exact-planar-intrinsic-edge-spans-v1",
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                    },
+                    ["limitations"] = {
+                        "Classification is relative to the selected deterministic model, not exact Roblox physics.",
+                        "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
+                        "Surface envelope maxima are not a character landing or feasibility test.",
+                        "World AABB overlap does not prove native primitive surface contact.",
+                    },
+                    ["normalizedInputHash"] = "sha256:b30e178e408ea86088125dba5ea07b7bc583f533bb2d48842078618545209ceb",
+                    ["outcome"] = "feasible-under-model",
+                    ["sourceSurfaceKind"] = "planar-face",
+                    ["toGlobalOrder"] = 45,
+                    ["toObjectId"] = "Stage15Route003",
+                    ["transitionId"] = "layout-transition-045",
+                    ["verticalRise"] = {
+                        ["applicability"] = "broad-phase-only",
+                        ["approximationKind"] = "conservative-bounds-delta",
+                        ["limitations"] = {
+                            "Surface envelope maxima are not a character landing or feasibility test.",
+                        },
+                        ["method"] = "surface-envelope-height-delta",
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                        ["value"] = 0,
+                    },
+                },
+                {
+                    ["destinationSurfaceKind"] = "planar-face",
+                    ["downwardDrop"] = {
+                        ["applicability"] = "broad-phase-only",
+                        ["approximationKind"] = "conservative-bounds-delta",
+                        ["limitations"] = {
+                            "Surface envelope maxima are not a character landing or feasibility test.",
+                        },
+                        ["method"] = "surface-envelope-height-delta",
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                        ["value"] = 0,
+                    },
+                    ["fromGlobalOrder"] = 45,
+                    ["fromObjectId"] = "Stage15Route003",
+                    ["horizontalSeparation"] = {
+                        ["applicability"] = "broad-phase-only",
+                        ["approximationKind"] = "conservative-lower-bound",
+                        ["limitations"] = {
+                            "World AABB overlap does not prove native primitive surface contact.",
+                        },
+                        ["method"] = "world-aabb-horizontal-separation",
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                        ["value"] = 1.2,
+                    },
+                    ["landingRegion"] = {
+                        ["approximationKind"] = "exact-native-primitive",
+                        ["limitations"] = {
+                            "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
+                        },
+                        ["method"] = "exact-planar-intrinsic-edge-spans-v1",
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                    },
+                    ["limitations"] = {
+                        "Classification is relative to the selected deterministic model, not exact Roblox physics.",
+                        "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
+                        "Surface envelope maxima are not a character landing or feasibility test.",
+                        "World AABB overlap does not prove native primitive surface contact.",
+                    },
+                    ["normalizedInputHash"] = "sha256:5bc1ed70b2eba104b4ad7edd9c9b7947fb428ff0daa583a418d8d64dee356cad",
+                    ["outcome"] = "feasible-under-model",
+                    ["sourceSurfaceKind"] = "planar-face",
+                    ["toGlobalOrder"] = 46,
+                    ["toObjectId"] = "Finish",
+                    ["transitionId"] = "layout-transition-046",
                     ["verticalRise"] = {
                         ["applicability"] = "broad-phase-only",
                         ["approximationKind"] = "conservative-bounds-delta",
@@ -6677,9 +6929,21 @@ return {
             },
             {
                 ["globalOrder"] = 44,
-                ["objectId"] = "Finish",
+                ["objectId"] = "Stage15Route002",
                 ["stageId"] = "layout-stage-15",
                 ["stageOrder"] = 2,
+            },
+            {
+                ["globalOrder"] = 45,
+                ["objectId"] = "Stage15Route003",
+                ["stageId"] = "layout-stage-15",
+                ["stageOrder"] = 3,
+            },
+            {
+                ["globalOrder"] = 46,
+                ["objectId"] = "Finish",
+                ["stageId"] = "layout-stage-15",
+                ["stageOrder"] = 4,
             },
         },
         ["routeId"] = "layout-route-43025289b1542801",
@@ -6727,6 +6991,8 @@ return {
             "Stage14Route002",
             "Stage14Route003",
             "Stage15Route001",
+            "Stage15Route002",
+            "Stage15Route003",
             "Finish",
         },
         ["sourceRouteId"] = "required-safe-route",
@@ -6878,6 +7144,8 @@ return {
                 ["order"] = 15,
                 ["safeRouteObjectIds"] = {
                     "Stage15Route001",
+                    "Stage15Route002",
+                    "Stage15Route003",
                     "Finish",
                 },
                 ["sourceStageId"] = "stage-15",
@@ -6889,41 +7157,41 @@ return {
     ["provenance"] = {
         ["generationBundleHash"] = "sha256:1d8d412db7224203b37fcae9c9ed7042ee2bdd5a13a41b9403a7cf9967817cae",
         ["generatorConfigurationHash"] = "sha256:756d387f618bc1811d606e202e99d2f8e74d166c4f437bf4d7e12c65337ef668",
-        ["layoutBundleHash"] = "sha256:3d60d9953bf9fa0afbb0124ca3d98724c9642fde8ca28ca24709c419d8dc41ae",
-        ["layoutConfigurationHash"] = "sha256:86eb7a47e49ecc50c3c8c1dad0493d8921864c3d87e7d9bbc899ae84caeca329",
-        ["layoutSpecHash"] = "sha256:92be1cfa7d10f6222d0ef6b06475f8d3561916e4883277392385a7153ee27f7c",
+        ["layoutBundleHash"] = "sha256:1ea58ff5745cabc894539784afd138dc3c93ed2d32f2c043a3eb7746a466cebb",
+        ["layoutConfigurationHash"] = "sha256:2b5e95301355cc71f640b62081a522be48cd6dfdbf0340336b2004a0f49d44bc",
+        ["layoutSpecHash"] = "sha256:5651ddc7d0366e04de37441563271084db658f8bb7811ee7020f7ca43b055d94",
         ["layoutSpecId"] = "layout-spec-b3baf3f51296fcaa",
         ["mechanicCatalogHash"] = "sha256:94d10afa7e63bc81ebe50c2084b436b90497022c7ac1f4792040f4508c32027a",
         ["mechanicLayoutDefinitionHashes"] = {
-            "sha256:6df27726ee9663bb36f3a38952434ac33f46b64fcd7eaa225cba645845a2011d",
-            "sha256:b9f04b7dd5d8a1dd416fbb8bb28787158bfd71c2f438611920a9de06c8bb2a64",
-            "sha256:378ad7fd7c5e5de85730861227f2e8e1e589e515b28ea6cb20d2513d29b3cd05",
-            "sha256:3447240af3a43259363cfbba2b8231529acd3043f69319c2d54897be262b8f38",
-            "sha256:f33bea0692e7eff4dd8edbba03183c88d45050f090c1abb08c1f298c497a90ec",
-            "sha256:0956d827b3eb7c0d647fe83c96165731421ec5c841ea2db4d0b487ffdd053f22",
-            "sha256:c4e84f1263fcdd4721553a30dd804415ba4b54bfcea0baf68ad0a1a6fa9aea86",
-            "sha256:b93d3dcec9fbaf6fc88d4292358fe3db11675fd6dadd01778f2cad3eded6c769",
-            "sha256:2be069a184e338e88d10c9fdf76bf0222a4655b50b4e54aae9d9c1eac87c6aad",
+            "sha256:67ddf0d8d03634e65092b66a1d37cec4d0f35cc5f42a945b1a58917457d9c03f",
+            "sha256:405339fff5caad5f9fb195c33b09013ad48b012a98a2ed66e49a6d0afabc216b",
+            "sha256:eecd5934fffb4dcc6b06c0f0ea85f6f88beb1fa4c5259b8b0ffd4c4991a58408",
+            "sha256:f23f31f338301fef762667ee51e5bcf69e91734c0579246e089ab8a6d6c2b4c0",
+            "sha256:61e2d0db429b5bee1554869d7224c3f0221ff6dcc41a9c37aba0b2b332b7f8a8",
+            "sha256:bd35c647b0a9b0985c2ed4253a9fcd3fdc2f3f8474bc5dcf772b11871cad53cf",
+            "sha256:c5e6dce029da77ddc6dd6b86a93498e9364c8fc4de8eb65b397327cbf70ae72f",
+            "sha256:3f6a244d730f6bcd6369a2b0841a35430f4ee62c57aa9467f73c51de1b371795",
+            "sha256:19e888d3cd8b0a03aafb86d447efd0e39cb4856485638edf1549128a5db4f528",
         },
         ["obbySpecHash"] = "sha256:b3baf3f51296fcaa109c77cf75a12d791082f845f9820f2834f2987144d749a3",
         ["obbySpecId"] = "obby-3afb3e09b52dc696",
     },
-    ["sceneId"] = "place-spec-92be1cfa7d10f622-scene",
+    ["sceneId"] = "place-spec-5651ddc7d0366e04-scene",
     ["schemaVersion"] = "0.3",
     ["seed"] = 42,
     ["seedIdentity"] = "sha256:6f27d8d4b97efb925a411f147320cd3084a4d548db5c8f8c87c8c04e78598872",
-    ["sourcePlaceSpecHash"] = "sha256:541d21a5cd570efffac792719e671b7463349aa6223c13ea678eda02955ee791",
-    ["sourceSpecId"] = "place-spec-92be1cfa7d10f622",
+    ["sourcePlaceSpecHash"] = "sha256:36d456c5d7765096b144ffac645ea6611c703ae7e890b0e5d28dcffb7e2dcb9d",
+    ["sourceSpecId"] = "place-spec-5651ddc7d0366e04",
     ["worldBounds"] = {
         ["maximum"] = {
-            ["x"] = 130,
+            ["x"] = 181,
             ["y"] = 15,
-            ["z"] = 34,
+            ["z"] = 38,
         },
         ["minimum"] = {
-            ["x"] = -24,
+            ["x"] = -26,
             ["y"] = -25.5,
-            ["z"] = -18,
+            ["z"] = -14,
         },
     },
 }

@@ -1,4 +1,28 @@
 local G2eObservationV03 = require("../g2e/G2eObservationV03")
+local G2eGameplayObservationV03 = require("../g2e/G2eGameplayObservationV03")
+local referenceManifest = require("../generated/G2ReferenceManifestV03")
+local boundary20Manifest = require("../generated/G2Boundary20ManifestV03")
+local boundary21Manifest = require("../generated/G2Boundary21ManifestV03")
+local maximum50Manifest = require("../generated/G2Maximum50ManifestV03")
+
+local function geometryObject(id, minimum, maximum)
+    return {
+        id = id,
+        geometry = {
+            axisAlignedBounds = {
+                minimum = minimum,
+                maximum = maximum,
+            },
+        },
+    }
+end
+
+local function gameplayManifest(objects)
+    return {
+        manifestHash = "sha256:" .. string.rep("2", 64),
+        layers = { gameplay = { objects = objects } },
+    }
+end
 
 local function manifest()
     return {
@@ -55,6 +79,61 @@ local function mutableCopy(value)
 end
 
 return function(test, expect)
+    test("finds no runtime-visible intersections in reference 20 21 and 50-stage fixtures", function()
+        for _, value in ipairs({ referenceManifest, boundary20Manifest, boundary21Manifest, maximum50Manifest }) do
+            local summary = G2eGameplayObservationV03.geometrySummary(value)
+            expect(summary.unauthorizedGeometryIntersections == 0, "generated fixture contains penetration")
+            expect(summary.coplanarVisibleSurfaces == 0, "generated fixture contains coplanar surfaces")
+        end
+    end)
+
+    test("keeps final gameplay acceptance pending until every live observation exists", function()
+        local value = G2eGameplayObservationV03.build(
+            "reference",
+            gameplayManifest({
+                geometryObject("A", { x = 0, y = 0, z = 0 }, { x = 2, y = 2, z = 2 }),
+                geometryObject("B", { x = 2, y = 0, z = 0 }, { x = 4, y = 2, z = 2 }),
+            }),
+            { hazardConnections = 1 }
+        )
+        expect(value.status == "FAIL", "missing live gameplay evidence reported PASS")
+        expect(value.unauthorizedGeometryIntersections == 0, "edge adjacency was rejected")
+        expect(value.coplanarVisibleSurfaces == 0, "edge adjacency was called coplanar")
+    end)
+
+    test("passes bounded gameplay evidence only after two-player respawn and replacement", function()
+        local value = G2eGameplayObservationV03.build(
+            "reference",
+            gameplayManifest({
+                geometryObject("A", { x = 0, y = 0, z = 0 }, { x = 2, y = 1, z = 2 }),
+                geometryObject("B", { x = 0, y = 1, z = 0 }, { x = 2, y = 2, z = 2 }),
+            }),
+            {
+                hazardConnections = 1,
+                validCharacterTouches = 2,
+                humanoidsResolved = 2,
+                lethalActions = 2,
+                lethalPlayerCount = 2,
+                respawnsObserved = 2,
+                checkpointRespawnsObserved = 1,
+                staleCallbackRejections = 1,
+                staleAcceptedActions = 0,
+                replacementCount = 1,
+            }
+        )
+        expect(value.status == "PASS", "complete bounded gameplay evidence did not pass")
+        expect(value.checkedGeometryPairs == 1, "geometry work count changed")
+    end)
+
+    test("reports volumetric penetration and coplanar visible surfaces", function()
+        local summary = G2eGameplayObservationV03.geometrySummary(gameplayManifest({
+            geometryObject("A", { x = 0, y = 0, z = 0 }, { x = 4, y = 2, z = 4 }),
+            geometryObject("B", { x = 1, y = 0, z = 0 }, { x = 5, y = 2, z = 4 }),
+        }))
+        expect(summary.unauthorizedGeometryIntersections == 1, "penetration was not reported")
+        expect(summary.coplanarVisibleSurfaces == 1, "coplanar surface risk was not reported")
+    end)
+
     test("reads required transitions from navigation reachability without the old nil crash", function()
         local observation = build()
         expect(observation.status == "PASS", "valid nested transition evidence failed")

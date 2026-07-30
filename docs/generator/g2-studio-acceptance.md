@@ -25,8 +25,8 @@ observations.
 
 ## Build protocol
 
-1. Run `npm ci`, the future G2 fixture drift check, `npm run validate`, and the future dedicated G2
-   Rojo smoke build command.
+1. Run `npm ci`, `npm run g2:fixtures:check`, `npm run validate`, and
+   `npm run roblox:g2e:build`.
 2. Open the produced G2 smoke place, not the active `0.2` default place.
 3. Confirm no scene exists before the test bootstrap invokes the opt-in `0.3` builder.
 4. Run one cold reference build after opening the place.
@@ -66,6 +66,16 @@ Record pass/fail and Output errors for:
 
 Touch and character observations are empirical evidence for this environment. They are not proof of
 universal Roblox physics feasibility or scheduling.
+
+After completing the reference-fixture gameplay actions, invoke
+`game:GetService("ServerStorage").G2eControl.ObserveGameplay:Invoke()` from the server Command Bar.
+The bounded `[G2 gameplay observation]` record remains `FAIL` until it has observed a bound hazard,
+a valid character touch, Humanoid resolution, a lethal action, an expected respawn, a preserved
+checkpoint respawn, two-player independence, and a completed replacement with zero stale callback
+actions. It also requires zero
+unauthorized gameplay intersections and zero coplanar visible surfaces. This record does not verify
+camera-dependent flicker: move the camera around every visible route and hazard surface and record
+that human observation separately.
 
 ## Counts and memory observations
 
