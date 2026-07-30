@@ -62,6 +62,12 @@ const documents = Object.freeze({
     "## Trust boundary",
     "## Remaining limitations and G2c boundary",
   ],
+  "docs/generator/g2c-native-construction.md": [
+    "## Build plan and complexity",
+    "## Candidate hierarchy and invariants",
+    "## Root-only replacement primitive",
+    "## Remaining G2d boundary",
+  ],
 });
 
 const existingRuntimeModules = Object.freeze([

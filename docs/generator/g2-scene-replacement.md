@@ -1,7 +1,21 @@
 # G2 SceneManifest 0.3 scene replacement specification
 
-This specification defines the future `0.3` replacement protocol. G2a implements none of it. The
-existing `0.2` `SceneBuilderCore` continues to own the active path.
+This specification defines the complete `0.3` replacement protocol. G2c implements the candidate
+construction and root-only transaction subset described below; G2d still owns runtime sessions,
+connections, player state, and production activation. The existing `0.2` `SceneBuilderCore`
+continues to own the active path.
+
+## G2c implemented subset
+
+G2c completes steps 1–6 of pre-activation for construction data, validates Part counts and object-ID
+lookup closure, and constructs no connections. Its `SceneBuilderCoreV03.commitCandidate` primitive
+performs a no-yield root swap using a root pointer bound to the current manifest hash. It refuses
+unowned, cross-version, ambiguous, pointer-inconsistent, and changed-identity roots; switches the
+pointer before old-root destruction; rolls back all tested pre-pointer failures; and quarantines a
+retired root when post-commit destruction fails.
+
+The primitive is not called by `ObbyBootstrap` and does not implement a runtime session or generation
+token. The session-aware activation steps and callback invalidation below remain normative G2d work.
 
 ## Terms and invariants
 
