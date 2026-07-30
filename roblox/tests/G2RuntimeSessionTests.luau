@@ -175,6 +175,27 @@ return function(test, expect)
         expect(character.rootPart.CFrame == nil, "stale delayed placement changed HumanoidRootPart")
     end)
 
+    test("handles delayed and missing HumanoidRootPart creation within the fixed bound", function()
+        local harness, _, _, _, session = sessionHarness("g2d-generation-v1:1")
+        activate(session)
+        local player = harness:newPlayer(101)
+        local delayed = harness:newCharacter(player)
+        delayed.rootPart = nil
+        delayed.waitHook = function()
+            delayed.rootPart = harness.runtime.partRuntime.newInstance("Part")
+            delayed.rootPart.Name = "HumanoidRootPart"
+        end
+        local placed, placementError = session:placeCharacter(player, delayed)
+        expect(placed, placementError and placementError.message or "delayed root was not placed")
+        expect(delayed.rootPart.CFrame ~= nil, "delayed root did not receive a CFrame")
+
+        local missing = harness:newCharacter(player)
+        missing.rootPart = nil
+        local rejected, missingError = session:placeCharacter(player, missing)
+        expect(rejected == nil and missingError.code == "placement-root", "missing root did not fail closed")
+        expect(harness.tracker.waits == 2, "root lookup count was not bounded to one per placement")
+    end)
+
     test("activates checkpoints idempotently prevents regression and respawns from current IDs", function()
         local harness, admitted, candidate, _, session = sessionHarness("g2d-generation-v1:1")
         activate(session)

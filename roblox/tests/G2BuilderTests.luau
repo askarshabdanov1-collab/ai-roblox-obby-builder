@@ -47,16 +47,28 @@ return function(test, expect)
     end)
 
     test("preserves the old complete scene and session on a pre-commit failure", function()
-        local harness = G2RuntimeHarnessV03.new()
-        local builder = BuilderV03.new(harness.runtime)
-        local first = build(builder, reference)
-        local failed, buildError = build(builder, replacement, {
-            commitOptions = { failAt = "after-retire" },
-        })
-        expect(failed == nil and buildError.code == "commit-injected-failure", "failure was not surfaced")
-        expect(builder:currentSession() == first.session, "old session pointer changed")
-        expect(first.session:status() == "active", "old session was invalidated before commit")
-        expect(first.root.Parent == harness.workspace and not first.root.Destroyed, "old scene was not preserved")
+        for _, boundary in ipairs({ "before-commit", "after-retire", "after-publish", "before-pointer" }) do
+            local harness = G2RuntimeHarnessV03.new()
+            local builder = BuilderV03.new(harness.runtime)
+            local first = build(builder, reference)
+            local options = if boundary == "before-commit"
+                then { failAt = boundary }
+                else { commitOptions = { failAt = boundary } }
+            local failed, buildError = build(builder, replacement, options)
+            local expectedCode = if boundary == "before-commit"
+                then "builder-injected-failure"
+                else "commit-injected-failure"
+            expect(
+                failed == nil and buildError.code == expectedCode,
+                string.format("%s failure was not surfaced", boundary)
+            )
+            expect(builder:currentSession() == first.session, "old session pointer changed at " .. boundary)
+            expect(first.session:status() == "active", "old session was invalidated at " .. boundary)
+            expect(
+                first.root.Parent == harness.workspace and not first.root.Destroyed,
+                "old scene was not preserved at " .. boundary
+            )
+        end
     end)
 
     test("invalidates old callbacks before retired-root cleanup", function()
