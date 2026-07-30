@@ -35,7 +35,7 @@ local fixtures = table.freeze({
 
 local environment = table.freeze({
     repositoryCommit = "9a92540aad3183342096501f268eb1f966d640bf",
-    studioVersion = "0.731.0.7310942",
+    studioVersion = "0.732.0.7321040",
     osBuild = "Windows 10 Pro 10.0.19045 build 19045",
 })
 
