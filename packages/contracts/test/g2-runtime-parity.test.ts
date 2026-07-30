@@ -175,4 +175,43 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
         );
     }
   });
+
+  it("isolates the G2e Studio acceptance project from the default 0.2 path", async () => {
+    const packageJson = JSON.parse(await readFile("package.json", "utf8")) as {
+      scripts?: Record<string, string>;
+    };
+    expect(packageJson.scripts?.["roblox:g2e:build"]).toBe(
+      "tsx tools/prepare-build.ts && rojo build roblox/g2e-smoke.project.json --output build/G2eStudioAcceptance.rbxlx",
+    );
+
+    const project = await readFile("roblox/g2e-smoke.project.json", "utf8");
+    expect(project).toContain("G2eAcceptanceBootstrap");
+    expect(project).toContain("G2ReferenceManifestV03");
+    expect(project).toContain("G2Maximum50ManifestV03");
+    expect(project).toContain("G2ZeroCheckpointManifestV03");
+    expect(project).not.toContain("ObbyBootstrap.server.luau");
+    expect(project).not.toContain("VerticalSliceManifest.luau");
+
+    const bootstrap = await readFile(
+      "roblox/g2e/G2eAcceptanceBootstrap.server.luau",
+      "utf8",
+    );
+    expect(bootstrap).toContain("BuilderV03");
+    expect(bootstrap).toContain("G2eAcceptanceHarness");
+    expect(bootstrap).toContain("G2ReferenceManifestV03");
+    expect(bootstrap).not.toContain("Builder.build");
+    expect(bootstrap).not.toContain("HttpService");
+
+    const defaultProject = await readFile(
+      "roblox/default.project.json",
+      "utf8",
+    );
+    const defaultBootstrap = await readFile(
+      "roblox/src/ServerScriptService/ObbyBootstrap.server.luau",
+      "utf8",
+    );
+    expect(defaultProject).not.toContain("G2eAcceptance");
+    expect(defaultProject).not.toContain("G2ReferenceManifestV03");
+    expect(defaultBootstrap).not.toContain("BuilderV03");
+  });
 });
