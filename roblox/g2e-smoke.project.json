@@ -1,0 +1,42 @@
+{
+  "name": "AIObbyBuilderG2eStudioAcceptance",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "ObbyRuntime": {
+        "$path": "src/ReplicatedStorage/ObbyRuntime"
+      }
+    },
+    "ServerScriptService": {
+      "G2eAcceptanceBootstrap": {
+        "$path": "g2e/G2eAcceptanceBootstrap.server.luau"
+      },
+      "G2eAcceptanceHarness": {
+        "$path": "g2e/G2eAcceptanceHarness.luau"
+      }
+    },
+    "ServerStorage": {
+      "G2eManifests": {
+        "$className": "Folder",
+        "G2ReferenceManifestV03": {
+          "$path": "generated/G2ReferenceManifestV03.luau"
+        },
+        "G2Maximum50ManifestV03": {
+          "$path": "generated/G2Maximum50ManifestV03.luau"
+        },
+        "G2ZeroCheckpointManifestV03": {
+          "$path": "generated/G2ZeroCheckpointManifestV03.luau"
+        },
+        "G2ReplacementManifestV03": {
+          "$path": "generated/G2ReplacementManifestV03.luau"
+        },
+        "G2WedgeManifestV03": {
+          "$path": "generated/G2WedgeManifestV03.luau"
+        },
+        "G2DecorativeManifestV03": {
+          "$path": "generated/G2DecorativeManifestV03.luau"
+        }
+      }
+    }
+  }
+}
