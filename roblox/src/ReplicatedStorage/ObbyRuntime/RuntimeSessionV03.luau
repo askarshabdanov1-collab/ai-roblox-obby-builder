@@ -226,8 +226,180 @@ function RuntimeSessionV03:checkCurrent(expected)
     return true, nil
 end
 
-function RuntimeSessionV03:_handleTouch(_part, _record, _hit)
-    -- G2d behavior handlers are added only after their focused vectors.
+local function playerKey(player)
+    if
+        type(player) ~= "table"
+        or type(player.UserId) ~= "number"
+        or player.UserId ~= math.floor(player.UserId)
+        or player.UserId <= 0
+    then
+        return nil
+    end
+    return player.UserId
+end
+
+function RuntimeSessionV03:_nextRouteObject(sourceObjectId)
+    local indexes = self.admitted.indexes
+    local route = indexes.safeRouteObjectIds
+    local nextId = nil
+    if sourceObjectId == self.admitted.manifest.navigation.spawnObjectId then
+        nextId = route[1]
+    else
+        local position = indexes.routePositionByObjectId[sourceObjectId]
+        if position ~= nil then
+            nextId = route[position + 1]
+        end
+    end
+    if nextId == nil then
+        return nil
+    end
+    return indexes.gameplayById[nextId]
+end
+
+function RuntimeSessionV03:_placementObject(player)
+    local key = playerKey(player)
+    local checkpoint = if key == nil then nil else self._checkpoints[key]
+    if checkpoint ~= nil then
+        local object = self.admitted.indexes.gameplayById[checkpoint.checkpointObjectId]
+        if
+            object ~= nil
+            and object.role == "checkpoint"
+            and object.behavior.kind == "checkpoint"
+            and object.behavior.checkpointOrder == checkpoint.checkpointOrder
+        then
+            return object
+        end
+        self._checkpoints[key] = nil
+    end
+    return self.admitted.indexes.gameplayById[self.admitted.manifest.navigation.spawnObjectId]
+end
+
+function RuntimeSessionV03:placeCharacter(player, character)
+    local key = playerKey(player)
+    if key == nil then
+        return failure("session-character", "placement player identity is invalid")
+    end
+    local current, currentError = self:checkCurrent({
+        manifestHash = self.manifestHash,
+        generationToken = self.generationToken,
+        root = self.candidate.root,
+        player = player,
+        character = character,
+    })
+    if current == nil then
+        return nil, currentError
+    end
+
+    local pending = table.freeze({
+        character = character,
+        generationToken = self.generationToken,
+    })
+    self._pendingPlacements[key] = pending
+    local rootPart = nil
+    local waited = pcall(function()
+        rootPart = self.runtime.waitForRootPart(character, ROOT_WAIT_TIMEOUT_SECONDS)
+    end)
+    if not waited or rootPart == nil or type(rootPart.IsA) ~= "function" or not rootPart:IsA("BasePart") then
+        if self._pendingPlacements[key] == pending then
+            self._pendingPlacements[key] = nil
+        end
+        return failure("placement-root", "HumanoidRootPart was not available within the bounded wait")
+    end
+    if self._pendingPlacements[key] ~= pending then
+        return failure("session-stale", "pending character placement was replaced")
+    end
+    current, currentError = self:checkCurrent({
+        manifestHash = self.manifestHash,
+        generationToken = pending.generationToken,
+        root = self.candidate.root,
+        player = player,
+        character = pending.character,
+    })
+    if current == nil then
+        self._pendingPlacements[key] = nil
+        return nil, currentError
+    end
+
+    local object = self:_placementObject(player)
+    if object == nil then
+        self._pendingPlacements[key] = nil
+        return failure("placement-target", "current spawn or checkpoint target is unavailable")
+    end
+    local nextObject = self:_nextRouteObject(object.id)
+    local transform = nil
+    local transformed = pcall(function()
+        transform =
+            CharacterPlacement.transformFor(object, self.admitted.manifest.navigation.characterPlacement, nextObject)
+    end)
+    if not transformed or transform == nil then
+        self._pendingPlacements[key] = nil
+        return failure("placement-transform", "deterministic character placement could not be calculated")
+    end
+    current, currentError = self:checkCurrent({
+        manifestHash = self.manifestHash,
+        generationToken = pending.generationToken,
+        root = self.candidate.root,
+        player = player,
+        character = pending.character,
+    })
+    if current == nil or self._pendingPlacements[key] ~= pending then
+        self._pendingPlacements[key] = nil
+        return nil, currentError or table.freeze({ code = "session-stale", message = "placement became stale" })
+    end
+    local applied = pcall(function()
+        rootPart.CFrame = self.runtime.cframe(transform)
+    end)
+    self._pendingPlacements[key] = nil
+    if not applied then
+        return failure("placement-apply", "HumanoidRootPart placement failed")
+    end
+    return true, nil
+end
+
+function RuntimeSessionV03:_activateCheckpoint(player, record)
+    local key = playerKey(player)
+    if key == nil then
+        return false
+    end
+    local order = record.behavior.checkpointOrder
+    local current = self._checkpoints[key]
+    if current ~= nil and current.checkpointOrder >= order then
+        return false
+    end
+    self._checkpoints[key] = table.freeze({
+        checkpointObjectId = record.id,
+        checkpointOrder = order,
+    })
+    player:SetAttribute(CHECKPOINT_ATTRIBUTE, order)
+    return true
+end
+
+function RuntimeSessionV03:checkpointOrder(player)
+    local key = playerKey(player)
+    local checkpoint = if key == nil then nil else self._checkpoints[key]
+    return if checkpoint == nil then nil else checkpoint.checkpointOrder
+end
+
+function RuntimeSessionV03:_handleTouch(part, record, hit)
+    local player, character = self.runtime.resolveTouch(hit)
+    if player == nil or character == nil then
+        return false
+    end
+    local current = self:checkCurrent({
+        manifestHash = self.manifestHash,
+        generationToken = self.generationToken,
+        root = self.candidate.root,
+        objectId = record.id,
+        part = part,
+        player = player,
+        character = character,
+    })
+    if current == nil then
+        return false
+    end
+    if record.role == "checkpoint" and record.behavior.kind == "checkpoint" then
+        return self:_activateCheckpoint(player, record)
+    end
     return false
 end
 
