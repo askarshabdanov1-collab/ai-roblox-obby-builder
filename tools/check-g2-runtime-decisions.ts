@@ -57,6 +57,11 @@ const documents = Object.freeze({
     "## G2b handoff gate",
     "SceneManifest 0.3 runtime construction remains unimplemented",
   ],
+  "docs/generator/g2b-manifest-admission.md": [
+    "## Implemented modules",
+    "## Trust boundary",
+    "## Remaining limitations and G2c boundary",
+  ],
 });
 
 const existingRuntimeModules = Object.freeze([
@@ -98,6 +103,11 @@ async function checkDecisions(): Promise<void> {
     "tsx tools/check-g1-workflow-fixtures.ts"
   )
     throw new Error("the authoritative G1d drift-check command changed");
+  if (
+    packageJson.scripts?.["g2:fixtures:check"] !==
+    "tsx tools/check-g2-runtime-fixtures.ts"
+  )
+    throw new Error("the authoritative G2b drift-check command changed");
 
   const expected =
     expectedG1WorkflowFixtures()[g1WorkflowFixturePaths.robloxModule];

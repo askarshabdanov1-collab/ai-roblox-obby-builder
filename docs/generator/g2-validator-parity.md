@@ -1,57 +1,70 @@
 # SceneManifest 0.3 TypeScript/Luau validator parity
 
-The JSON Schema and `packages/contracts/src/validation-v0.3.ts` are the publication authority.
-`roblox/src/ReplicatedStorage/ObbyRuntime/ManifestValidatorV03.luau` is currently a validation-only
-transport check. “Partial” below means the current Luau validator checks some fields but is not
-equivalent. Every listed G2b blocker must be closed before a manifest reaches construction.
+The JSON Schema and `packages/contracts/src/validation-v0.3.ts` remain the publication authority.
+G2b closes the construction-relevant Luau admission gaps in
+`roblox/src/ReplicatedStorage/ObbyRuntime/ManifestValidatorV03.luau`. The Luau implementation is an
+independent fail-closed validator, not a second schema authority.
 
 ## Parity matrix
 
-| Rule                   | TypeScript/schema state                                                                               | Current Luau state                                                                                                                                       | Required G2b state                                                                                                                                                                     |
-| ---------------------- | ----------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Structural validation  | Draft 2020-12 schema requires all declared records and field types                                    | Partial top-level, gameplay, navigation, and transition checks                                                                                           | Validate every construction-relevant record and contract maximum before admission                                                                                                      |
-| Additional properties  | `additionalProperties: false` throughout schema                                                       | Not rejected                                                                                                                                             | Snapshot validator rejects unknown keys at every admitted record; **G2b blocker**                                                                                                      |
-| Numeric validity       | Schema bounds plus semantic checks; non-finite input rejected                                         | Some vectors reject NaN/infinity, but scalar measurements, offsets, geometry summaries, orders, and bounds are incomplete                                | Reject NaN/infinity and enforce every schema bound/integer rule; **G2b blocker**                                                                                                       |
-| Duplicate IDs          | Semantic validation covers object identities and route uniqueness                                     | Gameplay duplicates are checked; decorative duplicate tracking is incomplete and zone/stage IDs are not closed                                           | Check gameplay, decorative, zones, stages, route entries, transitions, and cross-layer uniqueness; **G2b blocker**                                                                     |
-| Dangling references    | Semantic validator closes objects, stage routes/hazards/zones, checkpoints, and navigation references | Safe-route/checkpoint basics only; source, zone, stage, hazard, and decorative closure is incomplete                                                     | Close every ID/reference used by construction or behavior; **G2b blocker**                                                                                                             |
-| Route closure          | Exact ordered safe gameplay, final Finish, route-entry and stage concatenation rules                  | Checks safe gameplay coverage, final Finish, and basic stage flattening; does not verify every route-entry stage coordinate                              | Match TypeScript ordering and route-entry coordinates exactly; **G2b blocker**                                                                                                         |
-| Transition evidence    | Exact route adjacency/order, authority IDs, count, outcomes, measurements, limitations, and hashes    | Checks adjacency/order, authority IDs, available measurements, limitations, and count; nested field/unknown-property coverage is partial                 | Validate all schema fields and bounds without reclassifying evidence; **G2b blocker**                                                                                                  |
-| Collision authority    | Semantic role-to-gameplay collision policy                                                            | Gameplay role flags checked                                                                                                                              | Preserve exact parity and require native gameplay authority before construction                                                                                                        |
-| Decorative constraints | Schema defines complete decorative object and zone shapes; semantics prohibit route use               | Only no-collide/no-touch/no-query and basic layer ID collision are checked; appearance, geometry, authority, zone fields, limits, and IDs are incomplete | Validate full decorative records, unique IDs, zone closure, and route exclusion; **G2b blocker**                                                                                       |
-| Schema version         | Exact `0.3`, generator `0.3.0`, projection authority                                                  | Exact values checked                                                                                                                                     | Preserve exact rejection; never coerce `0.2`                                                                                                                                           |
-| Manifest identity/hash | TypeScript recomputes the self-excluding canonical hash and rejects mismatch                          | Syntax checks hash fields only                                                                                                                           | Compare declared hash with configured reviewed expected hash; do not claim content authentication. Canonical recomputation remains an intentional documented non-parity under ADR 0003 |
+| Rule                   | TypeScript/schema authority                                                        | G2b Luau admission                                                                                                                             |
+| ---------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| Structural validation  | Draft 2020-12 schema defines records, required fields, primitive types, and maxima | Validates every admitted record and exact primitive type after bounded snapshotting                                                            |
+| Additional properties  | `additionalProperties: false` throughout                                           | Rejects unknown keys at each supported record level; no G2b blocker remains                                                                    |
+| Numeric validity       | Bounds, integer rules, and finite-number semantics                                 | Rejects NaN, infinity, unsafe integers, and out-of-range measurements                                                                          |
+| Duplicate identities   | Object, stage, route, transition, and zone uniqueness                              | Rejects gameplay/decorative cross-layer collisions and duplicate stage, route-entry, checkpoint, transition, and zone identities               |
+| Dangling references    | Closes object, stage, checkpoint, hazard, route, source, and zone references       | Closes every construction- or behavior-relevant reference                                                                                      |
+| Route closure          | Exact ordered safe gameplay route ending at Finish                                 | Requires Spawn-to-Finish order and exact route-entry/stage flattening                                                                          |
+| Transition evidence    | Exact adjacency, authority IDs, outcomes, measurements, limitations, and hashes    | Validates transition count, order, references, nested fields, outcomes, and evidence metadata without reclassification                         |
+| Collision authority    | Role-to-gameplay collision policy                                                  | Enforces native gameplay collision authority and role-specific flags                                                                           |
+| Decorative constraints | Decorative schema plus route exclusion                                             | Enforces non-collision, non-touch, non-query, full record validity, zone closure, and route exclusion                                          |
+| Schema version         | Exact `0.3`, generator `0.3.0`, and projection authority                           | Rejects cross-loaded or coerced versions before semantic admission                                                                             |
+| Manifest identity/hash | Recomputes the self-excluding canonical hash                                       | Validates syntax and exact equality with the configured reviewed expected hash; canonical recomputation is intentionally absent under ADR 0003 |
 
-## Construction admission policy
+The contract has no standalone behavior-ID field. Behavior uniqueness is therefore enforced through
+unique object identity plus role, route, checkpoint, hazard, and finish consistency; the Luau
+validator does not invent a new identity domain.
 
-The future loader may call the validator only after creating a bounded, metatable-free plain-data
-snapshot. Validation success is necessary but not sufficient: it must also compare the configured
-expected `manifestHash`, enforce work admission, and construct lookup maps from the admitted snapshot
-only.
+## Admission order
 
-Rules that affect no runtime field still require either explicit validation parity or a written
-reason they are evidence-only. “The factory ignores it” is not a valid reason to admit malformed
-input. Unknown fields fail closed rather than becoming forward-compatible extensions.
+`ManifestLoaderV03.load` executes these fail-closed stages:
+
+1. protected `require` of the configured repository ModuleScript;
+2. non-table and raw cross-version rejection;
+3. expected-hash syntax validation;
+4. iterative bounded plain-data snapshot with metatable, cycle/alias, key, value, depth, node, entry,
+   and string-byte rejection;
+5. collection-count and derived work admission;
+6. structural and semantic validation;
+7. declared-hash equality with the configured expected hash;
+8. deterministic indexes built only from the detached admitted snapshot; and
+9. bottom-up frozen admitted result.
+
+No stage allocates an Instance, reads Workspace, uses time/random/network/locale state, or retains a
+caller-owned table. Snapshot traversal is iterative and bounded by 64 levels, 20,000 table nodes,
+50,000 entries, and 4 MiB of strings by default. Semantic work is bounded by the contract collection
+maxima and a maximum derived work count of 2,612 units.
 
 ## Hash limitation
 
 The intentional hash exception is precise:
 
-- TypeScript proves `manifestHash` equals the canonical, self-excluding content hash.
-- G2 Luau proves only that the declared hash has the correct format and equals the reviewed expected
-  value configured with the packaged ModuleScript.
-- Repository review and `npm run layout:workflow:fixtures:check` prove the committed reference bytes
-  match the deterministic G1d producer.
-- G2 does not authenticate an arbitrary ModuleScript or table supplied after packaging.
+- TypeScript proves `manifestHash` equals the canonical self-excluding content hash.
+- Luau proves that the declared hash is well formed and equals the reviewed expected hash configured
+  beside the packaged ModuleScript.
+- `npm run layout:workflow:fixtures:check` proves the authoritative G1d artifact has not drifted.
+- `npm run g2:fixtures:check` proves the G2 runtime transports and fixture index match their single
+  deterministic owner.
+- The admitted envelope reports `hashTrust = "repository-module-expected-hash-v1"`; it does not claim
+  arbitrary-table authentication.
 
-This limitation must appear in loader diagnostics, runtime documentation, and Studio evidence. A
-future untrusted transport boundary requires canonical Luau hash recomputation or an authenticated
-envelope; it cannot reuse this assumption silently.
+An untrusted runtime transport would require canonical Luau recomputation or an authenticated
+envelope and a new reviewed decision. It cannot silently reuse the repository-package assumption.
 
-## Parity test plan
+## Evidence
 
-G2b will add table-driven Luau cases paired with TypeScript fixtures for every matrix row. Each case
-contains a valid control, one isolated mutation, the TypeScript result, and the required Luau result.
-The suite must include N−1/N/N+1 limits, NaN/infinity created directly in Luau, unknown fields at
-nested levels, duplicate identities in every domain, and dangling references to every target class.
-
-No runtime construction module may consume a manifest until all G2b blockers above are tested green.
+`roblox/tests/G2ManifestAdmissionTests.luau` covers protected loading, snapshot safety, all parity
+classes, N-1/N/N+1 count and work bounds, caller mutation, deterministic indexes, zero checkpoints,
+maximum checkpoints, and 20/21/50 stages. `packages/contracts/test/g2-runtime-parity.test.ts`
+validates the shared transports with the TypeScript authority and verifies their exact emitted Luau
+bytes. Runtime construction remains outside G2b.
