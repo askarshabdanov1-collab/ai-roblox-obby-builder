@@ -9,6 +9,7 @@ local SafeRouteNavigator = require("../src/ReplicatedStorage/ObbyRuntime/SafeRou
 local SceneBuilderCore = require("../src/ReplicatedStorage/ObbyRuntime/SceneBuilderCore")
 local manifest = require("../generated/VerticalSliceManifest")
 local manifestV03 = require("../generated/G1cReferenceManifest")
+local registerG2ManifestAdmissionTests = require("./G2ManifestAdmissionTests")
 
 local passed = 0
 
@@ -661,5 +662,7 @@ test("rejects incomplete or unsafe SceneManifest 0.3 route evidence", function()
     local evidenceValid = ManifestValidatorV03.validate(indeterminate)
     expect(not evidenceValid, "0.3 validator accepted indeterminate required evidence")
 end)
+
+registerG2ManifestAdmissionTests(test, expect)
 
 print(string.format("1..%d", passed))
