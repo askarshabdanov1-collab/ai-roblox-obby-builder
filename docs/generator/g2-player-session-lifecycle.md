@@ -1,7 +1,8 @@
 # G2 player and runtime-session lifecycle
 
-This specification defines future SceneManifest `0.3` player behavior. G2a adds no Players service
-binding and does not change `PlayerProgress`, `PlacementController`, or the active `0.2` builder.
+This specification defines SceneManifest `0.3` player behavior. G2d implements it in the opt-in
+`RuntimeSessionV03` and `BuilderV03` libraries without changing `PlayerProgress`,
+`PlacementController`, `ObbyBootstrap`, or the active `0.2` builder.
 
 ## State keys
 
@@ -16,9 +17,10 @@ The runtime generation token is deliberately absent from these keys. It guards c
 Instances but does not change same-manifest semantic progress. Stored progress contains IDs and
 orders only—never a Part, connection, character, manifest table, or runtime-session reference.
 
-Visible player attributes for `0.3` will use version-specific names selected before G2d. They must
-expose only the current manifest's checkpoint order and finish identity, not stale state or internal
-generation tokens. The exact names are a G2d implementation detail and require tests before use.
+Visible player state uses `ObbyV03CheckpointOrder` and `ObbyV03FinishedManifestHash`. These
+attributes expose only the current manifest's checkpoint order and finish identity, not stale state
+or internal generation tokens. They are cleared on different-manifest activation and player
+removal, and their behavior is covered by G2d tests.
 
 ## Initial player and CharacterAdded flow
 
@@ -97,7 +99,7 @@ records for that `UserId`, clears debounce state, and releases character referen
 idempotent. A callback already queued for the removed player fails its player/current-character
 check and becomes a no-op.
 
-## Required isolation tests for G2d
+## Implemented isolation tests in G2d
 
 - two players activate different checkpoints without shared state;
 - one player's duplicate/debounce state does not suppress the other;

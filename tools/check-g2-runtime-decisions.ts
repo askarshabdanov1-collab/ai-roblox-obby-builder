@@ -66,7 +66,13 @@ const documents = Object.freeze({
     "## Build plan and complexity",
     "## Candidate hierarchy and invariants",
     "## Root-only replacement primitive",
-    "## Remaining G2d boundary",
+    "## G2d integration boundary",
+  ],
+  "docs/generator/g2d-gameplay-session.md": [
+    "## Runtime session lifecycle and identity",
+    "## Gameplay behavior",
+    "## Replacement and failure behavior",
+    "## Evidence, limits, and G2e handoff",
   ],
 });
 

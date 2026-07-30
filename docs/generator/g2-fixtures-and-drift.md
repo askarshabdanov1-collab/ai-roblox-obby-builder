@@ -59,13 +59,13 @@ fixture mutation.
 
 Scenario ownership remains:
 
-| Scenario              | G2c evidence owner                                                          |
+| Scenario              | G2c/G2d evidence owner                                                      |
 | --------------------- | --------------------------------------------------------------------------- |
 | Replacement success   | Two independently valid generated manifests                                 |
 | Replacement failure   | Deterministic factory/session failure injector, never hash-invalid mutation |
-| Stale callbacks       | Deferred to the G2d runtime-session fake event scheduler                    |
-| Two players           | Deferred to G2d fake Players service plus manual two-client Studio run      |
-| Same-manifest rebuild | One valid manifest loaded under distinct runtime generations                |
+| Stale callbacks       | G2d fake event scheduler; manual Studio remains a G2e gate                  |
+| Two players           | G2d fake Players service; manual two-client Studio remains a G2e gate       |
+| Same-manifest rebuild | One valid manifest loaded under distinct tested runtime generations         |
 
 ## Review rules
 

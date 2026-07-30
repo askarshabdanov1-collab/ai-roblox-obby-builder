@@ -81,10 +81,10 @@ maximum. Luau tests cover deterministic planning, exact shape/property construct
 N−1/N/N+1 budgets, all pre-pointer failure boundaries, ownership refusal, rollback, and cleanup.
 The generated fixture drift check compares exact JSON and Luau bytes.
 
-## Remaining G2d boundary
+## G2d integration boundary
 
-G2d must provide `RuntimeSessionV03`, generation tokens, behavior connections, player progress,
-spawn/checkpoint placement, hazard and finish handling, stale-callback isolation, and the production
-activation coordinator. It must integrate the root primitive with the fuller session transaction in
-the G2 ADR. G2d must also retain the current `0.2` default until its automated gates and required
-manual Roblox Studio smoke run pass. None of those behaviors is implemented or enabled by G2c.
+G2d provides `RuntimeSessionV03`, generation tokens, behavior connections, player progress,
+spawn/checkpoint placement, hazard and finish handling, stale-callback isolation, and the opt-in
+activation coordinator. It integrates this root primitive with the fuller session transaction in
+the G2 ADR. The current `0.2` default remains unchanged until the required manual Roblox Studio gate
+and a later separately reviewed cutover pass; G2c alone still enables none of those behaviors.

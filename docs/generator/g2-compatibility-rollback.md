@@ -5,18 +5,19 @@ does not widen, reinterpret, or migrate `0.2` records.
 
 ## Compatibility matrix
 
-| Concern                        | SceneManifest `0.2`                           | SceneManifest `0.3` G2 policy                                    |
-| ------------------------------ | --------------------------------------------- | ---------------------------------------------------------------- |
-| Active status in G2a           | Active default                                | Validation-only; no construction                                 |
-| Manifest transport             | `roblox/generated/VerticalSliceManifest.luau` | G1d reference selected by ADR; not in active Rojo tree           |
-| Validator                      | `ManifestValidator.luau`                      | `ManifestValidatorV03.luau`, with documented G2b parity blockers |
-| Builder                        | Existing `Builder`/`SceneBuilderCore`         | Not implemented in G2a                                           |
-| Owner marker                   | `AIObbyBuilder/0.2`                           | Reserved `AIObbyBuilder/0.3`                                     |
-| Stage/checkpoint bounds        | Legacy maximum 20; checkpoint required        | 5–50 stages; zero checkpoints allowed                            |
-| Version selection              | Current bootstrap is implicitly `0.2`         | Future explicit server-lifetime selection                        |
-| Cross-version coercion         | Rejected                                      | Rejected                                                         |
-| Live cross-version replacement | Not supported                                 | Prohibited                                                       |
-| Studio evidence                | Phase 0 reference recorded                    | Must be executed manually before cutover                         |
+| Concern                        | SceneManifest `0.2`                           | SceneManifest `0.3` G2 policy                           |
+| ------------------------------ | --------------------------------------------- | ------------------------------------------------------- |
+| Active status after G2d        | Active default                                | Opt-in library only; not selected by bootstrap          |
+| Manifest transport             | `roblox/generated/VerticalSliceManifest.luau` | G1d/G2 fixture; not selected by the default project     |
+| Validator                      | `ManifestValidator.luau`                      | `ManifestValidatorV03.luau` with G2b parity implemented |
+| Builder                        | Existing `Builder`/`SceneBuilderCore`         | `BuilderV03` plus G2c core; no production caller        |
+| Gameplay session               | Existing `PlayerProgress` and runtime         | `RuntimeSessionV03`, implemented but not default        |
+| Owner marker                   | `AIObbyBuilder/0.2`                           | `AIObbyBuilder/0.3`                                     |
+| Stage/checkpoint bounds        | Legacy maximum 20; checkpoint required        | 5–50 stages; zero checkpoints allowed                   |
+| Version selection              | Current bootstrap is implicitly `0.2`         | Future explicit server-lifetime selection               |
+| Cross-version coercion         | Rejected                                      | Rejected                                                |
+| Live cross-version replacement | Not supported                                 | Prohibited                                              |
+| Studio evidence                | Phase 0 reference recorded                    | Must be executed manually in G2e before cutover         |
 
 ## Server-lifetime selection
 
@@ -31,7 +32,7 @@ acceptance. It must retain a documented way to select `0.2`.
 ## Ownership rules
 
 - A `0.2` builder may replace only a root marked `GeneratedBy = "AIObbyBuilder/0.2"`.
-- A future `0.3` builder may replace only a root marked `GeneratedBy = "AIObbyBuilder/0.3"`.
+- The opt-in `0.3` builder may replace only a root marked `GeneratedBy = "AIObbyBuilder/0.3"`.
 - An unowned, ambiguously owned, or other-version root fails closed and is not modified.
 - G2 does not attempt to translate progress, object IDs, or live Instances between versions.
 
