@@ -332,6 +332,7 @@ end
 function SceneBuilderCoreV03.newRootState()
     return {
         currentRoot = nil,
+        currentManifestHash = nil,
     }
 end
 
@@ -352,7 +353,16 @@ local function cleanupRejectedCandidate(candidate)
     return nil
 end
 
-local function rollback(candidate, previousRoot, previousParent, previousName, state, code, message)
+local function rollback(
+    candidate,
+    previousRoot,
+    previousParent,
+    previousName,
+    previousManifestHash,
+    state,
+    code,
+    message
+)
     local restored = pcall(function()
         candidate.root.Parent = candidate.stagingContainer
         candidate.root.Name = candidate.plan.ownership.candidateName
@@ -361,9 +371,11 @@ local function rollback(candidate, previousRoot, previousParent, previousName, s
             previousRoot.Parent = previousParent
         end
         state.currentRoot = previousRoot
+        state.currentManifestHash = previousManifestHash
     end)
     if not restored then
         state.currentRoot = nil
+        state.currentManifestHash = nil
         pcall(function()
             candidate.root.Parent = nil
         end)
@@ -378,7 +390,7 @@ end
 function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, options)
     local valid, candidateError = validateCandidate(candidate)
     if valid == nil then
-        if candidate ~= nil and candidate.stagingContainer ~= nil then
+        if type(candidate) == "table" and candidate.stagingContainer ~= nil then
             cleanupRejectedCandidate(candidate)
         end
         return nil, candidateError
@@ -406,9 +418,19 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             cleanupRejectedCandidate(candidate)
             return failure("active-root-pointer", "active root does not match the current root pointer")
         end
+        if
+            type(state.currentManifestHash) ~= "string"
+            or state.currentManifestHash ~= previousRoot:GetAttribute("ManifestHash")
+        then
+            cleanupRejectedCandidate(candidate)
+            return failure("active-root-pointer", "active root identity does not match the current root pointer")
+        end
     elseif state.currentRoot ~= nil then
         cleanupRejectedCandidate(candidate)
         return failure("active-root-pointer", "current root pointer has no matching active root")
+    elseif state.currentManifestHash ~= nil then
+        cleanupRejectedCandidate(candidate)
+        return failure("active-root-pointer", "current root identity has no matching active root")
     end
     if injected(options, "before-commit") then
         cleanupRejectedCandidate(candidate)
@@ -417,6 +439,7 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
 
     local previousParent = if previousRoot == nil then nil else previousRoot.Parent
     local previousName = if previousRoot == nil then nil else previousRoot.Name
+    local previousManifestHash = state.currentManifestHash
     if previousRoot ~= nil then
         local retired = pcall(function()
             previousRoot.Name = candidate.plan.ownership.retiredName
@@ -428,6 +451,7 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
                 previousRoot,
                 previousParent,
                 previousName,
+                previousManifestHash,
                 state,
                 "commit-retire",
                 "previous root could not be retired"
@@ -440,6 +464,7 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             previousRoot,
             previousParent,
             previousName,
+            previousManifestHash,
             state,
             "commit-injected-failure",
             "root replacement failed at an injected boundary"
@@ -456,6 +481,7 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             previousRoot,
             previousParent,
             previousName,
+            previousManifestHash,
             state,
             "commit-publish",
             "candidate root could not be published"
@@ -467,6 +493,7 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             previousRoot,
             previousParent,
             previousName,
+            previousManifestHash,
             state,
             "commit-injected-failure",
             "root replacement failed at an injected boundary"
@@ -474,6 +501,7 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
     end
 
     state.currentRoot = candidate.root
+    state.currentManifestHash = candidate.plan.manifestHash
     candidate.root:SetAttribute("CandidateState", "active")
     if previousRoot ~= nil and not destroy(previousRoot) then
         return candidate.root,
