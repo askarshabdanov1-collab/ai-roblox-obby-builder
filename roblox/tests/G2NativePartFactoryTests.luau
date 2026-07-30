@@ -15,10 +15,7 @@ local function admittedPlan()
 end
 
 local function with(record, overrides)
-    local result = {}
-    for key, value in next, record do
-        result[key] = value
-    end
+    local result = table.clone(record)
     for key, value in next, overrides do
         result[key] = value
     end
