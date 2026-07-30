@@ -1,4 +1,5 @@
 local HttpService = game:GetService("HttpService")
+local G2eObservationV03 = require("./G2eObservationV03")
 
 local G2eAcceptanceHarness = {}
 
@@ -154,9 +155,25 @@ function G2eAcceptanceHarness.emitMeasurement(
     runIndex,
     elapsed,
     result,
-    beforeHeap
+    beforeHeap,
+    configuredCollections
 )
     local counts = G2eAcceptanceHarness.assertScene(result, manifest)
+    local collections = configuredCollections
+        or {
+            observations = { { id = "scene-assertions", status = "PASS" } },
+            warnings = {},
+            errors = {},
+            evidence = { "scene-assertions" },
+            requiredObservationIds = { "scene-assertions" },
+            requiredEvidenceIds = { "scene-assertions" },
+        }
+    local observation = G2eObservationV03.build({
+        fixtureId = fixtureId,
+        manifest = manifest,
+        counts = counts,
+        collections = collections,
+    })
     local measurement = {
         schemaVersion = "g2-studio-measurement-v1",
         repositoryCommit = environment.repositoryCommit,
@@ -173,24 +190,24 @@ function G2eAcceptanceHarness.emitMeasurement(
         connections = result.session:connectionCount(),
         luaHeapKilobytesBefore = beforeHeap,
         luaHeapKilobytesAfter = collectgarbage("count"),
-        warnings = 0,
-        errors = 0,
+        warnings = observation.warningCount,
+        errors = observation.errorCount,
         orphans = 0,
     }
-    print(MEASUREMENT_PREFIX .. HttpService:JSONEncode(measurement))
-    print(OBSERVATION_PREFIX .. HttpService:JSONEncode({
-        fixtureId = fixtureId,
-        manifestHash = manifest.manifestHash,
-        stages = #manifest.navigation.stages,
-        zones = #manifest.decorativeZones,
-        routeEntries = #manifest.navigation.routeEntries,
-        transitions = #manifest.navigation.requiredTransitions,
-        baseParts = counts.baseParts,
-        containers = counts.folders,
-        helperSpawnLocations = counts.spawnLocations,
-        status = "PASS",
-    }))
-    return measurement
+    for _, record in ipairs(G2eObservationV03.orderedRecords(measurement, observation)) do
+        local prefix = if record.kind == "measurement" then MEASUREMENT_PREFIX else OBSERVATION_PREFIX
+        print(prefix .. HttpService:JSONEncode(record.payload))
+    end
+    if observation.status == "FAIL" then
+        warn(
+            string.format(
+                "[G2 acceptance diagnostic] code=%s field=%s",
+                observation.diagnosticCode,
+                observation.diagnosticField
+            )
+        )
+    end
+    return measurement, observation
 end
 
 function G2eAcceptanceHarness.bindControl(api)

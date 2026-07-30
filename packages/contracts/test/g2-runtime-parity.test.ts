@@ -168,6 +168,23 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
     expect(bootstrap).toContain("buildError.field");
   });
 
+  it("keeps G2e observation emission on validated bounded collections", async () => {
+    const harness = await readFile(
+      "roblox/g2e/G2eAcceptanceHarness.luau",
+      "utf8",
+    );
+    const observation = await readFile(
+      "roblox/g2e/G2eObservationV03.luau",
+      "utf8",
+    );
+    expect(observation).toContain("reachability.requiredTransitions");
+    expect(harness).not.toContain("manifest.navigation.requiredTransitions");
+    expect(harness).toContain("G2eObservationV03.orderedRecords");
+
+    const project = await readFile("roblox/g2e-smoke.project.json", "utf8");
+    expect(project).toContain("G2eObservationV03");
+  });
+
   it("keeps G2d opt-in and excludes later-phase integrations", async () => {
     const runtimeDirectory = "roblox/src/ReplicatedStorage/ObbyRuntime";
     const bootstrap = await readFile(

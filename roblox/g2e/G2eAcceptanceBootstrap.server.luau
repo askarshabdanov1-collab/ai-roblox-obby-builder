@@ -72,7 +72,7 @@ function api:build(fixtureId, runKind, runIndex, options)
     end
     assert(result ~= nil, buildError and (buildError.code .. ": " .. buildError.message) or "G2e build failed")
     assert(manifest.manifestHash == fixture.expectedHash, "configured expected hash changed")
-    local measurement = G2eAcceptanceHarness.emitMeasurement(
+    local measurement, observation = G2eAcceptanceHarness.emitMeasurement(
         environment,
         fixtureId,
         manifest,
@@ -81,6 +81,10 @@ function api:build(fixtureId, runKind, runIndex, options)
         elapsed,
         result,
         beforeHeap
+    )
+    assert(
+        observation.status == "PASS",
+        string.format("%s: %s", observation.diagnosticCode, observation.diagnosticField)
     )
     table.insert(self.measurements, measurement)
     self.current = result

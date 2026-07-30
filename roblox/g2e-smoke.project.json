@@ -13,6 +13,9 @@
       },
       "G2eAcceptanceHarness": {
         "$path": "g2e/G2eAcceptanceHarness.luau"
+      },
+      "G2eObservationV03": {
+        "$path": "g2e/G2eObservationV03.luau"
       }
     },
     "ServerStorage": {
