@@ -67,6 +67,8 @@ return function(test, expect)
         local builder = BuilderV03.new(harness.runtime)
         local first = build(builder, reference)
         local oldFinish = first.session.candidate.partById[reference.navigation.finishObjectId]
+        local oldCheckpoint = first.session.candidate.partById.Checkpoint001
+        local oldHazard = first.session.candidate.partById[firstByRole(reference, "kill")]
         local newWasActiveAtOldDestroy = false
         harness.tracker.onDestroy = function(instance)
             if instance == first.root then
@@ -79,7 +81,11 @@ return function(test, expect)
         expect(first.session:status() == "disposed", "old session survived replacement")
         expect(newWasActiveAtOldDestroy, "old root was destroyed before new session activation")
         harness:touch(oldFinish, harness:hit(player, character))
+        harness:touch(oldCheckpoint, harness:hit(player, character))
+        harness:touch(oldHazard, harness:hit(player, character))
         expect(not second.session:finished(player), "old finish callback mutated new session")
+        expect(second.session:checkpointOrder(player) == nil, "old checkpoint callback mutated new session")
+        expect(harness.tracker.kills == 0, "old hazard callback mutated the player")
         expect(harness.tracker.activeConnections == second.session:connectionCount() + 3, "old connections leaked")
     end)
 
@@ -120,18 +126,28 @@ return function(test, expect)
         local first = build(builder, reference)
         harness:touch(first.session.candidate.partById.Checkpoint001, harness:hit(playerA, characterA))
         harness:touch(first.session.candidate.partById.Checkpoint002, harness:hit(playerB, characterB))
+        harness:touch(
+            first.session.candidate.partById[reference.navigation.finishObjectId],
+            harness:hit(playerA, characterA)
+        )
         expect(first.session:checkpointOrder(playerA) == 1, "player A checkpoint changed")
         expect(first.session:checkpointOrder(playerB) == 2, "player B checkpoint changed")
         local second = build(builder, replacement)
         expect(second.session:checkpointOrder(playerA) == nil, "player A old-manifest state survived")
         expect(second.session:checkpointOrder(playerB) == nil, "player B old-manifest state survived")
+        expect(not second.session:finished(playerA), "player A old-manifest finish survived")
         expect(playerA:GetAttribute(RuntimeSessionV03.CHECKPOINT_ATTRIBUTE) == nil, "player A attribute survived")
         expect(playerB:GetAttribute(RuntimeSessionV03.CHECKPOINT_ATTRIBUTE) == nil, "player B attribute survived")
+        expect(playerA:GetAttribute(RuntimeSessionV03.FINISH_ATTRIBUTE) == nil, "player A finish attribute survived")
         harness:touch(second.session.candidate.partById.Checkpoint001, harness:hit(playerA, characterA))
         harness:touch(second.session.candidate.partById.Checkpoint002, harness:hit(playerB, characterB))
         harness:removePlayer(playerA)
         expect(second.session:checkpointOrder(playerA) == nil, "removed player state survived")
         expect(second.session:checkpointOrder(playerB) == 2, "player removal cleared another player")
+        expect(builder.playerConnectionByPlayer[playerA] == nil, "removed player connection survived")
+        for _, retainedPlayer in ipairs(builder.playerOrder) do
+            expect(retainedPlayer ~= playerA, "removed player reference survived")
+        end
     end)
 
     test("supports zero checkpoints and bounds 50-stage connections by gameplay objects", function()
@@ -167,5 +183,39 @@ return function(test, expect)
         end
         expect(result.session:connectionCount() == expected, "explicit behavior connection count changed")
         expect(firstByRole(reference, "kill") ~= nil, "reference hazard coverage disappeared")
+    end)
+
+    test("places delayed CharacterAdded and rejects queued placement from a replaced session", function()
+        local harness = G2RuntimeHarnessV03.new()
+        local player = harness:newPlayer(101)
+        harness:addPlayer(player)
+        local builder = BuilderV03.new(harness.runtime)
+        build(builder, reference)
+        local delayed = harness:newCharacter(player)
+        harness:fireCharacter(player, delayed)
+        harness:runDeferred()
+        expect(delayed.rootPart.CFrame ~= nil, "delayed CharacterAdded was not placed")
+
+        local staleCharacter = harness:newCharacter(player)
+        harness:fireCharacter(player, staleCharacter)
+        local currentCharacter = harness:newCharacter(player)
+        build(builder, replacement)
+        harness:runDeferred()
+        expect(staleCharacter.rootPart.CFrame == nil, "queued old-session placement crossed replacement")
+        expect(currentCharacter.rootPart.CFrame ~= nil, "current replacement character was not placed")
+    end)
+
+    test("cleans partial new-session connections and preserves old session on preparation failure", function()
+        local harness = G2RuntimeHarnessV03.new()
+        local builder = BuilderV03.new(harness.runtime)
+        local first = build(builder, reference)
+        local activeBefore = harness.tracker.activeConnections
+        harness.tracker.failTouchConnectionAt = harness.tracker.touchConnectionAttempts + 2
+        local failed, buildError = build(builder, replacement)
+        expect(failed == nil and buildError.code == "session-connection", "connection failure was hidden")
+        expect(builder:currentSession() == first.session, "connection failure changed current session")
+        expect(first.session:status() == "active", "connection failure invalidated old session")
+        expect(harness.tracker.activeConnections == activeBefore, "partial new-session connection leaked")
+        expect(first.root.Parent == harness.workspace and not first.root.Destroyed, "connection failure changed scene")
     end)
 end

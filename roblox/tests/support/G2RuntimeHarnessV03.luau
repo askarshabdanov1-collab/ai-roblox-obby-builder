@@ -57,6 +57,7 @@ function G2RuntimeHarnessV03.new()
     tracker.waits = 0
     tracker.placements = {}
     tracker.kills = 0
+    tracker.touchConnectionAttempts = 0
 
     local players = {}
     local playerAdded = signal(tracker)
@@ -77,6 +78,10 @@ function G2RuntimeHarnessV03.new()
         partRuntime = partRuntime,
         workspace = workspace,
         connectTouched = function(part, callback)
+            tracker.touchConnectionAttempts += 1
+            if tracker.failTouchConnectionAt == tracker.touchConnectionAttempts then
+                error("injected touch connection failure")
+            end
             return touchSignal(part):Connect(callback)
         end,
         resolveTouch = function(hit)

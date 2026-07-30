@@ -137,6 +137,12 @@ function BuilderV03:_removePlayer(player)
         disconnect(connection)
         self.playerConnectionByPlayer[player] = nil
     end
+    for index, retainedPlayer in ipairs(self.playerOrder) do
+        if retainedPlayer == player then
+            table.remove(self.playerOrder, index)
+            break
+        end
+    end
     local session = self.rootState.currentSession
     if session ~= nil then
         session:removePlayer(player)
