@@ -49,6 +49,16 @@ local api = {
     measurements = {},
 }
 
+local function reportBuildFailure(buildError)
+    local code = if type(buildError) == "table" and type(buildError.code) == "string"
+        then string.sub(buildError.code, 1, 64)
+        else "unknown"
+    local field = if type(buildError) == "table" and type(buildError.field) == "string"
+        then string.sub(buildError.field, 1, 64)
+        else "none"
+    warn(string.format("[G2 acceptance diagnostic] code=%s field=%s", code, field))
+end
+
 function api:build(fixtureId, runKind, runIndex, options)
     local fixture = fixtures[fixtureId]
     assert(fixture ~= nil, "unknown G2e fixture: " .. tostring(fixtureId))
@@ -57,6 +67,9 @@ function api:build(fixtureId, runKind, runIndex, options)
     local started = os.clock()
     local result, buildError = builder:build(fixture.module, fixture.expectedHash, options)
     local elapsed = os.clock() - started
+    if result == nil then
+        reportBuildFailure(buildError)
+    end
     assert(result ~= nil, buildError and (buildError.code .. ": " .. buildError.message) or "G2e build failed")
     assert(manifest.manifestHash == fixture.expectedHash, "configured expected hash changed")
     local measurement = G2eAcceptanceHarness.emitMeasurement(

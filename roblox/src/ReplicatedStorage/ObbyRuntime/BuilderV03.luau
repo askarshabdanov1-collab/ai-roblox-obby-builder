@@ -17,6 +17,9 @@ local function defaultRuntime()
     local Workspace = game:GetService("Workspace")
     return {
         workspace = Workspace,
+        isWorkspace = function(value)
+            return typeof(value) == "Instance" and value == Workspace and value:IsA("Workspace")
+        end,
         connectTouched = function(part, callback)
             return part.Touched:Connect(callback)
         end,
@@ -67,6 +70,7 @@ end
 local function validRuntime(runtime)
     return type(runtime) == "table"
         and runtime.workspace ~= nil
+        and type(runtime.isWorkspace) == "function"
         and type(runtime.connectTouched) == "function"
         and type(runtime.resolveTouch) == "function"
         and type(runtime.waitForRootPart) == "function"
@@ -153,9 +157,13 @@ function BuilderV03.new(configuredRuntime)
     if not validRuntime(runtime) then
         return failure("builder-runtime", "BuilderV03 runtime is invalid")
     end
+    local rootState = SceneBuilderCoreV03.newRootState()
+    local replacementRuntime =
+        SceneBuilderCoreV03.newReplacementRuntime(runtime.workspace, rootState, runtime.isWorkspace)
     local self = setmetatable({
         runtime = runtime,
-        rootState = SceneBuilderCoreV03.newRootState(),
+        rootState = rootState,
+        replacementRuntime = replacementRuntime,
         generation = 0,
         playerConnectionByPlayer = {},
         playerOrder = {},
@@ -275,7 +283,7 @@ function BuilderV03:build(moduleScript, expectedManifestHash, options)
     commitOptions.nextGenerationToken = generationToken
     commitOptions.deferCleanup = true
     local root, commitError, cleanupReceipt =
-        SceneBuilderCoreV03.commitCandidate(candidate, self.runtime.workspace, self.rootState, commitOptions)
+        SceneBuilderCoreV03.commitCandidate(candidate, self.replacementRuntime, commitOptions)
     if root == nil then
         session:dispose()
         return nil, commitError

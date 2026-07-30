@@ -149,6 +149,25 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
     }
   });
 
+  it("keeps replacement runtime validation compatible with real Workspace Instances", async () => {
+    const core = await readFile(
+      "roblox/src/ReplicatedStorage/ObbyRuntime/SceneBuilderCoreV03.luau",
+      "utf8",
+    );
+    expect(core).not.toMatch(/type\(workspace\)\s*[~=]=\s*["']table["']/u);
+    expect(core).toContain("commit-runtime-workspace");
+    expect(core).toContain("commit-runtime-current-root");
+    expect(core).toContain("commit-runtime-manifest");
+    expect(core).toContain("commit-runtime-session");
+
+    const bootstrap = await readFile(
+      "roblox/g2e/G2eAcceptanceBootstrap.server.luau",
+      "utf8",
+    );
+    expect(bootstrap).toContain("[G2 acceptance diagnostic]");
+    expect(bootstrap).toContain("buildError.field");
+  });
+
   it("keeps G2d opt-in and excludes later-phase integrations", async () => {
     const runtimeDirectory = "roblox/src/ReplicatedStorage/ObbyRuntime";
     const bootstrap = await readFile(

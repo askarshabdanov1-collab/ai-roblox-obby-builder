@@ -15,6 +15,14 @@ local function failure(code, message)
     })
 end
 
+local function runtimeFailure(code, field, message)
+    return nil, table.freeze({
+        code = code,
+        field = field,
+        message = message,
+    })
+end
+
 local function injected(options, boundary)
     return options ~= nil and options.failAt == boundary
 end
@@ -386,6 +394,116 @@ function SceneBuilderCoreV03.newRootState()
     }
 end
 
+function SceneBuilderCoreV03.newReplacementRuntime(workspace, state, isWorkspace)
+    return table.freeze({
+        runtimeVersion = "g2-replacement-runtime-v1",
+        workspace = workspace,
+        isWorkspace = isWorkspace,
+        getCurrentRoot = function()
+            return state.currentRoot
+        end,
+        getCurrentManifestHash = function()
+            return state.currentManifestHash
+        end,
+        getCurrentSession = function()
+            return state.currentSession
+        end,
+        getCurrentGenerationToken = function()
+            return state.currentGenerationToken
+        end,
+        setCurrent = function(root, manifestHash, session, generationToken)
+            state.currentRoot = root
+            state.currentManifestHash = manifestHash
+            state.currentSession = session
+            state.currentGenerationToken = generationToken
+        end,
+    })
+end
+
+local function readReplacementRuntime(replacementRuntime)
+    if type(replacementRuntime) ~= "table" or replacementRuntime.runtimeVersion ~= "g2-replacement-runtime-v1" then
+        return runtimeFailure(
+            "commit-runtime-workspace",
+            "replacementRuntime",
+            "root replacement runtime contract is invalid"
+        )
+    end
+    if replacementRuntime.workspace == nil then
+        return runtimeFailure("commit-runtime-workspace", "workspace", "replacement Workspace is missing")
+    end
+    if type(replacementRuntime.isWorkspace) ~= "function" then
+        return runtimeFailure("commit-runtime-workspace", "isWorkspace", "replacement Workspace validator is missing")
+    end
+    local identityOk, isWorkspace = pcall(replacementRuntime.isWorkspace, replacementRuntime.workspace)
+    if not identityOk or isWorkspace ~= true then
+        return runtimeFailure(
+            "commit-runtime-workspace",
+            "workspace-identity",
+            "replacement Workspace identity is invalid"
+        )
+    end
+    if type(replacementRuntime.getCurrentRoot) ~= "function" then
+        return runtimeFailure("commit-runtime-current-root", "getCurrentRoot", "current-root accessor is missing")
+    end
+    if type(replacementRuntime.getCurrentManifestHash) ~= "function" then
+        return runtimeFailure(
+            "commit-runtime-manifest",
+            "getCurrentManifestHash",
+            "current-manifest accessor is missing"
+        )
+    end
+    if type(replacementRuntime.getCurrentSession) ~= "function" then
+        return runtimeFailure("commit-runtime-session", "getCurrentSession", "current-session accessor is missing")
+    end
+    if type(replacementRuntime.getCurrentGenerationToken) ~= "function" then
+        return runtimeFailure(
+            "commit-runtime-session",
+            "getCurrentGenerationToken",
+            "current-generation accessor is missing"
+        )
+    end
+    if type(replacementRuntime.setCurrent) ~= "function" then
+        return runtimeFailure("commit-runtime-session", "setCurrent", "current-pointer setter is missing")
+    end
+
+    local rootOk, currentRoot = pcall(replacementRuntime.getCurrentRoot)
+    if not rootOk then
+        return runtimeFailure("commit-runtime-current-root", "getCurrentRoot", "current-root accessor failed")
+    end
+    local manifestOk, currentManifestHash = pcall(replacementRuntime.getCurrentManifestHash)
+    if not manifestOk then
+        return runtimeFailure("commit-runtime-manifest", "getCurrentManifestHash", "current-manifest accessor failed")
+    end
+    local sessionOk, currentSession = pcall(replacementRuntime.getCurrentSession)
+    local tokenOk, currentGenerationToken = pcall(replacementRuntime.getCurrentGenerationToken)
+    if not sessionOk then
+        return runtimeFailure("commit-runtime-session", "getCurrentSession", "current-session accessor failed")
+    end
+    if not tokenOk then
+        return runtimeFailure(
+            "commit-runtime-session",
+            "getCurrentGenerationToken",
+            "current-generation accessor failed"
+        )
+    end
+    return table.freeze({
+        workspace = replacementRuntime.workspace,
+        currentRoot = currentRoot,
+        currentManifestHash = currentManifestHash,
+        currentSession = currentSession,
+        currentGenerationToken = currentGenerationToken,
+    }),
+        nil
+end
+
+local function validSessionHooks(session)
+    return type(session) == "table"
+        and type(session.activate) == "function"
+        and type(session.invalidate) == "function"
+        and type(session.dispose) == "function"
+        and type(session.checkCurrent) == "function"
+end
+
 local function activeRoots(workspace)
     local roots = {}
     for _, child in ipairs(workspace:GetChildren()) do
@@ -412,7 +530,7 @@ local function rollback(
     previousManifestHash,
     previousSession,
     previousGenerationToken,
-    state,
+    replacementRuntime,
     code,
     message
 )
@@ -423,16 +541,10 @@ local function rollback(
             previousRoot.Name = previousName
             previousRoot.Parent = previousParent
         end
-        state.currentRoot = previousRoot
-        state.currentManifestHash = previousManifestHash
-        state.currentSession = previousSession
-        state.currentGenerationToken = previousGenerationToken
+        replacementRuntime.setCurrent(previousRoot, previousManifestHash, previousSession, previousGenerationToken)
     end)
     if not restored then
-        state.currentRoot = nil
-        state.currentManifestHash = nil
-        state.currentSession = nil
-        state.currentGenerationToken = nil
+        pcall(replacementRuntime.setCurrent, nil, nil, nil, nil)
         pcall(function()
             candidate.root.Parent = nil
         end)
@@ -449,16 +561,18 @@ local function rollback(
     return failure(code, message)
 end
 
-function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, options)
+function SceneBuilderCoreV03.commitCandidate(candidate, replacementRuntime, options)
     local valid, candidateError = validateCandidate(candidate)
     if valid == nil then
         cleanupRejectedCandidate(candidate)
         return nil, candidateError
     end
-    if type(workspace) ~= "table" or type(workspace.GetChildren) ~= "function" or type(state) ~= "table" then
+    local runtimeSnapshot, runtimeError = readReplacementRuntime(replacementRuntime)
+    if runtimeSnapshot == nil then
         cleanupRejectedCandidate(candidate)
-        return failure("commit-runtime", "root replacement runtime is invalid")
+        return nil, runtimeError
     end
+    local workspace = runtimeSnapshot.workspace
 
     local nextSession = if options == nil then nil else options.nextSession
     local nextGenerationToken = if options == nil then nil else options.nextGenerationToken
@@ -466,13 +580,17 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
     if
         sessionAware
         and (
-            type(nextSession) ~= "table"
+            not validSessionHooks(nextSession)
             or type(nextGenerationToken) ~= "string"
             or candidate.root:GetAttribute("GenerationToken") ~= nextGenerationToken
         )
     then
         cleanupRejectedCandidate(candidate)
-        return failure("commit-session", "candidate session pointer identity is invalid")
+        return runtimeFailure(
+            "commit-runtime-session",
+            "nextSession",
+            "candidate session hooks or identity are invalid"
+        )
     end
 
     local roots = activeRoots(workspace)
@@ -489,33 +607,61 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             cleanupRejectedCandidate(candidate)
             return failure("active-root-ownership", "active root is unowned or belongs to another runtime version")
         end
-        if state.currentRoot ~= previousRoot then
+        if runtimeSnapshot.currentRoot ~= previousRoot then
             cleanupRejectedCandidate(candidate)
-            return failure("active-root-pointer", "active root does not match the current root pointer")
+            return runtimeFailure(
+                "commit-runtime-current-root",
+                "currentRoot",
+                "active root does not match the current root pointer"
+            )
         end
         if
-            type(state.currentManifestHash) ~= "string"
-            or state.currentManifestHash ~= previousRoot:GetAttribute("ManifestHash")
+            type(runtimeSnapshot.currentManifestHash) ~= "string"
+            or runtimeSnapshot.currentManifestHash ~= previousRoot:GetAttribute("ManifestHash")
         then
             cleanupRejectedCandidate(candidate)
-            return failure("active-root-pointer", "active root identity does not match the current root pointer")
+            return runtimeFailure(
+                "commit-runtime-manifest",
+                "currentManifestHash",
+                "active root manifest does not match the current manifest pointer"
+            )
         end
         if
-            state.currentSession ~= nil
+            runtimeSnapshot.currentSession ~= nil
             and (
-                type(state.currentGenerationToken) ~= "string"
-                or previousRoot:GetAttribute("GenerationToken") ~= state.currentGenerationToken
+                not validSessionHooks(runtimeSnapshot.currentSession)
+                or type(runtimeSnapshot.currentGenerationToken) ~= "string"
+                or previousRoot:GetAttribute("GenerationToken") ~= runtimeSnapshot.currentGenerationToken
             )
         then
             cleanupRejectedCandidate(candidate)
-            return failure("active-root-pointer", "active root generation does not match the current session")
+            return runtimeFailure(
+                "commit-runtime-session",
+                "currentSession",
+                "active root generation does not match the current session"
+            )
         end
-    elseif state.currentRoot ~= nil then
+    elseif runtimeSnapshot.currentRoot ~= nil then
         cleanupRejectedCandidate(candidate)
-        return failure("active-root-pointer", "current root pointer has no matching active root")
-    elseif state.currentManifestHash ~= nil then
+        return runtimeFailure(
+            "commit-runtime-current-root",
+            "currentRoot",
+            "current root pointer has no matching active root"
+        )
+    elseif runtimeSnapshot.currentManifestHash ~= nil then
         cleanupRejectedCandidate(candidate)
-        return failure("active-root-pointer", "current root identity has no matching active root")
+        return runtimeFailure(
+            "commit-runtime-manifest",
+            "currentManifestHash",
+            "current manifest pointer has no matching active root"
+        )
+    elseif runtimeSnapshot.currentSession ~= nil or runtimeSnapshot.currentGenerationToken ~= nil then
+        cleanupRejectedCandidate(candidate)
+        return runtimeFailure(
+            "commit-runtime-session",
+            "currentSession",
+            "current session pointer has no matching active root"
+        )
     end
     if injected(options, "before-commit") then
         cleanupRejectedCandidate(candidate)
@@ -524,9 +670,9 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
 
     local previousParent = if previousRoot == nil then nil else previousRoot.Parent
     local previousName = if previousRoot == nil then nil else previousRoot.Name
-    local previousManifestHash = state.currentManifestHash
-    local previousSession = state.currentSession
-    local previousGenerationToken = state.currentGenerationToken
+    local previousManifestHash = runtimeSnapshot.currentManifestHash
+    local previousSession = runtimeSnapshot.currentSession
+    local previousGenerationToken = runtimeSnapshot.currentGenerationToken
     if previousRoot ~= nil then
         local retired = pcall(function()
             previousRoot.Name = candidate.plan.ownership.retiredName
@@ -541,7 +687,7 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
                 previousManifestHash,
                 previousSession,
                 previousGenerationToken,
-                state,
+                replacementRuntime,
                 "commit-retire",
                 "previous root could not be retired"
             )
@@ -556,7 +702,7 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             previousManifestHash,
             previousSession,
             previousGenerationToken,
-            state,
+            replacementRuntime,
             "commit-injected-failure",
             "root replacement failed at an injected boundary"
         )
@@ -575,7 +721,7 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             previousManifestHash,
             previousSession,
             previousGenerationToken,
-            state,
+            replacementRuntime,
             "commit-publish",
             "candidate root could not be published"
         )
@@ -589,17 +735,34 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             previousManifestHash,
             previousSession,
             previousGenerationToken,
-            state,
+            replacementRuntime,
             "commit-injected-failure",
             "root replacement failed at an injected boundary"
         )
     end
 
-    state.currentRoot = candidate.root
-    state.currentManifestHash = candidate.plan.manifestHash
-    if sessionAware then
-        state.currentSession = nextSession
-        state.currentGenerationToken = nextGenerationToken
+    local committedSession = if sessionAware then nextSession else previousSession
+    local committedGenerationToken = if sessionAware then nextGenerationToken else previousGenerationToken
+    local pointerStored = pcall(
+        replacementRuntime.setCurrent,
+        candidate.root,
+        candidate.plan.manifestHash,
+        committedSession,
+        committedGenerationToken
+    )
+    if not pointerStored then
+        return rollback(
+            candidate,
+            previousRoot,
+            previousParent,
+            previousName,
+            previousManifestHash,
+            previousSession,
+            previousGenerationToken,
+            replacementRuntime,
+            "commit-pointer",
+            "new root pointer could not be stored"
+        )
     end
     candidate.root:SetAttribute("CandidateState", "active")
     candidateLifecycleByEnvelope[candidate].state = "active"

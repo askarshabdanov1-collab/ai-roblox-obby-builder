@@ -39,11 +39,21 @@ local function activeRoots(workspace)
     return roots
 end
 
+local function replacementRuntime(workspace, state)
+    return SceneBuilderCoreV03.newReplacementRuntime(workspace, state, function(value)
+        return value == workspace and value:IsA("Workspace")
+    end)
+end
+
+local function commit(candidate, workspace, state, options)
+    return SceneBuilderCoreV03.commitCandidate(candidate, replacementRuntime(workspace, state), options)
+end
+
 local function publishReference(runtime, workspace)
     local state = SceneBuilderCoreV03.newRootState()
     local candidate, buildError = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
     assert(candidate ~= nil, buildError and buildError.message or "candidate failed")
-    local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+    local root, commitError = commit(candidate, workspace, state)
     assert(root ~= nil, commitError and commitError.message or "initial commit failed")
     return state, root
 end
@@ -86,6 +96,112 @@ return function(test, expect)
         expect(candidate.partById.Spawn ~= nil and candidate.partById.Finish ~= nil, "lookup closure failed")
         expect(table.isfrozen(candidate.partById), "candidate lookup is mutable")
         expect(tracker.connections == 0, "candidate construction bound gameplay behavior")
+    end)
+
+    test("accepts a real-shaped replacement runtime record", function()
+        local _, runtime, workspace = harness()
+        local state = SceneBuilderCoreV03.newRootState()
+        local replacementContext = replacementRuntime(workspace, state)
+        local candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
+        local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, replacementContext)
+        expect(root ~= nil, commitError and commitError.message or "real-shaped replacement runtime failed")
+        expect(root.Parent == workspace and state.currentRoot == root, "replacement runtime did not store exact root")
+    end)
+
+    test("rejects missing and wrong Workspace identity with typed fields", function()
+        local _, runtime, workspace = harness()
+        local state = SceneBuilderCoreV03.newRootState()
+        local valid = replacementRuntime(workspace, state)
+
+        local missingWorkspace = table.clone(valid)
+        missingWorkspace.workspace = nil
+        local candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
+        local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, missingWorkspace)
+        expect(
+            root == nil and commitError.code == "commit-runtime-workspace" and commitError.field == "workspace",
+            "missing Workspace did not fail with its typed field"
+        )
+
+        local wrongWorkspace = table.clone(valid)
+        wrongWorkspace.workspace = FakeInstanceV03.new("Workspace")
+        candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
+        root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, wrongWorkspace)
+        expect(
+            root == nil and commitError.code == "commit-runtime-workspace" and commitError.field == "workspace-identity",
+            "wrong Workspace identity was accepted"
+        )
+    end)
+
+    test("rejects missing current-root accessors before scene mutation", function()
+        local _, runtime, workspace = harness()
+        local state = SceneBuilderCoreV03.newRootState()
+        local malformed = table.clone(replacementRuntime(workspace, state))
+        malformed.getCurrentRoot = nil
+        local candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
+        local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, malformed)
+        expect(
+            root == nil and commitError.code == "commit-runtime-current-root" and commitError.field == "getCurrentRoot",
+            "missing current-root accessor was accepted"
+        )
+        expect(#workspace:GetChildren() == 0, "malformed accessor mutated Workspace")
+    end)
+
+    test("rejects each malformed replacement session hook independently", function()
+        for _, field in ipairs({ "getCurrentSession", "getCurrentGenerationToken", "setCurrent" }) do
+            local _, runtime, workspace = harness()
+            local state = SceneBuilderCoreV03.newRootState()
+            local malformed = table.clone(replacementRuntime(workspace, state))
+            malformed[field] = nil
+            local candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
+            local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, malformed)
+            expect(
+                root == nil and commitError.code == "commit-runtime-session" and commitError.field == field,
+                field .. " did not fail with its typed field"
+            )
+            expect(#workspace:GetChildren() == 0 and state.currentRoot == nil, field .. " mutated root state")
+        end
+    end)
+
+    test("rejects stale current-root and wrong manifest identity independently", function()
+        local _, runtime, workspace = harness()
+        local state, previous = publishReference(runtime, workspace)
+
+        state.currentRoot = nil
+        local candidate = SceneBuilderCoreV03.buildCandidate(admit(replacement), runtime)
+        local root, commitError = commit(candidate, workspace, state)
+        expect(
+            root == nil and commitError.code == "commit-runtime-current-root" and commitError.field == "currentRoot",
+            "stale current-root pointer did not receive a typed failure"
+        )
+        expect(previous.Parent == workspace, "stale current-root rejection changed the old scene")
+
+        state.currentRoot = previous
+        state.currentManifestHash = "sha256:" .. string.rep("0", 64)
+        candidate = SceneBuilderCoreV03.buildCandidate(admit(replacement), runtime)
+        root, commitError = commit(candidate, workspace, state)
+        expect(
+            root == nil and commitError.code == "commit-runtime-manifest" and commitError.field == "currentManifestHash",
+            "wrong manifest identity did not receive a typed failure"
+        )
+        expect(previous.Parent == workspace, "manifest rejection changed the old scene")
+    end)
+
+    test("rejects malformed next-session hooks before pointer swap", function()
+        local _, runtime, workspace = harness()
+        local state = SceneBuilderCoreV03.newRootState()
+        local candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
+        local token = "g2d-generation-v1:test"
+        candidate.root:SetAttribute("GenerationToken", token)
+        local root, commitError = SceneBuilderCoreV03.commitCandidate(
+            candidate,
+            replacementRuntime(workspace, state),
+            { nextSession = {}, nextGenerationToken = token }
+        )
+        expect(
+            root == nil and commitError.code == "commit-runtime-session" and commitError.field == "nextSession",
+            "malformed session hooks were accepted"
+        )
+        expect(#workspace:GetChildren() == 0 and state.currentRoot == nil, "session rejection changed root state")
     end)
 
     test("constructs Wedge decoration and 0/20/21/50-stage fixtures exactly", function()
@@ -166,7 +282,7 @@ return function(test, expect)
                 pointerWasNewAtDestroy = state.currentRoot == candidate.root
             end
         end
-        local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+        local root, commitError = commit(candidate, workspace, state)
         expect(root ~= nil, commitError and commitError.message or "replacement failed")
         expect(root == candidate.root and state.currentRoot == root, "current root pointer did not switch")
         expect(pointerWasNewAtDestroy, "old root was destroyed before pointer switch")
@@ -183,7 +299,7 @@ return function(test, expect)
         local state, previous = publishReference(runtime, workspace)
         local candidate, buildError = SceneBuilderCoreV03.buildCandidate(admit(replacement), runtime)
         expect(candidate ~= nil, buildError and buildError.message or "replacement candidate failed")
-        local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+        local root, commitError = commit(candidate, workspace, state)
         expect(root ~= nil, commitError and commitError.message or "replacement commit failed")
         expect(FakeInstanceV03.isDestroyed(previous), "previous scene survived replacement")
         expect(root:GetAttribute("ManifestHash") == replacement.manifestHash, "replacement hash changed")
@@ -226,7 +342,7 @@ return function(test, expect)
             local _, runtime, workspace = harness()
             local state, previous = publishReference(runtime, workspace)
             local candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
-            local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, {
+            local root, commitError = commit(candidate, workspace, state, {
                 failAt = boundary,
             })
             expect(root == nil and commitError.code == "commit-injected-failure", boundary .. " was not injected")
@@ -252,7 +368,7 @@ return function(test, expect)
             existing.Parent = workspace
             local state = SceneBuilderCoreV03.newRootState()
             local candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
-            local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+            local root, commitError = commit(candidate, workspace, state)
             expect(root == nil and commitError.code == "active-root-ownership", owner .. " root was replaced")
             expect(
                 existing.Parent == workspace and not FakeInstanceV03.isDestroyed(existing),
@@ -267,7 +383,7 @@ return function(test, expect)
         duplicate:SetAttribute("GeneratedBy", "AIObbyBuilder/0.3")
         duplicate.Parent = workspace
         local candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
-        local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+        local root, commitError = commit(candidate, workspace, state)
         expect(root == nil and commitError.code == "active-root-ambiguous", "duplicate active roots were accepted")
         expect(
             not FakeInstanceV03.isDestroyed(previous) and not FakeInstanceV03.isDestroyed(duplicate),
@@ -277,7 +393,7 @@ return function(test, expect)
         duplicate:Destroy()
         candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
         candidate.root:SetAttribute("ManifestHash", "sha256:" .. string.rep("0", 64))
-        root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+        root, commitError = commit(candidate, workspace, state)
         expect(root == nil and commitError.code == "candidate-identity", "changed candidate identity was accepted")
         expect(
             state.currentRoot == previous and not FakeInstanceV03.isDestroyed(previous),
@@ -286,8 +402,8 @@ return function(test, expect)
 
         previous:SetAttribute("ManifestHash", "sha256:" .. string.rep("1", 64))
         candidate = SceneBuilderCoreV03.buildCandidate(admit(replacement), runtime)
-        root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
-        expect(root == nil and commitError.code == "active-root-pointer", "changed active identity was accepted")
+        root, commitError = commit(candidate, workspace, state)
+        expect(root == nil and commitError.code == "commit-runtime-manifest", "changed active identity was accepted")
         expect(
             state.currentRoot == previous and not FakeInstanceV03.isDestroyed(previous),
             "active identity rejection changed root"
@@ -300,7 +416,7 @@ return function(test, expect)
         local candidate = SceneBuilderCoreV03.buildCandidate(admit(replacement), runtime)
         local disposed, disposeError = SceneBuilderCoreV03.disposeCandidate(candidate)
         expect(disposed == true, disposeError and disposeError.message or "candidate disposal failed")
-        local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+        local root, commitError = commit(candidate, workspace, state)
         expect(root == nil and commitError.code == "candidate-identity", "disposed candidate was accepted")
         expect(state.currentRoot == previous and previous.Parent == workspace, "disposed candidate changed old scene")
         expect(FakeInstanceV03.isDestroyed(candidate.root), "disposed candidate root survived")
@@ -311,7 +427,7 @@ return function(test, expect)
         local state, previous = publishReference(runtime, workspace)
         local candidate = SceneBuilderCoreV03.buildCandidate(admit(replacement), runtime)
         candidate.root.Parent = nil
-        local root, commitError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+        local root, commitError = commit(candidate, workspace, state)
         expect(root == nil and commitError.code == "candidate-identity", "removed candidate was accepted")
         expect(state.currentRoot == previous and previous.Parent == workspace, "removed candidate changed old scene")
         expect(FakeInstanceV03.isDestroyed(candidate.root), "removed candidate root survived cleanup")
@@ -323,7 +439,7 @@ return function(test, expect)
         local state, previous = publishReference(runtime, workspace)
         previous.FailDestroy = true
         local candidate = SceneBuilderCoreV03.buildCandidate(admit(reference), runtime)
-        local root, cleanupError = SceneBuilderCoreV03.commitCandidate(candidate, workspace, state)
+        local root, cleanupError = commit(candidate, workspace, state)
         expect(root == candidate.root and cleanupError.code == "commit-cleanup", "cleanup failure hid committed root")
         expect(state.currentRoot == root and root.Parent == workspace, "cleanup failure rolled back committed root")
         expect(previous.Parent == candidate.stagingContainer, "failed retired root was not quarantined")

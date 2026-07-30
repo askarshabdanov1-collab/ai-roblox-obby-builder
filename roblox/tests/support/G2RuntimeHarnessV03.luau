@@ -77,6 +77,9 @@ function G2RuntimeHarnessV03.new()
     local runtime = {
         partRuntime = partRuntime,
         workspace = workspace,
+        isWorkspace = function(value)
+            return value == workspace and value:IsA("Workspace")
+        end,
         connectTouched = function(part, callback)
             tracker.touchConnectionAttempts += 1
             if tracker.failTouchConnectionAt == tracker.touchConnectionAttempts then
