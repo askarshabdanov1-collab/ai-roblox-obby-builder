@@ -1,5 +1,4 @@
 local FakeInstanceV03 = {}
-FakeInstanceV03.__index = FakeInstanceV03
 
 local BASE_PART_CLASSES = {
     Part = true,
@@ -30,6 +29,13 @@ function FakeInstanceV03.__newindex(instance, key, value)
         return
     end
     rawset(instance, key, value)
+end
+
+function FakeInstanceV03.__index(instance, key)
+    if key == "Parent" then
+        return rawget(instance, "_parent")
+    end
+    return FakeInstanceV03[key]
 end
 
 function FakeInstanceV03.new(className, tracker)
@@ -87,6 +93,9 @@ function FakeInstanceV03:Destroy()
     detach(self)
     rawset(self, "_parent", nil)
     self.Destroyed = true
+    if self._tracker ~= nil and self._tracker.onDestroy ~= nil then
+        self._tracker.onDestroy(self)
+    end
 end
 
 function FakeInstanceV03.tracker()
