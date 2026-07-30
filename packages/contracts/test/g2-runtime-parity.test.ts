@@ -6,7 +6,7 @@ import { emitManifestModuleV03 } from "@obby/roblox-emitter";
 
 import { validateSceneManifestV03 } from "../src/index.js";
 
-interface FixtureIndex {
+type FixtureIndex = {
   readonly schemaVersion: "0.1";
   readonly owner: string;
   readonly fixtures: readonly {
@@ -17,7 +17,7 @@ interface FixtureIndex {
     readonly stageCount: number;
     readonly checkpointCount: number;
   }[];
-}
+};
 
 describe("G2 TypeScript/Luau shared valid fixtures", () => {
   it("validates every shared manifest and exact Luau transport", async () => {

@@ -98,15 +98,13 @@ async function checkDecisions(): Promise<void> {
   const packageJson = JSON.parse(await readFile("package.json", "utf8")) as {
     scripts?: Record<string, string>;
   };
+  const scripts = packageJson.scripts ?? {};
   if (
-    packageJson.scripts?.["layout:workflow:fixtures:check"] !==
+    scripts["layout:workflow:fixtures:check"] !==
     "tsx tools/check-g1-workflow-fixtures.ts"
   )
     throw new Error("the authoritative G1d drift-check command changed");
-  if (
-    packageJson.scripts?.["g2:fixtures:check"] !==
-    "tsx tools/check-g2-runtime-fixtures.ts"
-  )
+  if (scripts["g2:fixtures:check"] !== "tsx tools/check-g2-runtime-fixtures.ts")
     throw new Error("the authoritative G2b drift-check command changed");
 
   const expected =
