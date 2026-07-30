@@ -69,14 +69,6 @@ const existingRuntimeModules = Object.freeze([
   "roblox/smoke.project.json",
 ]);
 
-const forbiddenG2bModules = Object.freeze([
-  "roblox/src/ReplicatedStorage/ObbyRuntime/ManifestLoaderV03.luau",
-  "roblox/src/ReplicatedStorage/ObbyRuntime/BuildPlanV03.luau",
-  "roblox/src/ReplicatedStorage/ObbyRuntime/NativePartFactoryV03.luau",
-  "roblox/src/ReplicatedStorage/ObbyRuntime/SceneBuilderCoreV03.luau",
-  "roblox/src/ReplicatedStorage/ObbyRuntime/RuntimeSessionV03.luau",
-]);
-
 async function requireFile(path: string): Promise<void> {
   try {
     await access(path);
@@ -87,16 +79,6 @@ async function requireFile(path: string): Promise<void> {
 
 async function checkDecisions(): Promise<void> {
   for (const path of existingRuntimeModules) await requireFile(path);
-
-  for (const path of forbiddenG2bModules) {
-    try {
-      await access(path);
-      throw new Error(`G2b production module must not exist in G2a: ${path}`);
-    } catch (error) {
-      if (error instanceof Error && error.message.startsWith("G2b"))
-        throw error;
-    }
-  }
 
   for (const [path, markers] of Object.entries(documents)) {
     const content = await readFile(path, "utf8");

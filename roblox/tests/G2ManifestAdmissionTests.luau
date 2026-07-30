@@ -98,9 +98,17 @@ return function(test, expect)
         cyclic.cycle = cyclic
         expectError(cyclic, "snapshot-cycle")
 
+        local aliased = clone(reference)
+        aliased.layers.decorative.objects[1] = aliased.layers.gameplay.objects[1]
+        expectError(aliased, "snapshot-cycle")
+
         local sparse = clone(reference)
-        sparse.limitations = { [1] = sparse.limitations[1], [3] = sparse.limitations[1] }
+        sparse.limitations = { [1] = clone(sparse.findings[1]), [3] = clone(sparse.findings[2]) }
         expectError(sparse, "array-shape")
+
+        local numericRecordKey = clone(reference)
+        numericRecordKey[1] = "not-a-record-field"
+        expectError(numericRecordKey, "record-key")
 
         for _, unsupported in ipairs({
             function() end,
