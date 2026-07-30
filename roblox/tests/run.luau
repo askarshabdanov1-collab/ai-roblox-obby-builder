@@ -11,6 +11,7 @@ local manifest = require("../generated/VerticalSliceManifest")
 local manifestV03 = require("../generated/G1cReferenceManifest")
 local registerG2BuildPlanTests = require("./G2BuildPlanTests")
 local registerG2ManifestAdmissionTests = require("./G2ManifestAdmissionTests")
+local registerG2NativePartFactoryTests = require("./G2NativePartFactoryTests")
 
 local passed = 0
 
@@ -666,5 +667,6 @@ end)
 
 registerG2ManifestAdmissionTests(test, expect)
 registerG2BuildPlanTests(test, expect)
+registerG2NativePartFactoryTests(test, expect)
 
 print(string.format("1..%d", passed))
