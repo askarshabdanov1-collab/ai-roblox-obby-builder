@@ -205,4 +205,87 @@ return function(test, expect)
         expect(session:checkpointOrder(player) == nil, "stale checkpoint callback mutated progress")
         expect(player:GetAttribute(RuntimeSessionV03.CHECKPOINT_ATTRIBUTE) == nil, "stale callback set attributes")
     end)
+
+    test("kills only from explicit current hazards with per-player character debounce", function()
+        local harness, admitted, candidate, _, session = sessionHarness("g2d-generation-v1:1")
+        activate(session)
+        local hazardId = nil
+        local platformId = nil
+        for _, object in ipairs(admitted.manifest.layers.gameplay.objects) do
+            if hazardId == nil and object.role == "kill" then
+                hazardId = object.id
+            elseif platformId == nil and object.role == "platform" then
+                platformId = object.id
+            end
+        end
+        local playerA = harness:newPlayer(101)
+        local playerB = harness:newPlayer(202)
+        local characterA = harness:newCharacter(playerA)
+        local characterB = harness:newCharacter(playerB)
+        harness:touch(candidate.partById[platformId], harness:hit(playerA, characterA))
+        expect(harness.tracker.kills == 0, "non-hazard Part killed a character")
+        harness:touch(candidate.partById[hazardId], harness:hit(playerA, characterA))
+        harness:touch(candidate.partById[hazardId], harness:hit(playerA, characterA))
+        expect(harness.tracker.kills == 1 and characterA.humanoid.Health == 0, "hazard debounce failed")
+        harness:touch(candidate.partById[hazardId], harness:hit(playerB, characterB))
+        expect(harness.tracker.kills == 2 and characterB.humanoid.Health == 0, "player debounce leaked")
+        local nextCharacter = harness:newCharacter(playerA)
+        harness:touch(candidate.partById[hazardId], harness:hit(playerA, nextCharacter))
+        expect(harness.tracker.kills == 3, "new character inherited old hazard debounce")
+    end)
+
+    test("ignores stale replaced-object and mismatched-character hazard callbacks", function()
+        local harness, admitted, candidate, pointer, session = sessionHarness("g2d-generation-v1:1")
+        activate(session)
+        local hazardRecord = nil
+        for _, record in ipairs(candidate.plan.gameplayRecords) do
+            if record.role == "kill" then
+                hazardRecord = record
+                break
+            end
+        end
+        local player = harness:newPlayer(101)
+        local character = harness:newCharacter(player)
+        local hit = harness:hit(player, character)
+        local replacementPart = candidate.partById[admitted.manifest.navigation.spawnObjectId]
+        session:_handleTouch(replacementPart, hazardRecord, hit)
+        expect(harness.tracker.kills == 0, "replaced object identity killed a character")
+        local otherCharacter = { humanoid = { Health = 100 } }
+        session:_handleTouch(candidate.partById[hazardRecord.id], hazardRecord, harness:hit(player, otherCharacter))
+        expect(harness.tracker.kills == 0, "mismatched character was killed")
+        pointer.currentGenerationToken = "g2d-generation-v1:2"
+        session:_handleTouch(candidate.partById[hazardRecord.id], hazardRecord, hit)
+        expect(harness.tracker.kills == 0, "stale hazard callback killed a character")
+    end)
+
+    test("finishes idempotently per player only from the explicit finish", function()
+        local harness, admitted, candidate, _, session = sessionHarness("g2d-generation-v1:1")
+        activate(session)
+        local playerA = harness:newPlayer(101)
+        local playerB = harness:newPlayer(202)
+        local characterA = harness:newCharacter(playerA)
+        local characterB = harness:newCharacter(playerB)
+        local finish = candidate.partById[admitted.manifest.navigation.finishObjectId]
+        harness:touch(finish, harness:hit(playerA, characterA))
+        harness:touch(finish, harness:hit(playerA, characterA))
+        expect(session:finished(playerA), "player A finish was not stored")
+        expect(not session:finished(playerB), "player B inherited player A finish")
+        expect(
+            playerA:GetAttribute(RuntimeSessionV03.FINISH_ATTRIBUTE) == session.manifestHash,
+            "finish attribute identity changed"
+        )
+        harness:touch(finish, harness:hit(playerB, characterB))
+        expect(session:finished(playerB), "player B could not finish independently")
+    end)
+
+    test("ignores stale finish callbacks", function()
+        local harness, admitted, candidate, pointer, session = sessionHarness("g2d-generation-v1:1")
+        activate(session)
+        local player = harness:newPlayer(101)
+        local character = harness:newCharacter(player)
+        pointer.currentRoot = nil
+        harness:touch(candidate.partById[admitted.manifest.navigation.finishObjectId], harness:hit(player, character))
+        expect(not session:finished(player), "stale finish callback mutated progress")
+        expect(player:GetAttribute(RuntimeSessionV03.FINISH_ATTRIBUTE) == nil, "stale finish set attributes")
+    end)
 end

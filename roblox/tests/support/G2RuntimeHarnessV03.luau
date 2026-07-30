@@ -95,6 +95,10 @@ function G2RuntimeHarnessV03.new()
             return character.rootPart
         end,
         cframe = partRuntime.cframe,
+        killHumanoid = function(humanoid)
+            tracker.kills += 1
+            humanoid.Health = 0
+        end,
         getPlayers = function()
             return table.clone(players)
         end,
