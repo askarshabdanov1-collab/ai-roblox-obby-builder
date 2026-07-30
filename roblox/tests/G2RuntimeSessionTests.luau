@@ -31,6 +31,17 @@ local function sessionHarness(token)
     return harness, admitted, candidate, pointer, session
 end
 
+local function activate(session)
+    local prepared, prepareError = session:prepare()
+    assert(prepared, prepareError and prepareError.message or "session preparation failed")
+    local activated, activationError = session:activate()
+    assert(activated, activationError and activationError.message or "session activation failed")
+end
+
+local function approximately(actual, expected)
+    return math.abs(actual - expected) < 0.000001
+end
+
 return function(test, expect)
     test("initializes deterministic inactive 0.3 sessions", function()
         local _, _, _, _, first = sessionHarness("g2d-generation-v1:1")
@@ -99,5 +110,99 @@ return function(test, expect)
         expect(session:dispose() == true, "double disposal was not idempotent")
         local current, staleError = session:checkCurrent({})
         expect(current == nil and staleError.code == "session-stale", "disposed session remained current")
+    end)
+
+    test("places initial characters at the exact spawn center facing the safe route", function()
+        local harness, admitted, candidate, _, session = sessionHarness("g2d-generation-v1:1")
+        activate(session)
+        local player = harness:newPlayer(101)
+        local character = harness:newCharacter(player)
+        local placed, placementError = session:placeCharacter(player, character)
+        expect(placed, placementError and placementError.message or "initial placement failed")
+        local spawn = admitted.indexes.gameplayById[admitted.manifest.navigation.spawnObjectId]
+        local root = character.rootPart
+        expect(root.CFrame.position.x == spawn.transform.position.x, "spawn X center changed")
+        expect(root.CFrame.position.z == spawn.transform.position.z, "spawn Z center changed")
+        expect(
+            root.CFrame.position.y
+                == spawn.transform.position.y
+                    + spawn.size.y / 2
+                    + admitted.manifest.navigation.characterPlacement.verticalOffset,
+            "spawn vertical offset changed"
+        )
+        expect(approximately(root.CFrame.rotation.y, 270), "spawn did not face the +X route target")
+        expect(harness.tracker.waits == 1, "bounded root lookup was not used")
+        expect(candidate.helper:GetAttribute("NonAuthoritative") == true, "helper became placement authority")
+    end)
+
+    test("uses shared cardinal diagonal and explicit-yaw placement semantics", function()
+        local placement = {
+            strategy = "humanoid-root-part-cframe-v1",
+            orientationPolicy = "face-next-safe-route-object",
+            verticalOffset = 3,
+        }
+        local source = {
+            transform = { position = { x = 0, y = 1, z = 0 }, rotation = { x = 0, y = 37, z = 0 } },
+            size = { x = 8, y = 2, z = 8 },
+        }
+        local diagonal = {
+            transform = { position = { x = 10, y = 100, z = 10 }, rotation = { x = 0, y = 0, z = 0 } },
+        }
+        local diagonalTransform = RuntimeSessionV03.CharacterPlacement.transformFor(source, placement, diagonal)
+        expect(approximately(diagonalTransform.rotation.y, 225), "diagonal route-facing changed")
+        placement.orientationPolicy = "explicit-yaw"
+        expect(
+            RuntimeSessionV03.CharacterPlacement.transformFor(source, placement, diagonal).rotation.y == 37,
+            "explicit-yaw fallback changed"
+        )
+    end)
+
+    test("rejects placement when delayed root lookup crosses a generation", function()
+        local harness, _, _, pointer, session = sessionHarness("g2d-generation-v1:1")
+        activate(session)
+        local player = harness:newPlayer(101)
+        local character = harness:newCharacter(player)
+        character.waitHook = function()
+            pointer.currentGenerationToken = "g2d-generation-v1:2"
+        end
+        local placed, placementError = session:placeCharacter(player, character)
+        expect(placed == nil and placementError.code == "session-stale", "stale delayed placement succeeded")
+        expect(character.rootPart.CFrame == nil, "stale delayed placement changed HumanoidRootPart")
+    end)
+
+    test("activates checkpoints idempotently prevents regression and respawns from current IDs", function()
+        local harness, admitted, candidate, _, session = sessionHarness("g2d-generation-v1:1")
+        activate(session)
+        local player = harness:newPlayer(101)
+        local character = harness:newCharacter(player)
+        local hit = harness:hit(player, character)
+        harness:touch(candidate.partById.Checkpoint001, hit)
+        expect(session:checkpointOrder(player) == 1, "first checkpoint was not stored")
+        expect(player:GetAttribute(RuntimeSessionV03.CHECKPOINT_ATTRIBUTE) == 1, "checkpoint attribute changed")
+        harness:touch(candidate.partById.Checkpoint001, hit)
+        expect(session:checkpointOrder(player) == 1, "duplicate checkpoint changed progress")
+        harness:touch(candidate.partById.Checkpoint002, hit)
+        expect(session:checkpointOrder(player) == 2, "second checkpoint was not stored")
+        harness:touch(candidate.partById.Checkpoint001, hit)
+        expect(session:checkpointOrder(player) == 2, "checkpoint route regressed")
+
+        local respawn = harness:newCharacter(player)
+        local placed, placementError = session:placeCharacter(player, respawn)
+        expect(placed, placementError and placementError.message or "checkpoint respawn failed")
+        local checkpoint = admitted.indexes.gameplayById.Checkpoint002
+        expect(respawn.rootPart.CFrame.position.x == checkpoint.transform.position.x, "checkpoint X center changed")
+        expect(respawn.rootPart.CFrame.position.z == checkpoint.transform.position.z, "checkpoint Z center changed")
+        expect(approximately(respawn.rootPart.CFrame.rotation.y, 90), "checkpoint did not face its -X next route")
+    end)
+
+    test("ignores stale checkpoint callbacks", function()
+        local harness, _, candidate, pointer, session = sessionHarness("g2d-generation-v1:1")
+        activate(session)
+        local player = harness:newPlayer(101)
+        local character = harness:newCharacter(player)
+        pointer.currentGenerationToken = "g2d-generation-v1:2"
+        harness:touch(candidate.partById.Checkpoint001, harness:hit(player, character))
+        expect(session:checkpointOrder(player) == nil, "stale checkpoint callback mutated progress")
+        expect(player:GetAttribute(RuntimeSessionV03.CHECKPOINT_ATTRIBUTE) == nil, "stale callback set attributes")
     end)
 end
