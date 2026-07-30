@@ -174,6 +174,8 @@ function G2eAcceptanceHarness.emitMeasurement(
         counts = counts,
         collections = collections,
     })
+    local observationPassed, diagnosticMessage, normalizedObservation = G2eObservationV03.formatResult(observation)
+    observation = normalizedObservation
     local measurement = {
         schemaVersion = "g2-studio-measurement-v1",
         repositoryCommit = environment.repositoryCommit,
@@ -198,16 +200,18 @@ function G2eAcceptanceHarness.emitMeasurement(
         local prefix = if record.kind == "measurement" then MEASUREMENT_PREFIX else OBSERVATION_PREFIX
         print(prefix .. HttpService:JSONEncode(record.payload))
     end
-    if observation.status == "FAIL" then
-        warn(
-            string.format(
-                "[G2 acceptance diagnostic] code=%s field=%s",
-                observation.diagnosticCode,
-                observation.diagnosticField
-            )
-        )
+    if not observationPassed then
+        warn("[G2 acceptance diagnostic] " .. diagnosticMessage)
     end
     return measurement, observation
+end
+
+function G2eAcceptanceHarness.formatObservationResult(observation)
+    return G2eObservationV03.formatResult(observation)
+end
+
+function G2eAcceptanceHarness.formatTypedDiagnostic(code, field, message)
+    return G2eObservationV03.formatTypedDiagnostic(code, field, message)
 end
 
 function G2eAcceptanceHarness.bindControl(api)

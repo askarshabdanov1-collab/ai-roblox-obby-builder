@@ -3,6 +3,7 @@ local G2eObservationV03 = {}
 local MAX_COLLECTION_ITEMS = 64
 local MAX_MANIFEST_ITEMS = 1000
 local MAX_IDENTIFIER_LENGTH = 80
+local MAX_DIAGNOSTIC_MESSAGE_LENGTH = 160
 
 local function appendDiagnostic(diagnostics, code, field)
     if diagnostics[1] == nil then
@@ -117,6 +118,68 @@ local function requiredNumber(value, field, diagnostics)
     return value
 end
 
+local function resultShapeFailure(value, field)
+    local readable = type(value) == "table" and getmetatable(value) == nil
+    local fixtureId = if readable then boundedIdentifier(value.fixtureId) else nil
+    local manifestHash = if readable then boundedIdentifier(value.manifestHash) else nil
+    return table.freeze({
+        schemaVersion = "g2-acceptance-observation-v1",
+        fixtureId = fixtureId or "unknown",
+        manifestHash = manifestHash or "unknown",
+        stages = 0,
+        zones = 0,
+        routeEntries = 0,
+        transitions = 0,
+        baseParts = 0,
+        containers = 0,
+        helperSpawnLocations = 0,
+        observationCount = 0,
+        warningCount = 0,
+        errorCount = 1,
+        evidenceCount = 0,
+        status = "FAIL",
+        diagnosticCode = "acceptance-result-shape",
+        diagnosticField = field,
+        diagnosticMessage = "none",
+    })
+end
+
+local RESULT_COUNT_FIELDS = table.freeze({
+    "stages",
+    "zones",
+    "routeEntries",
+    "transitions",
+    "baseParts",
+    "containers",
+    "helperSpawnLocations",
+    "observationCount",
+    "warningCount",
+    "errorCount",
+    "evidenceCount",
+})
+
+local function boundedMessage(value)
+    if value == nil then
+        return "none"
+    end
+    if type(value) ~= "string" then
+        return nil
+    end
+    if value == "" then
+        return "none"
+    end
+    return string.sub(value, 1, MAX_DIAGNOSTIC_MESSAGE_LENGTH)
+end
+
+local function validResultCount(value)
+    return type(value) == "number"
+        and value == value
+        and value ~= math.huge
+        and value >= 0
+        and value <= MAX_MANIFEST_ITEMS
+        and value == math.floor(value)
+end
+
 function G2eObservationV03.build(context)
     context = if type(context) == "table" then context else {}
     local manifest = if type(context.manifest) == "table" then context.manifest else {}
@@ -175,18 +238,82 @@ function G2eObservationV03.build(context)
     return table.freeze(observation)
 end
 
+function G2eObservationV03.validateResult(value)
+    if type(value) ~= "table" or getmetatable(value) ~= nil then
+        return resultShapeFailure(value, "observation")
+    end
+    if value.schemaVersion ~= "g2-acceptance-observation-v1" then
+        return resultShapeFailure(value, "schemaVersion")
+    end
+    local fixtureId = boundedIdentifier(value.fixtureId)
+    if fixtureId == nil then
+        return resultShapeFailure(value, "fixtureId")
+    end
+    local manifestHash = boundedIdentifier(value.manifestHash)
+    if manifestHash == nil then
+        return resultShapeFailure(value, "manifestHash")
+    end
+    if value.status ~= "PASS" and value.status ~= "FAIL" then
+        return resultShapeFailure(value, "status")
+    end
+    local normalized = {
+        schemaVersion = "g2-acceptance-observation-v1",
+        fixtureId = fixtureId,
+        manifestHash = manifestHash,
+        status = value.status,
+    }
+    for _, field in ipairs(RESULT_COUNT_FIELDS) do
+        if not validResultCount(value[field]) then
+            return resultShapeFailure(value, field)
+        end
+        normalized[field] = value[field]
+    end
+    if value.status == "FAIL" then
+        local code = boundedIdentifier(value.diagnosticCode)
+        if code == nil then
+            return resultShapeFailure(value, "diagnosticCode")
+        end
+        local field = boundedIdentifier(value.diagnosticField)
+        if field == nil then
+            return resultShapeFailure(value, "diagnosticField")
+        end
+        local message = boundedMessage(value.diagnosticMessage)
+        if message == nil then
+            return resultShapeFailure(value, "diagnosticMessage")
+        end
+        normalized.diagnosticCode = code
+        normalized.diagnosticField = field
+        normalized.diagnosticMessage = message
+    end
+    return table.freeze(normalized)
+end
+
+function G2eObservationV03.formatTypedDiagnostic(code, field, message)
+    local safeCode = boundedIdentifier(code) or "unknown"
+    local safeField = boundedIdentifier(field) or "none"
+    local safeMessage = boundedMessage(message) or "none"
+    return string.format("code=%s field=%s message=%s", safeCode, safeField, safeMessage)
+end
+
+function G2eObservationV03.formatResult(value)
+    local normalized = G2eObservationV03.validateResult(value)
+    if normalized.status == "PASS" then
+        return true, "none", normalized
+    end
+    return false,
+        G2eObservationV03.formatTypedDiagnostic(
+            normalized.diagnosticCode,
+            normalized.diagnosticField,
+            normalized.diagnosticMessage
+        ),
+        normalized
+end
+
 function G2eObservationV03.orderedRecords(measurement, observation)
     local safeMeasurement = if type(measurement) == "table"
         then measurement
         else table.freeze({ schemaVersion = "g2-studio-measurement-v1", status = "INVALID" })
-    local safeObservation = if type(observation) == "table"
-        then observation
-        else table.freeze({
-            schemaVersion = "g2-acceptance-observation-v1",
-            status = "FAIL",
-            diagnosticCode = "acceptance-result-shape",
-            diagnosticField = "observation",
-        })
+    local safeObservation = G2eObservationV03.validateResult(observation)
     return table.freeze({
         table.freeze({ kind = "measurement", payload = safeMeasurement }),
         table.freeze({ kind = "observation", payload = safeObservation }),

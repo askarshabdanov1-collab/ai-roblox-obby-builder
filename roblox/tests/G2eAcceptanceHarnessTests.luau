@@ -50,6 +50,10 @@ local function build(overrides, manifestValue)
     return buildWithCollections(collections(overrides), manifestValue)
 end
 
+local function mutableCopy(value)
+    return table.clone(value)
+end
+
 return function(test, expect)
     test("reads required transitions from navigation reachability without the old nil crash", function()
         local observation = build()
@@ -106,7 +110,10 @@ return function(test, expect)
         local observation = build()
         local records = G2eObservationV03.orderedRecords(measurement, observation)
         expect(records[1].kind == "measurement" and records[1].payload == measurement, "measurement was not first")
-        expect(records[2].kind == "observation" and records[2].payload == observation, "observation was not second")
+        expect(
+            records[2].kind == "observation" and records[2].payload.status == observation.status,
+            "observation was not second"
+        )
     end)
 
     test("reports missing required observations as a typed FAIL", function()
@@ -121,6 +128,111 @@ return function(test, expect)
         expect(observation.status == "FAIL", "missing required evidence reported PASS")
         expect(observation.diagnosticCode == "acceptance-required-evidence", "missing evidence code changed")
         expect(observation.diagnosticField == "scene-assertions", "missing evidence field changed")
+    end)
+
+    test("formats a PASS observation without reading its absent diagnostics", function()
+        local observation = build()
+        expect(observation.diagnosticCode == nil, "PASS unexpectedly acquired a diagnostic code")
+        local ok, passed, message, normalized = pcall(G2eObservationV03.formatResult, observation)
+        expect(ok, "PASS observation reproduced the nil string.format crash")
+        expect(passed == true and message == "none", "PASS formatting result changed")
+        expect(normalized.status == "PASS", "valid PASS observation was rejected")
+    end)
+
+    test("validates every required PASS observation field", function()
+        local passed, _, normalized = G2eObservationV03.formatResult(build())
+        expect(passed == true, "complete PASS observation was rejected")
+        expect(normalized.schemaVersion == "g2-acceptance-observation-v1", "schema version changed")
+        expect(normalized.fixtureId == "reference", "fixture identity changed")
+        expect(normalized.manifestHash == manifest().manifestHash, "manifest identity changed")
+    end)
+
+    test("formats a FAIL observation with bounded code and field", function()
+        local observation = build({
+            observations = { { id = "scene-structure", status = "FAIL" } },
+        })
+        local passed, message, normalized = G2eObservationV03.formatResult(observation)
+        expect(passed == false and normalized.status == "FAIL", "FAIL observation reported PASS")
+        expect(string.find(message, "code=acceptance-observation-failed", 1, true) ~= nil, "code was omitted")
+        expect(string.find(message, "field=scene-structure", 1, true) ~= nil, "field was omitted")
+    end)
+
+    test("uses an explicit placeholder for a missing optional diagnostic message", function()
+        local observation = build({
+            observations = { { id = "scene-structure", status = "FAIL" } },
+        })
+        local passed, message = G2eObservationV03.formatResult(observation)
+        expect(passed == false, "FAIL observation reported PASS")
+        expect(string.find(message, "message=none", 1, true) ~= nil, "optional message placeholder changed")
+    end)
+
+    test("turns a missing required status into a typed FAIL", function()
+        local observation = mutableCopy(build())
+        observation.status = nil
+        local passed, message, normalized = G2eObservationV03.formatResult(observation)
+        expect(passed == false, "missing status reported PASS")
+        expect(normalized.diagnosticCode == "acceptance-result-shape", "missing status code changed")
+        expect(normalized.diagnosticField == "status", "missing status field changed")
+        expect(type(message) == "string", "missing status did not produce a safe message")
+    end)
+
+    test("turns a missing required diagnostic code into a typed FAIL", function()
+        local observation = mutableCopy(build({
+            observations = { { id = "scene-structure", status = "FAIL" } },
+        }))
+        observation.diagnosticCode = nil
+        local passed, _, normalized = G2eObservationV03.formatResult(observation)
+        expect(passed == false, "missing diagnostic code reported PASS")
+        expect(normalized.diagnosticCode == "acceptance-result-shape", "replacement diagnostic code changed")
+        expect(normalized.diagnosticField == "diagnosticCode", "missing diagnostic-code field changed")
+    end)
+
+    test("turns a missing required diagnostic field into a typed FAIL", function()
+        local observation = mutableCopy(build({
+            observations = { { id = "scene-structure", status = "FAIL" } },
+        }))
+        observation.diagnosticField = nil
+        local passed, _, normalized = G2eObservationV03.formatResult(observation)
+        expect(passed == false, "missing diagnostic field reported PASS")
+        expect(normalized.diagnosticCode == "acceptance-result-shape", "replacement diagnostic code changed")
+        expect(normalized.diagnosticField == "diagnosticField", "missing diagnostic-field result changed")
+    end)
+
+    test("formats every supported observation result shape without crashing", function()
+        local hostileMetatable = setmetatable({}, {
+            __index = function()
+                error("result fields must not be read")
+            end,
+        })
+        local shapes = {
+            {},
+            build(),
+            build({ observations = { { id = "scene-structure", status = "FAIL" } } }),
+            { status = "PASS" },
+            { status = "FAIL" },
+            "invalid",
+            hostileMetatable,
+        }
+        for _, shape in ipairs(shapes) do
+            local ok, passed, message, normalized = pcall(G2eObservationV03.formatResult, shape)
+            expect(ok, "supported result shape crashed diagnostic formatting")
+            expect(type(passed) == "boolean", "formatting did not return a boolean")
+            expect(type(message) == "string", "formatting did not return a safe string")
+            expect(type(normalized) == "table", "formatting did not return a bounded result")
+        end
+        local ok, _, message = pcall(G2eObservationV03.formatResult, nil)
+        expect(ok and type(message) == "string", "nil result crashed diagnostic formatting")
+    end)
+
+    test("bounds diagnostic message text before formatting or concatenation", function()
+        local observation = mutableCopy(build({
+            observations = { { id = "scene-structure", status = "FAIL" } },
+        }))
+        observation.diagnosticMessage = string.rep("x", 500)
+        local passed, message, normalized = G2eObservationV03.formatResult(observation)
+        expect(passed == false, "FAIL observation reported PASS")
+        expect(#normalized.diagnosticMessage <= 160, "diagnostic message was not bounded")
+        expect(#message <= 360, "formatted diagnostic was not bounded")
     end)
 
     test("never crashes for supported nil empty populated or malformed bounded collection shapes", function()

@@ -165,7 +165,7 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
       "utf8",
     );
     expect(bootstrap).toContain("[G2 acceptance diagnostic]");
-    expect(bootstrap).toContain("buildError.field");
+    expect(bootstrap).toContain('boundedText(value.field, "none", 80)');
   });
 
   it("keeps G2e observation emission on validated bounded collections", async () => {
@@ -177,9 +177,20 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
       "roblox/g2e/G2eObservationV03.luau",
       "utf8",
     );
+    const acceptanceBootstrap = await readFile(
+      "roblox/g2e/G2eAcceptanceBootstrap.server.luau",
+      "utf8",
+    );
     expect(observation).toContain("reachability.requiredTransitions");
+    expect(observation).toContain("G2eObservationV03.formatResult");
     expect(harness).not.toContain("manifest.navigation.requiredTransitions");
     expect(harness).toContain("G2eObservationV03.orderedRecords");
+    expect(acceptanceBootstrap).not.toContain(
+      'string.format("%s: %s", observation.diagnosticCode',
+    );
+    expect(acceptanceBootstrap).toContain(
+      "G2eAcceptanceHarness.formatObservationResult(observation)",
+    );
 
     const project = await readFile("roblox/g2e-smoke.project.json", "utf8");
     expect(project).toContain("G2eObservationV03");

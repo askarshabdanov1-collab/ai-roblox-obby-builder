@@ -49,14 +49,21 @@ local api = {
     measurements = {},
 }
 
+local function boundedText(value, fallback, maximum)
+    if type(value) ~= "string" or value == "" then
+        return fallback
+    end
+    return string.sub(value, 1, maximum)
+end
+
 local function reportBuildFailure(buildError)
-    local code = if type(buildError) == "table" and type(buildError.code) == "string"
-        then string.sub(buildError.code, 1, 64)
-        else "unknown"
-    local field = if type(buildError) == "table" and type(buildError.field) == "string"
-        then string.sub(buildError.field, 1, 64)
-        else "none"
-    warn(string.format("[G2 acceptance diagnostic] code=%s field=%s", code, field))
+    local value = if type(buildError) == "table" then buildError else {}
+    local code = boundedText(value.code, "acceptance-build-error-shape", 80)
+    local field = boundedText(value.field, "none", 80)
+    local message = boundedText(value.message, "none", 160)
+    local diagnostic = G2eAcceptanceHarness.formatTypedDiagnostic(code, field, message)
+    warn("[G2 acceptance diagnostic] " .. diagnostic)
+    return diagnostic
 end
 
 function api:build(fixtureId, runKind, runIndex, options)
@@ -67,10 +74,11 @@ function api:build(fixtureId, runKind, runIndex, options)
     local started = os.clock()
     local result, buildError = builder:build(fixture.module, fixture.expectedHash, options)
     local elapsed = os.clock() - started
+    local buildDiagnostic = "code=unknown field=none message=none"
     if result == nil then
-        reportBuildFailure(buildError)
+        buildDiagnostic = reportBuildFailure(buildError)
     end
-    assert(result ~= nil, buildError and (buildError.code .. ": " .. buildError.message) or "G2e build failed")
+    assert(result ~= nil, buildDiagnostic)
     assert(manifest.manifestHash == fixture.expectedHash, "configured expected hash changed")
     local measurement, observation = G2eAcceptanceHarness.emitMeasurement(
         environment,
@@ -82,10 +90,8 @@ function api:build(fixtureId, runKind, runIndex, options)
         result,
         beforeHeap
     )
-    assert(
-        observation.status == "PASS",
-        string.format("%s: %s", observation.diagnosticCode, observation.diagnosticField)
-    )
+    local observationPassed, observationDiagnostic = G2eAcceptanceHarness.formatObservationResult(observation)
+    assert(observationPassed, observationDiagnostic)
     table.insert(self.measurements, measurement)
     self.current = result
     self.currentFixtureId = fixtureId
