@@ -333,6 +333,8 @@ function SceneBuilderCoreV03.newRootState()
     return {
         currentRoot = nil,
         currentManifestHash = nil,
+        currentSession = nil,
+        currentGenerationToken = nil,
     }
 end
 
@@ -359,6 +361,8 @@ local function rollback(
     previousParent,
     previousName,
     previousManifestHash,
+    previousSession,
+    previousGenerationToken,
     state,
     code,
     message
@@ -372,10 +376,14 @@ local function rollback(
         end
         state.currentRoot = previousRoot
         state.currentManifestHash = previousManifestHash
+        state.currentSession = previousSession
+        state.currentGenerationToken = previousGenerationToken
     end)
     if not restored then
         state.currentRoot = nil
         state.currentManifestHash = nil
+        state.currentSession = nil
+        state.currentGenerationToken = nil
         pcall(function()
             candidate.root.Parent = nil
         end)
@@ -398,6 +406,21 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
     if type(workspace) ~= "table" or type(workspace.GetChildren) ~= "function" or type(state) ~= "table" then
         cleanupRejectedCandidate(candidate)
         return failure("commit-runtime", "root replacement runtime is invalid")
+    end
+
+    local nextSession = if options == nil then nil else options.nextSession
+    local nextGenerationToken = if options == nil then nil else options.nextGenerationToken
+    local sessionAware = nextSession ~= nil or nextGenerationToken ~= nil
+    if
+        sessionAware
+        and (
+            type(nextSession) ~= "table"
+            or type(nextGenerationToken) ~= "string"
+            or candidate.root:GetAttribute("GenerationToken") ~= nextGenerationToken
+        )
+    then
+        cleanupRejectedCandidate(candidate)
+        return failure("commit-session", "candidate session pointer identity is invalid")
     end
 
     local roots = activeRoots(workspace)
@@ -425,6 +448,16 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             cleanupRejectedCandidate(candidate)
             return failure("active-root-pointer", "active root identity does not match the current root pointer")
         end
+        if
+            state.currentSession ~= nil
+            and (
+                type(state.currentGenerationToken) ~= "string"
+                or previousRoot:GetAttribute("GenerationToken") ~= state.currentGenerationToken
+            )
+        then
+            cleanupRejectedCandidate(candidate)
+            return failure("active-root-pointer", "active root generation does not match the current session")
+        end
     elseif state.currentRoot ~= nil then
         cleanupRejectedCandidate(candidate)
         return failure("active-root-pointer", "current root pointer has no matching active root")
@@ -440,6 +473,8 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
     local previousParent = if previousRoot == nil then nil else previousRoot.Parent
     local previousName = if previousRoot == nil then nil else previousRoot.Name
     local previousManifestHash = state.currentManifestHash
+    local previousSession = state.currentSession
+    local previousGenerationToken = state.currentGenerationToken
     if previousRoot ~= nil then
         local retired = pcall(function()
             previousRoot.Name = candidate.plan.ownership.retiredName
@@ -452,6 +487,8 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
                 previousParent,
                 previousName,
                 previousManifestHash,
+                previousSession,
+                previousGenerationToken,
                 state,
                 "commit-retire",
                 "previous root could not be retired"
@@ -465,6 +502,8 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             previousParent,
             previousName,
             previousManifestHash,
+            previousSession,
+            previousGenerationToken,
             state,
             "commit-injected-failure",
             "root replacement failed at an injected boundary"
@@ -482,6 +521,8 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             previousParent,
             previousName,
             previousManifestHash,
+            previousSession,
+            previousGenerationToken,
             state,
             "commit-publish",
             "candidate root could not be published"
@@ -494,6 +535,8 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             previousParent,
             previousName,
             previousManifestHash,
+            previousSession,
+            previousGenerationToken,
             state,
             "commit-injected-failure",
             "root replacement failed at an injected boundary"
@@ -502,7 +545,21 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
 
     state.currentRoot = candidate.root
     state.currentManifestHash = candidate.plan.manifestHash
+    if sessionAware then
+        state.currentSession = nextSession
+        state.currentGenerationToken = nextGenerationToken
+    end
     candidate.root:SetAttribute("CandidateState", "active")
+    if options ~= nil and options.deferCleanup == true then
+        return candidate.root,
+            nil,
+            table.freeze({
+                receiptVersion = "g2d-deferred-cleanup-v1",
+                activeRoot = candidate.root,
+                retiredRoot = previousRoot,
+                stagingContainer = candidate.stagingContainer,
+            })
+    end
     if previousRoot ~= nil and not destroy(previousRoot) then
         return candidate.root,
             table.freeze({
@@ -518,6 +575,24 @@ function SceneBuilderCoreV03.commitCandidate(candidate, workspace, state, option
             })
     end
     return candidate.root, nil
+end
+
+function SceneBuilderCoreV03.finalizeCommit(receipt)
+    if
+        type(receipt) ~= "table"
+        or receipt.receiptVersion ~= "g2d-deferred-cleanup-v1"
+        or receipt.activeRoot == nil
+        or receipt.stagingContainer == nil
+    then
+        return failure("commit-cleanup", "deferred root cleanup receipt is invalid")
+    end
+    if receipt.retiredRoot ~= nil and receipt.retiredRoot.Destroyed ~= true and not destroy(receipt.retiredRoot) then
+        return failure("commit-cleanup", "new root is active but retired-root cleanup is incomplete")
+    end
+    if receipt.stagingContainer.Destroyed ~= true and not destroy(receipt.stagingContainer) then
+        return failure("commit-cleanup", "new root is active but private staging cleanup is incomplete")
+    end
+    return true, nil
 end
 
 SceneBuilderCoreV03.validateCandidate = validateCandidate

@@ -420,6 +420,66 @@ function RuntimeSessionV03:finished(player)
     return key ~= nil and self._finishes[key] == true
 end
 
+function RuntimeSessionV03:adoptProgress(previousSession, players)
+    if
+        self._state ~= "inactive"
+        or self._prepared == false
+        or type(previousSession) ~= "table"
+        or previousSession.manifestHash ~= self.manifestHash
+        or type(players) ~= "table"
+    then
+        return failure("session-progress", "same-manifest progress cannot be adopted")
+    end
+    for _, player in ipairs(players) do
+        local key = playerKey(player)
+        if key ~= nil then
+            local checkpoint = previousSession._checkpoints[key]
+            if checkpoint ~= nil then
+                local object = self.admitted.indexes.gameplayById[checkpoint.checkpointObjectId]
+                if
+                    object ~= nil
+                    and object.role == "checkpoint"
+                    and object.behavior.kind == "checkpoint"
+                    and object.behavior.checkpointOrder == checkpoint.checkpointOrder
+                then
+                    self._checkpoints[key] = table.freeze({
+                        checkpointObjectId = checkpoint.checkpointObjectId,
+                        checkpointOrder = checkpoint.checkpointOrder,
+                    })
+                else
+                    player:SetAttribute(CHECKPOINT_ATTRIBUTE, nil)
+                end
+            end
+            if previousSession._finishes[key] == true then
+                self._finishes[key] = true
+            end
+        end
+    end
+    return true, nil
+end
+
+function RuntimeSessionV03:clearVisibleProgress(player)
+    if playerKey(player) == nil then
+        return false
+    end
+    player:SetAttribute(CHECKPOINT_ATTRIBUTE, nil)
+    player:SetAttribute(FINISH_ATTRIBUTE, nil)
+    return true
+end
+
+function RuntimeSessionV03:removePlayer(player)
+    local key = playerKey(player)
+    if key == nil then
+        return false
+    end
+    self._checkpoints[key] = nil
+    self._finishes[key] = nil
+    self._debounces[key] = nil
+    self._pendingPlacements[key] = nil
+    self:clearVisibleProgress(player)
+    return true
+end
+
 function RuntimeSessionV03:_handleTouch(part, record, hit)
     local player, character, humanoid = self.runtime.resolveTouch(hit)
     if player == nil or character == nil then
