@@ -39,6 +39,7 @@ local function validInput(admitted, candidate, token, pointer, runtime)
         and type(runtime.resolveTouch) == "function"
         and type(runtime.waitForRootPart) == "function"
         and type(runtime.cframe) == "function"
+        and type(runtime.killHumanoid) == "function"
 end
 
 local function shouldBind(record)
@@ -380,8 +381,47 @@ function RuntimeSessionV03:checkpointOrder(player)
     return if checkpoint == nil then nil else checkpoint.checkpointOrder
 end
 
+function RuntimeSessionV03:_kill(player, character, humanoid, record)
+    local key = playerKey(player)
+    if key == nil or type(humanoid) ~= "table" then
+        return false
+    end
+    local debounces = self._debounces[key]
+    if debounces == nil then
+        debounces = {}
+        self._debounces[key] = debounces
+    end
+    if debounces[record.id] == character then
+        return false
+    end
+    debounces[record.id] = character
+    local killed = pcall(function()
+        self.runtime.killHumanoid(humanoid)
+    end)
+    if not killed then
+        debounces[record.id] = nil
+        return false
+    end
+    return true
+end
+
+function RuntimeSessionV03:_finish(player)
+    local key = playerKey(player)
+    if key == nil or self._finishes[key] then
+        return false
+    end
+    self._finishes[key] = true
+    player:SetAttribute(FINISH_ATTRIBUTE, self.manifestHash)
+    return true
+end
+
+function RuntimeSessionV03:finished(player)
+    local key = playerKey(player)
+    return key ~= nil and self._finishes[key] == true
+end
+
 function RuntimeSessionV03:_handleTouch(part, record, hit)
-    local player, character = self.runtime.resolveTouch(hit)
+    local player, character, humanoid = self.runtime.resolveTouch(hit)
     if player == nil or character == nil then
         return false
     end
@@ -399,6 +439,10 @@ function RuntimeSessionV03:_handleTouch(part, record, hit)
     end
     if record.role == "checkpoint" and record.behavior.kind == "checkpoint" then
         return self:_activateCheckpoint(player, record)
+    elseif record.role == "kill" and record.behavior.kind == "kill" and record.behavior.killMode == "touch" then
+        return self:_kill(player, character, humanoid, record)
+    elseif record.role == "finish" and record.behavior.kind == "finish" then
+        return self:_finish(player)
     end
     return false
 end
