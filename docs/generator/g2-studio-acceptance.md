@@ -4,8 +4,9 @@ This is the required engine-dependent G2 acceptance protocol. It supplements Lua
 Studio automation and must not be reported as passed until a human has performed and recorded every
 applicable observation. The [2026-07-31 Studio evidence](./g2e-studio-evidence-2026-07-31.md)
 records the reference, `maximum-50`, zero-checkpoint, failure-boundary, and Phase 0 pre-cutover runs
-as completed. Pre-cutover G2e remains incomplete because mandatory environment, raw measurement,
-Output, and functional observation fields are still missing.
+as historical executions. The provenance-fixed artifact and bounded controls are ready for the
+exact seven-session rerun in [the final rerun sheet](./g2e-final-studio-rerun.md). Pre-cutover G2e
+remains incomplete until those human sessions and their complete evidence package are reviewed.
 
 ## Measurement environment
 
@@ -43,6 +44,15 @@ observations.
 
 Cold means the first runtime build after opening a fresh Studio server session. Repeated means the
 same valid manifest is rebuilt with a new runtime generation token without restarting that server.
+The bootstrap must expose `G2eControl` while `[G2 precondition]` reports zero active roots; it must
+not build reference automatically.
+
+`npm run roblox:g2e:build` embeds deterministic source provenance before Rojo runs. An explicitly
+supplied `G2E_REPOSITORY_COMMIT` takes precedence over Git and represents the reviewed release/source
+commit. Without the override, the build uses `git rev-parse HEAD^{commit}`. Both paths require
+exactly 40 lowercase hexadecimal characters and fail closed when missing or malformed. Studio does
+not query Git or the network. See
+[the implementation record](./g2e-provenance-harness-implementation.md).
 
 ## Functional observations
 
@@ -77,12 +87,13 @@ role is `kill`, its behavior is `kind: "kill"` plus `killMode: "touch"`, and its
 must remain anchored, non-colliding, touch-enabled, query-enabled, and in the default collision
 group.
 
-Run the following from the server Command Bar after the initial `Reference ready` message:
+Run the following from the server Command Bar after the controls-ready message:
 
 ```lua
 local control = game:GetService("ServerStorage").G2eControl
-control.RunReferenceReplacementSequence:Invoke()
+control.RunReferenceColdAndReplacementSequence:Invoke()
 control.VerifyStaleHazardCallback:Invoke()
+control.ObservePlayerPlacement:Invoke("initial")
 control.InspectHazard:Invoke("Stage04Hazard001")
 ```
 
@@ -105,7 +116,7 @@ class, fixed attributes, sorted tags, touch/collision/query/anchored properties,
 exact callback binding, touched Part name/class, character and Humanoid resolution, lethal action,
 and spawn/checkpoint respawn counters. Missing evidence produces
 `code=gameplay-evidence-incomplete` with the first missing observation ID as its field. A static
-`Reference ready` line or hazard count cannot satisfy this check.
+controls-ready line or hazard count cannot satisfy this check.
 
 After completing the reference-fixture gameplay actions, invoke
 `game:GetService("ServerStorage").G2eControl.ObserveGameplay:Invoke()` from the server Command Bar.
@@ -137,12 +148,13 @@ environment, and rollback response and receive review before cutover.
 
 ## Logging format
 
-Emit one JSON object per measurement to Studio Output, prefixed by `[G2 runtime measurement] `. Keys
-are fixed and values unavailable from Studio are `null`, not omitted:
+Emit one JSON object per measurement to Studio Output, prefixed by `[G2 runtime measurement] `. The
+v2 schema uses a status field plus numeric zero for an unavailable Lua heap reading, rather than
+omitting fixed keys:
 
 ```json
 {
-  "schemaVersion": "g2-studio-measurement-v1",
+  "schemaVersion": "g2-studio-measurement-v2",
   "repositoryCommit": "<40-hex>",
   "studioVersion": "<recorded>",
   "osBuild": "<recorded>",
@@ -150,13 +162,26 @@ are fixed and values unavailable from Studio are `null`, not omitted:
   "manifestHash": "sha256:<64-hex>",
   "runKind": "cold",
   "runIndex": 1,
+  "monotonicStartSeconds": 0,
+  "monotonicEndSeconds": 0,
   "elapsedMilliseconds": 0,
   "gameplayObjects": 0,
   "decorativeObjects": 0,
   "runtimeOwnedInstances": 0,
+  "activeRootCount": 1,
+  "checkpointConnections": 0,
+  "killConnections": 0,
+  "finishConnections": 0,
+  "sessionConnections": 0,
+  "characterAddedConnections": 0,
+  "playerAddedConnections": 1,
+  "playerRemovingConnections": 1,
+  "coordinatorConnections": 2,
+  "totalConnections": 2,
   "connections": 0,
-  "luaHeapKilobytesBefore": null,
-  "luaHeapKilobytesAfter": null,
+  "luaHeapStatus": "available",
+  "luaHeapKilobytesBefore": 0,
+  "luaHeapKilobytesAfter": 0,
   "warnings": 0,
   "errors": 0,
   "orphans": 0
@@ -165,6 +190,11 @@ are fixed and values unavailable from Studio are `null`, not omitted:
 
 Measurement logging is local test instrumentation. It sends no network request and contains no
 player name, UserId, credential, local path, or arbitrary manifest content.
+
+Every Command Bar BindableFunction returns `g2e-control-result-v1` with fixed primitive keys. A
+manual one-off `Build:Invoke("<fixture>")` is always labelled `manual`; callers cannot provide a
+false cold/repeated label. Official run indices are cold `1`, repeated `1..5`, and replacement
+`1,2`, and counters reset only with a fresh server.
 
 ## Acceptance evidence
 
@@ -178,5 +208,6 @@ commit, fixture manifest hash, built artifact and its SHA-256, supplied Studio/O
 the machine-emitted, manual, and harness-limitation evidence separately. The required pre-cutover
 build, gameplay, failure-boundary, and Phase 0 sequences now have supplied completion evidence, but
 missing environment fields, complete fixed-schema cold/repeated measurement and Output records, and
-the remaining functional observations keep pre-cutover G2e incomplete. The required post-cutover
-rerun remains future work.
+the remaining functional observations keep that historical artifact incomplete. The repaired
+artifact identity and exact pending commands are in `g2e-final-studio-rerun.md`. The required
+post-cutover rerun remains future work.

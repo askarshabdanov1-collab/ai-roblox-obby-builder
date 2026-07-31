@@ -11,6 +11,11 @@ reconstruct omitted Output lines, environment fields, measurements, or observati
 no default-runtime cutover and does not start G2f. The mandatory post-default-cutover rerun remains
 future work and is not covered by this record.
 
+This file is a historical evidence record for artifact SHA-256
+`B6D3A65E71C51845755614CB0BB0859531426453817AE916F83EEFA04CC03401`. It must not be reused as
+commit-bound evidence for the later provenance-fixed artifact. The historical Output and summaries
+below are intentionally unchanged.
+
 ## Identity and environment
 
 | Field                         | Recorded value                                                            |
@@ -59,7 +64,7 @@ of machine-emitted Output.
 | `maximum-50`              | `sha256:508ca29e776560a4a8919323555f481837687ae3504137b34574698245daad82` |
 | `minimum-zero-checkpoint` | `sha256:3aa06678bdf7d7d30e6eb15b1b11745659d041e4a4c983cac16d1f7bb87cc717` |
 
-## Stale `repositoryCommit` provenance
+## Historical stale `repositoryCommit` provenance
 
 The machine measurement environment contains the literal
 `repositoryCommit = "9a92540aad3183342096501f268eb1f966d640bf"`. Repository history shows that
@@ -74,6 +79,14 @@ the `repositoryCommit` identity for the tested artifact built from
 implementation identity. This documentation does not rewrite the literal in runtime code or alter
 any emitted Output. The implementation commit plus artifact SHA-256 above identify the tested build,
 while any supplied machine Output retains `9a92540aad3183342096501f268eb1f966d640bf` exactly.
+
+The later provenance implementation commit `2046121c5e5505397601ac7c6630a9fea9f0831b` removed this
+literal from the active build path. The bounded-harness commit
+`70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c` produced a new local artifact with embedded
+`repositoryCommit=70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`, SHA-256
+`37C53E0FA4E9B2B3FD7444CCFDB5AD12025028B8ED6CEAC7E4C077C87EFC275F`, and size `2,802,929`
+bytes. That artifact is awaiting the seven sessions in `g2e-final-studio-rerun.md`; no result in this
+historical file claims execution against it.
 
 ## Static reference acceptance
 

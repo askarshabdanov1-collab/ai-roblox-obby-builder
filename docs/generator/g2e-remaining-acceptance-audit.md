@@ -11,6 +11,24 @@ fixtures, manifests, generated scene data, or the current opt-in status of Scene
 Luau tests are cited as reusable implementation coverage, never as substitutes for required Studio
 execution.
 
+## 2026-08-01 implementation update
+
+The category matrix below is retained as the pre-implementation audit snapshot from commit
+`25868cd60e33648f963f3cec60aa2ef348810c87`. Its `REQUIRES_ACCEPTANCE_HARNESS_CHANGE` and
+`REQUIRES_PROVENANCE_FIX_AND_RERUN` labels explain why the work was required; they are not a claim
+that those implementation blocks remain open.
+
+Provenance commit `2046121c5e5505397601ac7c6630a9fea9f0831b` and bounded-harness commit
+`70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c` implement all H-01 through H-06 groups without changing
+`roblox/src`. A clean reviewed-source build produced local artifact SHA-256
+`37C53E0FA4E9B2B3FD7444CCFDB5AD12025028B8ED6CEAC7E4C077C87EFC275F`, size `2,802,929` bytes,
+with embedded `repositoryCommit=70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`. The stale literal is absent
+from the active artifact.
+
+The current recommendation is therefore `READY_FOR_FINAL_EVIDENCE_COLLECTION`. Exactly seven
+fresh Studio sessions remain; none was performed by this implementation task. The historical
+classification table and historical Output remain unchanged.
+
 The audit inspected the committed Studio protocols and evidence; Phase 0 smoke procedure and
 completion record; compatibility and G2d handoff documents; both Rojo smoke projects; the G2e
 bootstrap, harness, observation modules, and fixture configuration; `BuilderV03`,
@@ -27,11 +45,10 @@ four rollback boundaries, focused lethal-hazard behavior, stale kill rejection, 
 and the Phase 0 regression smoke all have recorded successful evidence. The remaining blockers are
 acceptance evidence quality and coverage, not a proven gameplay defect.
 
-Pre-cutover G2e is **not** formally `PASS`. The current G2e artifact cannot produce commit-bound
-measurement evidence because its machine-emitted `repositoryCommit` is hardcoded to the branch base
-instead of the tested implementation commit. The harness also lacks bounded receipts or inspectors
-for several mandatory observations. Successful Luau coverage shows that these paths are reusable
-and likely testable without runtime changes, but it does not close the Studio gate.
+Pre-cutover G2e is **not** formally `PASS`. The repaired artifact can now produce commit-bound
+measurement and bounded functional evidence, but the seven human Studio sessions and evidence
+package have not been executed. Successful Luau coverage validates the harness boundary; it does
+not substitute for Studio execution.
 
 The 64 audited requirements classify as follows:
 
@@ -46,13 +63,11 @@ The 64 audited requirements classify as follows:
 | `DEFERRED_UNTIL_DEFAULT_CUTOVER`          |      1 |
 | **Total**                                 | **64** |
 
-The true critical path is finite:
+The original critical path was finite and its implementation portion is complete:
 
-1. Repair build-time commit provenance and make the acceptance controls return bounded acyclic
-   receipts.
-2. Add acceptance-only inspectors for the fields the current harness cannot emit; keep
-   `roblox/src` unchanged.
-3. Rebuild one identified G2e artifact and record the missing static environment fields.
+1. ~~Repair build-time commit provenance and bounded acyclic controls.~~ Complete.
+2. ~~Add acceptance-only inspectors while keeping `roblox/src` unchanged.~~ Complete.
+3. Record the missing static environment fields for the identified rebuilt artifact.
 4. Execute seven fresh Studio server sessions: one combined two-player reference session, one
    `maximum-50` session, one two-player zero-checkpoint session, and four separate failure-boundary
    sessions.
@@ -340,11 +355,15 @@ No new Phase 0 run belongs in this minimal pre-cutover plan. The 2026-07-31 regr
 already recorded. The post-default-cutover rerun is also excluded because the cutover has not
 occurred.
 
-## 4. Harness gaps
+## 4. Harness gaps identified by the audit
 
 Only gaps that cannot be closed reliably with the current harness are listed here. All proposed
 changes remain under acceptance/build tooling; runtime gameplay modules in `roblox/src` remain
 untouched.
+
+Implementation update: all six rows were completed by
+`70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`. The table is retained to preserve the reviewed scope
+and rerun mapping.
 
 | Gap                                                           | Current limitation                                                                                                                                                          | Smallest bounded change                                                                                                                                                                                              | Likely files                                                                               | Tests                                                                                                                       | Rebuild? | Studio evidence repeated                                                                       |
 | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- |
@@ -362,6 +381,12 @@ Output remain sufficient.
 
 ## 5. Provenance repair plan
 
+Implementation update: this plan was implemented by
+`2046121c5e5505397601ac7c6630a9fea9f0831b`. The explicit `G2E_REPOSITORY_COMMIT` override has
+precedence over Git; Git is the fallback source, not a historical fallback value. Both sources are
+strict lowercase 40-hex, and missing or malformed identity fails closed. The rebuilt artifact uses
+the reviewed harness commit as its source/release identity.
+
 ### Exact source and meaning
 
 - **Source:** `roblox/g2e/G2eAcceptanceBootstrap.server.luau`, local `environment` table,
@@ -374,8 +399,8 @@ Output remain sufficient.
 - **Classification:** hardcoded source, not generated data and not fixture metadata. Fixture
   identities are separate `expectedHash` values and manifest hashes.
 
-The current artifact can never produce correct commit-bound measurement evidence while this literal
-remains hardcoded. An external document can associate its SHA with implementation commit
+The audited historical artifact could never produce correct commit-bound measurement evidence while
+this literal remained hardcoded. An external document could associate its SHA with implementation commit
 `1379849686525d88c71245626e0360a00f1d48a9`, but that does not satisfy the machine record's own
 repository-commit field.
 
@@ -450,15 +475,14 @@ the first evidence-content commit rather than repeatedly changing a self-referen
 
 ## 7. Closure recommendation
 
-**`BLOCKED_BY_PROVENANCE`**
+**`READY_FOR_FINAL_EVIDENCE_COLLECTION`**
 
 The exercised runtime paths appear accepted and no remaining repository evidence proves a runtime
-defect. Nevertheless, the current artifact cannot emit a truthful commit-bound measurement record,
-and fixing the hardcoded provenance necessarily changes the artifact SHA. Acceptance-harness gaps
-also prevent finite bounded evidence for true maximum cold start, exact placement, finish/progress,
-non-kill stale callbacks, ownership refusal, wedge, and decoration.
+defect. Deterministic provenance, true cold selection, bounded returns, measurement v2, exact Part
+inspection, placement/finish/progress/stale observations, and ownership refusals are now implemented
+in the acceptance artifact. Gameplay runtime code remains unchanged.
 
-The block is removable without changing gameplay runtime code: implement the six bounded harness
-change groups and one build-provenance injection path above, rebuild once, execute seven fresh
-server sessions, package the records, and reassess. Until that evidence exists, pre-cutover G2e must
-remain incomplete and the future post-default-cutover rerun must remain deferred.
+The only pre-cutover closure work is operator evidence: record the environment, execute the seven
+fresh sessions in `g2e-final-studio-rerun.md`, preserve complete server/client Output, package the
+bounded records and human sheet, and review them. Until that evidence exists, pre-cutover G2e must
+remain incomplete and the future post-default-cutover rerun remains deferred.
