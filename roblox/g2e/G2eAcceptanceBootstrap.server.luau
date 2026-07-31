@@ -5,6 +5,15 @@ local Players = game:GetService("Players")
 
 local BuilderV03 = require(ReplicatedStorage.ObbyRuntime.BuilderV03)
 local G2eAcceptanceHarness = require(ServerScriptService.G2eAcceptanceHarness)
+local G2eBuildProvenance = require(ServerStorage.G2eBuildProvenance)
+
+assert(G2eBuildProvenance.schemaVersion == "g2e-build-provenance-v1", "G2e provenance schema changed")
+assert(
+    type(G2eBuildProvenance.repositoryCommit) == "string"
+        and #G2eBuildProvenance.repositoryCommit == 40
+        and string.match(G2eBuildProvenance.repositoryCommit, "^[0-9a-f]+$") ~= nil,
+    "G2e repository commit provenance is invalid"
+)
 
 local manifests = ServerStorage.G2eManifests
 local fixtures = table.freeze({
@@ -36,7 +45,7 @@ local fixtures = table.freeze({
 })
 
 local environment = table.freeze({
-    repositoryCommit = "9a92540aad3183342096501f268eb1f966d640bf",
+    repositoryCommit = G2eBuildProvenance.repositoryCommit,
     studioVersion = "0.732.0.7321040",
     osBuild = "Windows 10 Pro 10.0.19045 build 19045",
 })

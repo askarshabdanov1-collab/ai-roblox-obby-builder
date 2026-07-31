@@ -283,7 +283,7 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
       scripts?: Record<string, string>;
     };
     expect(packageJson.scripts?.["roblox:g2e:build"]).toBe(
-      "tsx tools/prepare-build.ts && rojo build roblox/g2e-smoke.project.json --output build/G2eStudioAcceptance.rbxlx",
+      "tsx tools/prepare-g2e-build.ts && rojo build roblox/g2e-smoke.project.json --output build/G2eStudioAcceptance.rbxlx",
     );
 
     const project = await readFile("roblox/g2e-smoke.project.json", "utf8");

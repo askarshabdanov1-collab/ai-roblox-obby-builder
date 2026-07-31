@@ -22,6 +22,9 @@
       }
     },
     "ServerStorage": {
+      "G2eBuildProvenance": {
+        "$path": "../build/g2e-provenance/G2eBuildProvenance.luau"
+      },
       "G2eManifests": {
         "$className": "Folder",
         "G2ReferenceManifestV03": {

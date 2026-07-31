@@ -69,7 +69,7 @@
     "roblox:build": "tsx tools/prepare-build.ts && rojo build roblox/default.project.json --output build/AIObbyBuilder.rbxlx && rojo build roblox/smoke.project.json --output build/Phase0Smoke.rbxlx && rojo sourcemap roblox/default.project.json --output build/roblox-sourcemap.json",
     "roblox:format": "stylua roblox/src roblox/tests roblox/smoke roblox/g2e roblox/generated",
     "roblox:format:check": "stylua --check roblox/src roblox/tests roblox/smoke roblox/g2e roblox/generated",
-    "roblox:g2e:build": "tsx tools/prepare-build.ts && rojo build roblox/g2e-smoke.project.json --output build/G2eStudioAcceptance.rbxlx",
+    "roblox:g2e:build": "tsx tools/prepare-g2e-build.ts && rojo build roblox/g2e-smoke.project.json --output build/G2eStudioAcceptance.rbxlx",
     "roblox:lint": "selene roblox/src roblox/tests roblox/smoke roblox/g2e roblox/generated",
     "roblox:test": "lune run roblox/tests/run.luau",
     "security:dependencies": "npm audit --audit-level=high",
