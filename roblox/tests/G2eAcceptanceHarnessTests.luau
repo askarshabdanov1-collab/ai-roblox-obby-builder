@@ -1,5 +1,7 @@
 local G2eObservationV03 = require("../g2e/G2eObservationV03")
 local G2eGameplayObservationV03 = require("../g2e/G2eGameplayObservationV03")
+local G2eControlProtocol = require("../g2e/G2eControlProtocol")
+local G2eAcceptanceRecordsV1 = require("../g2e/G2eAcceptanceRecordsV1")
 local referenceManifest = require("../generated/G2ReferenceManifestV03")
 local boundary20Manifest = require("../generated/G2Boundary20ManifestV03")
 local boundary21Manifest = require("../generated/G2Boundary21ManifestV03")
@@ -79,6 +81,138 @@ local function mutableCopy(value)
 end
 
 return function(test, expect)
+    test("defines deterministic official G2e run indices", function()
+        local referenceRuns = G2eControlProtocol.referenceSequence()
+        expect(#referenceRuns == 8, "reference sequence length changed")
+        expect(referenceRuns[1].runKind == "cold" and referenceRuns[1].runIndex == 1, "cold index changed")
+        for index = 1, 5 do
+            local run = referenceRuns[index + 1]
+            expect(run.runKind == "repeated" and run.runIndex == index, "reference repeated index changed")
+        end
+        expect(
+            referenceRuns[7].runKind == "replacement" and referenceRuns[7].runIndex == 1,
+            "first replacement index changed"
+        )
+        expect(
+            referenceRuns[8].runKind == "replacement" and referenceRuns[8].runIndex == 2,
+            "second replacement index changed"
+        )
+        local maximumRuns = G2eControlProtocol.maximumSequence()
+        expect(#maximumRuns == 6 and maximumRuns[1].runKind == "cold", "maximum cold run changed")
+        for index = 1, 5 do
+            expect(maximumRuns[index + 1].runIndex == index, "maximum repeated index changed")
+        end
+    end)
+
+    test("reserves cold evidence for the first build attempt in each server state", function()
+        local state = G2eControlProtocol.newState()
+        local first, firstError = state:claimCold("reference")
+        expect(first ~= nil and firstError == nil and state:coldFixture() == "reference", "cold claim failed")
+        local second, secondError = state:claimCold("maximum-50")
+        expect(second == nil and secondError.status == "FAIL", "second cold claim was accepted")
+
+        local manualState = G2eControlProtocol.newState()
+        local manual = manualState:nextManual("wedge")
+        expect(manual.runKind == "manual" and manual.runIndex == 1, "manual run label changed")
+        local coldAfterManual, coldError = manualState:claimCold("reference")
+        expect(coldAfterManual == nil and coldError.status == "FAIL", "manual build did not invalidate cold evidence")
+
+        local freshState = G2eControlProtocol.newState()
+        expect(freshState:claimCold("maximum-50") ~= nil, "fresh server state did not reset cold admission")
+    end)
+
+    test("returns only bounded acyclic control results", function()
+        local success = G2eControlProtocol.invoke("Build", function()
+            return G2eControlProtocol.success("Build", {
+                fixtureId = "reference",
+                runKind = "manual",
+                runIndex = 1,
+                recordCount = 1,
+            })
+        end)
+        expect(success.status == "PASS" and G2eControlProtocol.validResult(success), "valid result was rejected")
+
+        local cyclic = {}
+        cyclic.self = cyclic
+        local failure = G2eControlProtocol.invoke("Build", function()
+            return cyclic
+        end)
+        expect(failure.status == "FAIL", "cyclic callback result crossed the control boundary")
+        for _, key in ipairs({
+            "schemaVersion",
+            "status",
+            "command",
+            "fixtureId",
+            "runKind",
+            "runIndex",
+            "recordCount",
+            "diagnosticCode",
+            "diagnosticField",
+            "diagnosticMessage",
+        }) do
+            local kind = type(failure[key])
+            expect(kind == "string" or kind == "number", "control result contains a non-primitive field")
+        end
+    end)
+
+    test("sorts bounded part receipts and rejects ambiguous object IDs", function()
+        local objects = {
+            { objectId = "B", status = "PASS" },
+            { objectId = "A", status = "PASS" },
+        }
+        local receipt = G2eAcceptanceRecordsV1.partInspection(
+            string.rep("a", 40),
+            "wedge",
+            "sha256:" .. string.rep("b", 64),
+            objects,
+            { objectId = "_RuntimeSpawnLocation" },
+            true
+        )
+        expect(receipt.status == "PASS" and receipt.objects[1].objectId == "A", "part receipt order changed")
+        local ok = pcall(function()
+            G2eAcceptanceRecordsV1.partInspection(
+                string.rep("a", 40),
+                "wedge",
+                "sha256:" .. string.rep("b", 64),
+                { { objectId = "A" }, { objectId = "A" } },
+                {},
+                true
+            )
+        end)
+        expect(not ok, "ambiguous inspector object ID was accepted")
+    end)
+
+    test("keeps functional refusal and zero-checkpoint receipts fail closed", function()
+        local repositoryCommit = string.rep("a", 40)
+        local manifestHash = "sha256:" .. string.rep("b", 64)
+        local progress = G2eAcceptanceRecordsV1.progress(repositoryCommit, manifestHash, {
+            sameHashCheckpointPreserved = true,
+            sameHashFinishPreserved = true,
+            differentHashCheckpointCleared = true,
+            differentHashFinishCleared = true,
+            staleCharacterPlacementRejected = true,
+            staleCheckpointRejected = true,
+            staleKillRejected = true,
+            staleFinishRejected = true,
+            restoredReference = true,
+        })
+        expect(progress.status == "PASS", "complete progress receipt failed")
+        local ownership = G2eAcceptanceRecordsV1.ownership(repositoryCommit, manifestHash, {
+            { scenario = "unowned-root", status = "PASS" },
+            { scenario = "ambiguous-roots", status = "FAIL" },
+            { scenario = "other-version-root", status = "PASS" },
+        }, true)
+        expect(ownership.status == "FAIL", "failed ownership case reported PASS")
+        local zero = G2eAcceptanceRecordsV1.zeroCheckpoint(repositoryCommit, manifestHash, {
+            playerCount = 2,
+            checkpointStateClear = true,
+            checkpointAttributesClear = true,
+            respawnsObserved = 2,
+            spawnRespawnsObserved = 2,
+        })
+        expect(zero.status == "PASS", "complete zero-checkpoint receipt failed")
+    end)
+
     test("finds no runtime-visible intersections in reference 20 21 and 50-stage fixtures", function()
         for _, value in ipairs({ referenceManifest, boundary20Manifest, boundary21Manifest, maximum50Manifest }) do
             local summary = G2eGameplayObservationV03.geometrySummary(value)

@@ -1,7 +1,14 @@
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local HttpService = game:GetService("HttpService")
 local CollectionService = game:GetService("CollectionService")
+local Players = game:GetService("Players")
 local G2eObservationV03 = require("./G2eObservationV03")
 local G2eGameplayObservationV03 = require("./G2eGameplayObservationV03")
+local G2eAcceptanceRecordsV1 = require("./G2eAcceptanceRecordsV1")
+local G2eControlProtocol = require("./G2eControlProtocol")
+local CharacterPlacement = require(ReplicatedStorage.ObbyRuntime.CharacterPlacement)
+local SafeRouteNavigator = require(ReplicatedStorage.ObbyRuntime.SafeRouteNavigator)
+local RuntimeSessionV03 = require(ReplicatedStorage.ObbyRuntime.RuntimeSessionV03)
 
 local G2eAcceptanceHarness = {}
 
@@ -9,9 +16,36 @@ local MEASUREMENT_PREFIX = "[G2 runtime measurement] "
 local OBSERVATION_PREFIX = "[G2 acceptance observation] "
 local GAMEPLAY_OBSERVATION_PREFIX = "[G2 gameplay observation] "
 local HAZARD_TRACE_PREFIX = "[G2 hazard trace] "
+local PRECONDITION_PREFIX = "[G2 precondition] "
+local PART_INSPECTION_PREFIX = "[G2 part inspection] "
+local PLACEMENT_PREFIX = "[G2 placement observation] "
+local FINISH_PREFIX = "[G2 finish observation] "
+local PROGRESS_PREFIX = "[G2 progress observation] "
+local OWNERSHIP_PREFIX = "[G2 ownership observation] "
+local ZERO_CHECKPOINT_PREFIX = "[G2 zero-checkpoint observation] "
+local CONTROL_PREFIX = "[G2 control result] "
 
 local function approximately(actual, expected)
     return math.abs(actual - expected) < 0.00001
+end
+
+local function activeRootCount()
+    local count = 0
+    for _, child in ipairs(workspace:GetChildren()) do
+        if child.Name == "GeneratedObby" then
+            count += 1
+        end
+    end
+    return count
+end
+
+local function emit(prefix, value)
+    print(prefix .. HttpService:JSONEncode(value))
+    return value
+end
+
+function G2eAcceptanceHarness.emitPrecondition(repositoryCommit)
+    return emit(PRECONDITION_PREFIX, G2eAcceptanceRecordsV1.precondition(repositoryCommit, activeRootCount()))
 end
 
 local function assertVector(actual, expected, label)
@@ -157,9 +191,13 @@ function G2eAcceptanceHarness.emitMeasurement(
     manifest,
     runKind,
     runIndex,
-    elapsed,
+    monotonicStart,
+    monotonicEnd,
     result,
     beforeHeap,
+    afterHeap,
+    heapStatus,
+    builder,
     configuredCollections
 )
     local counts = G2eAcceptanceHarness.assertScene(result, manifest)
@@ -195,8 +233,26 @@ function G2eAcceptanceHarness.emitMeasurement(
     })
     local observationPassed, diagnosticMessage, normalizedObservation = G2eObservationV03.formatResult(observation)
     observation = normalizedObservation
+    local checkpointConnections = 0
+    local killConnections = 0
+    local finishConnections = 0
+    for _, record in ipairs(result.session.candidate.plan.gameplayRecords) do
+        if record.role == "checkpoint" and record.behavior.kind == "checkpoint" then
+            checkpointConnections += 1
+        elseif record.role == "kill" and record.behavior.kind == "kill" then
+            killConnections += 1
+        elseif record.role == "finish" and record.behavior.kind == "finish" then
+            finishConnections += 1
+        end
+    end
+    local characterAddedConnections = 0
+    for _ in pairs(builder.playerConnectionByPlayer) do
+        characterAddedConnections += 1
+    end
+    local coordinatorConnections = #builder.coordinatorConnections
+    local sessionConnections = result.session:connectionCount()
     local measurement = {
-        schemaVersion = "g2-studio-measurement-v1",
+        schemaVersion = "g2-studio-measurement-v2",
         repositoryCommit = environment.repositoryCommit,
         studioVersion = environment.studioVersion,
         osBuild = environment.osBuild,
@@ -204,13 +260,26 @@ function G2eAcceptanceHarness.emitMeasurement(
         manifestHash = manifest.manifestHash,
         runKind = runKind,
         runIndex = runIndex,
-        elapsedMilliseconds = elapsed * 1000,
+        monotonicStartSeconds = monotonicStart,
+        monotonicEndSeconds = monotonicEnd,
+        elapsedMilliseconds = (monotonicEnd - monotonicStart) * 1000,
         gameplayObjects = #manifest.layers.gameplay.objects,
         decorativeObjects = #manifest.layers.decorative.objects,
         runtimeOwnedInstances = counts.total,
-        connections = result.session:connectionCount(),
+        activeRootCount = activeRootCount(),
+        checkpointConnections = checkpointConnections,
+        killConnections = killConnections,
+        finishConnections = finishConnections,
+        sessionConnections = sessionConnections,
+        characterAddedConnections = characterAddedConnections,
+        playerAddedConnections = if coordinatorConnections >= 1 then 1 else 0,
+        playerRemovingConnections = if coordinatorConnections >= 2 then 1 else 0,
+        coordinatorConnections = coordinatorConnections,
+        totalConnections = sessionConnections + characterAddedConnections + coordinatorConnections,
+        connections = sessionConnections,
+        luaHeapStatus = heapStatus,
         luaHeapKilobytesBefore = beforeHeap,
-        luaHeapKilobytesAfter = collectgarbage("count"),
+        luaHeapKilobytesAfter = afterHeap,
         warnings = observation.warningCount,
         errors = observation.errorCount,
         orphans = 0,
@@ -244,6 +313,114 @@ end
 
 local function attributeRecord(part, name)
     return table.freeze({ name = name, value = part:GetAttribute(name) })
+end
+
+local function vectorRecord(value)
+    return table.freeze({ value.X, value.Y, value.Z })
+end
+
+local function cframeRecord(value)
+    return table.freeze({ value:GetComponents() })
+end
+
+local function colorRecord(value)
+    return table.freeze({
+        math.round(value.R * 255),
+        math.round(value.G * 255),
+        math.round(value.B * 255),
+    })
+end
+
+local function inspectionRecord(part, object, layer)
+    local tags = CollectionService:GetTags(part)
+    table.sort(tags)
+    return table.freeze({
+        objectId = object.id,
+        name = part.Name,
+        className = part.ClassName,
+        shape = if part:IsA("Part") then part.Shape.Name else "Wedge",
+        role = object.role,
+        layer = layer,
+        expectedCFrame = cframeRecord(expectedCFrame(object.transform)),
+        observedCFrame = cframeRecord(part.CFrame),
+        size = vectorRecord(part.Size),
+        material = part.Material.Name,
+        colorRgb = colorRecord(part.Color),
+        anchored = part.Anchored,
+        canCollide = part.CanCollide,
+        canTouch = part.CanTouch,
+        canQuery = part.CanQuery,
+        collisionGroup = part.CollisionGroup,
+        attributes = table.freeze({
+            attributeRecord(part, "Layer"),
+            attributeRecord(part, "ManifestHash"),
+            attributeRecord(part, "ObjectId"),
+            attributeRecord(part, "Role"),
+            attributeRecord(part, "SceneId"),
+            attributeRecord(part, "SchemaVersion"),
+        }),
+        tags = table.freeze(tags),
+    })
+end
+
+local function helperInspectionRecord(helper)
+    local tags = CollectionService:GetTags(helper)
+    table.sort(tags)
+    return table.freeze({
+        objectId = "_RuntimeSpawnLocation",
+        name = helper.Name,
+        className = helper.ClassName,
+        layer = "infrastructure",
+        cframe = cframeRecord(helper.CFrame),
+        size = vectorRecord(helper.Size),
+        transparency = helper.Transparency,
+        anchored = helper.Anchored,
+        canCollide = helper.CanCollide,
+        canTouch = helper.CanTouch,
+        canQuery = helper.CanQuery,
+        collisionGroup = helper.CollisionGroup,
+        attributes = table.freeze({ attributeRecord(helper, "NonAuthoritative") }),
+        tags = table.freeze(tags),
+    })
+end
+
+function G2eAcceptanceHarness.emitPartInspection(repositoryCommit, fixtureId, manifest, result)
+    G2eAcceptanceHarness.assertScene(result, manifest)
+    local objects = {}
+    local seen = {}
+    for _, layer in ipairs({ "gameplay", "decorative" }) do
+        for _, object in ipairs(manifest.layers[layer].objects) do
+            assert(seen[object.id] == nil, "ambiguous G2e object ID: " .. object.id)
+            seen[object.id] = true
+            local part = result.session.candidate.partById[object.id]
+            assert(part ~= nil, "unknown G2e object ID: " .. object.id)
+            table.insert(objects, inspectionRecord(part, object, layer))
+        end
+    end
+    local safeRouteIds = {}
+    for _, objectId in ipairs(manifest.navigation.safeRouteObjectIds) do
+        safeRouteIds[objectId] = true
+    end
+    local decorativeSafeRouteExcluded = true
+    for _, object in ipairs(manifest.layers.decorative.objects) do
+        if safeRouteIds[object.id] then
+            decorativeSafeRouteExcluded = false
+            break
+        end
+    end
+    local helper = result.root.RuntimeInfrastructure:FindFirstChild("_RuntimeSpawnLocation")
+    assert(helper ~= nil and helper:IsA("SpawnLocation"), "runtime SpawnLocation helper is unavailable")
+    return emit(
+        PART_INSPECTION_PREFIX,
+        G2eAcceptanceRecordsV1.partInspection(
+            repositoryCommit,
+            fixtureId,
+            manifest.manifestHash,
+            objects,
+            helperInspectionRecord(helper),
+            decorativeSafeRouteExcluded
+        )
+    )
 end
 
 function G2eAcceptanceHarness.emitHazardTrace(fixtureId, manifest, result, objectId)
@@ -327,36 +504,223 @@ function G2eAcceptanceHarness.emitGameplayObservation(fixtureId, manifest, sessi
     return observation
 end
 
+local function receiptPlayers()
+    local players = Players:GetPlayers()
+    assert(#players == 2, "exactly two players are required for this G2e observation")
+    return players
+end
+
+local function placementObjectFor(session, manifest, player)
+    local checkpointOrder = session:checkpointOrder(player)
+    if checkpointOrder ~= nil then
+        for _, object in ipairs(manifest.layers.gameplay.objects) do
+            if
+                object.role == "checkpoint"
+                and object.behavior.kind == "checkpoint"
+                and object.behavior.checkpointOrder == checkpointOrder
+            then
+                return object, "checkpoint"
+            end
+        end
+    end
+    for _, object in ipairs(manifest.layers.gameplay.objects) do
+        if object.id == manifest.navigation.spawnObjectId and object.role == "spawn" then
+            return object, "spawn"
+        end
+    end
+    error("G2e placement target is unavailable")
+end
+
+function G2eAcceptanceHarness.emitPlacementObservation(repositoryCommit, fixtureId, manifest, session, phase)
+    assert(phase == "initial" or phase == "respawn" or phase == "zero-respawn", "placement phase is invalid")
+    local navigator = SafeRouteNavigator.new(manifest)
+    local records = {}
+    for index, player in ipairs(receiptPlayers()) do
+        local object, placementKind = placementObjectFor(session, manifest, player)
+        local transform = CharacterPlacement.transformFor(
+            object,
+            manifest.navigation.characterPlacement,
+            navigator:nextObject(object.id)
+        )
+        local expected = expectedCFrame(transform)
+        local character = player.Character
+        local rootPart = character and character:FindFirstChild("HumanoidRootPart") or nil
+        local matches = rootPart ~= nil and rootPart:IsA("BasePart") and rootPart.CFrame:FuzzyEq(expected, 0.00001)
+        table.insert(
+            records,
+            table.freeze({
+                playerSlot = index,
+                placementKind = placementKind,
+                objectId = object.id,
+                checkpointOrder = session:checkpointOrder(player) or 0,
+                expectedCFrame = cframeRecord(expected),
+                observedCFrame = if rootPart ~= nil and rootPart:IsA("BasePart")
+                    then cframeRecord(rootPart.CFrame)
+                    else table.freeze({}),
+                status = if matches then "PASS" else "FAIL",
+            })
+        )
+    end
+    return emit(
+        PLACEMENT_PREFIX,
+        G2eAcceptanceRecordsV1.placement(repositoryCommit, fixtureId, manifest.manifestHash, phase, records, 0.00001)
+    )
+end
+
+function G2eAcceptanceHarness.emitFinishObservation(repositoryCommit, fixtureId, manifest, session, phase)
+    assert(phase == "player-a-only" or phase == "both-finished", "finish phase is invalid")
+    local players = receiptPlayers()
+    return emit(
+        FINISH_PREFIX,
+        G2eAcceptanceRecordsV1.finish(
+            repositoryCommit,
+            fixtureId,
+            manifest.manifestHash,
+            phase,
+            session:finished(players[1]),
+            session:finished(players[2])
+        )
+    )
+end
+
+function G2eAcceptanceHarness.emitProgressObservation(repositoryCommit, manifestHash, fields)
+    return emit(PROGRESS_PREFIX, G2eAcceptanceRecordsV1.progress(repositoryCommit, manifestHash, fields))
+end
+
+function G2eAcceptanceHarness.emitOwnershipObservation(repositoryCommit, manifestHash, cases, preserved)
+    return emit(OWNERSHIP_PREFIX, G2eAcceptanceRecordsV1.ownership(repositoryCommit, manifestHash, cases, preserved))
+end
+
+function G2eAcceptanceHarness.emitZeroCheckpointObservation(repositoryCommit, manifest, session)
+    local players = receiptPlayers()
+    local checkpointStateClear = true
+    local checkpointAttributesClear = true
+    for _, player in ipairs(players) do
+        if session:checkpointOrder(player) ~= nil then
+            checkpointStateClear = false
+        end
+        if player:GetAttribute(RuntimeSessionV03.CHECKPOINT_ATTRIBUTE) ~= nil then
+            checkpointAttributesClear = false
+        end
+    end
+    local snapshot = session:acceptanceSnapshot()
+    local receipt = G2eAcceptanceRecordsV1.zeroCheckpoint(repositoryCommit, manifest.manifestHash, {
+        playerCount = #players,
+        checkpointStateClear = checkpointStateClear,
+        checkpointAttributesClear = checkpointAttributesClear,
+        respawnsObserved = snapshot.respawnsObserved,
+        spawnRespawnsObserved = snapshot.spawnRespawnsObserved,
+    })
+    emit(ZERO_CHECKPOINT_PREFIX, receipt)
+    local placement = G2eAcceptanceHarness.emitPlacementObservation(
+        repositoryCommit,
+        "minimum-zero-checkpoint",
+        manifest,
+        session,
+        "zero-respawn"
+    )
+    return receipt, placement
+end
+
 function G2eAcceptanceHarness.bindControl(api)
     local folder = Instance.new("Folder")
     folder.Name = "G2eControl"
     folder.Parent = game:GetService("ServerStorage")
     for name, callback in pairs({
-        Build = function(fixtureId, runKind, runIndex)
-            return api:build(fixtureId, runKind, runIndex)
+        Build = function(fixtureId)
+            local run = api:manualBuild(fixtureId)
+            return G2eControlProtocol.success("Build", run)
         end,
-        RunReferenceReplacementSequence = function()
-            return api:runReferenceReplacementSequence()
+        RunReferenceColdAndReplacementSequence = function()
+            local count = api:runReferenceColdAndReplacementSequence()
+            return G2eControlProtocol.success("RunReferenceColdAndReplacementSequence", {
+                fixtureId = "reference",
+                runKind = "sequence",
+                recordCount = count,
+            })
         end,
-        RunMaximumSequence = function()
-            return api:runMaximumSequence()
+        RunMaximumColdAndRepeatedSequence = function()
+            local count = api:runMaximumColdAndRepeatedSequence()
+            return G2eControlProtocol.success("RunMaximumColdAndRepeatedSequence", {
+                fixtureId = "maximum-50",
+                runKind = "sequence",
+                recordCount = count,
+            })
         end,
-        RunFailureBoundary = function(boundary)
-            return api:runFailureBoundary(boundary)
+        RunZeroCheckpointColdSequence = function()
+            local count = api:runZeroCheckpointColdSequence()
+            return G2eControlProtocol.success("RunZeroCheckpointColdSequence", {
+                fixtureId = "minimum-zero-checkpoint",
+                runKind = "sequence",
+                recordCount = count,
+            })
+        end,
+        RunFailureBoundarySequence = function(boundary)
+            api:runFailureBoundarySequence(boundary)
+            return G2eControlProtocol.success("RunFailureBoundarySequence", {
+                fixtureId = "reference",
+                runKind = "failure-boundary",
+                recordCount = 2,
+            })
         end,
         ObserveGameplay = function()
-            return api:observeGameplay()
+            api:observeGameplay()
+            return G2eControlProtocol.success("ObserveGameplay", { fixtureId = api.currentFixtureId })
         end,
         InspectHazard = function(objectId)
-            return api:inspectHazard(objectId)
+            api:inspectHazard(objectId)
+            return G2eControlProtocol.success("InspectHazard", { fixtureId = api.currentFixtureId })
         end,
         VerifyStaleHazardCallback = function()
-            return api:verifyStaleHazardCallback()
+            api:verifyStaleHazardCallback()
+            return G2eControlProtocol.success("VerifyStaleHazardCallback", { fixtureId = api.currentFixtureId })
+        end,
+        ObservePlayerPlacement = function(phase)
+            api:observePlayerPlacement(phase)
+            return G2eControlProtocol.success("ObservePlayerPlacement", { fixtureId = api.currentFixtureId })
+        end,
+        ObserveFinishIsolation = function(phase)
+            api:observeFinishIsolation(phase)
+            return G2eControlProtocol.success("ObserveFinishIsolation", { fixtureId = api.currentFixtureId })
+        end,
+        RunProgressAndStaleCallbackSequence = function()
+            api:runProgressAndStaleCallbackSequence()
+            return G2eControlProtocol.success("RunProgressAndStaleCallbackSequence", {
+                fixtureId = "reference",
+                runKind = "functional",
+                recordCount = 4,
+            })
+        end,
+        RunOwnershipRefusalSequence = function()
+            api:runOwnershipRefusalSequence()
+            return G2eControlProtocol.success("RunOwnershipRefusalSequence", {
+                fixtureId = "reference",
+                runKind = "refusal",
+                recordCount = 3,
+            })
+        end,
+        RunStaticFixtureSequence = function()
+            api:runStaticFixtureSequence()
+            return G2eControlProtocol.success("RunStaticFixtureSequence", {
+                fixtureId = "reference",
+                runKind = "static",
+                recordCount = 3,
+            })
+        end,
+        ObserveZeroCheckpointPlayers = function()
+            api:observeZeroCheckpointPlayers()
+            return G2eControlProtocol.success("ObserveZeroCheckpointPlayers", {
+                fixtureId = "minimum-zero-checkpoint",
+            })
         end,
     }) do
         local bindable = Instance.new("BindableFunction")
         bindable.Name = name
-        bindable.OnInvoke = callback
+        bindable.OnInvoke = function(...)
+            local controlResult = G2eControlProtocol.invoke(name, callback, ...)
+            emit(CONTROL_PREFIX, controlResult)
+            return controlResult
+        end
         bindable.Parent = folder
     end
     return folder
@@ -371,6 +735,10 @@ function G2eAcceptanceHarness.assertSingleActiveRoot()
     end
     assert(#active == 1, "Workspace does not contain exactly one GeneratedObby")
     return active[1]
+end
+
+function G2eAcceptanceHarness.activeRootCount()
+    return activeRootCount()
 end
 
 return table.freeze(G2eAcceptanceHarness)

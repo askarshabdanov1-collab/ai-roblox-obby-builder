@@ -14,6 +14,12 @@
       "G2eAcceptanceHarness": {
         "$path": "g2e/G2eAcceptanceHarness.luau"
       },
+      "G2eAcceptanceRecordsV1": {
+        "$path": "g2e/G2eAcceptanceRecordsV1.luau"
+      },
+      "G2eControlProtocol": {
+        "$path": "g2e/G2eControlProtocol.luau"
+      },
       "G2eObservationV03": {
         "$path": "g2e/G2eObservationV03.luau"
       },

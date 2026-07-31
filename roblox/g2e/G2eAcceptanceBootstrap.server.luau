@@ -5,6 +5,7 @@ local Players = game:GetService("Players")
 
 local BuilderV03 = require(ReplicatedStorage.ObbyRuntime.BuilderV03)
 local G2eAcceptanceHarness = require(ServerScriptService.G2eAcceptanceHarness)
+local G2eControlProtocol = require(ServerScriptService.G2eControlProtocol)
 local G2eBuildProvenance = require(ServerStorage.G2eBuildProvenance)
 
 assert(G2eBuildProvenance.schemaVersion == "g2e-build-provenance-v1", "G2e provenance schema changed")
@@ -61,6 +62,7 @@ local api = {
     replacementCount = 0,
     staleCallbackRejections = 0,
     staleAcceptedActions = 0,
+    protocol = G2eControlProtocol.newState(),
 }
 
 local function boundedText(value, fallback, maximum)
@@ -80,6 +82,14 @@ local function reportBuildFailure(buildError)
     return diagnostic
 end
 
+local function heapMeasurement()
+    local ok, value = pcall(collectgarbage, "count")
+    if ok and type(value) == "number" then
+        return value, "available"
+    end
+    return 0, "unavailable"
+end
+
 function api:build(fixtureId, runKind, runIndex, options)
     local replacing = self.current ~= nil
     local previous = self.current
@@ -87,10 +97,14 @@ function api:build(fixtureId, runKind, runIndex, options)
     local fixture = fixtures[fixtureId]
     assert(fixture ~= nil, "unknown G2e fixture: " .. tostring(fixtureId))
     local manifest = require(fixture.module)
-    local beforeHeap = collectgarbage("count")
+    local beforeHeap, beforeHeapStatus = heapMeasurement()
     local started = os.clock()
     local result, buildError = builder:build(fixture.module, fixture.expectedHash, options)
-    local elapsed = os.clock() - started
+    local finished = os.clock()
+    local afterHeap, afterHeapStatus = heapMeasurement()
+    local heapStatus = if beforeHeapStatus == "available" and afterHeapStatus == "available"
+        then "available"
+        else "unavailable"
     local buildDiagnostic = "code=unknown field=none message=none"
     if result == nil then
         buildDiagnostic = reportBuildFailure(buildError)
@@ -103,9 +117,13 @@ function api:build(fixtureId, runKind, runIndex, options)
         manifest,
         runKind or "manual",
         runIndex or 1,
-        elapsed,
+        started,
+        finished,
         result,
-        beforeHeap
+        beforeHeap,
+        afterHeap,
+        heapStatus,
+        builder
     )
     local observationPassed, observationDiagnostic = G2eAcceptanceHarness.formatObservationResult(observation)
     assert(observationPassed, observationDiagnostic)
@@ -118,6 +136,17 @@ function api:build(fixtureId, runKind, runIndex, options)
         self.previousFixtureId = previousFixtureId
     end
     return result
+end
+
+function api:manualBuild(fixtureId)
+    local run = self.protocol:nextManual(fixtureId)
+    self:build(run.fixtureId, run.runKind, run.runIndex)
+    return run
+end
+
+local function claimCold(apiValue, fixtureId)
+    local run, failure = apiValue.protocol:claimCold(fixtureId)
+    assert(run ~= nil, failure and failure.diagnosticMessage or "cold sequence requires a fresh server")
 end
 
 local function hazardRecord(result, configuredObjectId)
@@ -174,26 +203,48 @@ function api:verifyStaleHazardCallback()
     })
 end
 
-function api:runReferenceReplacementSequence()
-    for index = 1, 5 do
-        self:build("reference", "repeated", index)
+function api:runReferenceColdAndReplacementSequence()
+    claimCold(self, "reference")
+    local runs = G2eControlProtocol.referenceSequence()
+    for _, run in ipairs(runs) do
+        self:build(run.fixtureId, run.runKind, run.runIndex)
     end
-    self:build("replacement-b", "replacement", 1)
-    self:build("reference", "replacement", 2)
     G2eAcceptanceHarness.assertSingleActiveRoot()
     print("[G2 acceptance] reference replacement sequence PASS")
+    return #runs
 end
 
-function api:runMaximumSequence()
-    self:build("maximum-50", "cold", 1)
-    for index = 1, 5 do
-        self:build("maximum-50", "repeated", index)
+function api:runMaximumColdAndRepeatedSequence()
+    claimCold(self, "maximum-50")
+    local runs = G2eControlProtocol.maximumSequence()
+    for _, run in ipairs(runs) do
+        self:build(run.fixtureId, run.runKind, run.runIndex)
     end
     print("[G2 acceptance] maximum-50 sequence PASS")
+    return #runs
 end
 
-function api:runFailureBoundary(boundary)
-    local previous = self.current and self.current.root or G2eAcceptanceHarness.assertSingleActiveRoot()
+function api:runZeroCheckpointColdSequence()
+    claimCold(self, "minimum-zero-checkpoint")
+    local runs = G2eControlProtocol.zeroCheckpointSequence()
+    for _, run in ipairs(runs) do
+        self:build(run.fixtureId, run.runKind, run.runIndex)
+    end
+    print("[G2 acceptance] minimum-zero-checkpoint sequence PASS")
+    return #runs
+end
+
+function api:runFailureBoundarySequence(boundary)
+    assert(
+        boundary == "before-commit"
+            or boundary == "after-retire"
+            or boundary == "after-publish"
+            or boundary == "before-pointer",
+        "unknown failure boundary"
+    )
+    claimCold(self, "reference")
+    self:build("reference", "cold", 1)
+    local previous = self.current.root
     local result, buildError = builder:build(fixtures["replacement-b"].module, fixtures["replacement-b"].expectedHash, {
         failAt = if boundary == "before-commit" then boundary else nil,
         commitOptions = if boundary == "before-commit" then nil else { failAt = boundary },
@@ -221,7 +272,216 @@ function api:observeGameplay()
     )
 end
 
+function api:observePlayerPlacement(phase)
+    assert(self.current ~= nil, "a G2e fixture must be active")
+    local fixture = fixtures[self.currentFixtureId]
+    local receipt = G2eAcceptanceHarness.emitPlacementObservation(
+        environment.repositoryCommit,
+        self.currentFixtureId,
+        require(fixture.module),
+        self.current.session,
+        phase
+    )
+    assert(receipt.status == "PASS", receipt.firstFailingField)
+    return receipt
+end
+
+function api:observeFinishIsolation(phase)
+    assert(self.current ~= nil and self.currentFixtureId == "reference", "reference fixture must be active")
+    local receipt = G2eAcceptanceHarness.emitFinishObservation(
+        environment.repositoryCommit,
+        self.currentFixtureId,
+        require(fixtures.reference.module),
+        self.current.session,
+        phase
+    )
+    assert(receipt.status == "PASS", receipt.firstFailingField)
+    return receipt
+end
+
+local function gameplayRecordByRole(result, role)
+    for _, record in ipairs(result.session.candidate.plan.gameplayRecords) do
+        if record.role == role then
+            return record
+        end
+    end
+    return nil
+end
+
+local function playerHit(player)
+    local character = player and player.Character or nil
+    local hit = character
+        and (character:FindFirstChild("HumanoidRootPart") or character:FindFirstChildWhichIsA("BasePart"))
+    assert(hit ~= nil, "active player character Part is required")
+    return hit, character
+end
+
+function api:runProgressAndStaleCallbackSequence()
+    assert(self.current ~= nil and self.currentFixtureId == "reference", "reference fixture must be active")
+    local players = Players:GetPlayers()
+    assert(#players == 2, "progress sequence requires exactly two players")
+    local oldResult = self.current
+    local oldSession = oldResult.session
+    local checkpointOrder = oldSession:checkpointOrder(players[1])
+    assert(checkpointOrder ~= nil, "player A checkpoint progress is required")
+    assert(oldSession:finished(players[1]) and oldSession:finished(players[2]), "both finish states are required")
+
+    local sameResult = self:build("reference", "functional", 1)
+    local sameHashCheckpointPreserved = sameResult.session:checkpointOrder(players[1]) == checkpointOrder
+    local sameHashFinishPreserved = sameResult.session:finished(players[1]) and sameResult.session:finished(players[2])
+
+    local differentResult = self:build("replacement-b", "functional", 2)
+    local differentHashCheckpointCleared = differentResult.session:checkpointOrder(players[1]) == nil
+        and differentResult.session:checkpointOrder(players[2]) == nil
+    local differentHashFinishCleared = not differentResult.session:finished(players[1])
+        and not differentResult.session:finished(players[2])
+
+    local hit, character = playerHit(players[1])
+    local placed, placementError = oldSession:placeCharacter(players[1], character)
+    local staleCharacterPlacementRejected = placed == nil
+        and placementError ~= nil
+        and placementError.code == "session-stale"
+
+    local checkpointRecord = gameplayRecordByRole(oldResult, "checkpoint")
+    local killRecord = gameplayRecordByRole(oldResult, "kill")
+    local finishRecord = gameplayRecordByRole(oldResult, "finish")
+    assert(
+        checkpointRecord ~= nil and killRecord ~= nil and finishRecord ~= nil,
+        "stale callback records are incomplete"
+    )
+    local checkpointAccepted =
+        oldSession:_handleTouch(oldResult.session.candidate.partById[checkpointRecord.id], checkpointRecord, hit)
+    local staleCheckpointRejected = checkpointAccepted == false
+        and differentResult.session:checkpointOrder(players[1]) == nil
+    local beforeLethal = differentResult.session:acceptanceSnapshot().lethalActions
+    local killAccepted = oldSession:_handleTouch(oldResult.session.candidate.partById[killRecord.id], killRecord, hit)
+    local staleKillRejected = killAccepted == false
+        and differentResult.session:acceptanceSnapshot().lethalActions == beforeLethal
+    local finishAccepted =
+        oldSession:_handleTouch(oldResult.session.candidate.partById[finishRecord.id], finishRecord, hit)
+    local staleFinishRejected = finishAccepted == false and not differentResult.session:finished(players[1])
+
+    local restored = self:build("reference", "functional", 3)
+    local restoredReference = restored.root:GetAttribute("ManifestHash") == fixtures.reference.expectedHash
+        and G2eAcceptanceHarness.assertSingleActiveRoot() == restored.root
+    local receipt =
+        G2eAcceptanceHarness.emitProgressObservation(environment.repositoryCommit, fixtures.reference.expectedHash, {
+            sameHashCheckpointPreserved = sameHashCheckpointPreserved,
+            sameHashFinishPreserved = sameHashFinishPreserved,
+            differentHashCheckpointCleared = differentHashCheckpointCleared,
+            differentHashFinishCleared = differentHashFinishCleared,
+            staleCharacterPlacementRejected = staleCharacterPlacementRejected,
+            staleCheckpointRejected = staleCheckpointRejected,
+            staleKillRejected = staleKillRejected,
+            staleFinishRejected = staleFinishRejected,
+            restoredReference = restoredReference,
+        })
+    assert(receipt.status == "PASS", receipt.firstFailingField)
+    print("[G2 acceptance] progress and stale callback sequence PASS")
+    return receipt
+end
+
+local function ownershipCase(apiValue, scenario, owner, ambiguous)
+    local preservedRoot = apiValue.current.root
+    local preservedSession = apiValue.current.session
+    local originalName = preservedRoot.Name
+    if not ambiguous then
+        preservedRoot.Name = "_G2ePreservedRoot"
+    end
+    local adversarial = Instance.new("Model")
+    adversarial.Name = "GeneratedObby"
+    if owner ~= nil then
+        adversarial:SetAttribute("GeneratedBy", owner)
+        adversarial:SetAttribute("SchemaVersion", if owner == "AIObbyBuilder/0.3" then "0.3" else "0.2")
+    end
+    adversarial.Parent = workspace
+    local invoked, result, buildError = pcall(function()
+        return apiValue.builder:build(fixtures["replacement-b"].module, fixtures["replacement-b"].expectedHash)
+    end)
+    adversarial:Destroy()
+    preservedRoot.Name = originalName
+    local expectedCode = if ambiguous then "active-root-ambiguous" else "active-root-ownership"
+    local preserved = invoked
+        and result == nil
+        and buildError ~= nil
+        and buildError.code == expectedCode
+        and apiValue.builder:currentSession() == preservedSession
+        and preservedRoot.Parent == workspace
+        and G2eAcceptanceHarness.assertSingleActiveRoot() == preservedRoot
+    return table.freeze({
+        scenario = scenario,
+        status = if preserved then "PASS" else "FAIL",
+        expectedCode = expectedCode,
+        observedCode = if buildError ~= nil then boundedText(buildError.code, "none", 80) else "none",
+        transactionPreserved = preserved,
+    })
+end
+
+function api:runOwnershipRefusalSequence()
+    assert(self.current ~= nil and self.currentFixtureId == "reference", "reference fixture must be active")
+    local preservedRoot = self.current.root
+    local preservedSession = self.current.session
+    local cases = {
+        ownershipCase(self, "unowned-root", nil, false),
+        ownershipCase(self, "ambiguous-roots", "AIObbyBuilder/0.3", true),
+        ownershipCase(self, "other-version-root", "AIObbyBuilder/0.2", false),
+    }
+    local preserved = self.current.root == preservedRoot
+        and self.current.session == preservedSession
+        and G2eAcceptanceHarness.assertSingleActiveRoot() == preservedRoot
+    local receipt = G2eAcceptanceHarness.emitOwnershipObservation(
+        environment.repositoryCommit,
+        fixtures.reference.expectedHash,
+        cases,
+        preserved
+    )
+    assert(receipt.status == "PASS", receipt.firstFailingField)
+    print("[G2 acceptance] ownership refusal sequence PASS")
+    return receipt
+end
+
+function api:runStaticFixtureSequence()
+    assert(self.current ~= nil, "an active fixture is required before the static sequence")
+    local wedgeResult = self:build("wedge", "static", 1)
+    local wedgeReceipt = G2eAcceptanceHarness.emitPartInspection(
+        environment.repositoryCommit,
+        "wedge",
+        require(fixtures.wedge.module),
+        wedgeResult
+    )
+    assert(wedgeReceipt.status == "PASS", wedgeReceipt.firstFailingField)
+    local decorativeResult = self:build("decorative", "static", 2)
+    local decorativeReceipt = G2eAcceptanceHarness.emitPartInspection(
+        environment.repositoryCommit,
+        "decorative",
+        require(fixtures.decorative.module),
+        decorativeResult
+    )
+    assert(decorativeReceipt.status == "PASS", decorativeReceipt.firstFailingField)
+    local restored = self:build("reference", "static", 3)
+    assert(G2eAcceptanceHarness.assertSingleActiveRoot() == restored.root, "static sequence did not restore reference")
+    print("[G2 acceptance] static fixture sequence PASS")
+    return table.freeze({ wedge = wedgeReceipt, decorative = decorativeReceipt })
+end
+
+function api:observeZeroCheckpointPlayers()
+    assert(
+        self.current ~= nil and self.currentFixtureId == "minimum-zero-checkpoint",
+        "minimum-zero-checkpoint fixture must be active"
+    )
+    local receipt, placement = G2eAcceptanceHarness.emitZeroCheckpointObservation(
+        environment.repositoryCommit,
+        require(fixtures["minimum-zero-checkpoint"].module),
+        self.current.session
+    )
+    assert(receipt.status == "PASS", receipt.firstFailingField)
+    assert(placement.status == "PASS", placement.firstFailingField)
+    print("[G2 acceptance] minimum-zero-checkpoint players PASS")
+    return receipt
+end
+
 G2eAcceptanceHarness.bindControl(api)
-api:build("reference", "cold", 1)
+local precondition = G2eAcceptanceHarness.emitPrecondition(environment.repositoryCommit)
+assert(precondition.status == "PASS", precondition.firstFailingField)
 workspace:SetAttribute("G2eAcceptanceReady", true)
-print("[G2 acceptance] Reference ready; use ServerStorage.G2eControl from the server Command Bar")
+print("[G2 acceptance] Controls ready with zero active roots; use ServerStorage.G2eControl from the server Command Bar")
