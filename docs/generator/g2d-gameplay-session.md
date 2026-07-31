@@ -82,7 +82,8 @@ loops are bounded.
 
 G2e owns the required manual Roblox Studio smoke and two-client execution, environment and raw
 performance evidence, and any resulting runtime fixes. The
-[2026-07-31 Studio evidence](./g2e-studio-evidence-2026-07-31.md) records the focused reference
-hazard/gameplay/geometry subsection as `PASS`, but the missing mandatory sequences and records keep
-full G2e incomplete. G2d does not make SceneManifest `0.3` the default. A later separately reviewed
-cutover remains required; until then `0.2` is the rollback-safe active path.
+[2026-07-31 Studio evidence](./g2e-studio-evidence-2026-07-31.md) records the pre-cutover reference,
+`maximum-50`, zero-checkpoint, failure-boundary, and Phase 0 sequences as completed, but missing
+environment, raw measurement, Output, and functional observation fields keep pre-cutover G2e
+incomplete. G2d does not make SceneManifest `0.3` the default. A later separately reviewed cutover
+and its mandatory Studio rerun remain required; until then `0.2` is the rollback-safe active path.

@@ -3,8 +3,9 @@
 This is the required engine-dependent G2 acceptance protocol. It supplements Luau tests; it is not
 Studio automation and must not be reported as passed until a human has performed and recorded every
 applicable observation. The [2026-07-31 Studio evidence](./g2e-studio-evidence-2026-07-31.md)
-records the focused reference hazard/gameplay/geometry subsection as `PASS`; full G2e remains
-incomplete because the record does not cover every mandatory sequence and evidence field below.
+records the reference, `maximum-50`, zero-checkpoint, failure-boundary, and Phase 0 pre-cutover runs
+as completed. Pre-cutover G2e remains incomplete because mandatory environment, raw measurement,
+Output, and functional observation fields are still missing.
 
 ## Measurement environment
 
@@ -174,7 +175,8 @@ successful Luau test is not a substitute for execution.
 
 The [2026-07-31 Studio evidence](./g2e-studio-evidence-2026-07-31.md) identifies the implementation
 commit, fixture manifest hash, built artifact and its SHA-256, supplied Studio/OS environment, and
-the bounded static, gameplay, geometry, and visual observations separately. It supports the focused
-reference subsection only. Missing environment fields, raw cold/repeated measurements, the
-`maximum-50` and zero-checkpoint sequences, all four fresh-server failure-boundary sequences, the
-Phase 0 regression smoke, and the remaining functional and Output records keep full G2e incomplete.
+the machine-emitted, manual, and harness-limitation evidence separately. The required pre-cutover
+build, gameplay, failure-boundary, and Phase 0 sequences now have supplied completion evidence, but
+missing environment fields, complete fixed-schema cold/repeated measurement and Output records, and
+the remaining functional observations keep pre-cutover G2e incomplete. The required post-cutover
+rerun remains future work.

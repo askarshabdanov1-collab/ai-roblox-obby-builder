@@ -1,0 +1,13 @@
+Phase 0 regression smoke
+Date: 2026-07-31
+Studio: 0.732.0.7321040
+Players: 2
+
+Output:
+[Phase 0 smoke setup] Static engine checks passed; complete the documented two-player test.
+
+Manual observations:
+- Player 1 activated checkpoint, died, and respawned at checkpoint.
+- Player 2 did not activate checkpoint, died, and respawned at initial spawn.
+- Player states remained independent.
+- No Output errors were observed.
