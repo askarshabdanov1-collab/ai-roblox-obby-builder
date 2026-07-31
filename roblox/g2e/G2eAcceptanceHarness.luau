@@ -1,4 +1,5 @@
 local HttpService = game:GetService("HttpService")
+local CollectionService = game:GetService("CollectionService")
 local G2eObservationV03 = require("./G2eObservationV03")
 local G2eGameplayObservationV03 = require("./G2eGameplayObservationV03")
 
@@ -7,6 +8,7 @@ local G2eAcceptanceHarness = {}
 local MEASUREMENT_PREFIX = "[G2 runtime measurement] "
 local OBSERVATION_PREFIX = "[G2 acceptance observation] "
 local GAMEPLAY_OBSERVATION_PREFIX = "[G2 gameplay observation] "
+local HAZARD_TRACE_PREFIX = "[G2 hazard trace] "
 
 local function approximately(actual, expected)
     return math.abs(actual - expected) < 0.00001
@@ -231,14 +233,95 @@ function G2eAcceptanceHarness.formatTypedDiagnostic(code, field, message)
     return G2eObservationV03.formatTypedDiagnostic(code, field, message)
 end
 
-function G2eAcceptanceHarness.emitGameplayObservation(fixtureId, manifest, session, replacementCount)
+local function findObjectById(objects, objectId)
+    for _, object in ipairs(objects) do
+        if object.id == objectId then
+            return object
+        end
+    end
+    return nil
+end
+
+local function attributeRecord(part, name)
+    return table.freeze({ name = name, value = part:GetAttribute(name) })
+end
+
+function G2eAcceptanceHarness.emitHazardTrace(fixtureId, manifest, result, objectId)
+    assert(type(objectId) == "string" and #objectId <= 80, "hazard trace object ID is invalid")
+    local object = findObjectById(manifest.layers.gameplay.objects, objectId)
+    local record = findObjectById(result.session.candidate.plan.gameplayRecords, objectId)
+    local part = result.session.candidate.partById[objectId]
+    assert(object ~= nil and object.role == "kill", "hazard trace manifest object is invalid")
+    assert(record ~= nil and record.role == "kill", "hazard trace build-plan record is invalid")
+    assert(part ~= nil and part:IsA("BasePart"), "hazard trace Part is unavailable")
+    local tags = CollectionService:GetTags(part)
+    table.sort(tags)
+    local snapshot = result.session:acceptanceSnapshot()
+    local trace = table.freeze({
+        schemaVersion = "g2-hazard-trace-v1",
+        fixtureId = fixtureId,
+        manifestHash = manifest.manifestHash,
+        objectId = object.id,
+        sourceStageId = object.sourceReferences.sourceStageId,
+        sourceMechanicIntentId = object.sourceReferences.sourceMechanicIntentId,
+        sourceHazardId = object.sourceReferences.sourceHazardId,
+        manifestRole = object.role,
+        manifestBehaviorKind = object.behavior.kind,
+        manifestKillMode = object.behavior.killMode,
+        planRole = record.role,
+        planBehaviorKind = record.behavior.kind,
+        planKillMode = record.behavior.killMode,
+        partName = part.Name,
+        partClass = part.ClassName,
+        attributes = table.freeze({
+            attributeRecord(part, "ObjectId"),
+            attributeRecord(part, "Layer"),
+            attributeRecord(part, "Role"),
+            attributeRecord(part, "SceneId"),
+            attributeRecord(part, "ManifestHash"),
+            attributeRecord(part, "SchemaVersion"),
+        }),
+        tags = table.freeze(tags),
+        canTouch = part.CanTouch,
+        canCollide = part.CanCollide,
+        canQuery = part.CanQuery,
+        anchored = part.Anchored,
+        collisionGroup = part.CollisionGroup,
+        touchConnectionBound = result.session:touchConnectionBound(objectId),
+        hazardTouchCallbacks = snapshot.hazardTouchCallbacks,
+        validHazardCharacterTouches = snapshot.validHazardCharacterTouches,
+        humanoidsResolved = snapshot.humanoidsResolved,
+        lethalActions = snapshot.lethalActions,
+        respawnsObserved = snapshot.respawnsObserved,
+        checkpointRespawnsObserved = snapshot.checkpointRespawnsObserved,
+        spawnRespawnsObserved = snapshot.spawnRespawnsObserved,
+        lastHazardObjectId = snapshot.lastHazardObjectId,
+        lastTouchedPartName = snapshot.lastTouchedPartName,
+        lastTouchedPartClass = snapshot.lastTouchedPartClass,
+        lastCharacterResolved = snapshot.lastCharacterResolved,
+        lastHumanoidResolved = snapshot.lastHumanoidResolved,
+        lastLethalAction = snapshot.lastLethalAction,
+    })
+    print(HAZARD_TRACE_PREFIX .. HttpService:JSONEncode(trace))
+    return trace
+end
+
+function G2eAcceptanceHarness.emitGameplayObservation(fixtureId, manifest, session, replacementCount, staleEvidence)
     local snapshot = table.clone(session:acceptanceSnapshot())
     snapshot.replacementCount = replacementCount
+    local evidence = if type(staleEvidence) == "table" then staleEvidence else {}
+    snapshot.staleCallbackRejections += evidence.staleCallbackRejections or 0
+    snapshot.staleAcceptedActions += evidence.staleAcceptedActions or 0
     local observation = G2eGameplayObservationV03.build(fixtureId, manifest, snapshot)
     print(GAMEPLAY_OBSERVATION_PREFIX .. HttpService:JSONEncode(observation))
     if observation.status ~= "PASS" then
         warn(
-            "[G2 acceptance diagnostic] code=gameplay-evidence-incomplete field=observations message=manual checks remain"
+            "[G2 acceptance diagnostic] "
+                .. G2eObservationV03.formatTypedDiagnostic(
+                    observation.diagnosticCode,
+                    observation.diagnosticField,
+                    "manual checks remain"
+                )
         )
     end
     return observation
@@ -263,6 +346,12 @@ function G2eAcceptanceHarness.bindControl(api)
         end,
         ObserveGameplay = function()
             return api:observeGameplay()
+        end,
+        InspectHazard = function(objectId)
+            return api:inspectHazard(objectId)
+        end,
+        VerifyStaleHazardCallback = function()
+            return api:verifyStaleHazardCallback()
         end,
     }) do
         local bindable = Instance.new("BindableFunction")

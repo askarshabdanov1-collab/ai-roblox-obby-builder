@@ -97,8 +97,40 @@ return function(test, expect)
             { hazardConnections = 1 }
         )
         expect(value.status == "FAIL", "missing live gameplay evidence reported PASS")
+        expect(value.diagnosticCode == "gameplay-evidence-incomplete", "gameplay FAIL code changed")
+        expect(value.diagnosticField == "hazard-touch-callback-fired", "first missing gameplay field changed")
         expect(value.unauthorizedGeometryIntersections == 0, "edge adjacency was rejected")
         expect(value.coplanarVisibleSurfaces == 0, "edge adjacency was called coplanar")
+    end)
+
+    test("keeps bounded gameplay evidence in deterministic diagnostic order", function()
+        local value = G2eGameplayObservationV03.build(
+            "reference",
+            gameplayManifest({
+                geometryObject("A", { x = 0, y = 0, z = 0 }, { x = 2, y = 1, z = 2 }),
+                geometryObject("B", { x = 0, y = 1, z = 0 }, { x = 2, y = 2, z = 2 }),
+            }),
+            {}
+        )
+        local expectedIds = {
+            "hazard-callback-bound",
+            "hazard-touch-callback-fired",
+            "valid-character-touch-observed",
+            "humanoid-resolved",
+            "lethal-action-observed",
+            "expected-respawn-observed",
+            "checkpoint-respawn-preserved",
+            "initial-spawn-fallback-preserved",
+            "second-player-independent",
+            "stale-callback-rejected",
+            "zero-stale-callback-actions",
+            "zero-unauthorized-geometry-intersections",
+            "zero-coplanar-visible-surfaces",
+        }
+        expect(#value.observations == #expectedIds, "gameplay observation count changed")
+        for index, expectedId in ipairs(expectedIds) do
+            expect(value.observations[index].id == expectedId, "gameplay evidence order changed")
+        end
     end)
 
     test("passes bounded gameplay evidence only after two-player respawn and replacement", function()
@@ -110,12 +142,15 @@ return function(test, expect)
             }),
             {
                 hazardConnections = 1,
+                hazardTouchCallbacks = 2,
                 validCharacterTouches = 2,
+                validHazardCharacterTouches = 2,
                 humanoidsResolved = 2,
                 lethalActions = 2,
                 lethalPlayerCount = 2,
                 respawnsObserved = 2,
                 checkpointRespawnsObserved = 1,
+                spawnRespawnsObserved = 1,
                 staleCallbackRejections = 1,
                 staleAcceptedActions = 0,
                 replacementCount = 1,

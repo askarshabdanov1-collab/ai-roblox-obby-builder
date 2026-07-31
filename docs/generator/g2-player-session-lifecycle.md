@@ -13,6 +13,10 @@ checkpoint: (player.UserId, manifestHash) -> { checkpointObjectId, checkpointOrd
 finish:     (player.UserId, manifestHash) -> true
 ```
 
+The runtime accepts any non-zero finite integer returned by the server-owned `Player.UserId`
+adapter. Live identities are positive, while local multi-client Studio test identities may be
+negative. Zero, fractional, non-finite, and non-player-derived values fail closed.
+
 The runtime generation token is deliberately absent from these keys. It guards callbacks and scene
 Instances but does not change same-manifest semantic progress. Stored progress contains IDs and
 orders only—never a Part, connection, character, manifest table, or runtime-session reference.

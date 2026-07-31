@@ -1,6 +1,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ServerStorage = game:GetService("ServerStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
+local Players = game:GetService("Players")
 
 local BuilderV03 = require(ReplicatedStorage.ObbyRuntime.BuilderV03)
 local G2eAcceptanceHarness = require(ServerScriptService.G2eAcceptanceHarness)
@@ -10,6 +11,7 @@ local fixtures = table.freeze({
     reference = table.freeze({
         module = manifests.G2ReferenceManifestV03,
         expectedHash = "sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146",
+        hazardObjectId = "Stage04Hazard001",
     }),
     ["maximum-50"] = table.freeze({
         module = manifests.G2Maximum50ManifestV03,
@@ -48,6 +50,8 @@ local api = {
     fixtures = fixtures,
     measurements = {},
     replacementCount = 0,
+    staleCallbackRejections = 0,
+    staleAcceptedActions = 0,
 }
 
 local function boundedText(value, fallback, maximum)
@@ -69,6 +73,8 @@ end
 
 function api:build(fixtureId, runKind, runIndex, options)
     local replacing = self.current ~= nil
+    local previous = self.current
+    local previousFixtureId = self.currentFixtureId
     local fixture = fixtures[fixtureId]
     assert(fixture ~= nil, "unknown G2e fixture: " .. tostring(fixtureId))
     local manifest = require(fixture.module)
@@ -99,8 +105,64 @@ function api:build(fixtureId, runKind, runIndex, options)
     self.currentFixtureId = fixtureId
     if replacing then
         self.replacementCount += 1
+        self.previous = previous
+        self.previousFixtureId = previousFixtureId
     end
     return result
+end
+
+local function hazardRecord(result, configuredObjectId)
+    for _, record in ipairs(result.session.candidate.plan.gameplayRecords) do
+        if record.role == "kill" and (configuredObjectId == nil or record.id == configuredObjectId) then
+            return record
+        end
+    end
+    return nil
+end
+
+function api:inspectHazard(objectId)
+    assert(self.current ~= nil, "a G2e fixture must be active")
+    local fixture = fixtures[self.currentFixtureId]
+    assert(fixture ~= nil, "active G2e fixture identity changed")
+    local selectedObjectId = objectId or fixture.hazardObjectId
+    assert(selectedObjectId ~= nil, "active G2e fixture has no configured hazard trace")
+    return G2eAcceptanceHarness.emitHazardTrace(
+        self.currentFixtureId,
+        require(fixture.module),
+        self.current,
+        selectedObjectId
+    )
+end
+
+function api:verifyStaleHazardCallback()
+    assert(self.previous ~= nil and self.current ~= nil, "a successful G2e replacement is required")
+    local currentFixture = fixtures[self.currentFixtureId]
+    local configuredObjectId = currentFixture and currentFixture.hazardObjectId or nil
+    local record = hazardRecord(self.previous, configuredObjectId) or hazardRecord(self.previous, nil)
+    assert(record ~= nil, "previous G2e session has no hazard record")
+    local part = self.previous.session.candidate.partById[record.id]
+    assert(part ~= nil, "previous G2e hazard Part is unavailable")
+    local players = Players:GetPlayers()
+    local player = players[1]
+    local character = player and player.Character or nil
+    local hit = character
+        and (character:FindFirstChild("HumanoidRootPart") or character:FindFirstChildWhichIsA("BasePart"))
+    assert(hit ~= nil, "an active player character Part is required for stale-callback verification")
+    local before = self.previous.session:acceptanceSnapshot()
+    local accepted = self.previous.session:_handleTouch(part, record, hit)
+    local after = self.previous.session:acceptanceSnapshot()
+    local rejectionDelta = after.staleCallbackRejections - before.staleCallbackRejections
+    local lethalDelta = after.lethalActions - before.lethalActions
+    assert(accepted == false and rejectionDelta == 1 and lethalDelta == 0, "stale hazard callback was not rejected")
+    self.staleCallbackRejections += rejectionDelta
+    self.staleAcceptedActions += lethalDelta
+    print("[G2 acceptance] stale hazard callback rejection PASS", record.id)
+    return table.freeze({
+        status = "PASS",
+        objectId = record.id,
+        staleCallbackRejections = rejectionDelta,
+        staleAcceptedActions = lethalDelta,
+    })
 end
 
 function api:runReferenceReplacementSequence()
@@ -137,11 +199,16 @@ function api:observeGameplay()
     assert(self.current ~= nil, "a G2e fixture must be active")
     local fixture = fixtures[self.currentFixtureId]
     assert(fixture ~= nil, "active G2e fixture identity changed")
+    self:inspectHazard(fixture.hazardObjectId)
     return G2eAcceptanceHarness.emitGameplayObservation(
         self.currentFixtureId,
         require(fixture.module),
         self.current.session,
-        self.replacementCount
+        self.replacementCount,
+        {
+            staleCallbackRejections = self.staleCallbackRejections,
+            staleAcceptedActions = self.staleAcceptedActions,
+        }
     )
 end
 

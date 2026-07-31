@@ -49,23 +49,28 @@ function G2eGameplayObservationV03.build(fixtureId, manifest, snapshot)
     local geometry = G2eGameplayObservationV03.geometrySummary(manifest)
     local observations = {
         observation("hazard-callback-bound", (snapshot.hazardConnections or 0) > 0),
-        observation("valid-character-touch-observed", (snapshot.validCharacterTouches or 0) > 0),
+        observation("hazard-touch-callback-fired", (snapshot.hazardTouchCallbacks or 0) > 0),
+        observation("valid-character-touch-observed", (snapshot.validHazardCharacterTouches or 0) > 0),
         observation("humanoid-resolved", (snapshot.humanoidsResolved or 0) > 0),
         observation("lethal-action-observed", (snapshot.lethalActions or 0) > 0),
         observation("expected-respawn-observed", (snapshot.respawnsObserved or 0) > 0),
         observation("checkpoint-respawn-preserved", (snapshot.checkpointRespawnsObserved or 0) > 0),
+        observation("initial-spawn-fallback-preserved", (snapshot.spawnRespawnsObserved or 0) > 0),
         observation("second-player-independent", (snapshot.lethalPlayerCount or 0) > 1),
-        observation("zero-unauthorized-geometry-intersections", geometry.unauthorizedGeometryIntersections == 0),
-        observation("zero-coplanar-visible-surfaces", geometry.coplanarVisibleSurfaces == 0),
+        observation("stale-callback-rejected", (snapshot.staleCallbackRejections or 0) > 0),
         observation(
             "zero-stale-callback-actions",
             (snapshot.replacementCount or 0) > 0 and (snapshot.staleAcceptedActions or 0) == 0
         ),
+        observation("zero-unauthorized-geometry-intersections", geometry.unauthorizedGeometryIntersections == 0),
+        observation("zero-coplanar-visible-surfaces", geometry.coplanarVisibleSurfaces == 0),
     }
     local passed = true
+    local diagnosticField = nil
     for _, value in ipairs(observations) do
         if value.status ~= "PASS" then
             passed = false
+            diagnosticField = value.id
             break
         end
     end
@@ -74,15 +79,20 @@ function G2eGameplayObservationV03.build(fixtureId, manifest, snapshot)
         fixtureId = fixtureId,
         manifestHash = manifest.manifestHash,
         status = if passed then "PASS" else "FAIL",
+        diagnosticCode = if passed then nil else "gameplay-evidence-incomplete",
+        diagnosticField = diagnosticField,
         observations = table.freeze(observations),
         hazardConnections = snapshot.hazardConnections or 0,
         touchCallbacks = snapshot.touchCallbacks or 0,
+        hazardTouchCallbacks = snapshot.hazardTouchCallbacks or 0,
         validCharacterTouches = snapshot.validCharacterTouches or 0,
+        validHazardCharacterTouches = snapshot.validHazardCharacterTouches or 0,
         humanoidsResolved = snapshot.humanoidsResolved or 0,
         lethalActions = snapshot.lethalActions or 0,
         lethalPlayerCount = snapshot.lethalPlayerCount or 0,
         respawnsObserved = snapshot.respawnsObserved or 0,
         checkpointRespawnsObserved = snapshot.checkpointRespawnsObserved or 0,
+        spawnRespawnsObserved = snapshot.spawnRespawnsObserved or 0,
         staleCallbackRejections = snapshot.staleCallbackRejections or 0,
         staleAcceptedActions = snapshot.staleAcceptedActions or 0,
         replacementCount = snapshot.replacementCount or 0,
@@ -90,6 +100,12 @@ function G2eGameplayObservationV03.build(fixtureId, manifest, snapshot)
         unauthorizedGeometryIntersections = geometry.unauthorizedGeometryIntersections,
         coplanarVisibleSurfaces = geometry.coplanarVisibleSurfaces,
         epsilonStuds = geometry.epsilonStuds,
+        lastHazardObjectId = snapshot.lastHazardObjectId,
+        lastTouchedPartName = snapshot.lastTouchedPartName,
+        lastTouchedPartClass = snapshot.lastTouchedPartClass,
+        lastCharacterResolved = snapshot.lastCharacterResolved == true,
+        lastHumanoidResolved = snapshot.lastHumanoidResolved == true,
+        lastLethalAction = snapshot.lastLethalAction == true,
     })
 end
 

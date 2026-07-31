@@ -60,6 +60,8 @@ return function(test, expect)
         expect(prepared, prepareError and prepareError.message or "session preparation failed")
         expect(session:connectionCount() == 9, "unexpected gameplay connection count")
         expect(harness.tracker.activeConnections == 9, "prepared connections were not retained")
+        expect(session:touchConnectionBound("Stage03Hazard001"), "reference hazard callback was not retained")
+        expect(not session:touchConnectionBound("Stage03Route001"), "plain platform received a touch callback")
         local activated, activationError = session:activate()
         expect(activated, activationError and activationError.message or "session activation failed")
         expect(session:status() == "active", "session did not become active")
@@ -273,6 +275,73 @@ return function(test, expect)
         local nextCharacter = harness:newCharacter(playerA)
         harness:touch(candidate.partById[hazardId], harness:hit(playerA, nextCharacter))
         expect(harness.tracker.kills == 3, "new character inherited old hazard debounce")
+    end)
+
+    test("accepts negative Studio test-player UserIds for isolated hazard death and respawn", function()
+        local harness, admitted, candidate, _, session = sessionHarness("g2d-generation-v1:1")
+        activate(session)
+        local hazardId = nil
+        for _, object in ipairs(admitted.manifest.layers.gameplay.objects) do
+            if object.role == "kill" then
+                hazardId = object.id
+                break
+            end
+        end
+
+        local playerA = harness:newPlayer(-1)
+        local playerB = harness:newPlayer(-2)
+        local characterA = harness:newCharacter(playerA)
+        local characterB = harness:newCharacter(playerB)
+        local missingHumanoidHit = harness:hit(playerA, characterA)
+        missingHumanoidHit.humanoid = nil
+        harness:touch(candidate.partById[hazardId], missingHumanoidHit)
+        expect(harness.tracker.kills == 0, "missing Humanoid reached the lethal action")
+
+        harness:touch(candidate.partById.Checkpoint001, harness:hit(playerA, characterA))
+        local bodyPartHit = harness:hit(playerA, characterA)
+        bodyPartHit.partName = "LeftFoot"
+        bodyPartHit.partClass = "MeshPart"
+        local accessoryHit = harness:hit(playerA, characterA)
+        accessoryHit.partName = "Handle"
+        accessoryHit.partClass = "Part"
+        harness:touch(candidate.partById[hazardId], bodyPartHit)
+        harness:touch(candidate.partById[hazardId], accessoryHit)
+        expect(harness.tracker.kills == 1, "body and accessory touches duplicated the Studio player kill")
+
+        local playerBHit = harness:hit(playerB, characterB)
+        playerBHit.partName = "RightFoot"
+        playerBHit.partClass = "MeshPart"
+        harness:touch(candidate.partById[hazardId], playerBHit)
+        expect(harness.tracker.kills == 2, "negative Studio player identities were not independent")
+
+        local checkpointRespawn = harness:newCharacter(playerA)
+        local checkpointPlaced, checkpointError = session:placeCharacter(playerA, checkpointRespawn)
+        expect(checkpointPlaced, checkpointError and checkpointError.message or "Studio checkpoint respawn failed")
+        local checkpoint = admitted.indexes.gameplayById.Checkpoint001
+        expect(
+            checkpointRespawn.rootPart.CFrame.position.x == checkpoint.transform.position.x
+                and checkpointRespawn.rootPart.CFrame.position.z == checkpoint.transform.position.z,
+            "Studio checkpoint respawn selected the wrong object"
+        )
+
+        local spawnRespawn = harness:newCharacter(playerB)
+        local spawnPlaced, spawnError = session:placeCharacter(playerB, spawnRespawn)
+        expect(spawnPlaced, spawnError and spawnError.message or "Studio spawn fallback failed")
+        local spawn = admitted.indexes.gameplayById[admitted.manifest.navigation.spawnObjectId]
+        expect(
+            spawnRespawn.rootPart.CFrame.position.x == spawn.transform.position.x
+                and spawnRespawn.rootPart.CFrame.position.z == spawn.transform.position.z,
+            "Studio initial-spawn fallback selected the wrong object"
+        )
+
+        local snapshot = session:acceptanceSnapshot()
+        expect(snapshot.lethalPlayerCount == 2, "Studio lethal evidence merged two players")
+        expect(snapshot.checkpointRespawnsObserved == 1, "Studio checkpoint respawn evidence was lost")
+        expect(snapshot.spawnRespawnsObserved == 1, "Studio spawn fallback evidence was lost")
+        expect(snapshot.hazardTouchCallbacks == 4, "Studio hazard Touched callbacks were not counted")
+        expect(snapshot.lastHazardObjectId == hazardId, "Studio hazard trace lost the object identity")
+        expect(snapshot.lastTouchedPartName == "RightFoot", "Studio hazard trace lost the touched Part name")
+        expect(snapshot.lastTouchedPartClass == "MeshPart", "Studio hazard trace lost the touched Part class")
     end)
 
     test("kills through Roblox-shaped identity adapters without table-only assumptions", function()

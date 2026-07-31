@@ -209,7 +209,30 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
     expect(session).not.toContain('type(humanoid) ~= "table"');
     expect(session).toContain("self.runtime.playerUserId");
     expect(session).toContain("self.runtime.isHumanoid");
+    expect(session).toContain("value ~= 0");
+    expect(session).not.toContain("key <= 0");
     expect(builder).toContain('typeof(player) ~= "Instance"');
+  });
+
+  it("keeps the concrete G2e hazard trace and stale-callback check on the control surface", async () => {
+    const session = await readFile(
+      "roblox/src/ReplicatedStorage/ObbyRuntime/RuntimeSessionV03.luau",
+      "utf8",
+    );
+    const harness = await readFile(
+      "roblox/g2e/G2eAcceptanceHarness.luau",
+      "utf8",
+    );
+    const bootstrap = await readFile(
+      "roblox/g2e/G2eAcceptanceBootstrap.server.luau",
+      "utf8",
+    );
+    expect(session).toContain("touchConnectionBound");
+    expect(session).toContain("hazardTouchCallbacks");
+    expect(harness).toContain("emitHazardTrace");
+    expect(bootstrap).toContain('hazardObjectId = "Stage04Hazard001"');
+    expect(harness).toContain("VerifyStaleHazardCallback");
+    expect(harness).toContain("InspectHazard");
   });
 
   it("keeps G2d opt-in and excludes later-phase integrations", async () => {

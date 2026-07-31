@@ -67,12 +67,50 @@ Record pass/fail and Output errors for:
 Touch and character observations are empirical evidence for this environment. They are not proof of
 universal Roblox physics feasibility or scheduling.
 
+### Focused reference hazard check
+
+The concrete visible reference hazard for G2e is `Stage04Hazard001` in source stage `stage-04`
+(`layout-stage-04`), produced from `mechanic-intent-04` / mechanic `hazard-avoidance`. Its manifest
+role is `kill`, its behavior is `kind: "kill"` plus `killMode: "touch"`, and its constructed Part
+must remain anchored, non-colliding, touch-enabled, query-enabled, and in the default collision
+group.
+
+Run the following from the server Command Bar after the initial `Reference ready` message:
+
+```lua
+local control = game:GetService("ServerStorage").G2eControl
+control.RunReferenceReplacementSequence:Invoke()
+control.VerifyStaleHazardCallback:Invoke()
+control.InspectHazard:Invoke("Stage04Hazard001")
+```
+
+The replacement sequence ends on a fresh reference scene. Player A must then touch
+`Checkpoint001`, touch `Stage04Hazard001`, die once, and respawn at that checkpoint. Player B must
+touch the same hazard without a checkpoint, die independently, and respawn at the initial Spawn.
+Accessory and multiple body-Part contacts from one character must not create a second lethal
+action. Local Studio test players may have negative integer `UserId` values; those are valid
+server-owned test identities, while zero remains invalid.
+
+Finally run:
+
+```lua
+game:GetService("ServerStorage").G2eControl.ObserveGameplay:Invoke()
+```
+
+`InspectHazard` and `ObserveGameplay` emit bounded `[G2 hazard trace]` and
+`[G2 gameplay observation]` records. The trace includes manifest/build-plan metadata, Part name and
+class, fixed attributes, sorted tags, touch/collision/query/anchored properties, collision group,
+exact callback binding, touched Part name/class, character and Humanoid resolution, lethal action,
+and spawn/checkpoint respawn counters. Missing evidence produces
+`code=gameplay-evidence-incomplete` with the first missing observation ID as its field. A static
+`Reference ready` line or hazard count cannot satisfy this check.
+
 After completing the reference-fixture gameplay actions, invoke
 `game:GetService("ServerStorage").G2eControl.ObserveGameplay:Invoke()` from the server Command Bar.
 The bounded `[G2 gameplay observation]` record remains `FAIL` until it has observed a bound hazard,
 a valid character touch, Humanoid resolution, a lethal action, an expected respawn, a preserved
-checkpoint respawn, two-player independence, and a completed replacement with zero stale callback
-actions. It also requires zero
+checkpoint respawn, initial-spawn fallback, two-player independence, an explicitly rejected stale
+hazard callback, and a completed replacement with zero stale callback actions. It also requires zero
 unauthorized gameplay intersections and zero coplanar visible surfaces. This record does not verify
 camera-dependent flicker: move the camera around every visible route and hazard surface and record
 that human observation separately.
