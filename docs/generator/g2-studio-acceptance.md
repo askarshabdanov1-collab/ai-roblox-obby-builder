@@ -2,8 +2,9 @@
 
 This is the required engine-dependent G2 acceptance protocol. It supplements Luau tests; it is not
 Studio automation and must not be reported as passed until a human has performed and recorded every
-applicable observation. G2a defines the procedure but does not execute it because no `0.3` runtime
-construction exists.
+applicable observation. The [2026-07-31 Studio evidence](./g2e-studio-evidence-2026-07-31.md)
+records the focused reference hazard/gameplay/geometry subsection as `PASS`; full G2e remains
+incomplete because the record does not cover every mandatory sequence and evidence field below.
 
 ## Measurement environment
 
@@ -170,3 +171,10 @@ Attach the environment record, all measurement lines, two-player observation she
 Output, and exact pass/fail checklist to the relevant PR. Manual Studio execution is mandatory before
 G2 runtime acceptance and must be repeated after the final default cutover. A procedure document or
 successful Luau test is not a substitute for execution.
+
+The [2026-07-31 Studio evidence](./g2e-studio-evidence-2026-07-31.md) identifies the implementation
+commit, fixture manifest hash, built artifact and its SHA-256, supplied Studio/OS environment, and
+the bounded static, gameplay, geometry, and visual observations separately. It supports the focused
+reference subsection only. Missing environment fields, raw cold/repeated measurements, the
+`maximum-50` and zero-checkpoint sequences, all four fresh-server failure-boundary sequences, the
+Phase 0 regression smoke, and the remaining functional and Output records keep full G2e incomplete.

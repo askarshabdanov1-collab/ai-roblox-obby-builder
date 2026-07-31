@@ -81,6 +81,8 @@ objects and therefore never exceed the admitted gameplay-object count. All waits
 loops are bounded.
 
 G2e owns the required manual Roblox Studio smoke and two-client execution, environment and raw
-performance evidence, and any resulting runtime fixes. G2d does not execute that manual gate and
-does not make SceneManifest `0.3` the default. A later separately reviewed cutover remains required;
-until then `0.2` is the rollback-safe active path.
+performance evidence, and any resulting runtime fixes. The
+[2026-07-31 Studio evidence](./g2e-studio-evidence-2026-07-31.md) records the focused reference
+hazard/gameplay/geometry subsection as `PASS`, but the missing mandatory sequences and records keep
+full G2e incomplete. G2d does not make SceneManifest `0.3` the default. A later separately reviewed
+cutover remains required; until then `0.2` is the rollback-safe active path.
