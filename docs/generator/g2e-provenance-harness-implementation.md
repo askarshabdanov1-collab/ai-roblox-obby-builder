@@ -8,6 +8,8 @@ Provenance implementation commit: `2046121c5e5505397601ac7c6630a9fea9f0831b`
 
 Bounded harness commit: `70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`
 
+Placement-observer repair commit: `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`
+
 The documentation commit is the commit containing this file and is intentionally obtained from Git
 history rather than self-referenced here.
 
@@ -73,21 +75,38 @@ The official run indices are cold `1`, repeated `1..5`, and replacement `1,2`. F
 static follow-up builds have their own `functional` and `static` labels and cannot be confused with
 official cold/repeated evidence.
 
+### Session 1 placement-observer repair
+
+The first provenance-fixed Session 1 attempt proved the reference sequence and stale-hazard
+control, then failed `ObservePlayerPlacement("initial")`. The Command Bar invoked the observer in
+the same scheduler turn as eight synchronous builds. `BuilderV03` correctly uses `task.defer` for
+current-player placement, so the first observation ran before the final placement callback. Later
+observations sampled live characters after both had been assigned the same spawn CFrame and Roblox
+physics had separated them. Exact comparison of those later live CFrames was not a valid measure of
+the runtime assignment.
+
+The repair is acceptance-only. Each built session gets a bounded wrapper around its existing
+`placeCharacter` method. A successful call captures the CFrame and checkpoint order immediately
+after the production method returns; failed or stale calls do not update the capture. The observer
+waits at most 120 scheduler resumes for both players, emits
+`g2e-placement-observation-v2` with `observationBasis=runtime-placement-assignment`, and retains the
+`0.00001` tolerance. `roblox/src` and gameplay behavior are unchanged.
+
 ## Rebuilt artifact identity
 
 The reviewed harness commit was built from a clean working tree with:
 
 ```powershell
-$env:G2E_REPOSITORY_COMMIT = "70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c"
+$env:G2E_REPOSITORY_COMMIT = "cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b"
 npm run roblox:g2e:build
 ```
 
 | Field                      | Value                                                              |
 | -------------------------- | ------------------------------------------------------------------ |
 | Artifact                   | `build/G2eStudioAcceptance.rbxlx`                                  |
-| Size                       | `2,802,929` bytes                                                  |
-| SHA-256                    | `37C53E0FA4E9B2B3FD7444CCFDB5AD12025028B8ED6CEAC7E4C077C87EFC275F` |
-| Embedded repository commit | `70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`                         |
+| Size                       | `2,806,612` bytes                                                  |
+| SHA-256                    | `C74BDBAAC5EE31F736CEF0A2A4F0FD0F95767A4276B0CC8514F6BFC93C52A5F0` |
+| Embedded repository commit | `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`                         |
 | Provenance schema          | `g2e-build-provenance-v1`                                          |
 | Rojo project               | `roblox/g2e-smoke.project.json`                                    |
 | Working tree before build  | Clean                                                              |

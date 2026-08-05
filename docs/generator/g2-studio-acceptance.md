@@ -91,11 +91,22 @@ Run the following from the server Command Bar after the controls-ready message:
 
 ```lua
 local control = game:GetService("ServerStorage").G2eControl
-control.RunReferenceColdAndReplacementSequence:Invoke()
-control.VerifyStaleHazardCallback:Invoke()
-control.ObservePlayerPlacement:Invoke("initial")
-control.InspectHazard:Invoke("Stage04Hazard001")
+local result = control.RunReferenceColdAndReplacementSequence:Invoke()
+assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
+result = control.VerifyStaleHazardCallback:Invoke()
+assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
+result = control.ObservePlayerPlacement:Invoke("initial")
+assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
+result = control.InspectHazard:Invoke("Stage04Hazard001")
+assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
 ```
+
+The placement observer emits `g2e-placement-observation-v2`. It waits for the active session's
+deferred placement callbacks and records each HumanoidRootPart CFrame immediately after the real
+runtime placement call succeeds. Expected-vs-observed comparison retains the exact `0.00001`
+tolerance. A later live CFrame is not valid exact-placement evidence because character activation,
+physics settling, player input, and two-player separation can move it after assignment. Missing or
+incorrect runtime assignment still fails closed.
 
 The replacement sequence ends on a fresh reference scene. Player A must then touch
 `Checkpoint001`, touch `Stage04Hazard001`, die once, and respawn at that checkpoint. Player B must

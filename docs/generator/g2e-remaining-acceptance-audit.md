@@ -11,7 +11,7 @@ fixtures, manifests, generated scene data, or the current opt-in status of Scene
 Luau tests are cited as reusable implementation coverage, never as substitutes for required Studio
 execution.
 
-## 2026-08-01 implementation update
+## 2026-08-01 implementation and 2026-08-05 placement update
 
 The category matrix below is retained as the pre-implementation audit snapshot from commit
 `25868cd60e33648f963f3cec60aa2ef348810c87`. Its `REQUIRES_ACCEPTANCE_HARNESS_CHANGE` and
@@ -19,14 +19,23 @@ The category matrix below is retained as the pre-implementation audit snapshot f
 that those implementation blocks remain open.
 
 Provenance commit `2046121c5e5505397601ac7c6630a9fea9f0831b` and bounded-harness commit
-`70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c` implement all H-01 through H-06 groups without changing
-`roblox/src`. A clean reviewed-source build produced local artifact SHA-256
-`37C53E0FA4E9B2B3FD7444CCFDB5AD12025028B8ED6CEAC7E4C077C87EFC275F`, size `2,802,929` bytes,
-with embedded `repositoryCommit=70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`. The stale literal is absent
-from the active artifact.
+`70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c` implemented all H-01 through H-06 groups without
+changing `roblox/src`. Artifact
+`37C53E0FA4E9B2B3FD7444CCFDB5AD12025028B8ED6CEAC7E4C077C87EFC275F` is now historical: its first
+Session 1 attempt exposed an acceptance-observer timing defect after the reference and stale-hazard
+controls passed. Later repeated cold commands in that failed server are historical operator errors,
+not the primary defect and not reusable evidence.
 
-The current recommendation is therefore `READY_FOR_FINAL_EVIDENCE_COLLECTION`. Exactly seven
-fresh Studio sessions remain; none was performed by this implementation task. The historical
+Placement repair `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b` captures exact CFrames at successful runtime
+assignment rather than sampling live characters after scheduler delay or physics separation. It
+does not change production runtime behavior or the `0.00001` tolerance. The replacement artifact is
+SHA-256 `C74BDBAAC5EE31F736CEF0A2A4F0FD0F95767A4276B0CC8514F6BFC93C52A5F0`, size `2,806,612`
+bytes, with embedded `repositoryCommit=cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`. The stale literal is
+absent from the active artifact.
+
+The current recommendation remains `READY_FOR_FINAL_EVIDENCE_COLLECTION`. Session 1 must restart
+from a fresh server with the replacement artifact, so exactly seven fresh Studio sessions remain.
+No failed or repeated line from the superseded attempt completes a requirement. The historical
 classification table and historical Output remain unchanged.
 
 The audit inspected the committed Studio protocols and evidence; Phase 0 smoke procedure and

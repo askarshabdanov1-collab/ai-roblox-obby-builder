@@ -6,18 +6,25 @@ This sheet contains exactly seven required fresh-server sessions. It does not re
 execution. Historical 2026-07-31 runs remain preserved, but their stale machine provenance cannot
 close commit-bound acceptance for this artifact.
 
+The first Session 1 attempt against superseded artifact
+`37C53E0FA4E9B2B3FD7444CCFDB5AD12025028B8ED6CEAC7E4C077C87EFC275F` failed in the placement
+observer. Its complete Output, including later accidental repeated invocations, is historical
+failed-session evidence. It does not complete any checkbox and must not be reinterpreted as a cold
+sequence defect. Session 1 must restart in a fresh server with the fixed artifact below.
+
 ## Fixed artifact identity
 
-| Field                         | Required value                                                     |
-| ----------------------------- | ------------------------------------------------------------------ |
-| Artifact path                 | `D:\ai-roblox-obby-builder\build\G2eStudioAcceptance.rbxlx`        |
-| Artifact SHA-256              | `37C53E0FA4E9B2B3FD7444CCFDB5AD12025028B8ED6CEAC7E4C077C87EFC275F` |
-| Embedded `repositoryCommit`   | `70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`                         |
-| Runtime implementation commit | `1379849686525d88c71245626e0360a00f1d48a9`                         |
-| Provenance implementation     | `2046121c5e5505397601ac7c6630a9fea9f0831b`                         |
-| Harness implementation        | `70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`                         |
-| Measurement schema            | `g2-studio-measurement-v2`                                         |
-| Control-result schema         | `g2e-control-result-v1`                                            |
+| Field                         | Required value                                                                           |
+| ----------------------------- | ---------------------------------------------------------------------------------------- |
+| Artifact path                 | `C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder\build\G2eStudioAcceptance.rbxlx` |
+| Artifact SHA-256              | `C74BDBAAC5EE31F736CEF0A2A4F0FD0F95767A4276B0CC8514F6BFC93C52A5F0`                       |
+| Embedded `repositoryCommit`   | `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`                                               |
+| Runtime implementation commit | `1379849686525d88c71245626e0360a00f1d48a9`                                               |
+| Provenance implementation     | `2046121c5e5505397601ac7c6630a9fea9f0831b`                                               |
+| Harness implementation        | `70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`                                               |
+| Placement-observer repair     | `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`                                               |
+| Measurement schema            | `g2-studio-measurement-v2`                                                               |
+| Control-result schema         | `g2e-control-result-v1`                                                                  |
 
 Before Session 1, record the environment fields required by `g2-studio-acceptance.md` and verify
 the artifact hash with `Get-FileHash`. This environment capture is not an eighth Studio session.
@@ -28,20 +35,20 @@ missing result, or `status="FAIL"` fails the session.
 
 Capture every complete line with these prefixes:
 
-| Prefix                              | Schema and fixed identity                                                                                                    |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `[G2 precondition] `                | `g2e-precondition-v1`; commit, status, active/expected root counts, failure field                                            |
-| `[G2 runtime measurement] `         | `g2-studio-measurement-v2`; commit, fixture/hash, run kind/index, timing, counts, connections, heap, warnings/errors/orphans |
-| `[G2 acceptance observation] `      | `g2-acceptance-observation-v1`; fixture/hash, bounded counts/evidence/status                                                 |
-| `[G2 control result] `              | `g2e-control-result-v1`; status, command, fixture/run identity, count, typed diagnostic                                      |
-| `[G2 hazard trace] `                | `g2-hazard-trace-v1`; Stage04 manifest/plan/Part/callback/respawn trace                                                      |
-| `[G2 gameplay observation] `        | bounded gameplay status and ordered observation array                                                                        |
-| `[G2 placement observation] `       | `g2e-placement-observation-v1`; phase, tolerance, sorted player slots, expected/observed CFrames                             |
-| `[G2 finish observation] `          | `g2e-finish-observation-v1`; phase and isolated two-player finish state                                                      |
-| `[G2 progress observation] `        | `g2e-progress-stale-observation-v1`; preservation/reset and four stale no-op fields                                          |
-| `[G2 ownership observation] `       | `g2e-ownership-refusal-v1`; sorted refusal cases and transaction preservation                                                |
-| `[G2 part inspection] `             | `g2e-part-inspection-v1`; deterministic Parts/helper properties and safe-route isolation                                     |
-| `[G2 zero-checkpoint observation] ` | `g2e-zero-checkpoint-observation-v1`; two-player state/attribute/respawn fields                                              |
+| Prefix                              | Schema and fixed identity                                                                                                     |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `[G2 precondition] `                | `g2e-precondition-v1`; commit, status, active/expected root counts, failure field                                             |
+| `[G2 runtime measurement] `         | `g2-studio-measurement-v2`; commit, fixture/hash, run kind/index, timing, counts, connections, heap, warnings/errors/orphans  |
+| `[G2 acceptance observation] `      | `g2-acceptance-observation-v1`; fixture/hash, bounded counts/evidence/status                                                  |
+| `[G2 control result] `              | `g2e-control-result-v1`; status, command, fixture/run identity, count, typed diagnostic                                       |
+| `[G2 hazard trace] `                | `g2-hazard-trace-v1`; Stage04 manifest/plan/Part/callback/respawn trace                                                       |
+| `[G2 gameplay observation] `        | bounded gameplay status and ordered observation array                                                                         |
+| `[G2 placement observation] `       | `g2e-placement-observation-v2`; runtime-assignment basis, bounded wait, unchanged tolerance, sorted expected/observed CFrames |
+| `[G2 finish observation] `          | `g2e-finish-observation-v1`; phase and isolated two-player finish state                                                       |
+| `[G2 progress observation] `        | `g2e-progress-stale-observation-v1`; preservation/reset and four stale no-op fields                                           |
+| `[G2 ownership observation] `       | `g2e-ownership-refusal-v1`; sorted refusal cases and transaction preservation                                                 |
+| `[G2 part inspection] `             | `g2e-part-inspection-v1`; deterministic Parts/helper properties and safe-route isolation                                      |
+| `[G2 zero-checkpoint observation] ` | `g2e-zero-checkpoint-observation-v1`; two-player state/attribute/respawn fields                                               |
 
 Complete server Output and every active client Output must be preserved verbatim. Extracted JSON
 records do not replace complete Output.
@@ -60,10 +67,19 @@ records do not replace complete Output.
 
   ```lua
   local control = game:GetService("ServerStorage").G2eControl
-  control.RunReferenceColdAndReplacementSequence:Invoke()
-  control.VerifyStaleHazardCallback:Invoke()
-  control.ObservePlayerPlacement:Invoke("initial")
+  local result = control.RunReferenceColdAndReplacementSequence:Invoke()
+  assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
+  result = control.VerifyStaleHazardCallback:Invoke()
+  assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
+  result = control.ObservePlayerPlacement:Invoke("initial")
+  assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
   ```
+
+  `ObservePlayerPlacement("initial")` waits a maximum of 120 scheduler resumes for the two runtime
+  placement callbacks. It compares the CFrames captured immediately when the final active
+  `RuntimeSessionV03:placeCharacter` call succeeds. It does not compare later live CFrames after
+  physics settling, player movement, or two-player spawn separation. The tolerance remains
+  `0.00001`; a missing callback or a wrong assigned transform is `FAIL`.
 
 - **Manual actions:**
   1. Confirm the precondition has zero active roots and the reference sequence records cold `1`,
@@ -75,24 +91,32 @@ records do not replace complete Output.
 - **Post-respawn commands:**
 
   ```lua
-  control.ObservePlayerPlacement:Invoke("respawn")
-  control.InspectHazard:Invoke("Stage04Hazard001")
-  control.ObserveGameplay:Invoke()
+  local result = control.ObservePlayerPlacement:Invoke("respawn")
+  assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
+  result = control.InspectHazard:Invoke("Stage04Hazard001")
+  assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
+  result = control.ObserveGameplay:Invoke()
+  assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
   ```
 
 - **Finish actions and commands:** Player A touches `Finish` repeatedly; Player B remains unfinished.
 
   ```lua
-  control.ObserveFinishIsolation:Invoke("player-a-only")
+  local result = control.ObserveFinishIsolation:Invoke("player-a-only")
+  assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
   ```
 
   Then Player B touches `Finish` once.
 
   ```lua
-  control.ObserveFinishIsolation:Invoke("both-finished")
-  control.RunProgressAndStaleCallbackSequence:Invoke()
-  control.RunOwnershipRefusalSequence:Invoke()
-  control.RunStaticFixtureSequence:Invoke()
+  local result = control.ObserveFinishIsolation:Invoke("both-finished")
+  assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
+  result = control.RunProgressAndStaleCallbackSequence:Invoke()
+  assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
+  result = control.RunOwnershipRefusalSequence:Invoke()
+  assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
+  result = control.RunStaticFixtureSequence:Invoke()
+  assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
   ```
 
 - **Required machine Output:** all prefixes listed above except zero-checkpoint; final lines for the
@@ -103,6 +127,9 @@ records do not replace complete Output.
   all refusal cases preserve the scene; wedge is a `WedgePart`; decoration and helper are isolated.
 - **FAIL:** any missing line, non-PASS receipt, wrong index/hazard/placement, cyclic-return error,
   scene mutation, incomplete cleanup, or unexplained server/client error.
+- **Restart rule:** Any failure invalidates Session 1. Stop immediately; do not invoke the cold
+  sequence again in that server. Diagnose the failure and restart the entire session in a fresh
+  server with the same reviewed artifact.
 - **Combination rule:** The bounded functional/static/refusal commands above belong to this session.
   Combining it with a failure-boundary session invalidates the boundary evidence.
 
