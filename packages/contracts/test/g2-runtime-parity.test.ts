@@ -235,22 +235,26 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
     expect(harness).toContain("InspectHazard");
   });
 
-  it("keeps G2d opt-in and excludes later-phase integrations", async () => {
+  it("selects the accepted G2 runtime by default and excludes later-phase integrations", async () => {
     const runtimeDirectory = "roblox/src/ReplicatedStorage/ObbyRuntime";
     const bootstrap = await readFile(
       "roblox/src/ServerScriptService/ObbyBootstrap.server.luau",
       "utf8",
     );
-    expect(bootstrap).not.toContain("BuilderV03");
+    expect(bootstrap).toContain('runtimeVersion == "0.2"');
+    expect(bootstrap).toContain('runtimeVersion == "0.3"');
+    expect(bootstrap).toContain("ObbyRuntime.Builder)");
+    expect(bootstrap).toContain("ObbyRuntime.BuilderV03)");
     expect(bootstrap).not.toContain("RuntimeSessionV03");
-    expect(bootstrap).not.toContain("G2ReferenceManifestV03");
+    expect(bootstrap).toContain("G2ReferenceManifestV03");
 
     const defaultProject = await readFile(
       "roblox/default.project.json",
       "utf8",
     );
+    expect(defaultProject).toContain('"Value": "0.3"');
     expect(defaultProject).toContain("VerticalSliceManifest");
-    expect(defaultProject).not.toContain("G2ReferenceManifestV03");
+    expect(defaultProject).toContain("G2ReferenceManifestV03");
 
     const runtimeModules = await readdir(runtimeDirectory);
     expect(runtimeModules).toContain("RuntimeSessionV03.luau");
@@ -278,7 +282,7 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
     }
   });
 
-  it("isolates the G2e Studio acceptance project from the default 0.2 path", async () => {
+  it("keeps the G2e Studio acceptance harness isolated after the default 0.3 cutover", async () => {
     const packageJson = JSON.parse(await readFile("package.json", "utf8")) as {
       scripts?: Record<string, string>;
     };
@@ -313,7 +317,9 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
       "utf8",
     );
     expect(defaultProject).not.toContain("G2eAcceptance");
-    expect(defaultProject).not.toContain("G2ReferenceManifestV03");
-    expect(defaultBootstrap).not.toContain("BuilderV03");
+    expect(defaultProject).not.toContain("G2Maximum50ManifestV03");
+    expect(defaultProject).not.toContain("G2ZeroCheckpointManifestV03");
+    expect(defaultBootstrap).toContain("BuilderV03");
+    expect(defaultBootstrap).not.toContain("G2eAcceptanceHarness");
   });
 });
