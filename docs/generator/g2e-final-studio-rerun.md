@@ -91,6 +91,7 @@ records do not replace complete Output.
 - **Post-respawn commands:**
 
   ```lua
+  local control = game:GetService("ServerStorage").G2eControl
   local result = control.ObservePlayerPlacement:Invoke("respawn")
   assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
   result = control.InspectHazard:Invoke("Stage04Hazard001")
@@ -102,6 +103,7 @@ records do not replace complete Output.
 - **Finish actions and commands:** Player A touches `Finish` repeatedly; Player B remains unfinished.
 
   ```lua
+  local control = game:GetService("ServerStorage").G2eControl
   local result = control.ObserveFinishIsolation:Invoke("player-a-only")
   assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
   ```
@@ -109,6 +111,7 @@ records do not replace complete Output.
   Then Player B touches `Finish` once.
 
   ```lua
+  local control = game:GetService("ServerStorage").G2eControl
   local result = control.ObserveFinishIsolation:Invoke("both-finished")
   assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
   result = control.RunProgressAndStaleCallbackSequence:Invoke()
