@@ -1,0 +1,16 @@
+G2e Studio Acceptance Evidence
+Session: 3
+Fixture: minimum-zero-checkpoint
+Role: Client 2 / Player B
+Artifact SHA-256: D1C689A2D18B715BA42BF9475B9D6E78AB31D8AE5C4BB3CA26362BB9AA39849A
+Embedded repository commit: cbe5a5c43debe21cb144829cb704c6b378d1e80a
+
+Client 2 Output was empty for the complete Session 3 run.
+
+Manual observations:
+- Player B did not acquire checkpoint state.
+- Player B touched Stage03Hazard001.
+- Player B died and respawned at Spawn.
+- Server-side ObserveZeroCheckpointPlayers returned PASS.
+
+Evidence status: PASS

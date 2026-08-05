@@ -1,0 +1,48 @@
+﻿G2e Studio Acceptance Environment Record
+
+Evidence collection date:
+2026-08-05
+
+Operating system:
+Windows 10 Pro 10.0.19045 build 19045
+
+Roblox Studio version:
+0.732.0.7321040
+
+Repository path:
+C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder
+
+Evidence collection branch:
+feat/phase-g2e-studio-acceptance
+
+Artifact path:
+C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder\build\G2eStudioAcceptance.rbxlx
+
+Artifact size:
+2816523 bytes
+
+Artifact SHA-256:
+D1C689A2D18B715BA42BF9475B9D6E78AB31D8AE5C4BB3CA26362BB9AA39849A
+
+Embedded repository commit:
+cbe5a5c43debe21cb144829cb704c6b378d1e80a
+
+Measurement schema:
+g2-studio-measurement-v2
+
+Control-result schema:
+g2e-control-result-v1
+
+Studio test configuration:
+- Session 1: two players
+- Session 2: one player
+- Session 3: two players
+- Sessions 4 through 7: one player each
+
+Evidence summary:
+- Seven independent fresh-server Studio sessions completed.
+- Sixteen final run evidence files preserved.
+- Three prior failed Session 1 logs preserved unchanged.
+- Nineteen run files included in the SHA-256 output index.
+- Eighty-nine bounded JSON records extracted.
+- No final session reported an unexplained Output error.

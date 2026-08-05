@@ -1,0 +1,14 @@
+G2e Studio Acceptance Evidence
+Session: 2
+Fixture: maximum-50
+Role: Client 1
+Artifact SHA-256: D1C689A2D18B715BA42BF9475B9D6E78AB31D8AE5C4BB3CA26362BB9AA39849A
+Embedded repository commit: cbe5a5c43debe21cb144829cb704c6b378d1e80a
+
+Client 1 Output was empty for the complete Session 2 run.
+
+Server-side RunMaximumColdAndRepeatedSequence returned PASS.
+The maximum-50 fixture completed one cold run and five repeated runs.
+All six runtime measurements reported zero errors, zero warnings, and zero orphans.
+
+Evidence status: PASS
