@@ -83,57 +83,134 @@ local function mutableCopy(value)
 end
 
 return function(test, expect)
-    test("waits for a character that is not yet available", function()
-        local player = { Character = nil }
-        local character = { part = "ready-part" }
+    local function playerKey(player)
+        return player.userId
+    end
+
+    local function realPart(character)
+        local part = character.part
+        if type(part) == "table" and part.isBasePart == true then
+            return part
+        end
+        return nil
+    end
+
+    test("selects the second player when the first player is unready", function()
+        local first = { userId = 101, Character = {} }
+        local secondPart = { isBasePart = true }
+        local second = { userId = 202, Character = { part = secondPart } }
+        local receipt, failure = G2eCharacterPartReadinessV1.awaitAny(function()
+            return { first, second }
+        end, playerKey, realPart, function() end, 2)
+
+        expect(failure == nil, "ready second player was ignored")
+        expect(receipt.player == second and receipt.hit == secondPart, "wrong ready player was selected")
+        expect(receipt.waitIterations == 0, "ready second player caused an unnecessary wait")
+    end)
+
+    test("selects deterministically when player order changes", function()
+        local lowPart = { isBasePart = true }
+        local highPart = { isBasePart = true }
+        local low = { userId = -2, Character = {} }
+        local high = { userId = -1, Character = {} }
+        local reads = 0
+        local receipt, failure = G2eCharacterPartReadinessV1.awaitAny(
+            function()
+                reads += 1
+                if reads % 2 == 1 then
+                    return { high, low }
+                end
+                return { low, high }
+            end,
+            playerKey,
+            realPart,
+            function()
+                low.Character.part = lowPart
+                high.Character.part = highPart
+            end,
+            2
+        )
+
+        expect(failure == nil, "ready players failed after order changed")
+        expect(receipt.player == low and receipt.hit == lowPart, "selection depended on GetPlayers order")
+        expect(receipt.selectedSlot == 1, "stable ready-player slot changed")
+    end)
+
+    test("waits across all players for a delayed ready player", function()
+        local first = { userId = 101, Character = nil }
+        local delayedPart = { isBasePart = true }
+        local second = { userId = 202, Character = {} }
         local resumes = 0
-        local receipt, failure = G2eCharacterPartReadinessV1.await(player, function(value)
-            return value.part
-        end, function()
-            resumes += 1
-            if resumes == 2 then
-                player.Character = character
-            end
-        end, 3)
+        local receipt, failure = G2eCharacterPartReadinessV1.awaitAny(
+            function()
+                return { first, second }
+            end,
+            playerKey,
+            realPart,
+            function()
+                resumes += 1
+                if resumes == 2 then
+                    second.Character.part = delayedPart
+                end
+            end,
+            3
+        )
 
-        expect(failure == nil, "readiness failed after the character became available")
-        expect(receipt.character == character and receipt.hit == "ready-part", "ready character Part changed")
-        expect(receipt.waitIterations == 2, "character readiness wait count changed")
+        expect(failure == nil, "delayed ready player was not selected")
+        expect(receipt.player == second and receipt.hit == delayedPart, "delayed ready player changed")
+        expect(receipt.waitIterations == 2, "delayed all-player wait count changed")
     end)
 
-    test("waits for an existing character to receive a BasePart", function()
-        local character = { part = nil }
-        local player = { Character = character }
-        local receipt, failure = G2eCharacterPartReadinessV1.await(player, function(value)
-            return value.part
-        end, function()
-            character.part = "delayed-part"
-        end, 2)
+    test("fails closed when all players are unready", function()
+        local receipt, failure = G2eCharacterPartReadinessV1.awaitAny(function()
+            return {
+                { userId = 101, Character = nil },
+                { userId = 202, Character = {} },
+            }
+        end, playerKey, realPart, function() end, 2)
 
-        expect(failure == nil, "readiness failed after the BasePart became available")
-        expect(receipt.hit == "delayed-part" and receipt.waitIterations == 1, "delayed BasePart was not bounded")
+        expect(receipt == nil, "mixed unready players unexpectedly passed")
+        expect(failure.code == "g2e-stale-ready-player-unavailable", "no-ready-player code changed")
+        expect(failure.field == "players.ready", "no-ready-player field changed")
+        expect(failure.playerCount == 2 and failure.characterCount == 1, "bounded readiness counts changed")
+        expect(failure.basePartCount == 0 and failure.waitIterations == 2, "unready wait did not exhaust")
     end)
 
-    test("fails closed with a typed diagnostic when the character never becomes available", function()
-        local receipt, failure = G2eCharacterPartReadinessV1.await({ Character = nil }, function()
-            return nil
-        end, function() end, 2)
+    test("distinguishes no Character from no BasePart", function()
+        local _, characterFailure = G2eCharacterPartReadinessV1.awaitAny(function()
+            return { { userId = 101, Character = nil }, { userId = 202, Character = nil } }
+        end, playerKey, realPart, function() end, 1)
+        local _, partFailure = G2eCharacterPartReadinessV1.awaitAny(function()
+            return { { userId = 101, Character = {} }, { userId = 202, Character = {} } }
+        end, playerKey, realPart, function() end, 1)
 
-        expect(receipt == nil, "missing character unexpectedly passed readiness")
-        expect(failure.code == "g2e-stale-character-unavailable", "missing-character code changed")
-        expect(failure.field == "player.Character", "missing-character field changed")
-        expect(failure.waitIterations == 2, "missing-character wait was not exhausted")
+        expect(characterFailure.code == "g2e-stale-character-unavailable", "no-Character code changed")
+        expect(characterFailure.field == "players.Character", "no-Character field changed")
+        expect(partFailure.code == "g2e-stale-character-part-unavailable", "no-BasePart code changed")
+        expect(partFailure.field == "players.Character.BasePart", "no-BasePart field changed")
     end)
 
-    test("fails closed with a typed diagnostic when a character never receives a BasePart", function()
-        local receipt, failure = G2eCharacterPartReadinessV1.await({ Character = {} }, function()
-            return nil
-        end, function() end, 2)
+    test("requires a real BasePart and all-player readiness for the operator handshake", function()
+        local namedNonPart = { Name = "HumanoidRootPart", isBasePart = false }
+        local first = { userId = 101, Character = { part = namedNonPart } }
+        local second = { userId = 202, Character = { part = { isBasePart = true } } }
+        local receipt, failure = G2eCharacterPartReadinessV1.requireAll(function()
+            return { second, first }
+        end, playerKey, realPart, 2)
 
-        expect(receipt == nil, "partless character unexpectedly passed readiness")
-        expect(failure.code == "g2e-stale-character-part-unavailable", "missing-Part code changed")
-        expect(failure.field == "player.Character.BasePart", "missing-Part field changed")
-        expect(failure.waitIterations == 2, "missing-Part wait was not exhausted")
+        expect(receipt == nil, "named non-Part satisfied the readiness handshake")
+        expect(failure.code == "g2e-stale-character-part-unavailable", "handshake missing-Part code changed")
+        first.Character = nil
+        receipt, failure = G2eCharacterPartReadinessV1.requireAll(function()
+            return { second, first }
+        end, playerKey, realPart, 2)
+        expect(receipt == nil and failure.code == "g2e-stale-character-unavailable", "handshake missed no Character")
+        first.Character = {}
+        first.Character.part = { isBasePart = true }
+        receipt, failure = G2eCharacterPartReadinessV1.requireAll(function()
+            return { second, first }
+        end, playerKey, realPart, 2)
+        expect(failure == nil and receipt.basePartCount == 2, "ready two-player handshake failed")
     end)
 
     test("captures exact placement before physics settling or player movement", function()

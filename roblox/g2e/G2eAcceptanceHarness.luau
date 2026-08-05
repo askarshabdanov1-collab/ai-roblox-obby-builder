@@ -709,6 +709,21 @@ function G2eAcceptanceHarness.bindControl(api)
             api:inspectHazard(objectId)
             return G2eControlProtocol.success("InspectHazard", { fixtureId = api.currentFixtureId })
         end,
+        CheckPlayerCharacterReadiness = function()
+            local receipt, failure = api:checkPlayerCharacterReadiness()
+            if receipt == nil then
+                return G2eControlProtocol.failure(
+                    "CheckPlayerCharacterReadiness",
+                    failure.code,
+                    failure.field,
+                    failure.message
+                )
+            end
+            return G2eControlProtocol.success("CheckPlayerCharacterReadiness", {
+                fixtureId = api.currentFixtureId,
+                recordCount = receipt.playerCount,
+            })
+        end,
         VerifyStaleHazardCallback = function()
             local receipt, failure = api:verifyStaleHazardCallback()
             if receipt == nil then

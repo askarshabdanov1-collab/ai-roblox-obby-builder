@@ -160,6 +160,18 @@ local function hazardRecord(result, configuredObjectId)
     return nil
 end
 
+local function readinessPlayers()
+    return Players:GetPlayers()
+end
+
+local function readinessPlayerKey(player)
+    return player.UserId
+end
+
+local function readinessBasePart(character)
+    return character:FindFirstChildWhichIsA("BasePart")
+end
+
 function api:inspectHazard(objectId)
     assert(self.current ~= nil, "a G2e fixture must be active")
     local fixture = fixtures[self.currentFixtureId]
@@ -182,12 +194,8 @@ function api:verifyStaleHazardCallback()
     assert(record ~= nil, "previous G2e session has no hazard record")
     local part = self.previous.session.candidate.partById[record.id]
     assert(part ~= nil, "previous G2e hazard Part is unavailable")
-    local players = Players:GetPlayers()
-    local player = players[1]
-    assert(player ~= nil, "an active player is required for stale-callback verification")
-    local readiness, readinessFailure = G2eCharacterPartReadinessV1.await(player, function(character)
-        return character:FindFirstChildWhichIsA("BasePart")
-    end, task.wait)
+    local readiness, readinessFailure =
+        G2eCharacterPartReadinessV1.awaitAny(readinessPlayers, readinessPlayerKey, readinessBasePart, task.wait)
     if readiness == nil then
         return nil, readinessFailure
     end
@@ -200,7 +208,12 @@ function api:verifyStaleHazardCallback()
     assert(accepted == false and rejectionDelta == 1 and lethalDelta == 0, "stale hazard callback was not rejected")
     self.staleCallbackRejections += rejectionDelta
     self.staleAcceptedActions += lethalDelta
-    print("[G2 acceptance] stale hazard callback rejection PASS", record.id)
+    print(
+        "[G2 acceptance] stale hazard callback rejection PASS",
+        record.id,
+        "selectedSlot=" .. tostring(readiness.selectedSlot),
+        "characterWaitIterations=" .. tostring(readiness.waitIterations)
+    )
     return table.freeze({
         status = "PASS",
         objectId = record.id,
@@ -209,6 +222,21 @@ function api:verifyStaleHazardCallback()
         characterWaitIterations = readiness.waitIterations,
     }),
         nil
+end
+
+function api:checkPlayerCharacterReadiness()
+    local readiness, readinessFailure =
+        G2eCharacterPartReadinessV1.requireAll(readinessPlayers, readinessPlayerKey, readinessBasePart, 2)
+    if readiness == nil then
+        return nil, readinessFailure
+    end
+    print(
+        "[G2 acceptance] player character readiness PASS",
+        "players=" .. tostring(readiness.playerCount),
+        "characters=" .. tostring(readiness.characterCount),
+        "baseParts=" .. tostring(readiness.basePartCount)
+    )
+    return readiness, nil
 end
 
 function api:runReferenceColdAndReplacementSequence()
