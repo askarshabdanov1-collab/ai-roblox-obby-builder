@@ -12,17 +12,25 @@ observer. Its complete Output, including later accidental repeated invocations, 
 failed-session evidence. It does not complete any checkbox and must not be reinterpreted as a cold
 sequence defect. Session 1 must restart in a fresh server with the fixed artifact below.
 
+The second Session 1 attempt against superseded artifact
+`C74BDBAAC5EE31F736CEF0A2A4F0FD0F95767A4276B0CC8514F6BFC93C52A5F0` proved the precondition and
+all eight reference-sequence builds, then failed stale-hazard verification because the synchronous
+Command Bar block sampled `Player.Character` before a scheduler resume made a character BasePart
+available. The following assert correctly stopped the block before placement observation. This is
+also historical failed-session evidence and completes no checkbox.
+
 ## Fixed artifact identity
 
 | Field                         | Required value                                                                           |
 | ----------------------------- | ---------------------------------------------------------------------------------------- |
 | Artifact path                 | `C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder\build\G2eStudioAcceptance.rbxlx` |
-| Artifact SHA-256              | `C74BDBAAC5EE31F736CEF0A2A4F0FD0F95767A4276B0CC8514F6BFC93C52A5F0`                       |
-| Embedded `repositoryCommit`   | `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`                                               |
+| Artifact SHA-256              | `4A6AC116F11DB2E4A36FEB6A51FE051F1D9DDC82921153A1A927AE8BBE776871`                       |
+| Embedded `repositoryCommit`   | `56c2b51291b8e918a1c9559277a2590e18ee06af`                                               |
 | Runtime implementation commit | `1379849686525d88c71245626e0360a00f1d48a9`                                               |
 | Provenance implementation     | `2046121c5e5505397601ac7c6630a9fea9f0831b`                                               |
 | Harness implementation        | `70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`                                               |
 | Placement-observer repair     | `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`                                               |
+| Stale-character readiness     | `56c2b51291b8e918a1c9559277a2590e18ee06af`                                               |
 | Measurement schema            | `g2-studio-measurement-v2`                                                               |
 | Control-result schema         | `g2e-control-result-v1`                                                                  |
 
@@ -74,6 +82,12 @@ records do not replace complete Output.
   result = control.ObservePlayerPlacement:Invoke("initial")
   assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
   ```
+
+  `VerifyStaleHazardCallback` independently waits at most 120 scheduler resumes for Player A's
+  active character BasePart before exercising the retired session callback. It uses no timed sleep.
+  Exhaustion fails closed as `g2e-stale-character-unavailable` at `player.Character` or
+  `g2e-stale-character-part-unavailable` at `player.Character.BasePart`. A PASS still requires one
+  stale-generation rejection, zero lethal actions, and no current-scene mutation.
 
   `ObservePlayerPlacement("initial")` waits a maximum of 120 scheduler resumes for the two runtime
   placement callbacks. It compares the CFrames captured immediately when the final active

@@ -101,6 +101,12 @@ result = control.InspectHazard:Invoke("Stage04Hazard001")
 assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
 ```
 
+The stale-hazard control waits at most 120 scheduler resumes for Player A's character BasePart; it
+does not use an arbitrary wall-clock sleep. Exhaustion returns a typed FAIL distinguishing a missing
+`player.Character` from a character with no `BasePart`. A successful probe still resolves a real
+player-character touch and must increment the retired session's stale rejection exactly once with
+zero lethal action or current-scene mutation.
+
 The placement observer emits `g2e-placement-observation-v2`. It waits for the active session's
 deferred placement callbacks and records each HumanoidRootPart CFrame immediately after the real
 runtime placement call succeeds. Expected-vs-observed comparison retains the exact `0.00001`

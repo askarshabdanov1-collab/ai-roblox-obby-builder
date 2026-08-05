@@ -10,6 +10,8 @@ Bounded harness commit: `70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`
 
 Placement-observer repair commit: `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`
 
+Stale-character readiness repair commit: `56c2b51291b8e918a1c9559277a2590e18ee06af`
+
 The documentation commit is the commit containing this file and is intentionally obtained from Git
 history rather than self-referenced here.
 
@@ -92,24 +94,41 @@ waits at most 120 scheduler resumes for both players, emits
 `g2e-placement-observation-v2` with `observationBasis=runtime-placement-assignment`, and retains the
 `0.00001` tolerance. `roblox/src` and gameplay behavior are unchanged.
 
+### Session 1 stale-character readiness repair
+
+The second Session 1 attempt proved the precondition and the complete reference sequence, then
+called `VerifyStaleHazardCallback` in the same scheduler turn. That control previously sampled
+Player A's `Character` and BasePart once. The character was not ready, so the control failed before
+it could exercise the retired session. Replacement did not invalidate a character reference, and
+the runtime stale-generation check remained correct.
+
+The acceptance-only repair waits at most 120 scheduler resumes for a real player-character
+BasePart. A synthetic acceptance-owned Part is intentionally not used: production resolves a touch
+to a Player and character before checking session generation, so an unrelated probe would test an
+invalid touch rather than stale-callback rejection. The bound uses scheduler resumes with no delay
+argument. Exhaustion returns `g2e-control-result-v1` FAIL with either
+`g2e-stale-character-unavailable`/`player.Character` or
+`g2e-stale-character-part-unavailable`/`player.Character.BasePart`. The original assertion remains:
+one stale rejection, zero lethal actions, and no current-scene mutation.
+
 ## Rebuilt artifact identity
 
 The reviewed harness commit was built from a clean working tree with:
 
 ```powershell
-$env:G2E_REPOSITORY_COMMIT = "cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b"
+$env:G2E_REPOSITORY_COMMIT = "56c2b51291b8e918a1c9559277a2590e18ee06af"
 npm run roblox:g2e:build
 ```
 
 | Field                      | Value                                                              |
 | -------------------------- | ------------------------------------------------------------------ |
 | Artifact                   | `build/G2eStudioAcceptance.rbxlx`                                  |
-| Size                       | `2,806,612` bytes                                                  |
-| SHA-256                    | `C74BDBAAC5EE31F736CEF0A2A4F0FD0F95767A4276B0CC8514F6BFC93C52A5F0` |
-| Embedded repository commit | `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`                         |
+| Size                       | `2,809,631` bytes                                                  |
+| SHA-256                    | `4A6AC116F11DB2E4A36FEB6A51FE051F1D9DDC82921153A1A927AE8BBE776871` |
+| Embedded repository commit | `56c2b51291b8e918a1c9559277a2590e18ee06af`                         |
 | Provenance schema          | `g2e-build-provenance-v1`                                          |
 | Rojo project               | `roblox/g2e-smoke.project.json`                                    |
-| Working tree before build  | Clean                                                              |
+| Working tree before build  | Tracked files clean; preserved untracked evidence excluded         |
 | Stale active provenance    | Absent                                                             |
 | Artifact committed to Git  | No; repository policy ignores `.rbxlx` and `build/`                |
 

@@ -11,7 +11,7 @@ fixtures, manifests, generated scene data, or the current opt-in status of Scene
 Luau tests are cited as reusable implementation coverage, never as substitutes for required Studio
 execution.
 
-## 2026-08-01 implementation and 2026-08-05 placement update
+## 2026-08-01 implementation and 2026-08-05 Session 1 updates
 
 The category matrix below is retained as the pre-implementation audit snapshot from commit
 `25868cd60e33648f963f3cec60aa2ef348810c87`. Its `REQUIRES_ACCEPTANCE_HARNESS_CHANGE` and
@@ -31,11 +31,20 @@ assignment rather than sampling live characters after scheduler delay or physics
 does not change production runtime behavior or the `0.00001` tolerance. The replacement artifact is
 SHA-256 `C74BDBAAC5EE31F736CEF0A2A4F0FD0F95767A4276B0CC8514F6BFC93C52A5F0`, size `2,806,612`
 bytes, with embedded `repositoryCommit=cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`. The stale literal is
-absent from the active artifact.
+absent from that superseded artifact.
+
+The second Session 1 attempt used that placement-fixed artifact and proved the precondition and all
+eight reference-sequence builds. `VerifyStaleHazardCallback` then sampled the first player's
+character before the scheduler had made a BasePart available. Readiness repair
+`56c2b51291b8e918a1c9559277a2590e18ee06af` adds a 120-resume acceptance-only bound with typed
+missing-character and missing-Part failures; it does not weaken the stale assertion or change
+production runtime behavior. The current artifact is SHA-256
+`4A6AC116F11DB2E4A36FEB6A51FE051F1D9DDC82921153A1A927AE8BBE776871`, size `2,809,631` bytes, with
+embedded `repositoryCommit=56c2b51291b8e918a1c9559277a2590e18ee06af`.
 
 The current recommendation remains `READY_FOR_FINAL_EVIDENCE_COLLECTION`. Session 1 must restart
 from a fresh server with the replacement artifact, so exactly seven fresh Studio sessions remain.
-No failed or repeated line from the superseded attempt completes a requirement. The historical
+No failed or repeated line from either superseded attempt completes a requirement. The historical
 classification table and historical Output remain unchanged.
 
 The audit inspected the committed Studio protocols and evidence; Phase 0 smoke procedure and
