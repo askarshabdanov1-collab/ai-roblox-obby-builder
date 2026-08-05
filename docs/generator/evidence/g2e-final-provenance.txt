@@ -1,0 +1,27 @@
+﻿G2e Studio Acceptance Provenance Statement
+
+The evidence package was collected from:
+C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder\build\G2eStudioAcceptance.rbxlx
+
+The tested artifact had SHA-256:
+D1C689A2D18B715BA42BF9475B9D6E78AB31D8AE5C4BB3CA26362BB9AA39849A
+
+The artifact embedded repository commit:
+cbe5a5c43debe21cb144829cb704c6b378d1e80a
+
+The final evidence collection consisted of seven independent fresh-server Roblox Studio sessions:
+1. Reference two-player functional and replacement acceptance.
+2. Maximum 50-stage cold and repeated acceptance.
+3. Zero-checkpoint two-player respawn acceptance.
+4. Before-commit failure-boundary acceptance.
+5. After-retire failure-boundary acceptance.
+6. After-publish failure-boundary acceptance.
+7. Before-pointer failure-boundary acceptance.
+
+Complete server Output and active client evidence were preserved separately.
+Bounded JSON records were extracted into g2e-final-bounded-records.jsonl.
+SHA-256 hashes of the nineteen run evidence files were recorded in g2e-final-output-sha256.txt.
+Three prior failed Session 1 logs were preserved unchanged.
+
+All seven final sessions returned PASS control results.
+The separate future post-default-cutover rerun is not included in this package.

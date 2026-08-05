@@ -1,0 +1,81 @@
+﻿G2e Studio Acceptance Observation Sheet
+
+Artifact SHA-256:
+D1C689A2D18B715BA42BF9475B9D6E78AB31D8AE5C4BB3CA26362BB9AA39849A
+
+Embedded repository commit:
+cbe5a5c43debe21cb144829cb704c6b378d1e80a
+
+Session 1 - Reference two-player acceptance
+Status: PASS
+- Zero-root precondition passed.
+- Cold, repeated, and replacement sequences passed.
+- Two players had ready Characters and BaseParts.
+- Player A activated Checkpoint001.
+- Player A died on Stage04Hazard001 and respawned at Checkpoint001.
+- Player B acquired no checkpoint.
+- Player B died on Stage04Hazard001 and respawned at Spawn.
+- Initial and respawn placement observations passed.
+- Stale hazard callback was rejected with zero accepted lethal actions.
+- Gameplay observation reported two lethal actions and two respawns.
+- Finish state remained isolated and idempotent.
+- Progress/stale callback sequence passed.
+- Ownership refusal sequence passed.
+- Static fixture sequence passed.
+- Wedge and decorative isolation inspections passed.
+
+Session 2 - Maximum 50-stage acceptance
+Status: PASS
+- maximum-50 was the first build.
+- One cold run and five repeated runs completed.
+- All six runs had one active root.
+- All six runs reported zero errors, zero warnings, and zero orphans.
+- Fifty stages and fifty zones were observed.
+
+Session 3 - Zero-checkpoint two-player acceptance
+Status: PASS
+- minimum-zero-checkpoint cold sequence passed.
+- Two players independently touched Stage03Hazard001.
+- Two deaths and two respawns were observed.
+- Both players respawned at Spawn.
+- Internal checkpoint state remained clear.
+- Visible checkpoint attributes remained clear.
+- Both runtime placements exactly matched Spawn within tolerance.
+
+Session 4 - Before-commit failure boundary
+Status: PASS
+- Cold reference build passed.
+- Injected code was builder-injected-failure.
+- Previous root and session remained active.
+- Exactly one active root remained.
+- Zero errors, warnings, and orphans were reported.
+
+Session 5 - After-retire failure boundary
+Status: PASS
+- Cold reference build passed.
+- Injected code was commit-injected-failure.
+- Previous root and session remained active.
+- Exactly one active root remained.
+- Zero errors, warnings, and orphans were reported.
+
+Session 6 - After-publish failure boundary
+Status: PASS
+- Cold reference build passed.
+- Injected code was commit-injected-failure.
+- Previous root and session remained active.
+- Exactly one active root remained.
+- Zero errors, warnings, and orphans were reported.
+
+Session 7 - Before-pointer failure boundary
+Status: PASS
+- Cold reference build passed.
+- Injected code was commit-injected-failure.
+- Previous root and session remained active.
+- Exactly one active root remained.
+- Zero errors, warnings, and orphans were reported.
+
+Final observation:
+All seven required fresh-server pre-cutover Studio sessions completed with PASS control results.
+
+Scope note:
+The separate future post-default-cutover rerun was not performed and is not included.
