@@ -111,6 +111,7 @@ function api:build(fixtureId, runKind, runIndex, options)
     end
     assert(result ~= nil, buildDiagnostic)
     assert(manifest.manifestHash == fixture.expectedHash, "configured expected hash changed")
+    G2eAcceptanceHarness.attachPlacementCapture(result.session)
     local measurement, observation = G2eAcceptanceHarness.emitMeasurement(
         environment,
         fixtureId,
@@ -272,15 +273,30 @@ function api:observeGameplay()
     )
 end
 
+local function awaitCurrentPlacementCaptures(apiValue)
+    local players = Players:GetPlayers()
+    local captureWaitIterations = 0
+    while
+        captureWaitIterations < 120
+        and not G2eAcceptanceHarness.placementCapturesReady(apiValue.current.session, players)
+    do
+        captureWaitIterations += 1
+        task.wait()
+    end
+    return captureWaitIterations
+end
+
 function api:observePlayerPlacement(phase)
     assert(self.current ~= nil, "a G2e fixture must be active")
     local fixture = fixtures[self.currentFixtureId]
+    local captureWaitIterations = awaitCurrentPlacementCaptures(self)
     local receipt = G2eAcceptanceHarness.emitPlacementObservation(
         environment.repositoryCommit,
         self.currentFixtureId,
         require(fixture.module),
         self.current.session,
-        phase
+        phase,
+        captureWaitIterations
     )
     assert(receipt.status == "PASS", receipt.firstFailingField)
     return receipt
@@ -469,10 +485,12 @@ function api:observeZeroCheckpointPlayers()
         self.current ~= nil and self.currentFixtureId == "minimum-zero-checkpoint",
         "minimum-zero-checkpoint fixture must be active"
     )
+    local captureWaitIterations = awaitCurrentPlacementCaptures(self)
     local receipt, placement = G2eAcceptanceHarness.emitZeroCheckpointObservation(
         environment.repositoryCommit,
         require(fixtures["minimum-zero-checkpoint"].module),
-        self.current.session
+        self.current.session,
+        captureWaitIterations
     )
     assert(receipt.status == "PASS", receipt.firstFailingField)
     assert(placement.status == "PASS", placement.firstFailingField)

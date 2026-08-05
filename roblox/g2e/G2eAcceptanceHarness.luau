@@ -6,6 +6,7 @@ local G2eObservationV03 = require("./G2eObservationV03")
 local G2eGameplayObservationV03 = require("./G2eGameplayObservationV03")
 local G2eAcceptanceRecordsV1 = require("./G2eAcceptanceRecordsV1")
 local G2eControlProtocol = require("./G2eControlProtocol")
+local G2ePlacementCaptureV1 = require("./G2ePlacementCaptureV1")
 local CharacterPlacement = require(ReplicatedStorage.ObbyRuntime.CharacterPlacement)
 local SafeRouteNavigator = require(ReplicatedStorage.ObbyRuntime.SafeRouteNavigator)
 local RuntimeSessionV03 = require(ReplicatedStorage.ObbyRuntime.RuntimeSessionV03)
@@ -24,6 +25,7 @@ local PROGRESS_PREFIX = "[G2 progress observation] "
 local OWNERSHIP_PREFIX = "[G2 ownership observation] "
 local ZERO_CHECKPOINT_PREFIX = "[G2 zero-checkpoint observation] "
 local CONTROL_PREFIX = "[G2 control result] "
+local placementCaptureBySession = setmetatable({}, { __mode = "k" })
 
 local function approximately(actual, expected)
     return math.abs(actual - expected) < 0.00001
@@ -510,9 +512,8 @@ local function receiptPlayers()
     return players
 end
 
-local function placementObjectFor(session, manifest, player)
-    local checkpointOrder = session:checkpointOrder(player)
-    if checkpointOrder ~= nil then
+local function placementObjectFor(manifest, checkpointOrder)
+    if checkpointOrder > 0 then
         for _, object in ipairs(manifest.layers.gameplay.objects) do
             if
                 object.role == "checkpoint"
@@ -531,39 +532,75 @@ local function placementObjectFor(session, manifest, player)
     error("G2e placement target is unavailable")
 end
 
-function G2eAcceptanceHarness.emitPlacementObservation(repositoryCommit, fixtureId, manifest, session, phase)
+function G2eAcceptanceHarness.attachPlacementCapture(session)
+    local capture = G2ePlacementCaptureV1.attach(session, function(sessionValue, player, character)
+        local rootPart = character and character:FindFirstChild("HumanoidRootPart") or nil
+        if rootPart == nil or not rootPart:IsA("BasePart") then
+            return nil
+        end
+        return table.freeze({
+            observedCFrame = rootPart.CFrame,
+            checkpointOrder = sessionValue:checkpointOrder(player) or 0,
+        })
+    end)
+    placementCaptureBySession[session] = capture
+    return capture
+end
+
+function G2eAcceptanceHarness.placementCapturesReady(session, players)
+    local capture = placementCaptureBySession[session]
+    return capture ~= nil and capture.completeFor(players)
+end
+
+function G2eAcceptanceHarness.emitPlacementObservation(
+    repositoryCommit,
+    fixtureId,
+    manifest,
+    session,
+    phase,
+    captureWaitIterations
+)
     assert(phase == "initial" or phase == "respawn" or phase == "zero-respawn", "placement phase is invalid")
     local navigator = SafeRouteNavigator.new(manifest)
     local records = {}
+    local captureController = placementCaptureBySession[session]
     for index, player in ipairs(receiptPlayers()) do
-        local object, placementKind = placementObjectFor(session, manifest, player)
+        local capture = if captureController == nil then nil else captureController.captureFor(player)
+        local checkpointOrder = if capture == nil then 0 else capture.checkpointOrder
+        local object, placementKind = placementObjectFor(manifest, checkpointOrder)
         local transform = CharacterPlacement.transformFor(
             object,
             manifest.navigation.characterPlacement,
             navigator:nextObject(object.id)
         )
         local expected = expectedCFrame(transform)
-        local character = player.Character
-        local rootPart = character and character:FindFirstChild("HumanoidRootPart") or nil
-        local matches = rootPart ~= nil and rootPart:IsA("BasePart") and rootPart.CFrame:FuzzyEq(expected, 0.00001)
+        local observed = if capture == nil then nil else capture.observedCFrame
+        local matches = observed ~= nil and observed:FuzzyEq(expected, 0.00001)
         table.insert(
             records,
             table.freeze({
                 playerSlot = index,
                 placementKind = placementKind,
                 objectId = object.id,
-                checkpointOrder = session:checkpointOrder(player) or 0,
+                checkpointOrder = checkpointOrder,
+                captureStatus = if capture == nil then "missing" else "captured-at-runtime-placement",
                 expectedCFrame = cframeRecord(expected),
-                observedCFrame = if rootPart ~= nil and rootPart:IsA("BasePart")
-                    then cframeRecord(rootPart.CFrame)
-                    else table.freeze({}),
+                observedCFrame = if observed == nil then table.freeze({}) else cframeRecord(observed),
                 status = if matches then "PASS" else "FAIL",
             })
         )
     end
     return emit(
         PLACEMENT_PREFIX,
-        G2eAcceptanceRecordsV1.placement(repositoryCommit, fixtureId, manifest.manifestHash, phase, records, 0.00001)
+        G2eAcceptanceRecordsV1.placement(
+            repositoryCommit,
+            fixtureId,
+            manifest.manifestHash,
+            phase,
+            records,
+            0.00001,
+            captureWaitIterations
+        )
     )
 end
 
@@ -591,7 +628,7 @@ function G2eAcceptanceHarness.emitOwnershipObservation(repositoryCommit, manifes
     return emit(OWNERSHIP_PREFIX, G2eAcceptanceRecordsV1.ownership(repositoryCommit, manifestHash, cases, preserved))
 end
 
-function G2eAcceptanceHarness.emitZeroCheckpointObservation(repositoryCommit, manifest, session)
+function G2eAcceptanceHarness.emitZeroCheckpointObservation(repositoryCommit, manifest, session, captureWaitIterations)
     local players = receiptPlayers()
     local checkpointStateClear = true
     local checkpointAttributesClear = true
@@ -617,7 +654,8 @@ function G2eAcceptanceHarness.emitZeroCheckpointObservation(repositoryCommit, ma
         "minimum-zero-checkpoint",
         manifest,
         session,
-        "zero-respawn"
+        "zero-respawn",
+        captureWaitIterations
     )
     return receipt, placement
 end

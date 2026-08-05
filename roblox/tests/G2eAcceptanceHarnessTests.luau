@@ -2,6 +2,7 @@ local G2eObservationV03 = require("../g2e/G2eObservationV03")
 local G2eGameplayObservationV03 = require("../g2e/G2eGameplayObservationV03")
 local G2eControlProtocol = require("../g2e/G2eControlProtocol")
 local G2eAcceptanceRecordsV1 = require("../g2e/G2eAcceptanceRecordsV1")
+local G2ePlacementCaptureV1 = require("../g2e/G2ePlacementCaptureV1")
 local referenceManifest = require("../generated/G2ReferenceManifestV03")
 local boundary20Manifest = require("../generated/G2Boundary20ManifestV03")
 local boundary21Manifest = require("../generated/G2Boundary21ManifestV03")
@@ -81,6 +82,80 @@ local function mutableCopy(value)
 end
 
 return function(test, expect)
+    test("captures exact placement before physics settling or player movement", function()
+        local player = { id = "player-a" }
+        local character = { observedCFrame = "studio-spawn", checkpointOrder = 0 }
+        local session = {
+            placeCharacter = function(_, _, value)
+                value.observedCFrame = "exact-runtime-placement"
+                return true, nil
+            end,
+        }
+        local capture = G2ePlacementCaptureV1.attach(session, function(_, _, value)
+            return table.freeze({
+                observedCFrame = value.observedCFrame,
+                checkpointOrder = value.checkpointOrder,
+            })
+        end)
+
+        expect(not capture.completeFor({ player }), "placement was complete before the runtime callback")
+        expect(session:placeCharacter(player, character) == true, "runtime placement failed")
+        character.observedCFrame = "post-physics-settling"
+
+        local record = capture.captureFor(player)
+        expect(capture.completeFor({ player }), "runtime placement was not captured")
+        expect(record.observedCFrame == "exact-runtime-placement", "observer sampled after physics movement")
+        expect(record.checkpointOrder == 0, "captured initial progress changed")
+    end)
+
+    test("keeps the latest successful respawn placement and ignores failed placement", function()
+        local player = { id = "player-a" }
+        local character = { observedCFrame = "initial", checkpointOrder = 0, shouldFail = false }
+        local session = {
+            placeCharacter = function(_, _, value)
+                if value.shouldFail then
+                    return nil, { code = "placement-root" }
+                end
+                return true, nil
+            end,
+        }
+        local capture = G2ePlacementCaptureV1.attach(session, function(_, _, value)
+            return table.freeze({
+                observedCFrame = value.observedCFrame,
+                checkpointOrder = value.checkpointOrder,
+            })
+        end)
+
+        session:placeCharacter(player, character)
+        character.observedCFrame = "checkpoint-respawn"
+        character.checkpointOrder = 1
+        session:placeCharacter(player, character)
+        character.observedCFrame = "failed-placement"
+        character.shouldFail = true
+        session:placeCharacter(player, character)
+
+        local record = capture.captureFor(player)
+        expect(record.observedCFrame == "checkpoint-respawn", "latest successful placement was not retained")
+        expect(record.checkpointOrder == 1, "latest checkpoint placement state changed")
+    end)
+
+    test("labels exact placement evidence as runtime-assignment capture without weakening tolerance", function()
+        local receipt = G2eAcceptanceRecordsV1.placement(
+            string.rep("a", 40),
+            "reference",
+            "sha256:" .. string.rep("b", 64),
+            "initial",
+            { { playerSlot = 1, status = "PASS" }, { playerSlot = 2, status = "PASS" } },
+            0.00001,
+            1
+        )
+        expect(receipt.schemaVersion == "g2e-placement-observation-v2", "placement schema did not advance")
+        expect(receipt.observationBasis == "runtime-placement-assignment", "placement evidence basis changed")
+        expect(receipt.tolerance == 0.00001, "exact placement tolerance was weakened")
+        expect(receipt.captureWaitIterations == 1, "bounded capture wait was not recorded")
+        expect(receipt.maximumCaptureWaitIterations == 120, "capture wait bound changed")
+    end)
+
     test("defines deterministic official G2e run indices", function()
         local referenceRuns = G2eControlProtocol.referenceSequence()
         expect(#referenceRuns == 8, "reference sequence length changed")

@@ -25,6 +25,9 @@
       },
       "G2eGameplayObservationV03": {
         "$path": "g2e/G2eGameplayObservationV03.luau"
+      },
+      "G2ePlacementCaptureV1": {
+        "$path": "g2e/G2ePlacementCaptureV1.luau"
       }
     },
     "ServerStorage": {

@@ -50,7 +50,15 @@ function G2eAcceptanceRecordsV1.partInspection(
     })
 end
 
-function G2eAcceptanceRecordsV1.placement(repositoryCommit, fixtureId, manifestHash, phase, players, tolerance)
+function G2eAcceptanceRecordsV1.placement(
+    repositoryCommit,
+    fixtureId,
+    manifestHash,
+    phase,
+    players,
+    tolerance,
+    captureWaitIterations
+)
     local status = "PASS"
     local firstFailingField = "none"
     for _, player in ipairs(players) do
@@ -61,13 +69,16 @@ function G2eAcceptanceRecordsV1.placement(repositoryCommit, fixtureId, manifestH
         end
     end
     return table.freeze({
-        schemaVersion = "g2e-placement-observation-v1",
+        schemaVersion = "g2e-placement-observation-v2",
         repositoryCommit = repositoryCommit,
         fixtureId = fixtureId,
         manifestHash = manifestHash,
         phase = phase,
         status = status,
         tolerance = tolerance,
+        observationBasis = "runtime-placement-assignment",
+        captureWaitIterations = captureWaitIterations,
+        maximumCaptureWaitIterations = 120,
         playerCount = #players,
         firstFailingField = firstFailingField,
         players = frozenSortedCopy(players, "playerSlot"),

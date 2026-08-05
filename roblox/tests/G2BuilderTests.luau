@@ -1,5 +1,6 @@
 local BuilderV03 = require("../src/ReplicatedStorage/ObbyRuntime/BuilderV03")
 local RuntimeSessionV03 = require("../src/ReplicatedStorage/ObbyRuntime/RuntimeSessionV03")
+local G2ePlacementCaptureV1 = require("../g2e/G2ePlacementCaptureV1")
 local FakeInstanceV03 = require("./support/FakeInstanceV03")
 local G2RuntimeHarnessV03 = require("./support/G2RuntimeHarnessV03")
 
@@ -26,6 +27,40 @@ local function firstByRole(manifest, role)
 end
 
 return function(test, expect)
+    test("defers replacement placement until yield and applies only the final session", function()
+        local harness = G2RuntimeHarnessV03.new()
+        local player = harness:newPlayer(101)
+        local character = harness:newCharacter(player)
+        harness:addPlayer(player)
+        local builder = BuilderV03.new(harness.runtime)
+        local captureByResult = {}
+        for _, manifest in ipairs({ reference, replacement, reference }) do
+            local result = build(builder, manifest)
+            captureByResult[result] = G2ePlacementCaptureV1.attach(result.session, function(_, _, value)
+                return table.freeze({ observedCFrame = value.rootPart.CFrame })
+            end)
+        end
+        local finalResult = builder:currentSession()
+        local finalCapture = nil
+        for result, capture in pairs(captureByResult) do
+            if result.session == finalResult then
+                finalCapture = capture
+            else
+                expect(not capture.completeFor({ player }), "stale replacement placement ran before yield")
+            end
+        end
+        expect(finalCapture ~= nil and not finalCapture.completeFor({ player }), "final placement ran synchronously")
+
+        harness:runDeferred()
+
+        expect(finalCapture.completeFor({ player }), "final replacement placement did not run after yield")
+        for result, capture in pairs(captureByResult) do
+            if result.session ~= finalResult then
+                expect(not capture.completeFor({ player }), "stale replacement placement was accepted")
+            end
+        end
+    end)
+
     test("orchestrates admission candidate session activation and existing-player placement", function()
         local harness = G2RuntimeHarnessV03.new()
         local playerA = harness:newPlayer(101)
