@@ -186,7 +186,7 @@ function api:verifyStaleHazardCallback()
     local player = players[1]
     assert(player ~= nil, "an active player is required for stale-callback verification")
     local readiness, readinessFailure = G2eCharacterPartReadinessV1.await(player, function(character)
-        return character:FindFirstChild("HumanoidRootPart") or character:FindFirstChildWhichIsA("BasePart")
+        return character:FindFirstChildWhichIsA("BasePart")
     end, task.wait)
     if readiness == nil then
         return nil, readinessFailure
