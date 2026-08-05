@@ -18,6 +18,15 @@ local function validToken(value)
     return type(value) == "string" and string.match(value, "^g2d%-generation%-v1:%d+$") ~= nil
 end
 
+local function validPlayerKey(value)
+    return type(value) == "number"
+        and value == value
+        and value ~= math.huge
+        and value ~= -math.huge
+        and value == math.floor(value)
+        and value ~= 0
+end
+
 local function validInput(admitted, candidate, token, pointer, runtime)
     return type(admitted) == "table"
         and table.isfrozen(admitted)
@@ -40,6 +49,10 @@ local function validInput(admitted, candidate, token, pointer, runtime)
         and type(runtime.waitForRootPart) == "function"
         and type(runtime.cframe) == "function"
         and type(runtime.killHumanoid) == "function"
+        and type(runtime.playerUserId) == "function"
+        and type(runtime.playerCharacter) == "function"
+        and type(runtime.setPlayerAttribute) == "function"
+        and type(runtime.isHumanoid) == "function"
 end
 
 local function shouldBind(record)
@@ -75,6 +88,24 @@ local function identityFor(admitted, token)
     )
 end
 
+local function boundedTouchIdentity(hit)
+    local name = nil
+    local className = nil
+    pcall(function()
+        if type(hit.Name) == "string" then
+            name = string.sub(hit.Name, 1, 80)
+        elseif type(hit.partName) == "string" then
+            name = string.sub(hit.partName, 1, 80)
+        end
+        if type(hit.ClassName) == "string" then
+            className = string.sub(hit.ClassName, 1, 80)
+        elseif type(hit.partClass) == "string" then
+            className = string.sub(hit.partClass, 1, 80)
+        end
+    end)
+    return name, className
+end
+
 function RuntimeSessionV03.new(admitted, candidate, generationToken, pointer, runtime)
     if not validInput(admitted, candidate, generationToken, pointer, runtime) then
         return failure("session-input", "runtime session input is invalid")
@@ -92,10 +123,34 @@ function RuntimeSessionV03.new(admitted, candidate, generationToken, pointer, ru
         _invalidated = false,
         _acceptingCallbacks = false,
         _connections = {},
+        _boundTouchObjectIds = {},
         _checkpoints = {},
         _finishes = {},
         _debounces = {},
         _pendingPlacements = {},
+        _pendingLethal = {},
+        _lethalPlayers = {},
+        _acceptance = {
+            hazardConnections = 0,
+            touchCallbacks = 0,
+            hazardTouchCallbacks = 0,
+            validCharacterTouches = 0,
+            validHazardCharacterTouches = 0,
+            humanoidsResolved = 0,
+            lethalActions = 0,
+            lethalPlayerCount = 0,
+            respawnsObserved = 0,
+            checkpointRespawnsObserved = 0,
+            spawnRespawnsObserved = 0,
+            staleCallbackRejections = 0,
+            staleAcceptedActions = 0,
+            lastHazardObjectId = nil,
+            lastTouchedPartName = nil,
+            lastTouchedPartClass = nil,
+            lastCharacterResolved = false,
+            lastHumanoidResolved = false,
+            lastLethalAction = false,
+        },
     }, RuntimeSessionV03),
         nil
 end
@@ -108,11 +163,20 @@ function RuntimeSessionV03:connectionCount()
     return #self._connections
 end
 
+function RuntimeSessionV03:touchConnectionBound(objectId)
+    return type(objectId) == "string" and self._boundTouchObjectIds[objectId] == true
+end
+
+function RuntimeSessionV03:acceptanceSnapshot()
+    return table.freeze(table.clone(self._acceptance))
+end
+
 function RuntimeSessionV03:prepare()
     if self._state ~= "inactive" or self._prepared or self._invalidated then
         return failure("session-state", "runtime session cannot be prepared from its current state")
     end
     local connections = {}
+    local boundTouchObjectIds = {}
     for _, record in ipairs(self.candidate.plan.gameplayRecords) do
         if shouldBind(record) then
             local part = self.candidate.partById[record.id]
@@ -127,9 +191,14 @@ function RuntimeSessionV03:prepare()
                 return failure("session-connection", "gameplay connection preparation failed")
             end
             table.insert(connections, connection)
+            boundTouchObjectIds[record.id] = true
+            if record.role == "kill" then
+                self._acceptance.hazardConnections += 1
+            end
         end
     end
     self._connections = connections
+    self._boundTouchObjectIds = boundTouchObjectIds
     self._prepared = true
     return true, nil
 end
@@ -183,7 +252,7 @@ function RuntimeSessionV03:checkCurrent(expected)
     if self.pointer.currentManifestHash ~= self.manifestHash then
         return failure("session-manifest", "runtime session manifest identity is stale")
     end
-    if self.pointer.currentRoot ~= root or root.Destroyed == true then
+    if self.pointer.currentRoot ~= root or root.Parent ~= self.runtime.workspace then
         return failure("session-root", "runtime session root is stale")
     end
     if
@@ -215,11 +284,17 @@ function RuntimeSessionV03:checkCurrent(expected)
         end
     end
     if expected.player ~= nil or expected.character ~= nil then
+        local userId = nil
+        local character = nil
+        local resolved = pcall(function()
+            userId = self.runtime.playerUserId(expected.player)
+            character = self.runtime.playerCharacter(expected.player)
+        end)
         if
-            type(expected.player) ~= "table"
-            or type(expected.player.UserId) ~= "number"
+            not resolved
+            or not validPlayerKey(userId)
             or expected.character == nil
-            or expected.player.Character ~= expected.character
+            or character ~= expected.character
         then
             return failure("session-character", "captured player character is stale")
         end
@@ -227,16 +302,15 @@ function RuntimeSessionV03:checkCurrent(expected)
     return true, nil
 end
 
-local function playerKey(player)
-    if
-        type(player) ~= "table"
-        or type(player.UserId) ~= "number"
-        or player.UserId ~= math.floor(player.UserId)
-        or player.UserId <= 0
-    then
+function RuntimeSessionV03:_playerKey(player)
+    local key = nil
+    local resolved = pcall(function()
+        key = self.runtime.playerUserId(player)
+    end)
+    if not resolved or not validPlayerKey(key) then
         return nil
     end
-    return player.UserId
+    return key
 end
 
 function RuntimeSessionV03:_nextRouteObject(sourceObjectId)
@@ -258,7 +332,7 @@ function RuntimeSessionV03:_nextRouteObject(sourceObjectId)
 end
 
 function RuntimeSessionV03:_placementObject(player)
-    local key = playerKey(player)
+    local key = self:_playerKey(player)
     local checkpoint = if key == nil then nil else self._checkpoints[key]
     if checkpoint ~= nil then
         local object = self.admitted.indexes.gameplayById[checkpoint.checkpointObjectId]
@@ -276,7 +350,7 @@ function RuntimeSessionV03:_placementObject(player)
 end
 
 function RuntimeSessionV03:placeCharacter(player, character)
-    local key = playerKey(player)
+    local key = self:_playerKey(player)
     if key == nil then
         return failure("session-character", "placement player identity is invalid")
     end
@@ -354,11 +428,20 @@ function RuntimeSessionV03:placeCharacter(player, character)
     if not applied then
         return failure("placement-apply", "HumanoidRootPart placement failed")
     end
+    if self._pendingLethal[key] then
+        self._pendingLethal[key] = nil
+        self._acceptance.respawnsObserved += 1
+        if object.role == "checkpoint" then
+            self._acceptance.checkpointRespawnsObserved += 1
+        elseif object.role == "spawn" then
+            self._acceptance.spawnRespawnsObserved += 1
+        end
+    end
     return true, nil
 end
 
 function RuntimeSessionV03:_activateCheckpoint(player, record)
-    local key = playerKey(player)
+    local key = self:_playerKey(player)
     if key == nil then
         return false
     end
@@ -371,21 +454,27 @@ function RuntimeSessionV03:_activateCheckpoint(player, record)
         checkpointObjectId = record.id,
         checkpointOrder = order,
     })
-    player:SetAttribute(CHECKPOINT_ATTRIBUTE, order)
+    self.runtime.setPlayerAttribute(player, CHECKPOINT_ATTRIBUTE, order)
     return true
 end
 
 function RuntimeSessionV03:checkpointOrder(player)
-    local key = playerKey(player)
+    local key = self:_playerKey(player)
     local checkpoint = if key == nil then nil else self._checkpoints[key]
     return if checkpoint == nil then nil else checkpoint.checkpointOrder
 end
 
 function RuntimeSessionV03:_kill(player, character, humanoid, record)
-    local key = playerKey(player)
-    if key == nil or type(humanoid) ~= "table" then
+    local key = self:_playerKey(player)
+    local humanoidValid = false
+    local checked = pcall(function()
+        humanoidValid = self.runtime.isHumanoid(humanoid)
+    end)
+    if key == nil or not checked or not humanoidValid then
         return false
     end
+    self._acceptance.humanoidsResolved += 1
+    self._acceptance.lastHumanoidResolved = true
     local debounces = self._debounces[key]
     if debounces == nil then
         debounces = {}
@@ -402,21 +491,28 @@ function RuntimeSessionV03:_kill(player, character, humanoid, record)
         debounces[record.id] = nil
         return false
     end
+    self._acceptance.lethalActions += 1
+    self._acceptance.lastLethalAction = true
+    self._pendingLethal[key] = true
+    if not self._lethalPlayers[key] then
+        self._lethalPlayers[key] = true
+        self._acceptance.lethalPlayerCount += 1
+    end
     return true
 end
 
 function RuntimeSessionV03:_finish(player)
-    local key = playerKey(player)
+    local key = self:_playerKey(player)
     if key == nil or self._finishes[key] then
         return false
     end
     self._finishes[key] = true
-    player:SetAttribute(FINISH_ATTRIBUTE, self.manifestHash)
+    self.runtime.setPlayerAttribute(player, FINISH_ATTRIBUTE, self.manifestHash)
     return true
 end
 
 function RuntimeSessionV03:finished(player)
-    local key = playerKey(player)
+    local key = self:_playerKey(player)
     return key ~= nil and self._finishes[key] == true
 end
 
@@ -431,7 +527,7 @@ function RuntimeSessionV03:adoptProgress(previousSession, players)
         return failure("session-progress", "same-manifest progress cannot be adopted")
     end
     for _, player in ipairs(players) do
-        local key = playerKey(player)
+        local key = self:_playerKey(player)
         if key ~= nil then
             local checkpoint = previousSession._checkpoints[key]
             if checkpoint ~= nil then
@@ -447,7 +543,7 @@ function RuntimeSessionV03:adoptProgress(previousSession, players)
                         checkpointOrder = checkpoint.checkpointOrder,
                     })
                 else
-                    player:SetAttribute(CHECKPOINT_ATTRIBUTE, nil)
+                    self.runtime.setPlayerAttribute(player, CHECKPOINT_ATTRIBUTE, nil)
                 end
             end
             if previousSession._finishes[key] == true then
@@ -459,16 +555,16 @@ function RuntimeSessionV03:adoptProgress(previousSession, players)
 end
 
 function RuntimeSessionV03:clearVisibleProgress(player)
-    if playerKey(player) == nil then
+    if self:_playerKey(player) == nil then
         return false
     end
-    player:SetAttribute(CHECKPOINT_ATTRIBUTE, nil)
-    player:SetAttribute(FINISH_ATTRIBUTE, nil)
+    self.runtime.setPlayerAttribute(player, CHECKPOINT_ATTRIBUTE, nil)
+    self.runtime.setPlayerAttribute(player, FINISH_ATTRIBUTE, nil)
     return true
 end
 
 function RuntimeSessionV03:removePlayer(player)
-    local key = playerKey(player)
+    local key = self:_playerKey(player)
     if key == nil then
         return false
     end
@@ -476,11 +572,25 @@ function RuntimeSessionV03:removePlayer(player)
     self._finishes[key] = nil
     self._debounces[key] = nil
     self._pendingPlacements[key] = nil
+    self._pendingLethal[key] = nil
+    self._lethalPlayers[key] = nil
     self:clearVisibleProgress(player)
     return true
 end
 
 function RuntimeSessionV03:_handleTouch(part, record, hit)
+    self._acceptance.touchCallbacks += 1
+    local isHazard = record.role == "kill" and record.behavior.kind == "kill" and record.behavior.killMode == "touch"
+    if isHazard then
+        self._acceptance.hazardTouchCallbacks += 1
+        self._acceptance.lastHazardObjectId = record.id
+        local touchedPartName, touchedPartClass = boundedTouchIdentity(hit)
+        self._acceptance.lastTouchedPartName = touchedPartName
+        self._acceptance.lastTouchedPartClass = touchedPartClass
+        self._acceptance.lastCharacterResolved = false
+        self._acceptance.lastHumanoidResolved = false
+        self._acceptance.lastLethalAction = false
+    end
     local player, character, humanoid = self.runtime.resolveTouch(hit)
     if player == nil or character == nil then
         return false
@@ -495,7 +605,13 @@ function RuntimeSessionV03:_handleTouch(part, record, hit)
         character = character,
     })
     if current == nil then
+        self._acceptance.staleCallbackRejections += 1
         return false
+    end
+    self._acceptance.validCharacterTouches += 1
+    if isHazard then
+        self._acceptance.validHazardCharacterTouches += 1
+        self._acceptance.lastCharacterResolved = true
     end
     if record.role == "checkpoint" and record.behavior.kind == "checkpoint" then
         return self:_activateCheckpoint(player, record)
@@ -515,10 +631,13 @@ function RuntimeSessionV03:dispose()
     self._invalidated = true
     local complete = disconnectAll(self._connections)
     self._connections = {}
+    self._boundTouchObjectIds = {}
     self._checkpoints = {}
     self._finishes = {}
     self._debounces = {}
     self._pendingPlacements = {}
+    self._pendingLethal = {}
+    self._lethalPlayers = {}
     self._state = "disposed"
     if not complete then
         return failure("session-disposal", "runtime session connection disposal was incomplete")

@@ -35,6 +35,9 @@ function FakeInstanceV03.__index(instance, key)
     if key == "Parent" then
         return rawget(instance, "_parent")
     end
+    if key == "Destroyed" then
+        error(string.format("Destroyed is not a valid member of %s", rawget(instance, "ClassName")))
+    end
     return FakeInstanceV03[key]
 end
 
@@ -45,7 +48,7 @@ function FakeInstanceV03.new(className, tracker)
         _children = {},
         _attributes = {},
         _tracker = tracker,
-        Destroyed = false,
+        _destroyed = false,
     }, FakeInstanceV03)
     if tracker ~= nil then
         tracker.allocations += 1
@@ -84,7 +87,10 @@ function FakeInstanceV03:IsA(className)
 end
 
 function FakeInstanceV03:Destroy()
-    if self.FailDestroy then
+    if rawget(self, "_destroyed") then
+        return
+    end
+    if rawget(self, "FailDestroy") then
         error("injected destroy failure")
     end
     for _, child in ipairs(self:GetChildren()) do
@@ -92,10 +98,14 @@ function FakeInstanceV03:Destroy()
     end
     detach(self)
     rawset(self, "_parent", nil)
-    self.Destroyed = true
+    rawset(self, "_destroyed", true)
     if self._tracker ~= nil and self._tracker.onDestroy ~= nil then
         self._tracker.onDestroy(self)
     end
+end
+
+function FakeInstanceV03.isDestroyed(instance)
+    return rawget(instance, "_destroyed") == true
 end
 
 function FakeInstanceV03.tracker()

@@ -5,19 +5,19 @@ does not widen, reinterpret, or migrate `0.2` records.
 
 ## Compatibility matrix
 
-| Concern                        | SceneManifest `0.2`                           | SceneManifest `0.3` G2 policy                           |
-| ------------------------------ | --------------------------------------------- | ------------------------------------------------------- |
-| Active status after G2d        | Active default                                | Opt-in library only; not selected by bootstrap          |
-| Manifest transport             | `roblox/generated/VerticalSliceManifest.luau` | G1d/G2 fixture; not selected by the default project     |
-| Validator                      | `ManifestValidator.luau`                      | `ManifestValidatorV03.luau` with G2b parity implemented |
-| Builder                        | Existing `Builder`/`SceneBuilderCore`         | `BuilderV03` plus G2c core; no production caller        |
-| Gameplay session               | Existing `PlayerProgress` and runtime         | `RuntimeSessionV03`, implemented but not default        |
-| Owner marker                   | `AIObbyBuilder/0.2`                           | `AIObbyBuilder/0.3`                                     |
-| Stage/checkpoint bounds        | Legacy maximum 20; checkpoint required        | 5–50 stages; zero checkpoints allowed                   |
-| Version selection              | Current bootstrap is implicitly `0.2`         | Future explicit server-lifetime selection               |
-| Cross-version coercion         | Rejected                                      | Rejected                                                |
-| Live cross-version replacement | Not supported                                 | Prohibited                                              |
-| Studio evidence                | Phase 0 reference recorded                    | Must be executed manually in G2e before cutover         |
+| Concern                        | SceneManifest `0.2`                                          | SceneManifest `0.3` G2 policy                                                                 |
+| ------------------------------ | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| Active status after G2d        | Active default                                               | Opt-in library only; not selected by bootstrap                                                |
+| Manifest transport             | `roblox/generated/VerticalSliceManifest.luau`                | G1d/G2 fixture; not selected by the default project                                           |
+| Validator                      | `ManifestValidator.luau`                                     | `ManifestValidatorV03.luau` with G2b parity implemented                                       |
+| Builder                        | Existing `Builder`/`SceneBuilderCore`                        | `BuilderV03` plus G2c core; no production caller                                              |
+| Gameplay session               | Existing `PlayerProgress` and runtime                        | `RuntimeSessionV03`, implemented but not default                                              |
+| Owner marker                   | `AIObbyBuilder/0.2`                                          | `AIObbyBuilder/0.3`                                                                           |
+| Stage/checkpoint bounds        | Legacy maximum 20; checkpoint required                       | 5–50 stages; zero checkpoints allowed                                                         |
+| Version selection              | Current bootstrap is implicitly `0.2`                        | Future explicit server-lifetime selection                                                     |
+| Cross-version coercion         | Rejected                                                     | Rejected                                                                                      |
+| Live cross-version replacement | Not supported                                                | Prohibited                                                                                    |
+| Studio evidence                | [Phase 0 regression recorded](./phase0-smoke-2026-07-31.txt) | [Pre-cutover sequences completed](./g2e-studio-evidence-2026-07-31.md); evidence gaps pending |
 
 ## Server-lifetime selection
 

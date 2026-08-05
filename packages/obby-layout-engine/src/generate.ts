@@ -50,6 +50,7 @@ import {
   NATIVE_PART_RECIPE_REGISTRY,
   expandNativePartRecipe,
 } from "./recipes.js";
+import { assessLayoutGeometryIntegrity } from "./geometry-integrity.js";
 import { assessRequiredRoute } from "./reachability.js";
 import { deriveLayoutDomainSeed } from "./seed.js";
 import {
@@ -454,7 +455,7 @@ export function generateLayout(
   if (firstCell === undefined)
     throw new LayoutEngineError("invariant", "first layout cell is missing");
   const spawnCenter = {
-    x: rounded(firstCell.x - cellWidth, precisionDecimalPlaces),
+    x: rounded(firstCell.x - cellWidth * 0.75, precisionDecimalPlaces),
     z: firstCell.z,
   };
   const spawnDirection = directionBetween(spawnCenter, firstCell);
@@ -657,7 +658,9 @@ export function generateLayout(
               y: rounded(
                 fallVoid
                   ? routeBaseCenterY - fallDepth
-                  : routeBaseCenterY - thickness,
+                  : routeBaseCenterY +
+                      numeric(configuration, "spawn-thickness") / 2 +
+                      thickness / 2,
                 precisionDecimalPlaces,
               ),
               z: rounded(
@@ -678,9 +681,9 @@ export function generateLayout(
           },
           size: fallVoid
             ? {
-                x: rounded(cellWidth + 2 * fallMargin, precisionDecimalPlaces),
+                x: rounded(cellWidth - 2 * fallMargin, precisionDecimalPlaces),
                 y: thickness,
-                z: rounded(cellDepth + 2 * fallMargin, precisionDecimalPlaces),
+                z: rounded(cellDepth - 2 * fallMargin, precisionDecimalPlaces),
               }
             : { x: hazardSize, y: thickness, z: hazardSize },
           canCollide: false,
@@ -846,6 +849,24 @@ export function generateLayout(
     "Finish",
   ];
   const routeLayoutId = `layout-route-${source.obbySpec.route.routeHash.slice(7, 23)}`;
+  operation(options, "geometry-integrity");
+  const geometryIntegrity = assessLayoutGeometryIntegrity(objects, {
+    epsilonStuds: configuration.numericPolicy.measurementToleranceStuds,
+    firstFailingPipelineBoundary: "LayoutSpec-generation",
+    maximumFindings: configuration.limits.maxGameplayObjects,
+    orderedRouteObjectIds: routeObjectIds,
+  });
+  if (geometryIntegrity.blockingFindingCount > 0) {
+    const first = geometryIntegrity.findings.find(
+      (finding) => finding.blocking,
+    );
+    throw new LayoutEngineError(
+      "geometry-integrity",
+      first === undefined
+        ? "layout geometry integrity failed without a bounded finding"
+        : `layout geometry integrity rejected ${first.objectAId}/${first.objectBId}: ${first.classification}; positions=${JSON.stringify([first.positionA, first.positionB])}; sizes=${JSON.stringify([first.sizeA, first.sizeB])}`,
+    );
+  }
   operation(options, "reachability-classification");
   const reachability = assessRequiredRoute(
     routeLayoutId,

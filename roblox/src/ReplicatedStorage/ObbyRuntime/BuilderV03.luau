@@ -17,6 +17,9 @@ local function defaultRuntime()
     local Workspace = game:GetService("Workspace")
     return {
         workspace = Workspace,
+        isWorkspace = function(value)
+            return typeof(value) == "Instance" and value == Workspace and value:IsA("Workspace")
+        end,
         connectTouched = function(part, callback)
             return part.Touched:Connect(callback)
         end,
@@ -48,6 +51,27 @@ local function defaultRuntime()
         killHumanoid = function(humanoid)
             humanoid.Health = 0
         end,
+        playerUserId = function(player)
+            if typeof(player) ~= "Instance" or not player:IsA("Player") then
+                return nil
+            end
+            return player.UserId
+        end,
+        playerCharacter = function(player)
+            if typeof(player) ~= "Instance" or not player:IsA("Player") then
+                return nil
+            end
+            return player.Character
+        end,
+        setPlayerAttribute = function(player, name, value)
+            if typeof(player) ~= "Instance" or not player:IsA("Player") then
+                error("player identity is invalid")
+            end
+            player:SetAttribute(name, value)
+        end,
+        isHumanoid = function(value)
+            return typeof(value) == "Instance" and value:IsA("Humanoid")
+        end,
         getPlayers = function()
             return Players:GetPlayers()
         end,
@@ -67,11 +91,16 @@ end
 local function validRuntime(runtime)
     return type(runtime) == "table"
         and runtime.workspace ~= nil
+        and type(runtime.isWorkspace) == "function"
         and type(runtime.connectTouched) == "function"
         and type(runtime.resolveTouch) == "function"
         and type(runtime.waitForRootPart) == "function"
         and type(runtime.cframe) == "function"
         and type(runtime.killHumanoid) == "function"
+        and type(runtime.playerUserId) == "function"
+        and type(runtime.playerCharacter) == "function"
+        and type(runtime.setPlayerAttribute) == "function"
+        and type(runtime.isHumanoid) == "function"
         and type(runtime.getPlayers) == "function"
         and type(runtime.connectPlayerAdded) == "function"
         and type(runtime.connectPlayerRemoving) == "function"
@@ -89,12 +118,11 @@ local function disconnect(connection)
 end
 
 local function destroyCandidate(candidate)
-    if candidate == nil or candidate.stagingContainer == nil or candidate.stagingContainer.Destroyed == true then
+    if candidate == nil then
         return true
     end
-    return pcall(function()
-        candidate.stagingContainer:Destroy()
-    end)
+    local disposed = SceneBuilderCoreV03.disposeCandidate(candidate)
+    return disposed == true
 end
 
 function BuilderV03:_deferPlacement(player, character)
@@ -124,7 +152,7 @@ function BuilderV03:_bindPlayer(player)
     end
     self.playerConnectionByPlayer[player] = connection
     table.insert(self.playerOrder, player)
-    local character = player.Character
+    local character = self.runtime.playerCharacter(player)
     if character ~= nil and self.rootState.currentSession ~= nil then
         self:_deferPlacement(player, character)
     end
@@ -154,9 +182,13 @@ function BuilderV03.new(configuredRuntime)
     if not validRuntime(runtime) then
         return failure("builder-runtime", "BuilderV03 runtime is invalid")
     end
+    local rootState = SceneBuilderCoreV03.newRootState()
+    local replacementRuntime =
+        SceneBuilderCoreV03.newReplacementRuntime(runtime.workspace, rootState, runtime.isWorkspace)
     local self = setmetatable({
         runtime = runtime,
-        rootState = SceneBuilderCoreV03.newRootState(),
+        rootState = rootState,
+        replacementRuntime = replacementRuntime,
         generation = 0,
         playerConnectionByPlayer = {},
         playerOrder = {},
@@ -276,7 +308,7 @@ function BuilderV03:build(moduleScript, expectedManifestHash, options)
     commitOptions.nextGenerationToken = generationToken
     commitOptions.deferCleanup = true
     local root, commitError, cleanupReceipt =
-        SceneBuilderCoreV03.commitCandidate(candidate, self.runtime.workspace, self.rootState, commitOptions)
+        SceneBuilderCoreV03.commitCandidate(candidate, self.replacementRuntime, commitOptions)
     if root == nil then
         session:dispose()
         return nil, commitError
@@ -301,7 +333,7 @@ function BuilderV03:build(moduleScript, expectedManifestHash, options)
 
     local cleaned, cleanupError = SceneBuilderCoreV03.finalizeCommit(cleanupReceipt)
     for _, player in ipairs(players) do
-        local character = player.Character
+        local character = self.runtime.playerCharacter(player)
         if character ~= nil then
             self:_deferPlacement(player, character)
         end

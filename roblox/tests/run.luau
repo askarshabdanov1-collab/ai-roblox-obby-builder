@@ -15,6 +15,7 @@ local registerG2NativePartFactoryTests = require("./G2NativePartFactoryTests")
 local registerG2SceneBuilderCoreTests = require("./G2SceneBuilderCoreTests")
 local registerG2RuntimeSessionTests = require("./G2RuntimeSessionTests")
 local registerG2BuilderTests = require("./G2BuilderTests")
+local registerG2eAcceptanceHarnessTests = require("./G2eAcceptanceHarnessTests")
 
 local passed = 0
 
@@ -674,5 +675,6 @@ registerG2NativePartFactoryTests(test, expect)
 registerG2SceneBuilderCoreTests(test, expect)
 registerG2RuntimeSessionTests(test, expect)
 registerG2BuilderTests(test, expect)
+registerG2eAcceptanceHarnessTests(test, expect)
 
 print(string.format("1..%d", passed))

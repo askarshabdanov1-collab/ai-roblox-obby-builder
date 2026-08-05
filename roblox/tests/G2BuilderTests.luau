@@ -1,5 +1,7 @@
 local BuilderV03 = require("../src/ReplicatedStorage/ObbyRuntime/BuilderV03")
 local RuntimeSessionV03 = require("../src/ReplicatedStorage/ObbyRuntime/RuntimeSessionV03")
+local G2ePlacementCaptureV1 = require("../g2e/G2ePlacementCaptureV1")
+local FakeInstanceV03 = require("./support/FakeInstanceV03")
 local G2RuntimeHarnessV03 = require("./support/G2RuntimeHarnessV03")
 
 local maximum50 = require("../generated/G2Maximum50ManifestV03")
@@ -25,6 +27,40 @@ local function firstByRole(manifest, role)
 end
 
 return function(test, expect)
+    test("defers replacement placement until yield and applies only the final session", function()
+        local harness = G2RuntimeHarnessV03.new()
+        local player = harness:newPlayer(101)
+        harness:newCharacter(player)
+        harness:addPlayer(player)
+        local builder = BuilderV03.new(harness.runtime)
+        local captureByResult = {}
+        for _, manifest in ipairs({ reference, replacement, reference }) do
+            local result = build(builder, manifest)
+            captureByResult[result] = G2ePlacementCaptureV1.attach(result.session, function(_, _, value)
+                return table.freeze({ observedCFrame = value.rootPart.CFrame })
+            end)
+        end
+        local finalResult = builder:currentSession()
+        local finalCapture = nil
+        for result, capture in pairs(captureByResult) do
+            if result.session == finalResult then
+                finalCapture = capture
+            else
+                expect(not capture.completeFor({ player }), "stale replacement placement ran before yield")
+            end
+        end
+        expect(finalCapture ~= nil and not finalCapture.completeFor({ player }), "final placement ran synchronously")
+
+        harness:runDeferred()
+
+        expect(finalCapture.completeFor({ player }), "final replacement placement did not run after yield")
+        for result, capture in pairs(captureByResult) do
+            if result.session ~= finalResult then
+                expect(not capture.completeFor({ player }), "stale replacement placement was accepted")
+            end
+        end
+    end)
+
     test("orchestrates admission candidate session activation and existing-player placement", function()
         local harness = G2RuntimeHarnessV03.new()
         local playerA = harness:newPlayer(101)
@@ -65,7 +101,7 @@ return function(test, expect)
             expect(builder:currentSession() == first.session, "old session pointer changed at " .. boundary)
             expect(first.session:status() == "active", "old session was invalidated at " .. boundary)
             expect(
-                first.root.Parent == harness.workspace and not first.root.Destroyed,
+                first.root.Parent == harness.workspace and not FakeInstanceV03.isDestroyed(first.root),
                 "old scene was not preserved at " .. boundary
             )
         end
@@ -99,6 +135,49 @@ return function(test, expect)
         expect(second.session:checkpointOrder(player) == nil, "old checkpoint callback mutated new session")
         expect(harness.tracker.kills == 0, "old hazard callback mutated the player")
         expect(harness.tracker.activeConnections == second.session:connectionCount() + 3, "old connections leaked")
+    end)
+
+    test("rejects a direct stale hazard callback without current-scene mutation", function()
+        local harness = G2RuntimeHarnessV03.new()
+        local player = harness:newPlayer(101)
+        local character = harness:newCharacter(player)
+        harness:addPlayer(player)
+        local builder = BuilderV03.new(harness.runtime)
+        local first = build(builder, reference)
+        local hazardRecord = nil
+        for _, record in ipairs(first.session.candidate.plan.gameplayRecords) do
+            if record.role == "kill" then
+                hazardRecord = record
+                break
+            end
+        end
+        expect(hazardRecord ~= nil, "reference hazard record is unavailable")
+        local hazardPart = first.session.candidate.partById[hazardRecord.id]
+        local second = build(builder, replacement)
+        local currentRoot = second.root
+        local currentBefore = second.session:acceptanceSnapshot()
+        local staleBefore = first.session:acceptanceSnapshot()
+        local healthBefore = character.humanoid.Health
+
+        local accepted = first.session:_handleTouch(hazardPart, hazardRecord, harness:hit(player, character))
+
+        local currentAfter = second.session:acceptanceSnapshot()
+        local staleAfter = first.session:acceptanceSnapshot()
+        expect(accepted == false, "direct stale hazard callback was accepted")
+        expect(
+            staleAfter.staleCallbackRejections == staleBefore.staleCallbackRejections + 1,
+            "direct stale callback did not reach the generation rejection"
+        )
+        expect(staleAfter.lethalActions == staleBefore.lethalActions, "stale session performed a lethal action")
+        expect(character.humanoid.Health == healthBefore, "stale callback mutated the character")
+        expect(
+            builder:currentSession() == second.session and second.root == currentRoot,
+            "current scene identity changed"
+        )
+        expect(
+            currentAfter.lethalActions == currentBefore.lethalActions,
+            "stale callback mutated current acceptance state"
+        )
     end)
 
     test("preserves ID-based progress across a same-manifest rebuild", function()
@@ -228,6 +307,9 @@ return function(test, expect)
         expect(builder:currentSession() == first.session, "connection failure changed current session")
         expect(first.session:status() == "active", "connection failure invalidated old session")
         expect(harness.tracker.activeConnections == activeBefore, "partial new-session connection leaked")
-        expect(first.root.Parent == harness.workspace and not first.root.Destroyed, "connection failure changed scene")
+        expect(
+            first.root.Parent == harness.workspace and not FakeInstanceV03.isDestroyed(first.root),
+            "connection failure changed scene"
+        )
     end)
 end

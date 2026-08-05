@@ -39,7 +39,9 @@ export function estimateLayoutWorkUnits(
     120 * definitionCount +
     80 * hazardCount +
     12 * assetIntentCount +
-    8 * stageCount * definitionCount;
+    8 * stageCount * definitionCount +
+    ((3 * stageCount + hazardCount + 2) * (3 * stageCount + hazardCount + 1)) /
+      2;
   if (!Number.isSafeInteger(units))
     throw new LayoutEngineError("work-limit", "layout work estimate overflow");
   return units;

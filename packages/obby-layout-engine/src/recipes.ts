@@ -27,8 +27,8 @@ export const NATIVE_PART_RECIPE_REGISTRY = Object.freeze(
     mechanicIds.map((mechanicId) => [
       mechanicId,
       Object.freeze({
-        recipeId: `native-part-${mechanicId}-v1`,
-        recipeVersion: "1.0.0",
+        recipeId: `native-part-${mechanicId}-v2`,
+        recipeVersion: "2.0.0",
         primitiveFamily: "native-parts",
         gameplayAuthority: "native-gameplay",
       } satisfies NativePartRecipeMetadata),
@@ -109,6 +109,34 @@ function pointDirection(
   return index < (count - 1) / 2 ? incoming : outgoing;
 }
 
+function routePoint(
+  ratio: number,
+  start: Readonly<{ x: number; z: number }>,
+  center: Readonly<{ x: number; z: number }>,
+  finish: Readonly<{ x: number; z: number }>,
+  incoming: HorizontalDirection,
+  outgoing: HorizontalDirection,
+  precisionDecimalPlaces: number,
+): Readonly<{ x: number; z: number }> {
+  if (incoming.x === outgoing.x && incoming.z === outgoing.z)
+    return {
+      x: mix(start.x, finish.x, ratio, precisionDecimalPlaces),
+      z: mix(start.z, finish.z, ratio, precisionDecimalPlaces),
+    };
+  if (ratio <= 0.5) {
+    const legRatio = ratio * 2;
+    return {
+      x: mix(start.x, center.x, legRatio, precisionDecimalPlaces),
+      z: mix(start.z, center.z, legRatio, precisionDecimalPlaces),
+    };
+  }
+  const legRatio = (ratio - 0.5) * 2;
+  return {
+    x: mix(center.x, finish.x, legRatio, precisionDecimalPlaces),
+    z: mix(center.z, finish.z, legRatio, precisionDecimalPlaces),
+  };
+}
+
 export function expandNativePartRecipe(
   input: ExpandRecipeInput,
 ): readonly RecipeObject[] {
@@ -181,7 +209,7 @@ export function expandNativePartRecipe(
   };
   const result: RecipeObject[] = [];
   for (let index = 0; index < count; index += 1) {
-    const ratio = count === 1 ? 0.5 : index / (count - 1);
+    const ratio = count === 1 ? 0 : index / (count - 1);
     const direction = pointDirection(
       index,
       count,
@@ -199,10 +227,18 @@ export function expandNativePartRecipe(
         : 0;
     const verticalOffset =
       input.mechanicId === "height-changes" ? vertical * middleWeight : 0;
+    const routePosition = routePoint(
+      ratio,
+      start,
+      input.cell,
+      finish,
+      input.incoming,
+      input.outgoing,
+      input.precisionDecimalPlaces,
+    );
     const position: Vector3 = {
       x: rounded(
-        mix(start.x, finish.x, ratio, input.precisionDecimalPlaces) +
-          perpendicular.x * lateralOffset,
+        routePosition.x + perpendicular.x * lateralOffset,
         input.precisionDecimalPlaces,
       ),
       y: rounded(
@@ -210,8 +246,7 @@ export function expandNativePartRecipe(
         input.precisionDecimalPlaces,
       ),
       z: rounded(
-        mix(start.z, finish.z, ratio, input.precisionDecimalPlaces) +
-          perpendicular.z * lateralOffset,
+        routePosition.z + perpendicular.z * lateralOffset,
         input.precisionDecimalPlaces,
       ),
     };

@@ -133,6 +133,108 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
     }
   });
 
+  it("uses only Roblox Instance members in production destroyed-state checks", async () => {
+    const runtimeDirectory = "roblox/src/ReplicatedStorage/ObbyRuntime";
+    const runtimeModules = (await readdir(runtimeDirectory)).filter((name) =>
+      name.endsWith(".luau"),
+    );
+    const destroyedMemberRead = /\.Destroyed\b|\[\s*["']Destroyed["']\s*\]/u;
+
+    for (const module of runtimeModules) {
+      const source = await readFile(`${runtimeDirectory}/${module}`, "utf8");
+      expect(
+        destroyedMemberRead.test(source),
+        `${module} reads the fake-only Destroyed member`,
+      ).toBe(false);
+    }
+  });
+
+  it("keeps replacement runtime validation compatible with real Workspace Instances", async () => {
+    const core = await readFile(
+      "roblox/src/ReplicatedStorage/ObbyRuntime/SceneBuilderCoreV03.luau",
+      "utf8",
+    );
+    expect(core).not.toMatch(/type\(workspace\)\s*[~=]=\s*["']table["']/u);
+    expect(core).toContain("commit-runtime-workspace");
+    expect(core).toContain("commit-runtime-current-root");
+    expect(core).toContain("commit-runtime-manifest");
+    expect(core).toContain("commit-runtime-session");
+
+    const bootstrap = await readFile(
+      "roblox/g2e/G2eAcceptanceBootstrap.server.luau",
+      "utf8",
+    );
+    expect(bootstrap).toContain("[G2 acceptance diagnostic]");
+    expect(bootstrap).toContain('boundedText(value.field, "none", 80)');
+  });
+
+  it("keeps G2e observation emission on validated bounded collections", async () => {
+    const harness = await readFile(
+      "roblox/g2e/G2eAcceptanceHarness.luau",
+      "utf8",
+    );
+    const observation = await readFile(
+      "roblox/g2e/G2eObservationV03.luau",
+      "utf8",
+    );
+    const acceptanceBootstrap = await readFile(
+      "roblox/g2e/G2eAcceptanceBootstrap.server.luau",
+      "utf8",
+    );
+    expect(observation).toContain("reachability.requiredTransitions");
+    expect(observation).toContain("G2eObservationV03.formatResult");
+    expect(harness).not.toContain("manifest.navigation.requiredTransitions");
+    expect(harness).toContain("G2eObservationV03.orderedRecords");
+    expect(acceptanceBootstrap).not.toContain(
+      'string.format("%s: %s", observation.diagnosticCode',
+    );
+    expect(acceptanceBootstrap).toContain(
+      "G2eAcceptanceHarness.formatObservationResult(observation)",
+    );
+
+    const project = await readFile("roblox/g2e-smoke.project.json", "utf8");
+    expect(project).toContain("G2eObservationV03");
+  });
+
+  it("uses runtime adapters instead of fake table types for Roblox identities", async () => {
+    const session = await readFile(
+      "roblox/src/ReplicatedStorage/ObbyRuntime/RuntimeSessionV03.luau",
+      "utf8",
+    );
+    const builder = await readFile(
+      "roblox/src/ReplicatedStorage/ObbyRuntime/BuilderV03.luau",
+      "utf8",
+    );
+    expect(session).not.toContain('type(expected.player) ~= "table"');
+    expect(session).not.toContain('type(humanoid) ~= "table"');
+    expect(session).toContain("self.runtime.playerUserId");
+    expect(session).toContain("self.runtime.isHumanoid");
+    expect(session).toContain("value ~= 0");
+    expect(session).not.toContain("key <= 0");
+    expect(builder).toContain('typeof(player) ~= "Instance"');
+  });
+
+  it("keeps the concrete G2e hazard trace and stale-callback check on the control surface", async () => {
+    const session = await readFile(
+      "roblox/src/ReplicatedStorage/ObbyRuntime/RuntimeSessionV03.luau",
+      "utf8",
+    );
+    const harness = await readFile(
+      "roblox/g2e/G2eAcceptanceHarness.luau",
+      "utf8",
+    );
+    const bootstrap = await readFile(
+      "roblox/g2e/G2eAcceptanceBootstrap.server.luau",
+      "utf8",
+    );
+    expect(session).toContain("touchConnectionBound");
+    expect(session).toContain("hazardTouchCallbacks");
+    expect(harness).toContain("emitHazardTrace");
+    expect(bootstrap).toContain('hazardObjectId = "Stage04Hazard001"');
+    expect(harness).toContain("VerifyStaleHazardCallback");
+    expect(harness).toContain("InspectHazard");
+  });
+
   it("keeps G2d opt-in and excludes later-phase integrations", async () => {
     const runtimeDirectory = "roblox/src/ReplicatedStorage/ObbyRuntime";
     const bootstrap = await readFile(
@@ -174,5 +276,44 @@ describe("G2 TypeScript/Luau shared valid fixtures", () => {
           forbidden,
         );
     }
+  });
+
+  it("isolates the G2e Studio acceptance project from the default 0.2 path", async () => {
+    const packageJson = JSON.parse(await readFile("package.json", "utf8")) as {
+      scripts?: Record<string, string>;
+    };
+    expect(packageJson.scripts?.["roblox:g2e:build"]).toBe(
+      "tsx tools/prepare-g2e-build.ts && rojo build roblox/g2e-smoke.project.json --output build/G2eStudioAcceptance.rbxlx",
+    );
+
+    const project = await readFile("roblox/g2e-smoke.project.json", "utf8");
+    expect(project).toContain("G2eAcceptanceBootstrap");
+    expect(project).toContain("G2ReferenceManifestV03");
+    expect(project).toContain("G2Maximum50ManifestV03");
+    expect(project).toContain("G2ZeroCheckpointManifestV03");
+    expect(project).not.toContain("ObbyBootstrap.server.luau");
+    expect(project).not.toContain("VerticalSliceManifest.luau");
+
+    const bootstrap = await readFile(
+      "roblox/g2e/G2eAcceptanceBootstrap.server.luau",
+      "utf8",
+    );
+    expect(bootstrap).toContain("BuilderV03");
+    expect(bootstrap).toContain("G2eAcceptanceHarness");
+    expect(bootstrap).toContain("G2ReferenceManifestV03");
+    expect(bootstrap).not.toContain("Builder.build");
+    expect(bootstrap).not.toContain("HttpService");
+
+    const defaultProject = await readFile(
+      "roblox/default.project.json",
+      "utf8",
+    );
+    const defaultBootstrap = await readFile(
+      "roblox/src/ServerScriptService/ObbyBootstrap.server.luau",
+      "utf8",
+    );
+    expect(defaultProject).not.toContain("G2eAcceptance");
+    expect(defaultProject).not.toContain("G2ReferenceManifestV03");
+    expect(defaultBootstrap).not.toContain("BuilderV03");
   });
 });

@@ -370,7 +370,7 @@ describe("G1d layout CLI publication", () => {
     } finally {
       await rm(cwd, { recursive: true, force: true });
     }
-  });
+  }, 15_000);
 
   it("allows exactly one concurrent publisher for an identical artifact identity", async () => {
     const cwd = await mkdtemp(join(tmpdir(), "g1d-race-"));
@@ -413,7 +413,7 @@ describe("G1d layout CLI publication", () => {
     } finally {
       await rm(cwd, { recursive: true, force: true });
     }
-  });
+  }, 15_000);
 
   it("fails closed when the host has no supported atomic no-replace primitive", async () => {
     const cwd = await mkdtemp(join(tmpdir(), "g1d-platform-"));

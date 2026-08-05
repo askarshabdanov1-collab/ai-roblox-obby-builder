@@ -1,0 +1,63 @@
+{
+  "name": "AIObbyBuilderG2eStudioAcceptance",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "ObbyRuntime": {
+        "$path": "src/ReplicatedStorage/ObbyRuntime"
+      }
+    },
+    "ServerScriptService": {
+      "G2eAcceptanceBootstrap": {
+        "$path": "g2e/G2eAcceptanceBootstrap.server.luau"
+      },
+      "G2eAcceptanceHarness": {
+        "$path": "g2e/G2eAcceptanceHarness.luau"
+      },
+      "G2eAcceptanceRecordsV1": {
+        "$path": "g2e/G2eAcceptanceRecordsV1.luau"
+      },
+      "G2eControlProtocol": {
+        "$path": "g2e/G2eControlProtocol.luau"
+      },
+      "G2eCharacterPartReadinessV1": {
+        "$path": "g2e/G2eCharacterPartReadinessV1.luau"
+      },
+      "G2eObservationV03": {
+        "$path": "g2e/G2eObservationV03.luau"
+      },
+      "G2eGameplayObservationV03": {
+        "$path": "g2e/G2eGameplayObservationV03.luau"
+      },
+      "G2ePlacementCaptureV1": {
+        "$path": "g2e/G2ePlacementCaptureV1.luau"
+      }
+    },
+    "ServerStorage": {
+      "G2eBuildProvenance": {
+        "$path": "../build/g2e-provenance/G2eBuildProvenance.luau"
+      },
+      "G2eManifests": {
+        "$className": "Folder",
+        "G2ReferenceManifestV03": {
+          "$path": "generated/G2ReferenceManifestV03.luau"
+        },
+        "G2Maximum50ManifestV03": {
+          "$path": "generated/G2Maximum50ManifestV03.luau"
+        },
+        "G2ZeroCheckpointManifestV03": {
+          "$path": "generated/G2ZeroCheckpointManifestV03.luau"
+        },
+        "G2ReplacementManifestV03": {
+          "$path": "generated/G2ReplacementManifestV03.luau"
+        },
+        "G2WedgeManifestV03": {
+          "$path": "generated/G2WedgeManifestV03.luau"
+        },
+        "G2DecorativeManifestV03": {
+          "$path": "generated/G2DecorativeManifestV03.luau"
+        }
+      }
+    }
+  }
+}

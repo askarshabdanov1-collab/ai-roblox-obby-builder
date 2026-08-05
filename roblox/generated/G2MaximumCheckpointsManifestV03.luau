@@ -35,12 +35,12 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 20,
+                    ["x"] = 28,
                     ["y"] = 13,
                     ["z"] = -4,
                 },
                 ["minimum"] = {
-                    ["x"] = 12,
+                    ["x"] = 20,
                     ["y"] = 1,
                     ["z"] = -12,
                 },
@@ -57,14 +57,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 36,
+                    ["x"] = 52,
                     ["y"] = 13,
-                    ["z"] = 12,
+                    ["z"] = -4,
                 },
                 ["minimum"] = {
-                    ["x"] = 28,
+                    ["x"] = 44,
                     ["y"] = 1,
-                    ["z"] = 4,
+                    ["z"] = -12,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -79,12 +79,12 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 52,
+                    ["x"] = 76,
                     ["y"] = 13,
                     ["z"] = 12,
                 },
                 ["minimum"] = {
-                    ["x"] = 44,
+                    ["x"] = 68,
                     ["y"] = 1,
                     ["z"] = 4,
                 },
@@ -97,50 +97,6 @@ return {
             ["sourceStageId"] = "stage-04",
             ["sourceVisualStyleIntentId"] = "visual-global",
             ["zoneId"] = "layout-zone-004",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 68,
-                    ["y"] = 13,
-                    ["z"] = 12,
-                },
-                ["minimum"] = {
-                    ["x"] = 60,
-                    ["y"] = 1,
-                    ["z"] = 4,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-05",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-005",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 84,
-                    ["y"] = 13,
-                    ["z"] = 12,
-                },
-                ["minimum"] = {
-                    ["x"] = 76,
-                    ["y"] = 1,
-                    ["z"] = 4,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-06",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-006",
         },
         {
             ["bounds"] = {
@@ -160,6 +116,50 @@ return {
             ["sourceAssetIntentIds"] = {
                 "asset-decoration",
             },
+            ["sourceStageId"] = "stage-05",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-005",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 124,
+                    ["y"] = 13,
+                    ["z"] = -4,
+                },
+                ["minimum"] = {
+                    ["x"] = 116,
+                    ["y"] = 1,
+                    ["z"] = -12,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-06",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-006",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 148,
+                    ["y"] = 13,
+                    ["z"] = -4,
+                },
+                ["minimum"] = {
+                    ["x"] = 140,
+                    ["y"] = 1,
+                    ["z"] = -12,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
             ["sourceStageId"] = "stage-07",
             ["sourceVisualStyleIntentId"] = "visual-global",
             ["zoneId"] = "layout-zone-007",
@@ -167,12 +167,12 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 124,
+                    ["x"] = 164,
                     ["y"] = 13,
                     ["z"] = 4,
                 },
                 ["minimum"] = {
-                    ["x"] = 116,
+                    ["x"] = 156,
                     ["y"] = 1,
                     ["z"] = -4,
                 },
@@ -189,14 +189,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 116,
+                    ["x"] = 172,
                     ["y"] = 13,
-                    ["z"] = 12,
+                    ["z"] = 20,
                 },
                 ["minimum"] = {
-                    ["x"] = 108,
+                    ["x"] = 164,
                     ["y"] = 1,
-                    ["z"] = 4,
+                    ["z"] = 12,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -211,14 +211,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 100,
+                    ["x"] = 148,
                     ["y"] = 13,
-                    ["z"] = 28,
+                    ["z"] = 20,
                 },
                 ["minimum"] = {
-                    ["x"] = 92,
+                    ["x"] = 140,
                     ["y"] = 1,
-                    ["z"] = 20,
+                    ["z"] = 12,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -233,14 +233,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 84,
+                    ["x"] = 124,
                     ["y"] = 13,
-                    ["z"] = 12,
+                    ["z"] = 36,
                 },
                 ["minimum"] = {
-                    ["x"] = 76,
+                    ["x"] = 116,
                     ["y"] = 1,
-                    ["z"] = 4,
+                    ["z"] = 28,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -255,14 +255,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 68,
+                    ["x"] = 100,
                     ["y"] = 13,
-                    ["z"] = 28,
+                    ["z"] = 36,
                 },
                 ["minimum"] = {
-                    ["x"] = 60,
+                    ["x"] = 92,
                     ["y"] = 1,
-                    ["z"] = 20,
+                    ["z"] = 28,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -277,14 +277,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 52,
+                    ["x"] = 76,
                     ["y"] = 13,
-                    ["z"] = 12,
+                    ["z"] = 36,
                 },
                 ["minimum"] = {
-                    ["x"] = 44,
+                    ["x"] = 68,
                     ["y"] = 1,
-                    ["z"] = 4,
+                    ["z"] = 28,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -299,14 +299,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 36,
+                    ["x"] = 52,
                     ["y"] = 13,
-                    ["z"] = 28,
+                    ["z"] = 36,
                 },
                 ["minimum"] = {
-                    ["x"] = 28,
+                    ["x"] = 44,
                     ["y"] = 1,
-                    ["z"] = 20,
+                    ["z"] = 28,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -321,14 +321,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 20,
+                    ["x"] = 28,
                     ["y"] = 13,
-                    ["z"] = 28,
+                    ["z"] = 20,
                 },
                 ["minimum"] = {
-                    ["x"] = 12,
+                    ["x"] = 20,
                     ["y"] = 1,
-                    ["z"] = 20,
+                    ["z"] = 12,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -345,12 +345,12 @@ return {
                 ["maximum"] = {
                     ["x"] = -4,
                     ["y"] = 13,
-                    ["z"] = 20,
+                    ["z"] = 28,
                 },
                 ["minimum"] = {
                     ["x"] = -12,
                     ["y"] = 1,
-                    ["z"] = 12,
+                    ["z"] = 20,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -387,14 +387,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 20,
+                    ["x"] = 28,
                     ["y"] = 13,
-                    ["z"] = 28,
+                    ["z"] = 44,
                 },
                 ["minimum"] = {
-                    ["x"] = 12,
+                    ["x"] = 20,
                     ["y"] = 1,
-                    ["z"] = 20,
+                    ["z"] = 36,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -409,14 +409,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 36,
+                    ["x"] = 52,
                     ["y"] = 13,
-                    ["z"] = 44,
+                    ["z"] = 60,
                 },
                 ["minimum"] = {
-                    ["x"] = 28,
+                    ["x"] = 44,
                     ["y"] = 1,
-                    ["z"] = 36,
+                    ["z"] = 52,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -431,14 +431,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 52,
+                    ["x"] = 76,
                     ["y"] = 13,
-                    ["z"] = 28,
+                    ["z"] = 44,
                 },
                 ["minimum"] = {
-                    ["x"] = 44,
+                    ["x"] = 68,
                     ["y"] = 1,
-                    ["z"] = 20,
+                    ["z"] = 36,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -453,12 +453,12 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 68,
+                    ["x"] = 100,
                     ["y"] = 13,
                     ["z"] = 44,
                 },
                 ["minimum"] = {
-                    ["x"] = 60,
+                    ["x"] = 92,
                     ["y"] = 1,
                     ["z"] = 36,
                 },
@@ -475,12 +475,12 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 84,
+                    ["x"] = 124,
                     ["y"] = 13,
                     ["z"] = 44,
                 },
                 ["minimum"] = {
-                    ["x"] = 76,
+                    ["x"] = 116,
                     ["y"] = 1,
                     ["z"] = 36,
                 },
@@ -497,12 +497,12 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 100,
+                    ["x"] = 148,
                     ["y"] = 13,
                     ["z"] = 44,
                 },
                 ["minimum"] = {
-                    ["x"] = 92,
+                    ["x"] = 140,
                     ["y"] = 1,
                     ["z"] = 36,
                 },
@@ -519,14 +519,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 124,
+                    ["x"] = 180,
                     ["y"] = 13,
-                    ["z"] = 36,
+                    ["z"] = 52,
                 },
                 ["minimum"] = {
-                    ["x"] = 116,
+                    ["x"] = 172,
                     ["y"] = 1,
-                    ["z"] = 28,
+                    ["z"] = 44,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -541,14 +541,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 116,
+                    ["x"] = 172,
                     ["y"] = 13,
-                    ["z"] = 44,
+                    ["z"] = 84,
                 },
                 ["minimum"] = {
-                    ["x"] = 108,
+                    ["x"] = 164,
                     ["y"] = 1,
-                    ["z"] = 36,
+                    ["z"] = 76,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -563,14 +563,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 100,
+                    ["x"] = 148,
                     ["y"] = 13,
-                    ["z"] = 60,
+                    ["z"] = 84,
                 },
                 ["minimum"] = {
-                    ["x"] = 92,
+                    ["x"] = 140,
                     ["y"] = 1,
-                    ["z"] = 52,
+                    ["z"] = 76,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -585,14 +585,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 84,
+                    ["x"] = 124,
                     ["y"] = 13,
-                    ["z"] = 60,
+                    ["z"] = 84,
                 },
                 ["minimum"] = {
-                    ["x"] = 76,
+                    ["x"] = 116,
                     ["y"] = 1,
-                    ["z"] = 52,
+                    ["z"] = 76,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -607,14 +607,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 68,
+                    ["x"] = 100,
                     ["y"] = 13,
-                    ["z"] = 44,
+                    ["z"] = 84,
                 },
                 ["minimum"] = {
-                    ["x"] = 60,
+                    ["x"] = 92,
                     ["y"] = 1,
-                    ["z"] = 36,
+                    ["z"] = 76,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -629,14 +629,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 52,
+                    ["x"] = 76,
                     ["y"] = 13,
-                    ["z"] = 60,
+                    ["z"] = 68,
                 },
                 ["minimum"] = {
-                    ["x"] = 44,
+                    ["x"] = 68,
                     ["y"] = 1,
-                    ["z"] = 52,
+                    ["z"] = 60,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -651,14 +651,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 36,
+                    ["x"] = 52,
                     ["y"] = 13,
-                    ["z"] = 60,
+                    ["z"] = 84,
                 },
                 ["minimum"] = {
-                    ["x"] = 28,
+                    ["x"] = 44,
                     ["y"] = 1,
-                    ["z"] = 52,
+                    ["z"] = 76,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -673,14 +673,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 20,
+                    ["x"] = 28,
                     ["y"] = 13,
-                    ["z"] = 60,
+                    ["z"] = 84,
                 },
                 ["minimum"] = {
-                    ["x"] = 12,
+                    ["x"] = 20,
                     ["y"] = 1,
-                    ["z"] = 52,
+                    ["z"] = 76,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -697,12 +697,12 @@ return {
                 ["maximum"] = {
                     ["x"] = 12,
                     ["y"] = 13,
-                    ["z"] = 52,
+                    ["z"] = 76,
                 },
                 ["minimum"] = {
                     ["x"] = 4,
                     ["y"] = 1,
-                    ["z"] = 44,
+                    ["z"] = 68,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -713,358 +713,6 @@ return {
             ["sourceStageId"] = "stage-32",
             ["sourceVisualStyleIntentId"] = "visual-global",
             ["zoneId"] = "layout-zone-032",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 4,
-                    ["y"] = 13,
-                    ["z"] = 60,
-                },
-                ["minimum"] = {
-                    ["x"] = -4,
-                    ["y"] = 1,
-                    ["z"] = 52,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-33",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-033",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 20,
-                    ["y"] = 13,
-                    ["z"] = 60,
-                },
-                ["minimum"] = {
-                    ["x"] = 12,
-                    ["y"] = 1,
-                    ["z"] = 52,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-34",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-034",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 36,
-                    ["y"] = 13,
-                    ["z"] = 60,
-                },
-                ["minimum"] = {
-                    ["x"] = 28,
-                    ["y"] = 1,
-                    ["z"] = 52,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-35",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-035",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 52,
-                    ["y"] = 13,
-                    ["z"] = 60,
-                },
-                ["minimum"] = {
-                    ["x"] = 44,
-                    ["y"] = 1,
-                    ["z"] = 52,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-36",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-036",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 68,
-                    ["y"] = 13,
-                    ["z"] = 76,
-                },
-                ["minimum"] = {
-                    ["x"] = 60,
-                    ["y"] = 1,
-                    ["z"] = 68,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-37",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-037",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 84,
-                    ["y"] = 13,
-                    ["z"] = 60,
-                },
-                ["minimum"] = {
-                    ["x"] = 76,
-                    ["y"] = 1,
-                    ["z"] = 52,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-38",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-038",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 100,
-                    ["y"] = 13,
-                    ["z"] = 60,
-                },
-                ["minimum"] = {
-                    ["x"] = 92,
-                    ["y"] = 1,
-                    ["z"] = 52,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-39",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-039",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 108,
-                    ["y"] = 13,
-                    ["z"] = 68,
-                },
-                ["minimum"] = {
-                    ["x"] = 100,
-                    ["y"] = 1,
-                    ["z"] = 60,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-40",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-040",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 116,
-                    ["y"] = 13,
-                    ["z"] = 92,
-                },
-                ["minimum"] = {
-                    ["x"] = 108,
-                    ["y"] = 1,
-                    ["z"] = 84,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-41",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-041",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 100,
-                    ["y"] = 13,
-                    ["z"] = 92,
-                },
-                ["minimum"] = {
-                    ["x"] = 92,
-                    ["y"] = 1,
-                    ["z"] = 84,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-42",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-042",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 84,
-                    ["y"] = 13,
-                    ["z"] = 76,
-                },
-                ["minimum"] = {
-                    ["x"] = 76,
-                    ["y"] = 1,
-                    ["z"] = 68,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-43",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-043",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 68,
-                    ["y"] = 13,
-                    ["z"] = 92,
-                },
-                ["minimum"] = {
-                    ["x"] = 60,
-                    ["y"] = 1,
-                    ["z"] = 84,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-44",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-044",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 52,
-                    ["y"] = 13,
-                    ["z"] = 76,
-                },
-                ["minimum"] = {
-                    ["x"] = 44,
-                    ["y"] = 1,
-                    ["z"] = 68,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-45",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-045",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 36,
-                    ["y"] = 13,
-                    ["z"] = 92,
-                },
-                ["minimum"] = {
-                    ["x"] = 28,
-                    ["y"] = 1,
-                    ["z"] = 84,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-46",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-046",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 20,
-                    ["y"] = 13,
-                    ["z"] = 76,
-                },
-                ["minimum"] = {
-                    ["x"] = 12,
-                    ["y"] = 1,
-                    ["z"] = 68,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-47",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-047",
-        },
-        {
-            ["bounds"] = {
-                ["maximum"] = {
-                    ["x"] = 12,
-                    ["y"] = 13,
-                    ["z"] = 84,
-                },
-                ["minimum"] = {
-                    ["x"] = 4,
-                    ["y"] = 1,
-                    ["z"] = 76,
-                },
-            },
-            ["collisionPolicy"] = "non-colliding-only",
-            ["nativePartFallback"] = true,
-            ["sourceAssetIntentIds"] = {
-                "asset-decoration",
-            },
-            ["sourceStageId"] = "stage-48",
-            ["sourceVisualStyleIntentId"] = "visual-global",
-            ["zoneId"] = "layout-zone-048",
         },
         {
             ["bounds"] = {
@@ -1084,6 +732,358 @@ return {
             ["sourceAssetIntentIds"] = {
                 "asset-decoration",
             },
+            ["sourceStageId"] = "stage-33",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-033",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 28,
+                    ["y"] = 13,
+                    ["z"] = 92,
+                },
+                ["minimum"] = {
+                    ["x"] = 20,
+                    ["y"] = 1,
+                    ["z"] = 84,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-34",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-034",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 52,
+                    ["y"] = 13,
+                    ["z"] = 108,
+                },
+                ["minimum"] = {
+                    ["x"] = 44,
+                    ["y"] = 1,
+                    ["z"] = 100,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-35",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-035",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 76,
+                    ["y"] = 13,
+                    ["z"] = 108,
+                },
+                ["minimum"] = {
+                    ["x"] = 68,
+                    ["y"] = 1,
+                    ["z"] = 100,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-36",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-036",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 100,
+                    ["y"] = 13,
+                    ["z"] = 108,
+                },
+                ["minimum"] = {
+                    ["x"] = 92,
+                    ["y"] = 1,
+                    ["z"] = 100,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-37",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-037",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 124,
+                    ["y"] = 13,
+                    ["z"] = 92,
+                },
+                ["minimum"] = {
+                    ["x"] = 116,
+                    ["y"] = 1,
+                    ["z"] = 84,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-38",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-038",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 148,
+                    ["y"] = 13,
+                    ["z"] = 92,
+                },
+                ["minimum"] = {
+                    ["x"] = 140,
+                    ["y"] = 1,
+                    ["z"] = 84,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-39",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-039",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 164,
+                    ["y"] = 13,
+                    ["z"] = 100,
+                },
+                ["minimum"] = {
+                    ["x"] = 156,
+                    ["y"] = 1,
+                    ["z"] = 92,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-40",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-040",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 172,
+                    ["y"] = 13,
+                    ["z"] = 116,
+                },
+                ["minimum"] = {
+                    ["x"] = 164,
+                    ["y"] = 1,
+                    ["z"] = 108,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-41",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-041",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 148,
+                    ["y"] = 13,
+                    ["z"] = 132,
+                },
+                ["minimum"] = {
+                    ["x"] = 140,
+                    ["y"] = 1,
+                    ["z"] = 124,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-42",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-042",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 124,
+                    ["y"] = 13,
+                    ["z"] = 132,
+                },
+                ["minimum"] = {
+                    ["x"] = 116,
+                    ["y"] = 1,
+                    ["z"] = 124,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-43",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-043",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 100,
+                    ["y"] = 13,
+                    ["z"] = 116,
+                },
+                ["minimum"] = {
+                    ["x"] = 92,
+                    ["y"] = 1,
+                    ["z"] = 108,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-44",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-044",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 76,
+                    ["y"] = 13,
+                    ["z"] = 116,
+                },
+                ["minimum"] = {
+                    ["x"] = 68,
+                    ["y"] = 1,
+                    ["z"] = 108,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-45",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-045",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 52,
+                    ["y"] = 13,
+                    ["z"] = 116,
+                },
+                ["minimum"] = {
+                    ["x"] = 44,
+                    ["y"] = 1,
+                    ["z"] = 108,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-46",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-046",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 28,
+                    ["y"] = 13,
+                    ["z"] = 116,
+                },
+                ["minimum"] = {
+                    ["x"] = 20,
+                    ["y"] = 1,
+                    ["z"] = 108,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-47",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-047",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = -4,
+                    ["y"] = 13,
+                    ["z"] = 124,
+                },
+                ["minimum"] = {
+                    ["x"] = -12,
+                    ["y"] = 1,
+                    ["z"] = 116,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
+            ["sourceStageId"] = "stage-48",
+            ["sourceVisualStyleIntentId"] = "visual-global",
+            ["zoneId"] = "layout-zone-048",
+        },
+        {
+            ["bounds"] = {
+                ["maximum"] = {
+                    ["x"] = 4,
+                    ["y"] = 13,
+                    ["z"] = 156,
+                },
+                ["minimum"] = {
+                    ["x"] = -4,
+                    ["y"] = 1,
+                    ["z"] = 148,
+                },
+            },
+            ["collisionPolicy"] = "non-colliding-only",
+            ["nativePartFallback"] = true,
+            ["sourceAssetIntentIds"] = {
+                "asset-decoration",
+            },
             ["sourceStageId"] = "stage-49",
             ["sourceVisualStyleIntentId"] = "visual-global",
             ["zoneId"] = "layout-zone-049",
@@ -1091,14 +1091,14 @@ return {
         {
             ["bounds"] = {
                 ["maximum"] = {
-                    ["x"] = 20,
+                    ["x"] = 28,
                     ["y"] = 13,
-                    ["z"] = 92,
+                    ["z"] = 140,
                 },
                 ["minimum"] = {
-                    ["x"] = 12,
+                    ["x"] = 20,
                     ["y"] = 1,
-                    ["z"] = 84,
+                    ["z"] = 132,
                 },
             },
             ["collisionPolicy"] = "non-colliding-only",
@@ -1164,18 +1164,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = -10,
+                                ["x"] = -12,
                                 ["y"] = 2,
                                 ["z"] = 6,
                             },
                             ["minimum"] = {
-                                ["x"] = -22,
+                                ["x"] = -24,
                                 ["y"] = 0,
                                 ["z"] = -6,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:0273c8dba2b12712608da795276433133f8e278818892334afac53da9e674503",
+                        ["normalizedGeometryHash"] = "sha256:c683335937531a31c5735e4ef1d9ac25751f98e36eedbf9e8c316e30d6f70a8e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1195,7 +1195,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = -16,
+                            ["x"] = -18,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1226,18 +1226,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 0,
+                                ["x"] = -5.4,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = -8,
+                                ["x"] = -11.4,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:2b28f9319a516b0eda1bcbc7eaf1b9de1c5cddb9409c199f016351faf494814a",
+                        ["normalizedGeometryHash"] = "sha256:65a3fc44acce94fc0950a7fb001f43fef0dae78106fe929fb3878e45fa5960f3",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1246,9 +1246,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -1260,7 +1260,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = -4,
+                            ["x"] = -8.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1291,18 +1291,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 4,
+                                ["x"] = 3,
                                 ["y"] = 3,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = -4,
+                                ["x"] = -3,
                                 ["y"] = 1,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:954634335d521e559af13610772b0facdbd348c6e3a8223f00564333b9451592",
+                        ["normalizedGeometryHash"] = "sha256:3f67598cd553e3e80ae876e1b7f169efa3fc36a235f5769402c5197fe56f4487",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 3,
                     },
@@ -1311,9 +1311,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -1357,18 +1357,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 8,
+                                ["x"] = 11.4,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 0,
+                                ["x"] = 5.4,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:bda09f80582c75d0989fa437ced589f226ed7e707bcbc2c7604bb822eb289e11",
+                        ["normalizedGeometryHash"] = "sha256:e7ef011de291e81fee750163e44e5d808bfadb9ad702b0bdfe7990d754c12623",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1377,9 +1377,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -1392,7 +1392,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 4,
+                            ["x"] = 8.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1423,18 +1423,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 15,
+                                ["x"] = 18.6,
                                 ["y"] = 2,
-                                ["z"] = 5,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 9,
+                                ["x"] = 12.6,
                                 ["y"] = 0,
-                                ["z"] = -5,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:db4f7c34d99061dcbf9b72898ca2fd11ec36c57884bcbb80246546c7165cecff",
+                        ["normalizedGeometryHash"] = "sha256:437487b884206445da228a70ccdebc6095b91d6885f78b9808aa3f41883ee835",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1443,7 +1443,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -1457,7 +1457,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 12,
+                            ["x"] = 15.6,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1488,18 +1488,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 19,
+                                ["x"] = 27,
                                 ["y"] = 2,
-                                ["z"] = 5,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 13,
+                                ["x"] = 21,
                                 ["y"] = 0,
-                                ["z"] = -5,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:4e3a59170e23b126ce85abe4a2668e90d7eb9f6a4695d5d9b792796b71fd0343",
+                        ["normalizedGeometryHash"] = "sha256:27e34bd9be02603ecdecd490c0e6a6609cfc979cb3d4765a48fcac9c8d198d4a",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1508,7 +1508,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -1522,7 +1522,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 16,
+                            ["x"] = 24,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1554,18 +1554,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 23,
+                                ["x"] = 35.4,
                                 ["y"] = 2,
-                                ["z"] = 5,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 17,
+                                ["x"] = 29.4,
                                 ["y"] = 0,
-                                ["z"] = -5,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:fee2a45c0f8352ab38bd010ed6a222d8ede880a32232e6cd03f8618e72c6369c",
+                        ["normalizedGeometryHash"] = "sha256:31da69e9927f874afd51c0a9576d1a5f9dee2fc4765e5cb89f03812a3140c42e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1574,7 +1574,7 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -1589,7 +1589,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 20,
+                            ["x"] = 32.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1620,18 +1620,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 31,
+                                ["x"] = 42.6,
                                 ["y"] = 2,
-                                ["z"] = 5,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 25,
+                                ["x"] = 36.6,
                                 ["y"] = 0,
-                                ["z"] = -5,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:456a818a8ff32da311f1289cd3855cadded19d6216f4ddc903a20f10b3ebdbd6",
+                        ["normalizedGeometryHash"] = "sha256:d64f54898061f16c85db0bfb6ed631c8b9b5dabe0f404e6e0d73d8c4be3fa2b5",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1640,7 +1640,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -1654,7 +1654,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 28,
+                            ["x"] = 39.6,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1685,18 +1685,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 35,
+                                ["x"] = 51,
                                 ["y"] = 2,
-                                ["z"] = 5,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 29,
+                                ["x"] = 45,
                                 ["y"] = 0,
-                                ["z"] = -5,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:e632e0995c131f1f690d0120c790eca274329cc33178f36600cb7c6a33bd94c5",
+                        ["normalizedGeometryHash"] = "sha256:5452b7a9ef446e85fecb89322fe111e0267f9d921785116ac2b3040e4dfb28fb",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1705,7 +1705,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -1719,7 +1719,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 32,
+                            ["x"] = 48,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1751,18 +1751,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 39,
+                                ["x"] = 59.4,
                                 ["y"] = 2,
-                                ["z"] = 5,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 33,
+                                ["x"] = 53.4,
                                 ["y"] = 0,
-                                ["z"] = -5,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:113dd5002207874350c98d921ac0a2933de448f9e106c7d328f0e5140e3a1fef",
+                        ["normalizedGeometryHash"] = "sha256:06c25abbd171512c7db1e587137a25651b860cb5606969045886718da8a656d5",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1771,7 +1771,7 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -1786,7 +1786,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 36,
+                            ["x"] = 56.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1818,18 +1818,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 48,
+                                ["x"] = 59,
                                 ["y"] = -22.5,
-                                ["z"] = 16,
+                                ["z"] = 11,
                             },
                             ["minimum"] = {
-                                ["x"] = 16,
+                                ["x"] = 37,
                                 ["y"] = -23.5,
-                                ["z"] = -16,
+                                ["z"] = -11,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f81aa99cfbf2455d700209eb0fb023088940f8b7fca9f1d6a18350af2c654657",
+                        ["normalizedGeometryHash"] = "sha256:5a9b86fe5f8d3ba6e3636c866ea9ec47141e74d2731acb234796c15edb29bdbe",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = -22.5,
                     },
@@ -1838,9 +1838,9 @@ return {
                     ["role"] = "kill",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 32,
+                        ["x"] = 22,
                         ["y"] = 1,
-                        ["z"] = 32,
+                        ["z"] = 22,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -1853,7 +1853,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 32,
+                            ["x"] = 48,
                             ["y"] = -23,
                             ["z"] = 0,
                         },
@@ -1884,18 +1884,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 47.5,
+                                ["x"] = 66.6,
                                 ["y"] = 2,
-                                ["z"] = 3.5,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 40.5,
+                                ["x"] = 60.6,
                                 ["y"] = 0,
-                                ["z"] = -3.5,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:92d4ef5c82268fb4a6436e5022e48b9bfe398172e853b67c27bcba421b039a5a",
+                        ["normalizedGeometryHash"] = "sha256:fb21662ae3ec1de0f2ba612c134d8cab166dc663115c7f340f1f9515c5662062",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1904,9 +1904,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -1918,7 +1918,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 44,
+                            ["x"] = 63.6,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -1949,18 +1949,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 52.286607049871,
+                                ["x"] = 75,
                                 ["y"] = 2,
-                                ["z"] = 2.286607049871,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 43.713392950129,
+                                ["x"] = 69,
                                 ["y"] = 0,
-                                ["z"] = -6.286607049871,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a2ed3dddae04e0cf5aea8d60f3e0eb5c80d0f4f7dcc6938f55bddbabc82e9216",
+                        ["normalizedGeometryHash"] = "sha256:01fe0774a49cb51c6271b213dd0f2581af0e11b3dbab879f1f626e0b17f20ade",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -1969,9 +1969,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -1983,13 +1983,13 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 48,
+                            ["x"] = 72,
                             ["y"] = 1,
-                            ["z"] = -2,
+                            ["z"] = 0,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
-                            ["y"] = -105,
+                            ["y"] = -90,
                             ["z"] = 0,
                         },
                     },
@@ -2015,18 +2015,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 55.5,
+                                ["x"] = 83.4,
                                 ["y"] = 2,
-                                ["z"] = 3.5,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 48.5,
+                                ["x"] = 77.4,
                                 ["y"] = 0,
-                                ["z"] = -3.5,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:3622f8c0933561a1a9d5a79138998f1562425e2b093ac13007345f4d1a66ae93",
+                        ["normalizedGeometryHash"] = "sha256:cf058cfff0564176345000f1a33eed838d5f9899a504a24b8502156df65f7e61",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2035,9 +2035,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -2050,7 +2050,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 52,
+                            ["x"] = 80.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -2081,18 +2081,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 63,
+                                ["x"] = 90.6,
                                 ["y"] = 2,
                                 ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 57,
+                                ["x"] = 84.6,
                                 ["y"] = 0,
                                 ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f1b84c9f60870e91263bc82fbe2c45f411de87555154b131a45e70e1f15d1730",
+                        ["normalizedGeometryHash"] = "sha256:b9e87afc850c158f4ee715d35a53eff35d9e08d508f7e3b6af533f3b002771bd",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2115,7 +2115,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 60,
+                            ["x"] = 87.6,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -2146,18 +2146,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 67,
+                                ["x"] = 99,
                                 ["y"] = 2,
-                                ["z"] = 2,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 61,
+                                ["x"] = 93,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:eafa83c4d23c04624ca26ec550ce8de6ffccfc4f2aaa7b7bb28b6b979707f2e4",
+                        ["normalizedGeometryHash"] = "sha256:26254470a5ea8d2f223444604bfe4d0f0e8e079090e749eb5ec9f80076048709",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2180,9 +2180,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 64,
+                            ["x"] = 96,
                             ["y"] = 1,
-                            ["z"] = -1,
+                            ["z"] = 0,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -2212,18 +2212,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 71,
+                                ["x"] = 107.4,
                                 ["y"] = 2,
                                 ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 65,
+                                ["x"] = 101.4,
                                 ["y"] = 0,
                                 ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a45e7ba8c8f0a21ca254a163b938bfdcd940fb856f037deabb61613a9f26cea6",
+                        ["normalizedGeometryHash"] = "sha256:a0dfe25c8400c20394c1469f23fc5c5d948944d7a89deb53a33c4064235a5920",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2247,7 +2247,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 68,
+                            ["x"] = 104.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -2278,18 +2278,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 80,
+                                ["x"] = 114.6,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 72,
+                                ["x"] = 108.6,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:76fe9172f79235965bbb7da616dddd9e2cbbd2e5585d50f8523a7024c90e9674",
+                        ["normalizedGeometryHash"] = "sha256:9a685418fe930c55c01b32859ecf34503f00c6e2828b2aadfbb0200d8f608c2a",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2298,9 +2298,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -2312,7 +2312,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 76,
+                            ["x"] = 111.6,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -2343,18 +2343,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 84,
+                                ["x"] = 123,
                                 ["y"] = 2,
-                                ["z"] = 6,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 76,
+                                ["x"] = 117,
                                 ["y"] = 0,
-                                ["z"] = -2,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:8f0ccd6a2f43aa27f0d5edd3c5d15f01c80357f41ca4895c6b724edd87f5b06d",
+                        ["normalizedGeometryHash"] = "sha256:f13d31e555426b6e41b70331f1a970c920f8296754604008b2c11fc2262c0546",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2363,9 +2363,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -2377,9 +2377,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 80,
+                            ["x"] = 120,
                             ["y"] = 1,
-                            ["z"] = 2,
+                            ["z"] = 0,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -2409,18 +2409,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 88,
+                                ["x"] = 131.4,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 80,
+                                ["x"] = 125.4,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:c4fb96e61f3586f62fbc39e539015d4e5adee28595b695aaa401ececd7fa72ac",
+                        ["normalizedGeometryHash"] = "sha256:969c448e36d62a237484da7250ca1e0c063f51891436de24c567223d78f699d3",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2429,9 +2429,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -2444,7 +2444,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 84,
+                            ["x"] = 128.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -2476,20 +2476,20 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 83,
-                                ["y"] = 0.5,
-                                ["z"] = 8,
+                                ["x"] = 123,
+                                ["y"] = 3,
+                                ["z"] = -6,
                             },
                             ["minimum"] = {
-                                ["x"] = 77,
-                                ["y"] = -0.5,
-                                ["z"] = 2,
+                                ["x"] = 117,
+                                ["y"] = 2,
+                                ["z"] = -12,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:1428093f7045d32fff77695a78d3dd063bea642cddc5dfe683f80fc2a9b2fe99",
+                        ["normalizedGeometryHash"] = "sha256:b155148703ea780d5527674f797c8ee93876e453ae71798443b748d77fdd858d",
                         ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
+                        ["topSurfaceMaximumY"] = 3,
                     },
                     ["id"] = "Stage06Hazard001",
                     ["order"] = 20,
@@ -2511,9 +2511,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 80,
-                            ["y"] = 0,
-                            ["z"] = 5,
+                            ["x"] = 120,
+                            ["y"] = 2.5,
+                            ["z"] = -9,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -2542,18 +2542,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 95,
+                                ["x"] = 138.6,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 89,
+                                ["x"] = 132.6,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:e30e6b760670b2a688bdcaa97a66d69d9543939ee84c54ef29460d011e1c9c72",
+                        ["normalizedGeometryHash"] = "sha256:c5af555acefa0325a253bc0653bda3126ae48b29fc803c3d2c6e483972f26d4a",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2562,7 +2562,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -2576,7 +2576,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 92,
+                            ["x"] = 135.6,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -2607,18 +2607,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 99,
+                                ["x"] = 147,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 93,
+                                ["x"] = 141,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:1fea4a33f2e3dac6ba7d71b70e0a0496e4600969b5eeff99ad02d394bb6a1af2",
+                        ["normalizedGeometryHash"] = "sha256:83f142988f0859c66af7dd88e58bc0538c82d0e6d6ace927bf823ef5ce2e90ea",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2627,7 +2627,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -2641,7 +2641,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 96,
+                            ["x"] = 144,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -2673,18 +2673,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 103,
+                                ["x"] = 155.4,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 97,
+                                ["x"] = 149.4,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:19732168d7e4912d2604fc74ef108ae6189a41ba6b7c117486d641162922663d",
+                        ["normalizedGeometryHash"] = "sha256:d222a92acdf1a0d09b2a2889c71dee9c68f102d7062572e3ba81b1d6ea865841",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2693,7 +2693,7 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -2708,7 +2708,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 100,
+                            ["x"] = 152.4,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -2739,18 +2739,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 112,
+                                ["x"] = 162.6,
                                 ["y"] = 2,
-                                ["z"] = 4,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 104,
+                                ["x"] = 156.6,
                                 ["y"] = 0,
-                                ["z"] = -4,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:1744e1442962073b758db1f00983f0d48e50186ba86a93bc758e1435a51b1c65",
+                        ["normalizedGeometryHash"] = "sha256:bdc911979059e4155dd2f87b0eeef524ec150dfdae99199c0e79763efaf9f267",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2759,9 +2759,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -2773,7 +2773,7 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 108,
+                            ["x"] = 159.6,
                             ["y"] = 1,
                             ["z"] = 0,
                         },
@@ -2804,18 +2804,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 114,
+                                ["x"] = 171,
                                 ["y"] = 4,
-                                ["z"] = 6,
+                                ["z"] = 3,
                             },
                             ["minimum"] = {
-                                ["x"] = 106,
+                                ["x"] = 165,
                                 ["y"] = 2,
-                                ["z"] = -2,
+                                ["z"] = -3,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a67b54d70955b996a328c61230356b13c1885358694ce8c7e00799da2ab8e578",
+                        ["normalizedGeometryHash"] = "sha256:1abb50afbcea2ca761763adbe976c5ba5cc164096408750cb271f7f6cccaf3b0",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 4,
                     },
@@ -2824,9 +2824,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -2838,9 +2838,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 110,
+                            ["x"] = 168,
                             ["y"] = 3,
-                            ["z"] = 2,
+                            ["z"] = 0,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -2870,18 +2870,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 116,
+                                ["x"] = 171,
                                 ["y"] = 2,
-                                ["z"] = 8,
+                                ["z"] = 11.4,
                             },
                             ["minimum"] = {
-                                ["x"] = 108,
+                                ["x"] = 165,
                                 ["y"] = 0,
-                                ["z"] = 0,
+                                ["z"] = 5.4,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:9aa03bd43ec70ac0a14e8017c8890ff1608e9f96f452115ff8c0e5dfb81395ef",
+                        ["normalizedGeometryHash"] = "sha256:4910e83b54d88545c0a806fd80ced55d8002e168ab709dd8270db580aff458c1",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2890,9 +2890,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -2905,9 +2905,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 112,
+                            ["x"] = 168,
                             ["y"] = 1,
-                            ["z"] = 4,
+                            ["z"] = 8.4,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -2936,18 +2936,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 115,
+                                ["x"] = 171,
                                 ["y"] = 2,
-                                ["z"] = 17,
+                                ["z"] = 18.6,
                             },
                             ["minimum"] = {
-                                ["x"] = 109,
+                                ["x"] = 165,
                                 ["y"] = 0,
-                                ["z"] = 7,
+                                ["z"] = 12.6,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:127c19ed4f296b6faa51268cda7acf5ff0afe3c9c567e9b7fc91325b61f470fa",
+                        ["normalizedGeometryHash"] = "sha256:5850f8b5b6055da0c0caa34e150c610ebb5767a46a750d73be6e11896ef4447e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -2958,7 +2958,7 @@ return {
                     ["size"] = {
                         ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -2970,9 +2970,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 112,
+                            ["x"] = 168,
                             ["y"] = 1,
-                            ["z"] = 12,
+                            ["z"] = 15.6,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3001,18 +3001,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 113,
+                                ["x"] = 171,
                                 ["y"] = 2,
-                                ["z"] = 19,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 107,
+                                ["x"] = 165,
                                 ["y"] = 0,
-                                ["z"] = 9,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:5e1a328417390e2ba6a92fa9b0bd415edeb9870a75381f71b3c75511fe143b8d",
+                        ["normalizedGeometryHash"] = "sha256:4dafb09df693f2215e8edcf410530cbc6e56f0dc47d3fdfa87cd15337460fdf7",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -3021,7 +3021,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -3035,9 +3035,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 110,
+                            ["x"] = 168,
                             ["y"] = 1,
-                            ["z"] = 14,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3067,18 +3067,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 111,
+                                ["x"] = 162.6,
                                 ["y"] = 2,
-                                ["z"] = 21,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 105,
+                                ["x"] = 156.6,
                                 ["y"] = 0,
-                                ["z"] = 11,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:cd774c300acbf88547dace89096339157827bc3c4b437dd87a7b71dc9a88b0db",
+                        ["normalizedGeometryHash"] = "sha256:b284f245e645b8c1003c9e9ab27228542b8b47dc54523851de44af3d6cc8df71",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -3087,7 +3087,7 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -3102,9 +3102,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 108,
+                            ["x"] = 159.6,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3134,18 +3134,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 128,
+                                ["x"] = 179,
                                 ["y"] = -22.5,
-                                ["z"] = 32,
+                                ["z"] = 35,
                             },
                             ["minimum"] = {
-                                ["x"] = 96,
+                                ["x"] = 157,
                                 ["y"] = -23.5,
-                                ["z"] = 0,
+                                ["z"] = 13,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:66ee35449a58614f6fbe89de8687141177669506a1fbec8647775bf59ba5499f",
+                        ["normalizedGeometryHash"] = "sha256:5f209c2df567220a9507d01ea26f6cfb86e2270a36c8c8972934dc726ae63488",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = -22.5,
                     },
@@ -3154,9 +3154,9 @@ return {
                     ["role"] = "kill",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 32,
+                        ["x"] = 22,
                         ["y"] = 1,
-                        ["z"] = 32,
+                        ["z"] = 22,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -3169,9 +3169,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 112,
+                            ["x"] = 168,
                             ["y"] = -23,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3200,18 +3200,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 104,
+                                ["x"] = 155.4,
                                 ["y"] = 2,
-                                ["z"] = 20,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 96,
+                                ["x"] = 149.4,
                                 ["y"] = 0,
-                                ["z"] = 12,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:d261c8f569507e02b03067fd408fdd51da3fa700f6000eba4bb2f6bd1cf5dabd",
+                        ["normalizedGeometryHash"] = "sha256:0855053501c44ee9058071e80474a861db037779ef125bcfb99d280566ae5de8",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -3220,9 +3220,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -3234,9 +3234,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 100,
+                            ["x"] = 152.4,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3265,18 +3265,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 100,
+                                ["x"] = 147,
                                 ["y"] = 2,
-                                ["z"] = 22,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 92,
+                                ["x"] = 141,
                                 ["y"] = 0,
-                                ["z"] = 14,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:e2a2bdd3da04f5f2e219b0e029ff339c212aac93225e758671430fe25b292b53",
+                        ["normalizedGeometryHash"] = "sha256:85572d047e2e27d17a28562859087c80d87d74b1e3f71ab72bf103963c3b4a3e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -3285,9 +3285,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -3299,9 +3299,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 96,
+                            ["x"] = 144,
                             ["y"] = 1,
-                            ["z"] = 18,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3331,18 +3331,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 96,
+                                ["x"] = 138.6,
                                 ["y"] = 2,
-                                ["z"] = 20,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 88,
+                                ["x"] = 132.6,
                                 ["y"] = 0,
-                                ["z"] = 12,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:9e869ad9ef26c75394672469561731a5a02c6f543cbbee65e1a817b8506294f1",
+                        ["normalizedGeometryHash"] = "sha256:3b1ab1a6c03db6779e2ee5a138eb761a4b8b94525049d27acd281d544c4a40d6",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -3351,9 +3351,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -3366,9 +3366,470 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 92,
+                            ["x"] = 135.6,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#F94144",
+                        ["colorRole"] = "hazard",
+                        ["material"] = "Neon",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["killMode"] = "touch",
+                        ["kind"] = "kill",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = false,
+                        ["canQuery"] = true,
+                        ["canTouch"] = true,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 147,
+                                ["y"] = 3,
+                                ["z"] = 18,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 141,
+                                ["y"] = 2,
+                                ["z"] = 12,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:e19aa4b338972e47e382ff163176f6b06224096e53a99e4647df7bd85b8d3c21",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 3,
+                    },
+                    ["id"] = "Stage10Hazard001",
+                    ["order"] = 34,
+                    ["role"] = "kill",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 1,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceHazardId"] = "hazard-10",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-10",
+                        ["sourceStageId"] = "stage-10",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 144,
+                            ["y"] = 2.5,
+                            ["z"] = 15,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 131.4,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 125.4,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:96954b911557394a299184e0ff5f2dc009695db295a8d7ac986e3028f168fb9c",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage11Route001",
+                    ["order"] = 35,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-11",
+                        ["sourceStageId"] = "stage-11",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 128.4,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 123,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 117,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:f381f46d425e33d9fc3eb76c620dd5de929e22847ed82febe46f937e504e698a",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage11Route002",
+                    ["order"] = 36,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-11",
+                        ["sourceStageId"] = "stage-11",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 120,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#F9C74F",
+                        ["colorRole"] = "reward",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["checkpointOrder"] = 11,
+                        ["kind"] = "checkpoint",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = true,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 114.6,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 108.6,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:cd607a7bad92e9a45a45dfa146562a4e01f1ccdb99774c67e86896449fdf9372",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Checkpoint011",
+                    ["order"] = 37,
+                    ["role"] = "checkpoint",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceCheckpointId"] = "checkpoint-11",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-11",
+                        ["sourceStageId"] = "stage-11",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 111.6,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 107.4,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 101.4,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:bc024e38052821059851117e0a01970c795f150705fc33a53ec2b1da90ea3bc4",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage12Route001",
+                    ["order"] = 38,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-12",
+                        ["sourceStageId"] = "stage-12",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 104.4,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 99,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 93,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:f087ad2f74418d6128e1ca62ebbde653470d1f840cf3c3eb8bd94b060c75dfda",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage12Route002",
+                    ["order"] = 39,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-12",
+                        ["sourceStageId"] = "stage-12",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 96,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#F9C74F",
+                        ["colorRole"] = "reward",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["checkpointOrder"] = 12,
+                        ["kind"] = "checkpoint",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = true,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 90.6,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 84.6,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:8877e36be221ce11bdf8a15989c02be8c37f5d92bb8e1b4a6de938a86b41167b",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Checkpoint012",
+                    ["order"] = 40,
+                    ["role"] = "checkpoint",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceCheckpointId"] = "checkpoint-12",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-12",
+                        ["sourceStageId"] = "stage-12",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 87.6,
+                            ["y"] = 1,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3399,480 +3860,19 @@ return {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
                                 ["x"] = 99,
-                                ["y"] = 0.5,
-                                ["z"] = 14,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 93,
-                                ["y"] = -0.5,
-                                ["z"] = 8,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:84dc9c99c957fc42226bf2747cb78576177f15129abd6550c96d974a250579f7",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
-                    },
-                    ["id"] = "Stage10Hazard001",
-                    ["order"] = 34,
-                    ["role"] = "kill",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 6,
-                        ["y"] = 1,
-                        ["z"] = 6,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceHazardId"] = "hazard-10",
-                        ["sourceMechanicIntentId"] = "mechanic-intent-10",
-                        ["sourceStageId"] = "stage-10",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 96,
-                            ["y"] = 0,
-                            ["z"] = 11,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 87,
-                                ["y"] = 2,
-                                ["z"] = 19,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 81,
-                                ["y"] = 0,
-                                ["z"] = 13,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:b7cfdcd273f177863a4a8909f707cd470ffb0f6c6f51cf2c028b22042d74c315",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage11Route001",
-                    ["order"] = 35,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 6,
-                        ["y"] = 2,
-                        ["z"] = 6,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-11",
-                        ["sourceStageId"] = "stage-11",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 84,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 83,
-                                ["y"] = 2,
+                                ["y"] = 3,
                                 ["z"] = 18,
                             },
                             ["minimum"] = {
-                                ["x"] = 77,
-                                ["y"] = 0,
+                                ["x"] = 93,
+                                ["y"] = 2,
                                 ["z"] = 12,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:437ba6388e1dcf20b3786eab71dd1bd6574ad5cdf754170623aa31c6294b73aa",
+                        ["normalizedGeometryHash"] = "sha256:9aabd6b13ed76ca416bbc387cacf21132e997f19484967ae4d24690d5378a8ef",
                         ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage11Route002",
-                    ["order"] = 36,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 6,
-                        ["y"] = 2,
-                        ["z"] = 6,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-11",
-                        ["sourceStageId"] = "stage-11",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 80,
-                            ["y"] = 1,
-                            ["z"] = 15,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#F9C74F",
-                        ["colorRole"] = "reward",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["checkpointOrder"] = 11,
-                        ["kind"] = "checkpoint",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = true,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 79,
-                                ["y"] = 2,
-                                ["z"] = 19,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 73,
-                                ["y"] = 0,
-                                ["z"] = 13,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:2a2edab23646d9bf5c53a5ca60deb1f5cdd3bada56517f13bee24a0266519837",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Checkpoint011",
-                    ["order"] = 37,
-                    ["role"] = "checkpoint",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 6,
-                        ["y"] = 2,
-                        ["z"] = 6,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceCheckpointId"] = "checkpoint-11",
-                        ["sourceMechanicIntentId"] = "mechanic-intent-11",
-                        ["sourceStageId"] = "stage-11",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 76,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 71.5,
-                                ["y"] = 2,
-                                ["z"] = 19.5,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 64.5,
-                                ["y"] = 0,
-                                ["z"] = 12.5,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:0833994a81f19a9b188a9fe2e7d33909bea1cb56320f9aada16c661c533fbd5d",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage12Route001",
-                    ["order"] = 38,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 7,
-                        ["y"] = 2,
-                        ["z"] = 7,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-12",
-                        ["sourceStageId"] = "stage-12",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 68,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 68.286607049871,
-                                ["y"] = 2,
-                                ["z"] = 22.286607049871,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 59.713392950129,
-                                ["y"] = 0,
-                                ["z"] = 13.713392950129,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:0f467b6dfb9f10f31718f137ba3db6590717cea6c1960bcdd9acf7461d0cc0e4",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage12Route002",
-                    ["order"] = 39,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 7,
-                        ["y"] = 2,
-                        ["z"] = 7,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-12",
-                        ["sourceStageId"] = "stage-12",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 64,
-                            ["y"] = 1,
-                            ["z"] = 18,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 75,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#F9C74F",
-                        ["colorRole"] = "reward",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["checkpointOrder"] = 12,
-                        ["kind"] = "checkpoint",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = true,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 63.5,
-                                ["y"] = 2,
-                                ["z"] = 19.5,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 56.5,
-                                ["y"] = 0,
-                                ["z"] = 12.5,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:ec05b148b820dbd3c4dc5df049fc3553bf12c26401d67abd4888b75274d83e05",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Checkpoint012",
-                    ["order"] = 40,
-                    ["role"] = "checkpoint",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 7,
-                        ["y"] = 2,
-                        ["z"] = 7,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceCheckpointId"] = "checkpoint-12",
-                        ["sourceMechanicIntentId"] = "mechanic-intent-12",
-                        ["sourceStageId"] = "stage-12",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 60,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#F94144",
-                        ["colorRole"] = "hazard",
-                        ["material"] = "Neon",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["killMode"] = "touch",
-                        ["kind"] = "kill",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = false,
-                        ["canQuery"] = true,
-                        ["canTouch"] = true,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 67,
-                                ["y"] = 0.5,
-                                ["z"] = 24,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 61,
-                                ["y"] = -0.5,
-                                ["z"] = 18,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:fae889d04d7db015a1293a69aace4e88dec78c63582c1274145cd1fd15d64ba5",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
+                        ["topSurfaceMaximumY"] = 3,
                     },
                     ["id"] = "Stage12Hazard001",
                     ["order"] = 41,
@@ -3894,9 +3894,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 64,
-                            ["y"] = 0,
-                            ["z"] = 21,
+                            ["x"] = 96,
+                            ["y"] = 2.5,
+                            ["z"] = 15,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3925,18 +3925,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 55,
+                                ["x"] = 83.4,
                                 ["y"] = 2,
-                                ["z"] = 19,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 49,
+                                ["x"] = 77.4,
                                 ["y"] = 0,
-                                ["z"] = 13,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:9ef982359dc2d59ce349ebbefbc84366d47953745ffd06d84282838b21f33a8f",
+                        ["normalizedGeometryHash"] = "sha256:1dc867ba4bfc7da1ef8b4ff332dd89893f940365938c4117d0480a66b26d1ae1",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -3959,9 +3959,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 52,
+                            ["x"] = 80.4,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -3990,18 +3990,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 51,
+                                ["x"] = 75,
                                 ["y"] = 2,
-                                ["z"] = 20,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 45,
+                                ["x"] = 69,
                                 ["y"] = 0,
-                                ["z"] = 14,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:b81a76992c4054c7e239dd137734f4ea81c9c1ba9089712768b067d091432f2e",
+                        ["normalizedGeometryHash"] = "sha256:f73587f4d518d94c709e62a12c00b2a0a12d051687d0ea64f5e8a3f16ee14275",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -4024,9 +4024,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 48,
+                            ["x"] = 72,
                             ["y"] = 1,
-                            ["z"] = 17,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -4056,18 +4056,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 47,
+                                ["x"] = 66.6,
                                 ["y"] = 2,
-                                ["z"] = 19,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 41,
+                                ["x"] = 60.6,
                                 ["y"] = 0,
-                                ["z"] = 13,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:3207544756877984fe24425ae12ed6adfe4db4f599310dc7220e1bdb69022ba3",
+                        ["normalizedGeometryHash"] = "sha256:f57f95b9373df158f13797d0b554c047c2c13ea8af88e2c18b61cee0fcd0706d",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -4091,9 +4091,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 44,
+                            ["x"] = 63.6,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -4122,18 +4122,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 40,
+                                ["x"] = 59.4,
                                 ["y"] = 2,
-                                ["z"] = 20,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 32,
+                                ["x"] = 53.4,
                                 ["y"] = 0,
-                                ["z"] = 12,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:65cd6c18055b7192979b0a248f30c9ce4c61716d2ccca5056a2ba0687b3a729e",
+                        ["normalizedGeometryHash"] = "sha256:2a1be84a634712a7e32c6c0cb26dccc215e0a55f94e331ec5b3de85b9e51d836",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -4142,9 +4142,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -4156,9 +4156,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 36,
+                            ["x"] = 56.4,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -4187,18 +4187,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 36,
+                                ["x"] = 51,
                                 ["y"] = 2,
-                                ["z"] = 22,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 28,
+                                ["x"] = 45,
                                 ["y"] = 0,
-                                ["z"] = 14,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:c47fee45a65680a8f363d5351b71527250f13a3675e54fbd230f4d6395bd8efe",
+                        ["normalizedGeometryHash"] = "sha256:d17a9eea228cd67e0ff1685557909da25a999a51e14dd65bd54d057efe938704",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -4207,9 +4207,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -4221,9 +4221,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 32,
+                            ["x"] = 48,
                             ["y"] = 1,
-                            ["z"] = 18,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -4253,18 +4253,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 32,
+                                ["x"] = 42.6,
                                 ["y"] = 2,
-                                ["z"] = 20,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 24,
+                                ["x"] = 36.6,
                                 ["y"] = 0,
-                                ["z"] = 12,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:535835d98cef4dfd51f1a3af29e8a0a5529f3ebfda8a8f58233133d52fb75d2f",
+                        ["normalizedGeometryHash"] = "sha256:5bbb91ba895a8793853773182912bc57a1c2affaa264328ac322c93b64da4051",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -4273,9 +4273,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -4288,9 +4288,273 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 28,
+                            ["x"] = 39.6,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#F94144",
+                        ["colorRole"] = "hazard",
+                        ["material"] = "Neon",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["killMode"] = "touch",
+                        ["kind"] = "kill",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = false,
+                        ["canQuery"] = true,
+                        ["canTouch"] = true,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 51,
+                                ["y"] = 3,
+                                ["z"] = 18,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 45,
+                                ["y"] = 2,
+                                ["z"] = 12,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:f49dc9f151ac9e3cbe00001de64beeb005a80b0a2329cad03f5d006a0b111086",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 3,
+                    },
+                    ["id"] = "Stage14Hazard001",
+                    ["order"] = 48,
+                    ["role"] = "kill",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 1,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceHazardId"] = "hazard-14",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-14",
+                        ["sourceStageId"] = "stage-14",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 48,
+                            ["y"] = 2.5,
+                            ["z"] = 15,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 35.4,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 29.4,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:5f5cbbbb0a24fb30fbb0afcea0df158553096bf6b89567a55253289f6f11f06b",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage15Route001",
+                    ["order"] = 49,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-15",
+                        ["sourceStageId"] = "stage-15",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 32.4,
+                            ["y"] = 1,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 27,
+                                ["y"] = 4,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 21,
+                                ["y"] = 2,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:7249bf77021270b8c7c4c83a3e6e592d218da439c7a5b5479be1007683196a57",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 4,
+                    },
+                    ["id"] = "Stage15Route002",
+                    ["order"] = 50,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-15",
+                        ["sourceStageId"] = "stage-15",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 24,
+                            ["y"] = 3,
+                            ["z"] = 24,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#F9C74F",
+                        ["colorRole"] = "reward",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["checkpointOrder"] = 15,
+                        ["kind"] = "checkpoint",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = true,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 18.6,
+                                ["y"] = 2,
+                                ["z"] = 27,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 12.6,
+                                ["y"] = 0,
+                                ["z"] = 21,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:b4eb4e113e9cce6bc64f9d20633fe701eb871b62a80314ba3c21365636a90162",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Checkpoint015",
+                    ["order"] = 51,
+                    ["role"] = "checkpoint",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceCheckpointId"] = "checkpoint-15",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-15",
+                        ["sourceStageId"] = "stage-15",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 15.6,
+                            ["y"] = 1,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -4321,281 +4585,17 @@ return {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
                                 ["x"] = 35,
-                                ["y"] = 0.5,
-                                ["z"] = 24,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 29,
-                                ["y"] = -0.5,
-                                ["z"] = 18,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:9386e254bca3b0c8fc0eb8a5dbaa97fe21725e5f05aad6f75355eac258ccd7c0",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
-                    },
-                    ["id"] = "Stage14Hazard001",
-                    ["order"] = 48,
-                    ["role"] = "kill",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 6,
-                        ["y"] = 1,
-                        ["z"] = 6,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceHazardId"] = "hazard-14",
-                        ["sourceMechanicIntentId"] = "mechanic-intent-14",
-                        ["sourceStageId"] = "stage-14",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 32,
-                            ["y"] = 0,
-                            ["z"] = 21,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 24,
-                                ["y"] = 2,
-                                ["z"] = 20,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 16,
-                                ["y"] = 0,
-                                ["z"] = 12,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:0bda1aa31ba73406a8cf6017a711dcabbf65141570a72c68bda609542bebf700",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage15Route001",
-                    ["order"] = 49,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-15",
-                        ["sourceStageId"] = "stage-15",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 20,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 20,
-                                ["y"] = 4,
-                                ["z"] = 20,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 12,
-                                ["y"] = 2,
-                                ["z"] = 12,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:332d7153fceb735fb50d92513370ada5877b36392ea19cadc2eaa956f309dd1a",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 4,
-                    },
-                    ["id"] = "Stage15Route002",
-                    ["order"] = 50,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-15",
-                        ["sourceStageId"] = "stage-15",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 16,
-                            ["y"] = 3,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#F9C74F",
-                        ["colorRole"] = "reward",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["checkpointOrder"] = 15,
-                        ["kind"] = "checkpoint",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = true,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 16,
-                                ["y"] = 2,
-                                ["z"] = 20,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 8,
-                                ["y"] = 0,
-                                ["z"] = 12,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:1105a6859ac75649a755af1a23148b7358aed374c10bbd465cb95e335a2a2443",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Checkpoint015",
-                    ["order"] = 51,
-                    ["role"] = "checkpoint",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceCheckpointId"] = "checkpoint-15",
-                        ["sourceMechanicIntentId"] = "mechanic-intent-15",
-                        ["sourceStageId"] = "stage-15",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 12,
-                            ["y"] = 1,
-                            ["z"] = 16,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#F94144",
-                        ["colorRole"] = "hazard",
-                        ["material"] = "Neon",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["killMode"] = "touch",
-                        ["kind"] = "kill",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = false,
-                        ["canQuery"] = true,
-                        ["canTouch"] = true,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 32,
                                 ["y"] = -22.5,
-                                ["z"] = 32,
+                                ["z"] = 35,
                             },
                             ["minimum"] = {
-                                ["x"] = 0,
+                                ["x"] = 13,
                                 ["y"] = -23.5,
-                                ["z"] = 0,
+                                ["z"] = 13,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:271876ad8407ac4edda348ec42510ebf15e9fce47f88e788a116b63b5533f3f8",
+                        ["normalizedGeometryHash"] = "sha256:9f82bd0bc5204f38d0e27095717978464c96ad59f09c44648be1803533f2bb14",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = -22.5,
                     },
@@ -4604,9 +4604,9 @@ return {
                     ["role"] = "kill",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 32,
+                        ["x"] = 22,
                         ["y"] = 1,
-                        ["z"] = 32,
+                        ["z"] = 22,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -4619,9 +4619,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 16,
+                            ["x"] = 24,
                             ["y"] = -23,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -4650,18 +4650,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 7,
+                                ["x"] = 11.4,
                                 ["y"] = 2,
-                                ["z"] = 19,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = 1,
+                                ["x"] = 5.4,
                                 ["y"] = 0,
-                                ["z"] = 13,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:d022f89f0502b0fc4809202870f6c2803907cc2fa7c25b9b0490f0320e8b240c",
+                        ["normalizedGeometryHash"] = "sha256:972e2404ff54260f93181af5423731146fca8873b4ff302ec5433d68136dc057",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -4684,9 +4684,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 4,
+                            ["x"] = 8.4,
                             ["y"] = 1,
-                            ["z"] = 16,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -4715,18 +4715,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 4,
+                                ["x"] = 3,
                                 ["y"] = 2,
-                                ["z"] = 21,
+                                ["z"] = 27,
                             },
                             ["minimum"] = {
-                                ["x"] = -2,
+                                ["x"] = -3,
                                 ["y"] = 0,
-                                ["z"] = 15,
+                                ["z"] = 21,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:e361902d824ae6edb784e82ae524a3cc49502e69de77cd51004c817a8e4ae987",
+                        ["normalizedGeometryHash"] = "sha256:30290a6ff85231c110b04e1350d43eff912ec5022db5eb2554ca23ee20777171",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -4749,9 +4749,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 1,
+                            ["x"] = 0,
                             ["y"] = 1,
-                            ["z"] = 18,
+                            ["z"] = 24,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -4783,16 +4783,16 @@ return {
                             ["maximum"] = {
                                 ["x"] = 3,
                                 ["y"] = 2,
-                                ["z"] = 23,
+                                ["z"] = 35.4,
                             },
                             ["minimum"] = {
                                 ["x"] = -3,
                                 ["y"] = 0,
-                                ["z"] = 17,
+                                ["z"] = 29.4,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:47db65b1e601cabfbaa22b9472c695f1fad20cb82a4918e80c8c9ddb097cc1ee",
+                        ["normalizedGeometryHash"] = "sha256:fe391cc1d99154dfc6cef3d0b5a12b6ac009ef248c22f2a9441d58ab2800da37",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -4818,7 +4818,7 @@ return {
                         ["position"] = {
                             ["x"] = 0,
                             ["y"] = 1,
-                            ["z"] = 20,
+                            ["z"] = 32.4,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -4847,18 +4847,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 3.5,
+                                ["x"] = 3,
                                 ["y"] = 2,
-                                ["z"] = 31.5,
+                                ["z"] = 42.6,
                             },
                             ["minimum"] = {
-                                ["x"] = -3.5,
+                                ["x"] = -3,
                                 ["y"] = 0,
-                                ["z"] = 24.5,
+                                ["z"] = 36.6,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:af808d581d2e2bdda2c56ffd6e7eba5b1d026c405d0b28d9b6566ced3969b46e",
+                        ["normalizedGeometryHash"] = "sha256:b043dad84fcf5d8b8fb3713b5e0df7e9f878a0c2542d0490a59e3bddad01df23",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -4867,9 +4867,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -4883,7 +4883,7 @@ return {
                         ["position"] = {
                             ["x"] = 0,
                             ["y"] = 1,
-                            ["z"] = 28,
+                            ["z"] = 39.6,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -4912,18 +4912,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 6.286607049871,
+                                ["x"] = 3,
                                 ["y"] = 2,
-                                ["z"] = 32.286607049871,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = -2.286607049871,
+                                ["x"] = -3,
                                 ["y"] = 0,
-                                ["z"] = 23.713392950129,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:55c6a537c9b679fb1f63c374eed887836a749c3719f2907e2b4a25c580e9457c",
+                        ["normalizedGeometryHash"] = "sha256:43bd9e9b078661fb806ae6bd459bb77c1bd0601888a4f32b61f87f600c9ecb0c",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -4932,9 +4932,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -4946,13 +4946,13 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 2,
+                            ["x"] = 0,
                             ["y"] = 1,
-                            ["z"] = 28,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
-                            ["y"] = -105,
+                            ["y"] = -90,
                             ["z"] = 0,
                         },
                     },
@@ -4978,18 +4978,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 7.5,
+                                ["x"] = 11.4,
                                 ["y"] = 2,
-                                ["z"] = 35.5,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 0.5,
+                                ["x"] = 5.4,
                                 ["y"] = 0,
-                                ["z"] = 28.5,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:efd2a34c4bd803a01a7cadd04b8eeb870f5dbb929bf5a7fd59e9fceb5d552a07",
+                        ["normalizedGeometryHash"] = "sha256:27e60d3c0a0c4b5377098ff8e33cb2ec87c2357dac9c2b932af28ce714fdc26d",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -4998,9 +4998,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5013,9 +5013,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 4,
+                            ["x"] = 8.4,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5044,18 +5044,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 16,
+                                ["x"] = 18.6,
                                 ["y"] = 2,
-                                ["z"] = 36,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 8,
+                                ["x"] = 12.6,
                                 ["y"] = 0,
-                                ["z"] = 28,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:df0c81dd23db01cf6f4e7c38f96498ab095ef001f3989a2127f9ccc0a2d69984",
+                        ["normalizedGeometryHash"] = "sha256:b12543226e16940ab689ea0f6f07fb9376a66ca871f057d32e642fdf75ef8448",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -5064,9 +5064,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5078,9 +5078,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 12,
+                            ["x"] = 15.6,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5109,18 +5109,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 20,
+                                ["x"] = 27,
                                 ["y"] = 5,
-                                ["z"] = 36,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 12,
+                                ["x"] = 21,
                                 ["y"] = 3,
-                                ["z"] = 28,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:af81c4a6ae114c796f8e66fc8f4cfb21548292b898a535a4d8d4c8115283ed5b",
+                        ["normalizedGeometryHash"] = "sha256:68c0810d74cc5759bcbbc20bd57a94adcdd934363178585be81a948333d6242e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 5,
                     },
@@ -5129,9 +5129,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5143,9 +5143,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 16,
+                            ["x"] = 24,
                             ["y"] = 4,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5175,18 +5175,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 24,
+                                ["x"] = 35.4,
                                 ["y"] = 2,
-                                ["z"] = 36,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 16,
+                                ["x"] = 29.4,
                                 ["y"] = 0,
-                                ["z"] = 28,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:9b85b826ceac15aaacf8bd478adfa53063be6c83131ed15226faa2f84605060b",
+                        ["normalizedGeometryHash"] = "sha256:334c68ecac7725a864d2d2be25e58fad531bd065fef82dc4a02095005e4fa2db",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -5195,9 +5195,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5210,9 +5210,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 20,
+                            ["x"] = 32.4,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5242,20 +5242,20 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 19,
-                                ["y"] = 0.5,
-                                ["z"] = 40,
+                                ["x"] = 27,
+                                ["y"] = 3,
+                                ["z"] = 42,
                             },
                             ["minimum"] = {
-                                ["x"] = 13,
-                                ["y"] = -0.5,
-                                ["z"] = 34,
+                                ["x"] = 21,
+                                ["y"] = 2,
+                                ["z"] = 36,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:7766cf36b1e524f8c6ff54870266dc380b1ad7e56354d4e47843890c465c35b6",
+                        ["normalizedGeometryHash"] = "sha256:7c457fb88b3fecf5af40717610772127f05c8456fc6f9bb2c16a223517e37845",
                         ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
+                        ["topSurfaceMaximumY"] = 3,
                     },
                     ["id"] = "Stage18Hazard001",
                     ["order"] = 62,
@@ -5277,9 +5277,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 16,
-                            ["y"] = 0,
-                            ["z"] = 37,
+                            ["x"] = 24,
+                            ["y"] = 2.5,
+                            ["z"] = 39,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5308,18 +5308,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 32,
+                                ["x"] = 42.6,
                                 ["y"] = 2,
-                                ["z"] = 36,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 24,
+                                ["x"] = 36.6,
                                 ["y"] = 0,
-                                ["z"] = 28,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:3b84fdb368808c6f13cc33ae7b73af56dfae3b98e5254e9bc908f4e0211caac1",
+                        ["normalizedGeometryHash"] = "sha256:7bc3fbc640da9df6dfc77e5db8630416c7e50931003f7316c8c0800e472af42b",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -5328,9 +5328,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5342,9 +5342,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 28,
+                            ["x"] = 39.6,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5373,18 +5373,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 36,
+                                ["x"] = 51,
                                 ["y"] = 2,
-                                ["z"] = 38,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 28,
+                                ["x"] = 45,
                                 ["y"] = 0,
-                                ["z"] = 30,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f023d012e781ac5db4f8ff2f541619f294f4df506a4b0ffe727781e6817aa36e",
+                        ["normalizedGeometryHash"] = "sha256:c558055daf96053cd872c80d92a512ed3627c41c2f8d1f9d8bde4e82f89c486c",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -5393,9 +5393,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5407,9 +5407,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 32,
+                            ["x"] = 48,
                             ["y"] = 1,
-                            ["z"] = 34,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5439,18 +5439,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 40,
+                                ["x"] = 59.4,
                                 ["y"] = 2,
-                                ["z"] = 36,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 32,
+                                ["x"] = 53.4,
                                 ["y"] = 0,
-                                ["z"] = 28,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:2fe408deeb73fb3cdec1229a35bf275979d39e22c7edc110c215c4e8191f00a3",
+                        ["normalizedGeometryHash"] = "sha256:9a98b72cdf4628a79588b1c25c277a7bbbfe4c54667aa62688beca8e65275e74",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -5459,9 +5459,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5474,9 +5474,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 36,
+                            ["x"] = 56.4,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5506,18 +5506,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 48,
+                                ["x"] = 59,
                                 ["y"] = -22.5,
-                                ["z"] = 48,
+                                ["z"] = 59,
                             },
                             ["minimum"] = {
-                                ["x"] = 16,
+                                ["x"] = 37,
                                 ["y"] = -23.5,
-                                ["z"] = 16,
+                                ["z"] = 37,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:1d10381ec803b024be8d39c4a11a4b86fe449178cec49803609f14883bdf3ae5",
+                        ["normalizedGeometryHash"] = "sha256:84fbf7236027a34111bebd9f05f16157d5079b1c153019d5d6cd1d0a8367afc4",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = -22.5,
                     },
@@ -5526,9 +5526,9 @@ return {
                     ["role"] = "kill",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 32,
+                        ["x"] = 22,
                         ["y"] = 1,
-                        ["z"] = 32,
+                        ["z"] = 22,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5541,9 +5541,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 32,
+                            ["x"] = 48,
                             ["y"] = -23,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5572,18 +5572,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 48,
+                                ["x"] = 66.6,
                                 ["y"] = 2,
-                                ["z"] = 36,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 40,
+                                ["x"] = 60.6,
                                 ["y"] = 0,
-                                ["z"] = 28,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:9cfd3790cde9b9ee30abd28ef2c01a6317f62c09571dca57823823914cc899e7",
+                        ["normalizedGeometryHash"] = "sha256:d191ce2ff18650ddf946f1fb6d621cefe500ac4a9b72406c276055d52d3c7519",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -5592,9 +5592,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5606,9 +5606,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 44,
+                            ["x"] = 63.6,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5637,18 +5637,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 52,
+                                ["x"] = 75,
                                 ["y"] = 5,
-                                ["z"] = 36,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 44,
+                                ["x"] = 69,
                                 ["y"] = 3,
-                                ["z"] = 28,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:b4314853a506f5e304305f3da96b6a1a2a542a93b0103e3effc072080f6a8d9f",
+                        ["normalizedGeometryHash"] = "sha256:ff76df6cef5c74e090d8422767245c933e669b965080d25f406dbaa670015415",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 5,
                     },
@@ -5657,9 +5657,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5671,9 +5671,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 48,
+                            ["x"] = 72,
                             ["y"] = 4,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5703,18 +5703,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 56,
+                                ["x"] = 83.4,
                                 ["y"] = 2,
-                                ["z"] = 36,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 48,
+                                ["x"] = 77.4,
                                 ["y"] = 0,
-                                ["z"] = 28,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:c12ea0aa592a04760bd1c5fdd3073d40cd4473f7acc6912e24502e1c335e10bd",
+                        ["normalizedGeometryHash"] = "sha256:4c9b7165cdff6ad869850c618448953f6e3ddd8e8afa0b1d53c951afbdf55dcc",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -5723,9 +5723,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5738,9 +5738,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 52,
+                            ["x"] = 80.4,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5769,18 +5769,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 63.5,
+                                ["x"] = 90.6,
                                 ["y"] = 2,
-                                ["z"] = 35.5,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 56.5,
+                                ["x"] = 84.6,
                                 ["y"] = 0,
-                                ["z"] = 28.5,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:c6857518fa56fac6b3f52c5017522110267a06ebdd6d618b1efe7acd4186ebca",
+                        ["normalizedGeometryHash"] = "sha256:80e5597bc011b510c16fcd6c43a59c61b2457264de23bd425218541153c872c3",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -5789,9 +5789,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5803,9 +5803,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 60,
+                            ["x"] = 87.6,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5834,18 +5834,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 68.286607049871,
+                                ["x"] = 99,
                                 ["y"] = 2,
-                                ["z"] = 33.786607049871,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 59.713392950129,
+                                ["x"] = 93,
                                 ["y"] = 0,
-                                ["z"] = 25.213392950129,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:dd460f340b3d6eef09ac4af3b39b85bd4ef541fc76a0e52599f8905dbc8007c4",
+                        ["normalizedGeometryHash"] = "sha256:ccba60fe434d01209432ec5d97d53aa9f17dee149d93676151df69169ce1671e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -5854,9 +5854,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5868,13 +5868,13 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 64,
+                            ["x"] = 96,
                             ["y"] = 1,
-                            ["z"] = 29.5,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
-                            ["y"] = -105,
+                            ["y"] = -90,
                             ["z"] = 0,
                         },
                     },
@@ -5900,18 +5900,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 71.5,
+                                ["x"] = 107.4,
                                 ["y"] = 2,
-                                ["z"] = 35.5,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 64.5,
+                                ["x"] = 101.4,
                                 ["y"] = 0,
-                                ["z"] = 28.5,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:bd6f9a24820bd83ce650057ec543dd143ef36ba12271ff7f247533be5caa5641",
+                        ["normalizedGeometryHash"] = "sha256:f8d58553c2d013e3a7d96682bc4b957d06bd3dd3918434f4808919ef12a4eb0d",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -5920,9 +5920,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -5935,9 +5935,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 68,
+                            ["x"] = 104.4,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -5967,18 +5967,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 80,
+                                ["x"] = 107,
                                 ["y"] = -22.5,
-                                ["z"] = 48,
+                                ["z"] = 59,
                             },
                             ["minimum"] = {
-                                ["x"] = 48,
+                                ["x"] = 85,
                                 ["y"] = -23.5,
-                                ["z"] = 16,
+                                ["z"] = 37,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:4e186023b43d9b258155b63bbe763c408400555eb8c4bd922d52017dca2cba9a",
+                        ["normalizedGeometryHash"] = "sha256:5081d8ab1099112501ab0e3bd6f0e316484797c0962c39938c6771535d3f7309",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = -22.5,
                     },
@@ -5987,9 +5987,9 @@ return {
                     ["role"] = "kill",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 32,
+                        ["x"] = 22,
                         ["y"] = 1,
-                        ["z"] = 32,
+                        ["z"] = 22,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -6002,9 +6002,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 64,
+                            ["x"] = 96,
                             ["y"] = -23,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6033,18 +6033,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 80,
+                                ["x"] = 114.6,
                                 ["y"] = 2,
-                                ["z"] = 35.75,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 72,
+                                ["x"] = 108.6,
                                 ["y"] = 0,
-                                ["z"] = 28.25,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:2de3dfe0ba8d1f6ced58b3627826329630a9864cfead3274b12249a9ba68ec42",
+                        ["normalizedGeometryHash"] = "sha256:080a3a2170ae96b24cda4e1d02489d158156e33303da6ceef5823e9f0d01f7eb",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6053,9 +6053,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.5,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -6067,9 +6067,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 76,
+                            ["x"] = 111.6,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6098,18 +6098,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 84,
+                                ["x"] = 123,
                                 ["y"] = 2,
-                                ["z"] = 35.75,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 76,
+                                ["x"] = 117,
                                 ["y"] = 0,
-                                ["z"] = 28.25,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:1c31c4be9ae1fdbfafb5a3670825c66ab4ababa8a4933cfa6e91886c24abcc9a",
+                        ["normalizedGeometryHash"] = "sha256:b2f2f214007137d2ccbcd2222019129f927c7faeae4fbd7accec90ee39305131",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6118,9 +6118,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.5,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -6132,9 +6132,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 80,
+                            ["x"] = 120,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6164,18 +6164,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 88,
+                                ["x"] = 131.4,
                                 ["y"] = 2,
-                                ["z"] = 35.75,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 80,
+                                ["x"] = 125.4,
                                 ["y"] = 0,
-                                ["z"] = 28.25,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:6333c6cae6037c2081866b6bc960047ce9fad18767850ef42e36e267c214587a",
+                        ["normalizedGeometryHash"] = "sha256:3ab99f8ab054df5b91b71503bebe04a0821c72b74c0a64e569f8a6e099f7138b",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6184,9 +6184,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.5,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -6199,9 +6199,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 84,
+                            ["x"] = 128.4,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6230,18 +6230,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 95,
+                                ["x"] = 138.6,
                                 ["y"] = 2,
-                                ["z"] = 37,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 89,
+                                ["x"] = 132.6,
                                 ["y"] = 0,
-                                ["z"] = 27,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:66dcf8b4571b029f07194d97de3c7749e6fcd75ea6009f909aba0f3157de6fd0",
+                        ["normalizedGeometryHash"] = "sha256:1fce7cb77df88150eaa719bf6719b7918a8b886d4e4504eb5f4608cec1b2f4da",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6250,7 +6250,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -6264,9 +6264,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 92,
+                            ["x"] = 135.6,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6295,18 +6295,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 99,
+                                ["x"] = 147,
                                 ["y"] = 2,
-                                ["z"] = 37,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 93,
+                                ["x"] = 141,
                                 ["y"] = 0,
-                                ["z"] = 27,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:57e19d9a20ce69a22b9a7247f9a2cf8b01bdb8e05070eea9078bbb2627d998a6",
+                        ["normalizedGeometryHash"] = "sha256:b9c9f3e664f1be0dc6962c03851fbc7209dd62c2d21ace29c8a9e27636b6839f",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6315,7 +6315,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -6329,9 +6329,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 96,
+                            ["x"] = 144,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6361,18 +6361,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 103,
+                                ["x"] = 155.4,
                                 ["y"] = 2,
-                                ["z"] = 37,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 97,
+                                ["x"] = 149.4,
                                 ["y"] = 0,
-                                ["z"] = 27,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:3ef4a4753a13bcc02e19c05cdb2bc94418728881decfd1efe580a106ffec50c9",
+                        ["normalizedGeometryHash"] = "sha256:542a511192d0238eec1a1e47b97fcb10da8294fd3ac4782daa024a530179dd29",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6381,7 +6381,7 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -6396,9 +6396,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 100,
+                            ["x"] = 152.4,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6427,18 +6427,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 112,
+                                ["x"] = 162.6,
                                 ["y"] = 2,
-                                ["z"] = 36,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 104,
+                                ["x"] = 156.6,
                                 ["y"] = 0,
-                                ["z"] = 28,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:954d14ffa2a286ba671e8767548bf67746eb4493718e7e8936641f8c3843901b",
+                        ["normalizedGeometryHash"] = "sha256:7887dd23e637eae6e488dae752d6194110fdc1516b1aff634d2bc360a07e54e8",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6447,9 +6447,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -6461,9 +6461,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 108,
+                            ["x"] = 159.6,
                             ["y"] = 1,
-                            ["z"] = 32,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6492,18 +6492,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 114,
+                                ["x"] = 171,
                                 ["y"] = 5,
-                                ["z"] = 38,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 106,
+                                ["x"] = 165,
                                 ["y"] = 3,
-                                ["z"] = 30,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:230d4f4b8f689472a68bde437399113c4e50920f138071bc11f78e64b64efefd",
+                        ["normalizedGeometryHash"] = "sha256:cf636e03b4851fcee0debe0bc7ddcc72ccf574758ab920f349d3401217c01b1d",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 5,
                     },
@@ -6512,9 +6512,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -6526,9 +6526,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 110,
+                            ["x"] = 168,
                             ["y"] = 4,
-                            ["z"] = 34,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6558,18 +6558,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 116,
+                                ["x"] = 171,
                                 ["y"] = 2,
-                                ["z"] = 40,
+                                ["z"] = 59.4,
                             },
                             ["minimum"] = {
-                                ["x"] = 108,
+                                ["x"] = 165,
                                 ["y"] = 0,
-                                ["z"] = 32,
+                                ["z"] = 53.4,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a13743a6a749cedad3c07d473b9520b169817503cf0ef0e91a7395d083bed18a",
+                        ["normalizedGeometryHash"] = "sha256:2a519e75fc0d5ec8f977fbfed3089feac17975b1e11b1effe82b1fc39f86972a",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6578,9 +6578,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -6593,9 +6593,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 112,
+                            ["x"] = 168,
                             ["y"] = 1,
-                            ["z"] = 36,
+                            ["z"] = 56.4,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6625,20 +6625,20 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 120,
-                                ["y"] = 0.5,
-                                ["z"] = 35,
+                                ["x"] = 180,
+                                ["y"] = 3,
+                                ["z"] = 51,
                             },
                             ["minimum"] = {
-                                ["x"] = 114,
-                                ["y"] = -0.5,
-                                ["z"] = 29,
+                                ["x"] = 174,
+                                ["y"] = 2,
+                                ["z"] = 45,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:4b5ed1dc0f6096fa8025ab6bd545bc482d10228fc9265336a99c2e00e9ed64a9",
+                        ["normalizedGeometryHash"] = "sha256:f108ecb154ddb625ca1d439987658a2a0c0878aca24c1ec2580edae9238d3018",
                         ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
+                        ["topSurfaceMaximumY"] = 3,
                     },
                     ["id"] = "Stage24Hazard001",
                     ["order"] = 83,
@@ -6660,9 +6660,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 117,
-                            ["y"] = 0,
-                            ["z"] = 32,
+                            ["x"] = 177,
+                            ["y"] = 2.5,
+                            ["z"] = 48,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6691,18 +6691,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 116,
+                                ["x"] = 171,
                                 ["y"] = 2,
-                                ["z"] = 47.75,
+                                ["z"] = 66.6,
                             },
                             ["minimum"] = {
-                                ["x"] = 108,
+                                ["x"] = 165,
                                 ["y"] = 0,
-                                ["z"] = 40.25,
+                                ["z"] = 60.6,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:22547f80ee52efb428bbc7e75d67ee82e2a4025fe698bb561d1b8e0362c9ef3b",
+                        ["normalizedGeometryHash"] = "sha256:26522b3f4a12236593fb4e2c753838aa73682116e7d99f0e733f159a74e1fab9",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6711,9 +6711,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7.5,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -6725,9 +6725,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 112,
+                            ["x"] = 168,
                             ["y"] = 1,
-                            ["z"] = 44,
+                            ["z"] = 63.6,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6756,18 +6756,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 114,
+                                ["x"] = 171,
                                 ["y"] = 2,
-                                ["z"] = 49.75,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 106,
+                                ["x"] = 165,
                                 ["y"] = 0,
-                                ["z"] = 42.25,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:1f503c9e43bb7f503f9ea1626e9cf9e7445abcc146969889b87ff4491b6cd291",
+                        ["normalizedGeometryHash"] = "sha256:561299eab333a52d7e0e6217c3e0816ee54282e3a8f87ae6d95d5441b945ba8e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6776,9 +6776,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.5,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -6790,9 +6790,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 110,
+                            ["x"] = 168,
                             ["y"] = 1,
-                            ["z"] = 46,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6822,18 +6822,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 112,
+                                ["x"] = 162.6,
                                 ["y"] = 2,
-                                ["z"] = 51.75,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 104,
+                                ["x"] = 156.6,
                                 ["y"] = 0,
-                                ["z"] = 44.25,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:b5560ddf509f1bd59c90ff92ed38e41b62b1cf6e31fa0cfcd467bce10f942844",
+                        ["normalizedGeometryHash"] = "sha256:e93e3b814dccee27c9eb0fc7932366449cd6615c1e8e322c4f174cff4a10903e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6842,9 +6842,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.5,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -6857,9 +6857,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 108,
+                            ["x"] = 159.6,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6888,18 +6888,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 104,
+                                ["x"] = 155.4,
                                 ["y"] = 2,
-                                ["z"] = 51.75,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 96,
+                                ["x"] = 149.4,
                                 ["y"] = 0,
-                                ["z"] = 44.25,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a485e0354dc32e13b4b1968a6f35ba12d94a0441398c08b591b6c160fe9e1c02",
+                        ["normalizedGeometryHash"] = "sha256:55ea86506f0cb6ca4036a3e50ce1700bf19c5cedd023e04190d7ac90d37811ba",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6908,9 +6908,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.5,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -6922,9 +6922,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 100,
+                            ["x"] = 152.4,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -6953,18 +6953,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 100,
+                                ["x"] = 147,
                                 ["y"] = 2,
-                                ["z"] = 51.75,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 92,
+                                ["x"] = 141,
                                 ["y"] = 0,
-                                ["z"] = 44.25,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:200880446b6273c73c12b75ee0203d69d009869ae0bfa08a0d541889284a2497",
+                        ["normalizedGeometryHash"] = "sha256:fc4bc882b4f72153a728e92b39eb759bad3188576bfb6635af72bf522dd2c434",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -6973,9 +6973,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.5,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -6987,9 +6987,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 96,
+                            ["x"] = 144,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7019,18 +7019,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 96,
+                                ["x"] = 138.6,
                                 ["y"] = 2,
-                                ["z"] = 51.75,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 88,
+                                ["x"] = 132.6,
                                 ["y"] = 0,
-                                ["z"] = 44.25,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:31d50e0015caa4a44ad097f47e68c9248e70dfb53bc799b4de4c3815ba97042a",
+                        ["normalizedGeometryHash"] = "sha256:76e3c4e4ae6d560fd29fdf636fde168b83f52ce37c75eeb95b0ff6d668f6f937",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7039,9 +7039,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.5,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -7054,9 +7054,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 92,
+                            ["x"] = 135.6,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7085,18 +7085,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 87.5,
+                                ["x"] = 131.4,
                                 ["y"] = 2,
-                                ["z"] = 51.5,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 80.5,
+                                ["x"] = 125.4,
                                 ["y"] = 0,
-                                ["z"] = 44.5,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:b2e29a7c95b8b815161fd10629a937fc341022f49c3ec6759c836e9e91fb50af",
+                        ["normalizedGeometryHash"] = "sha256:a74239511d4bf019f22edbe70dd4092a26b2809c6ed4dbac4ecbc88bff6c63ec",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7105,9 +7105,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -7119,9 +7119,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 84,
+                            ["x"] = 128.4,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7150,18 +7150,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 84.286607049871,
+                                ["x"] = 123,
                                 ["y"] = 2,
-                                ["z"] = 49.786607049871,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 75.713392950129,
+                                ["x"] = 117,
                                 ["y"] = 0,
-                                ["z"] = 41.213392950129,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:7e8bb3fb0916b2aa50f3c4c5476e035f2481cbabc5f0543e39fcb470eb241974",
+                        ["normalizedGeometryHash"] = "sha256:ee1ef8f318a07327f1401c1b8b87afe9a6120d751f66b3fb240018d6ce004aae",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7170,9 +7170,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -7184,13 +7184,13 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 80,
+                            ["x"] = 120,
                             ["y"] = 1,
-                            ["z"] = 45.5,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
-                            ["y"] = 105,
+                            ["y"] = 90,
                             ["z"] = 0,
                         },
                     },
@@ -7216,18 +7216,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 79.5,
+                                ["x"] = 114.6,
                                 ["y"] = 2,
-                                ["z"] = 51.5,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 72.5,
+                                ["x"] = 108.6,
                                 ["y"] = 0,
-                                ["z"] = 44.5,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f3a6a9a61980aa2db1ab680fee80c45a90f530accb02cc4f52f010dc3ad8c810",
+                        ["normalizedGeometryHash"] = "sha256:4aa05996c7f84981694f7d577010ba16a01c8ddc1f3af2e2d07582e97c589fd8",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7236,9 +7236,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -7251,9 +7251,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 76,
+                            ["x"] = 111.6,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7283,18 +7283,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 96,
+                                ["x"] = 131,
                                 ["y"] = -22.5,
-                                ["z"] = 64,
+                                ["z"] = 83,
                             },
                             ["minimum"] = {
-                                ["x"] = 64,
+                                ["x"] = 109,
                                 ["y"] = -23.5,
-                                ["z"] = 32,
+                                ["z"] = 61,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:ef4b2c09d06c5e442dc8e9b3eccfa2f84fdaa507bca9db595a3fb6ebe56e3931",
+                        ["normalizedGeometryHash"] = "sha256:aa0ffd58a7bd73775adf6133a1646d46b81f5e351a16bcb96917dfcca4edcc41",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = -22.5,
                     },
@@ -7303,9 +7303,9 @@ return {
                     ["role"] = "kill",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 32,
+                        ["x"] = 22,
                         ["y"] = 1,
-                        ["z"] = 32,
+                        ["z"] = 22,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -7318,9 +7318,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 80,
+                            ["x"] = 120,
                             ["y"] = -23,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7349,18 +7349,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 72,
+                                ["x"] = 107.4,
                                 ["y"] = 2,
-                                ["z"] = 51.75,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 64,
+                                ["x"] = 101.4,
                                 ["y"] = 0,
-                                ["z"] = 44.25,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:9600202dd29f65ee31fc17f07a97ed56f0cf960c564d6d0236308e23d2e36754",
+                        ["normalizedGeometryHash"] = "sha256:2eb596b4a844b6d1a6a99f3abe71dbc17b0b0bb28939afcde0c65fd680ed869d",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7369,9 +7369,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.5,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -7383,9 +7383,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 68,
+                            ["x"] = 104.4,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7414,18 +7414,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 68,
+                                ["x"] = 99,
                                 ["y"] = 2,
-                                ["z"] = 51.75,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 60,
+                                ["x"] = 93,
                                 ["y"] = 0,
-                                ["z"] = 44.25,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:0703aa19e7b1f88a45fe6d9c86d04e455d2459d31f5858a76bf4264c027edd52",
+                        ["normalizedGeometryHash"] = "sha256:5b1b2681e331099144e90a07d2a640f832a53115f04f3a44adb50d92e0cffb06",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7434,9 +7434,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.5,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -7448,9 +7448,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 64,
+                            ["x"] = 96,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7480,18 +7480,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 64,
+                                ["x"] = 90.6,
                                 ["y"] = 2,
-                                ["z"] = 51.75,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 56,
+                                ["x"] = 84.6,
                                 ["y"] = 0,
-                                ["z"] = 44.25,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:02e104fe3515a13de225977de7dff2881e70408bb2fbf6485b6106d417aebe5b",
+                        ["normalizedGeometryHash"] = "sha256:1cebe81bca4e6cbd4c42b028dc3d9350ee17747e9176164838005127d7703cab",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7500,9 +7500,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.5,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -7515,9 +7515,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 60,
+                            ["x"] = 87.6,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7546,18 +7546,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 55,
+                                ["x"] = 83.4,
                                 ["y"] = 2,
-                                ["z"] = 51,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 49,
+                                ["x"] = 77.4,
                                 ["y"] = 0,
-                                ["z"] = 45,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:7c67db607bcaeab9c810246203dfc7f38c7b54c5247b53a734b22896a87fc4fa",
+                        ["normalizedGeometryHash"] = "sha256:cee2190f8b74a5e86b3505d57b27faeefa25c5d6c5e5e2a5f8219391dd4a518d",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7580,9 +7580,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 52,
+                            ["x"] = 80.4,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7611,18 +7611,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 51,
+                                ["x"] = 75,
                                 ["y"] = 2,
-                                ["z"] = 52,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 45,
+                                ["x"] = 69,
                                 ["y"] = 0,
-                                ["z"] = 46,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:6fdbd275b634d79ae117de7b50961a62298c4b6b53fae2a6e6228ab9fef4b436",
+                        ["normalizedGeometryHash"] = "sha256:e351c22e0bba14d2269f4c2190bc49cb6d6ade5e756903870315ef4198172d8d",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7645,9 +7645,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 48,
+                            ["x"] = 72,
                             ["y"] = 1,
-                            ["z"] = 49,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7677,18 +7677,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 47,
+                                ["x"] = 66.6,
                                 ["y"] = 2,
-                                ["z"] = 51,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 41,
+                                ["x"] = 60.6,
                                 ["y"] = 0,
-                                ["z"] = 45,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:0de06bd6c23c728b7bcad2de18ae5d1ea161fcfd99a385506d2a8c6662f0af45",
+                        ["normalizedGeometryHash"] = "sha256:9132297821a933c692b3d5f122732c4bc8daf14536e390a5be7a95a871e22c1e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7712,9 +7712,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 44,
+                            ["x"] = 63.6,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7743,18 +7743,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 39,
+                                ["x"] = 59.4,
                                 ["y"] = 2,
-                                ["z"] = 52,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 33,
+                                ["x"] = 53.4,
                                 ["y"] = 0,
-                                ["z"] = 44,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:039ca86697e6f14a143c5187e481a7b3a9e3a971b357e57c73676280c8d224f4",
+                        ["normalizedGeometryHash"] = "sha256:a9d477f155dc680c71075ae49c87959044f2499e4d341af6466eee72735403f9",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7763,7 +7763,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -7777,9 +7777,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 36,
+                            ["x"] = 56.4,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7808,18 +7808,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 35,
+                                ["x"] = 51,
                                 ["y"] = 2,
-                                ["z"] = 52,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 29,
+                                ["x"] = 45,
                                 ["y"] = 0,
-                                ["z"] = 44,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:551bc93e8b75315474ca44e01f7fc20b5d5719c35b92855b96aeb2b0df77d8a0",
+                        ["normalizedGeometryHash"] = "sha256:0513d7445edd78c3068b722cfa3289b2c7354841aeb5b74bc3ce2fb735c07062",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7828,7 +7828,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -7842,9 +7842,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 32,
+                            ["x"] = 48,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7874,18 +7874,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 31,
+                                ["x"] = 42.6,
                                 ["y"] = 2,
-                                ["z"] = 52,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 25,
+                                ["x"] = 36.6,
                                 ["y"] = 0,
-                                ["z"] = 44,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:5629c9b848f981ecdfc86de9ea91c5c399a0cb0861280b9368d39770cce538f4",
+                        ["normalizedGeometryHash"] = "sha256:202a966f1192640d9eb9893dafea6b14117613ba23c6f9576d052d3223141dc9",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -7894,7 +7894,7 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -7909,9 +7909,273 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 28,
+                            ["x"] = 39.6,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#F94144",
+                        ["colorRole"] = "hazard",
+                        ["material"] = "Neon",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["killMode"] = "touch",
+                        ["kind"] = "kill",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = false,
+                        ["canQuery"] = true,
+                        ["canTouch"] = true,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 51,
+                                ["y"] = 3,
+                                ["z"] = 66,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 45,
+                                ["y"] = 2,
+                                ["z"] = 60,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:0e915aefe9758c34dbbc5930dd4e2819d1fbc89c664cf3d95f058d8121cc1b4d",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 3,
+                    },
+                    ["id"] = "Stage30Hazard001",
+                    ["order"] = 103,
+                    ["role"] = "kill",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 1,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceHazardId"] = "hazard-30",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-30",
+                        ["sourceStageId"] = "stage-30",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 48,
+                            ["y"] = 2.5,
+                            ["z"] = 63,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 35.4,
+                                ["y"] = 2,
+                                ["z"] = 75,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 29.4,
+                                ["y"] = 0,
+                                ["z"] = 69,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:616cc76b44f3499fa0e4d0b011066794fa38f8503bb3548beca69129406cb593",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage31Route001",
+                    ["order"] = 104,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-31",
+                        ["sourceStageId"] = "stage-31",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 32.4,
+                            ["y"] = 1,
+                            ["z"] = 72,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 27,
+                                ["y"] = 2,
+                                ["z"] = 75,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 21,
+                                ["y"] = 0,
+                                ["z"] = 69,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:cc5fd149fae90ff745688a9b1b7b6d6bc6c01b767f8e78a7fce4b9ed64f01c85",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage31Route002",
+                    ["order"] = 105,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-31",
+                        ["sourceStageId"] = "stage-31",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 24,
+                            ["y"] = 1,
+                            ["z"] = 72,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = 90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#F9C74F",
+                        ["colorRole"] = "reward",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["checkpointOrder"] = 31,
+                        ["kind"] = "checkpoint",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = true,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 18.6,
+                                ["y"] = 2,
+                                ["z"] = 75,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 12.6,
+                                ["y"] = 0,
+                                ["z"] = 69,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:cde2d91b510e1efa0e25b6d7dcbd76506f3daa93c330232668f12f968765adf9",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Checkpoint031",
+                    ["order"] = 106,
+                    ["role"] = "checkpoint",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceCheckpointId"] = "checkpoint-31",
+                        ["sourceMechanicIntentId"] = "mechanic-intent-31",
+                        ["sourceStageId"] = "stage-31",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 15.6,
+                            ["y"] = 1,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -7942,281 +8206,17 @@ return {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
                                 ["x"] = 35,
-                                ["y"] = 0.5,
-                                ["z"] = 56,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 29,
-                                ["y"] = -0.5,
-                                ["z"] = 50,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a3c0f2e691df0e471069ee901f71760516d087aaad95c4b40a9cf4eb06ba9123",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
-                    },
-                    ["id"] = "Stage30Hazard001",
-                    ["order"] = 103,
-                    ["role"] = "kill",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 6,
-                        ["y"] = 1,
-                        ["z"] = 6,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceHazardId"] = "hazard-30",
-                        ["sourceMechanicIntentId"] = "mechanic-intent-30",
-                        ["sourceStageId"] = "stage-30",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 32,
-                            ["y"] = 0,
-                            ["z"] = 53,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4CC9F0",
-                        ["colorRole"] = "primary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 24,
-                                ["y"] = 2,
-                                ["z"] = 52,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 16,
-                                ["y"] = 0,
-                                ["z"] = 44,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:ed3464e885103a4b6219ab51d2f8b483d7f81c4bf12ba87d9ed1bf6a7f4a0ce2",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage31Route001",
-                    ["order"] = 104,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-31",
-                        ["sourceStageId"] = "stage-31",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 20,
-                            ["y"] = 1,
-                            ["z"] = 48,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#4895EF",
-                        ["colorRole"] = "secondary",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["kind"] = "none",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = false,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 20,
-                                ["y"] = 2,
-                                ["z"] = 50,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 12,
-                                ["y"] = 0,
-                                ["z"] = 42,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:eb817c7a257c593a75bc32c3f38fd6bad9545d31633892478c184d29cb242ec0",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Stage31Route002",
-                    ["order"] = 105,
-                    ["role"] = "platform",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceMechanicIntentId"] = "mechanic-intent-31",
-                        ["sourceStageId"] = "stage-31",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 16,
-                            ["y"] = 1,
-                            ["z"] = 46,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#F9C74F",
-                        ["colorRole"] = "reward",
-                        ["material"] = "SmoothPlastic",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["checkpointOrder"] = 31,
-                        ["kind"] = "checkpoint",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = true,
-                        ["canQuery"] = true,
-                        ["canTouch"] = true,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 16,
-                                ["y"] = 2,
-                                ["z"] = 52,
-                            },
-                            ["minimum"] = {
-                                ["x"] = 8,
-                                ["y"] = 0,
-                                ["z"] = 44,
-                            },
-                        },
-                        ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:70d30dccee7870845476e036481ad60427ac43848183883c1d9fefe7c4def95d",
-                        ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 2,
-                    },
-                    ["id"] = "Checkpoint031",
-                    ["order"] = 106,
-                    ["role"] = "checkpoint",
-                    ["shape"] = "Block",
-                    ["size"] = {
-                        ["x"] = 8,
-                        ["y"] = 2,
-                        ["z"] = 8,
-                    },
-                    ["sourceReferences"] = {
-                        ["sourceAssetIntentIds"] = {
-                            "asset-decoration",
-                            "asset-gameplay-route",
-                        },
-                        ["sourceCheckpointId"] = "checkpoint-31",
-                        ["sourceMechanicIntentId"] = "mechanic-intent-31",
-                        ["sourceStageId"] = "stage-31",
-                    },
-                    ["transform"] = {
-                        ["position"] = {
-                            ["x"] = 12,
-                            ["y"] = 1,
-                            ["z"] = 48,
-                        },
-                        ["rotation"] = {
-                            ["x"] = 0,
-                            ["y"] = 90,
-                            ["z"] = 0,
-                        },
-                    },
-                },
-                {
-                    ["appearance"] = {
-                        ["color"] = "#F94144",
-                        ["colorRole"] = "hazard",
-                        ["material"] = "Neon",
-                    },
-                    ["authority"] = "native-gameplay",
-                    ["behavior"] = {
-                        ["killMode"] = "touch",
-                        ["kind"] = "kill",
-                    },
-                    ["className"] = "Part",
-                    ["collision"] = {
-                        ["anchored"] = true,
-                        ["canCollide"] = false,
-                        ["canQuery"] = true,
-                        ["canTouch"] = true,
-                    },
-                    ["geometry"] = {
-                        ["axisAlignedBounds"] = {
-                            ["maximum"] = {
-                                ["x"] = 32,
                                 ["y"] = -22.5,
-                                ["z"] = 64,
+                                ["z"] = 83,
                             },
                             ["minimum"] = {
-                                ["x"] = 0,
+                                ["x"] = 13,
                                 ["y"] = -23.5,
-                                ["z"] = 32,
+                                ["z"] = 61,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:4b0306f560c03a01dd3bef6fcd6fd6d1f47234cc34a32537cab136a7bca7d0a8",
+                        ["normalizedGeometryHash"] = "sha256:086fe1fb4371dc9b4986ca1c855fcbabecd69495a00372d6e5180d36f95d02d3",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = -22.5,
                     },
@@ -8225,9 +8225,9 @@ return {
                     ["role"] = "kill",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 32,
+                        ["x"] = 22,
                         ["y"] = 1,
-                        ["z"] = 32,
+                        ["z"] = 22,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -8240,9 +8240,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 16,
+                            ["x"] = 24,
                             ["y"] = -23,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -8271,18 +8271,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 7,
+                                ["x"] = 11.4,
                                 ["y"] = 2,
-                                ["z"] = 53,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = 1,
+                                ["x"] = 5.4,
                                 ["y"] = 0,
-                                ["z"] = 43,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:b31a1c5294569601e0da4da74949c44dc09c5c9c1442503cefb5315af0d01976",
+                        ["normalizedGeometryHash"] = "sha256:7271c5d5509bd49dde6e5b5127f35517ceb49a7087cf8b0b7534b5b65a2a7679",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -8291,7 +8291,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -8305,9 +8305,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 4,
+                            ["x"] = 8.4,
                             ["y"] = 1,
-                            ["z"] = 48,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -8336,18 +8336,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 5,
+                                ["x"] = 3,
                                 ["y"] = 2,
-                                ["z"] = 55,
+                                ["z"] = 75,
                             },
                             ["minimum"] = {
-                                ["x"] = -1,
+                                ["x"] = -3,
                                 ["y"] = 0,
-                                ["z"] = 45,
+                                ["z"] = 69,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:35ce312596af0a8b714846e46fe86ac64cdd2caeb5794ff7b9a820542cc199dc",
+                        ["normalizedGeometryHash"] = "sha256:c03793ae1f085e8c20f286e071328cc9c4219e246ce11bdeab19d3a27eb40e7e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -8358,7 +8358,7 @@ return {
                     ["size"] = {
                         ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -8370,9 +8370,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 2,
+                            ["x"] = 0,
                             ["y"] = 1,
-                            ["z"] = 50,
+                            ["z"] = 72,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -8404,16 +8404,16 @@ return {
                             ["maximum"] = {
                                 ["x"] = 3,
                                 ["y"] = 2,
-                                ["z"] = 57,
+                                ["z"] = 83.4,
                             },
                             ["minimum"] = {
                                 ["x"] = -3,
                                 ["y"] = 0,
-                                ["z"] = 47,
+                                ["z"] = 77.4,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:7b7da90af6392ae0b4df74bf34ab7b706f895cf5b337da23ea9efa5adc93acf4",
+                        ["normalizedGeometryHash"] = "sha256:6054ecbe0b3a68724c0c48289886bef1e2227079bbf7ba556078acef6f104aa3",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -8424,7 +8424,7 @@ return {
                     ["size"] = {
                         ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -8439,7 +8439,7 @@ return {
                         ["position"] = {
                             ["x"] = 0,
                             ["y"] = 1,
-                            ["z"] = 52,
+                            ["z"] = 80.4,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -8468,18 +8468,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 4,
+                                ["x"] = 3,
                                 ["y"] = 2,
-                                ["z"] = 64,
+                                ["z"] = 90.6,
                             },
                             ["minimum"] = {
-                                ["x"] = -4,
+                                ["x"] = -3,
                                 ["y"] = 0,
-                                ["z"] = 56,
+                                ["z"] = 84.6,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:852d983754260cad170a2ebbd7be9cd9bb37d7d5e8d161aeb1693cbd51f3e219",
+                        ["normalizedGeometryHash"] = "sha256:fab22db7babed4ca093111fa2212b21f05be9dece79af6d54a78777430b118a4",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -8488,9 +8488,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -8504,7 +8504,7 @@ return {
                         ["position"] = {
                             ["x"] = 0,
                             ["y"] = 1,
-                            ["z"] = 60,
+                            ["z"] = 87.6,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -8533,18 +8533,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 6,
+                                ["x"] = 3,
                                 ["y"] = 5,
-                                ["z"] = 66,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = -2,
+                                ["x"] = -3,
                                 ["y"] = 3,
-                                ["z"] = 58,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:c94249d9e4736e708e3ff3aa57e32a8490a75cc79769fd59ef84436c8531ed4c",
+                        ["normalizedGeometryHash"] = "sha256:7af302a789b722064d6564fb2d883ad979b8ea74e504aec5fa3a77b91f7e28f2",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 5,
                     },
@@ -8553,9 +8553,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -8567,9 +8567,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 2,
+                            ["x"] = 0,
                             ["y"] = 4,
-                            ["z"] = 62,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -8599,18 +8599,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 8,
+                                ["x"] = 11.4,
                                 ["y"] = 2,
-                                ["z"] = 68,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 0,
+                                ["x"] = 5.4,
                                 ["y"] = 0,
-                                ["z"] = 60,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:200e2dc0ee7ea0eb83889d0fab890b462fe82077a5184f82fef6ccad1e13acf9",
+                        ["normalizedGeometryHash"] = "sha256:258a36c703d2da3425d66b43842cd3b16d81f7c71f8860267d0d9f2927d4017a",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -8619,9 +8619,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -8634,9 +8634,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 4,
+                            ["x"] = 8.4,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -8666,18 +8666,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 16,
+                                ["x"] = 11,
                                 ["y"] = -22.5,
-                                ["z"] = 80,
+                                ["z"] = 107,
                             },
                             ["minimum"] = {
-                                ["x"] = -16,
+                                ["x"] = -11,
                                 ["y"] = -23.5,
-                                ["z"] = 48,
+                                ["z"] = 85,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:6976ede6e00bb700b6f7717ce01778c2476f44462dcc26de3a3e6c08374dccb6",
+                        ["normalizedGeometryHash"] = "sha256:cf76c6e1a5b8b7e6d03e238afcce9c657d38f19293ca731d54df584627363a3c",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = -22.5,
                     },
@@ -8686,9 +8686,9 @@ return {
                     ["role"] = "kill",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 32,
+                        ["x"] = 22,
                         ["y"] = 1,
-                        ["z"] = 32,
+                        ["z"] = 22,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -8703,7 +8703,7 @@ return {
                         ["position"] = {
                             ["x"] = 0,
                             ["y"] = -23,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -8732,18 +8732,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 16,
+                                ["x"] = 18.6,
                                 ["y"] = 2,
-                                ["z"] = 68,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 8,
+                                ["x"] = 12.6,
                                 ["y"] = 0,
-                                ["z"] = 60,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:4db6915f2a74f79ac48fe5702b70d16163c81cb64b8a4454657edf38a60317a5",
+                        ["normalizedGeometryHash"] = "sha256:4bd209a7217b406d0ba4699a228ce74cf4c27558f23d1b47a0590d3c3f705244",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -8752,9 +8752,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -8766,9 +8766,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 12,
+                            ["x"] = 15.6,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -8797,18 +8797,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 20,
+                                ["x"] = 27,
                                 ["y"] = 6,
-                                ["z"] = 68,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 12,
+                                ["x"] = 21,
                                 ["y"] = 4,
-                                ["z"] = 60,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:1aea9cbbfc7f8a54b792df9bb76468724b5e2fc11698679a29ad90232da85e86",
+                        ["normalizedGeometryHash"] = "sha256:92f3272c072c51c3e3b0022f703f23a3dec9efa3c5c7f76cd1382a73c249e56c",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 6,
                     },
@@ -8817,9 +8817,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -8831,9 +8831,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 16,
+                            ["x"] = 24,
                             ["y"] = 5,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -8863,18 +8863,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 24,
+                                ["x"] = 35.4,
                                 ["y"] = 2,
-                                ["z"] = 68,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 16,
+                                ["x"] = 29.4,
                                 ["y"] = 0,
-                                ["z"] = 60,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:7e179edabb18ffdcc60f41f7521a15124505eacec344341374539053a50c58d1",
+                        ["normalizedGeometryHash"] = "sha256:a68b911352c7d0be9b44f5569cc196bbc9a54a4a500bfb6c778b286b08f4b142",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -8883,9 +8883,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -8898,9 +8898,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 20,
+                            ["x"] = 32.4,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -8929,18 +8929,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 33,
+                                ["x"] = 42.6,
                                 ["y"] = 2,
-                                ["z"] = 69,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 23,
+                                ["x"] = 36.6,
                                 ["y"] = 0,
-                                ["z"] = 59,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:3f027ee5667c71bfadf823c90679a23fa5e954de410944e3eddcb63515efba2c",
+                        ["normalizedGeometryHash"] = "sha256:b2ca8f1b7562a02d05f32252bd29acb86c375c97c344d5a84ff00e814e6222c9",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -8949,9 +8949,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -8963,9 +8963,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 28,
+                            ["x"] = 39.6,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -8994,18 +8994,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 37,
+                                ["x"] = 51,
                                 ["y"] = 2,
-                                ["z"] = 69,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 27,
+                                ["x"] = 45,
                                 ["y"] = 0,
-                                ["z"] = 59,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:eb242fef0a8e5a541ee19b9b22540c0c2f1a2373f63affbb86a60f3ae3145824",
+                        ["normalizedGeometryHash"] = "sha256:b8974a1aab43b2d75fcb98a491ce359dc8bb52ec3717ad070eb5ececd95d27e9",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9014,9 +9014,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -9028,9 +9028,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 32,
+                            ["x"] = 48,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9060,18 +9060,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 41,
+                                ["x"] = 59.4,
                                 ["y"] = 2,
-                                ["z"] = 69,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 31,
+                                ["x"] = 53.4,
                                 ["y"] = 0,
-                                ["z"] = 59,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:2932a982632755ce23506e20d92dea485d2c0d52bdeb102a1e54f65a0e26d320",
+                        ["normalizedGeometryHash"] = "sha256:90d6ae70a31186fcad599e471b40612a9b1273798c9d2f40d58ae633fc50e504",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9080,9 +9080,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -9095,9 +9095,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 36,
+                            ["x"] = 56.4,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9126,18 +9126,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 48,
+                                ["x"] = 66.6,
                                 ["y"] = 2,
-                                ["z"] = 67.625,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 40,
+                                ["x"] = 60.6,
                                 ["y"] = 0,
-                                ["z"] = 60.375,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:419f616df3c9e640467369e5b81cc312c838d08b9c51ad59f0dd6f4938fb9750",
+                        ["normalizedGeometryHash"] = "sha256:ac9cf3e9b587770edfd74664e79cfa4b09b62069d41ac9dfc59bf723c2797582",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9146,9 +9146,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -9160,9 +9160,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 44,
+                            ["x"] = 63.6,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9191,18 +9191,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 52,
+                                ["x"] = 75,
                                 ["y"] = 2,
-                                ["z"] = 67.625,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 44,
+                                ["x"] = 69,
                                 ["y"] = 0,
-                                ["z"] = 60.375,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:39b59069e53fc1d74928a107046a2dba671903c926871eda9fcf1b9e74428bec",
+                        ["normalizedGeometryHash"] = "sha256:7e01c3fe3898852fbeb2fc180283b672419db6d02c70e783cbaefab7c90f3ce2",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9211,9 +9211,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -9225,9 +9225,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 48,
+                            ["x"] = 72,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9257,18 +9257,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 56,
+                                ["x"] = 83.4,
                                 ["y"] = 2,
-                                ["z"] = 67.625,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 48,
+                                ["x"] = 77.4,
                                 ["y"] = 0,
-                                ["z"] = 60.375,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:93a8735b5f8aa48f09c531d35d26178cf277edf2c4e2f04cdf549e61ca991166",
+                        ["normalizedGeometryHash"] = "sha256:58f22a9cd74c6bae26d0964f24b294b46c66eb96d5bc3d35f02293f94da41742",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9277,9 +9277,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -9292,9 +9292,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 52,
+                            ["x"] = 80.4,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9324,20 +9324,20 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 51,
-                                ["y"] = 0.5,
-                                ["z"] = 62,
+                                ["x"] = 75,
+                                ["y"] = 3,
+                                ["z"] = 108,
                             },
                             ["minimum"] = {
-                                ["x"] = 45,
-                                ["y"] = -0.5,
-                                ["z"] = 56,
+                                ["x"] = 69,
+                                ["y"] = 2,
+                                ["z"] = 102,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:b26b7bbaf8ef7713d98824ed862fc206b678dc2048e466685b848139648b81c0",
+                        ["normalizedGeometryHash"] = "sha256:af1a3d52b8d002cf749180400a51df2f332b316820e0f60cd3c91490e7741813",
                         ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
+                        ["topSurfaceMaximumY"] = 3,
                     },
                     ["id"] = "Stage36Hazard001",
                     ["order"] = 124,
@@ -9359,9 +9359,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 48,
-                            ["y"] = 0,
-                            ["z"] = 59,
+                            ["x"] = 72,
+                            ["y"] = 2.5,
+                            ["z"] = 105,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9390,18 +9390,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 63,
+                                ["x"] = 90.6,
                                 ["y"] = 2,
-                                ["z"] = 68,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 57,
+                                ["x"] = 84.6,
                                 ["y"] = 0,
-                                ["z"] = 60,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:3fbb1f267515f045dd0b3dee3a9858bf80b45cbbbc5dc6c96d65a06e9de5b798",
+                        ["normalizedGeometryHash"] = "sha256:91147dca19d9aa238dc8de3940c2d57f634531d2b49ebd84f771094bd52a2966",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9410,7 +9410,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -9424,9 +9424,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 60,
+                            ["x"] = 87.6,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9455,18 +9455,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 67,
+                                ["x"] = 99,
                                 ["y"] = 2,
-                                ["z"] = 68,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 61,
+                                ["x"] = 93,
                                 ["y"] = 0,
-                                ["z"] = 60,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:00aeff03c617ab1b2f9d0372989c32ed442d9f4c13114b0f9d5d52f2553cf912",
+                        ["normalizedGeometryHash"] = "sha256:6cc71f422b3d129bdf23a3766d711620707e1a3aaaea8938a8a5dbbd68b5c570",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9475,7 +9475,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -9489,9 +9489,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 64,
+                            ["x"] = 96,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9521,18 +9521,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 71,
+                                ["x"] = 107.4,
                                 ["y"] = 2,
-                                ["z"] = 68,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 65,
+                                ["x"] = 101.4,
                                 ["y"] = 0,
-                                ["z"] = 60,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a6f2e4aab484fa59c0c70b44801ffb379ea743dc8173075f8e5d92668c59c539",
+                        ["normalizedGeometryHash"] = "sha256:dd618c276e7700fb50180d498a49237e65d8ee595e38b429d7b6f9cd125c91c6",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9541,7 +9541,7 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -9556,9 +9556,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 68,
+                            ["x"] = 104.4,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9587,18 +9587,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 79,
+                                ["x"] = 114.6,
                                 ["y"] = 2,
-                                ["z"] = 68,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 73,
+                                ["x"] = 108.6,
                                 ["y"] = 0,
-                                ["z"] = 60,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f564b39a6309f3d8987cf261b1d06e6bb0e1cf2340380e4273b28e460f5f0fa3",
+                        ["normalizedGeometryHash"] = "sha256:438e15a648d3ab22e6015e539183b3b670ee9ca1e36197e579fb5334fe2cede8",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9607,7 +9607,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -9621,9 +9621,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 76,
+                            ["x"] = 111.6,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9652,18 +9652,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 83,
+                                ["x"] = 123,
                                 ["y"] = 2,
-                                ["z"] = 68,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 77,
+                                ["x"] = 117,
                                 ["y"] = 0,
-                                ["z"] = 60,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:435d992c2fcb8e332b809ad425be945e2702e88bda4b6dd6853a3c83d1ca24c5",
+                        ["normalizedGeometryHash"] = "sha256:ad2650957a3c434cd299aa19491924086949b1eda82040303603966c3446fe72",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9672,7 +9672,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -9686,9 +9686,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 80,
+                            ["x"] = 120,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9718,18 +9718,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 87,
+                                ["x"] = 131.4,
                                 ["y"] = 2,
-                                ["z"] = 68,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 81,
+                                ["x"] = 125.4,
                                 ["y"] = 0,
-                                ["z"] = 60,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:4ae7650cd1742b2433190f236e5c507e3fe8b498dda21dcbe5f9b46be875c874",
+                        ["normalizedGeometryHash"] = "sha256:50d8b943e40b98db50e9cba8a426ad5bae432dd86a2aaf82cdfe48d705ca53e4",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9738,7 +9738,7 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -9753,9 +9753,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 84,
+                            ["x"] = 128.4,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9784,18 +9784,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 97,
+                                ["x"] = 138.6,
                                 ["y"] = 2,
-                                ["z"] = 69,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 87,
+                                ["x"] = 132.6,
                                 ["y"] = 0,
-                                ["z"] = 59,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:6e1137c9bc3174c3e648e44c2bea99ba82062d22dc103e0ea9144c5f4d5330f2",
+                        ["normalizedGeometryHash"] = "sha256:07d548398abdf615114c40ca4870c425992481ba2f8374f54abd8d5713deedd3",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9804,9 +9804,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -9818,9 +9818,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 92,
+                            ["x"] = 135.6,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9849,18 +9849,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 101,
+                                ["x"] = 147,
                                 ["y"] = 2,
-                                ["z"] = 69,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 91,
+                                ["x"] = 141,
                                 ["y"] = 0,
-                                ["z"] = 59,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:761090d71bbcf00ddecb0af831e928cf70b830100a24fdbd02939bf073c5a8f2",
+                        ["normalizedGeometryHash"] = "sha256:5bd9deeb1ee97707d5352cbbe0c803e59defa452ffc1e6f1a7ddfd934c18ae9e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9869,9 +9869,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -9883,9 +9883,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 96,
+                            ["x"] = 144,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9915,18 +9915,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 105,
+                                ["x"] = 155.4,
                                 ["y"] = 2,
-                                ["z"] = 69,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 95,
+                                ["x"] = 149.4,
                                 ["y"] = 0,
-                                ["z"] = 59,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:70b64221e9f53ce169b53f453f5ceb897cd159df1ff79ed23031ac849175739b",
+                        ["normalizedGeometryHash"] = "sha256:47fd0fb2f0fd4072a5a61040f99a17eaf0aa7af8f44c657322d32e2e6d0e68b6",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -9935,9 +9935,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -9950,9 +9950,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 100,
+                            ["x"] = 152.4,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -9982,18 +9982,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 112,
+                                ["x"] = 155,
                                 ["y"] = -22.5,
-                                ["z"] = 80,
+                                ["z"] = 107,
                             },
                             ["minimum"] = {
-                                ["x"] = 80,
+                                ["x"] = 133,
                                 ["y"] = -23.5,
-                                ["z"] = 48,
+                                ["z"] = 85,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:497020cc9c1a39667b309e7e085693e9fe4785fccefe4864936c863b5acb942a",
+                        ["normalizedGeometryHash"] = "sha256:7a4b94b9f3aea2d35a9a86b742708c31c9932bf15129830dc56bf0f4c4eb049e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = -22.5,
                     },
@@ -10002,9 +10002,9 @@ return {
                     ["role"] = "kill",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 32,
+                        ["x"] = 22,
                         ["y"] = 1,
-                        ["z"] = 32,
+                        ["z"] = 22,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10017,9 +10017,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 96,
+                            ["x"] = 144,
                             ["y"] = -23,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10048,18 +10048,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 111,
+                                ["x"] = 162.6,
                                 ["y"] = 2,
-                                ["z"] = 69,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 105,
+                                ["x"] = 156.6,
                                 ["y"] = 0,
-                                ["z"] = 59,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:4bb7d8ae04d91defef6f4d357c6e655075c092dc5edfe1e9cc55b3e718a770ea",
+                        ["normalizedGeometryHash"] = "sha256:12dc59922898b03c1d8208c1fd5ea9c5fa0c927bcb80ecefa51ddfdf7f320b27",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10068,7 +10068,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -10082,9 +10082,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 108,
+                            ["x"] = 159.6,
                             ["y"] = 1,
-                            ["z"] = 64,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10113,18 +10113,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 113,
+                                ["x"] = 171,
                                 ["y"] = 2,
-                                ["z"] = 71,
+                                ["z"] = 99,
                             },
                             ["minimum"] = {
-                                ["x"] = 107,
+                                ["x"] = 165,
                                 ["y"] = 0,
-                                ["z"] = 61,
+                                ["z"] = 93,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:d47a9477ffb7f62d041f2c803bebd8f9382479eb9e64faaa135fa460fb25eb9c",
+                        ["normalizedGeometryHash"] = "sha256:86494c463c0e3deb0cb4a72a3339c4650f57ff29bcd8014eddb669981ed4d606",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10135,7 +10135,7 @@ return {
                     ["size"] = {
                         ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10147,9 +10147,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 110,
+                            ["x"] = 168,
                             ["y"] = 1,
-                            ["z"] = 66,
+                            ["z"] = 96,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10179,18 +10179,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 115,
+                                ["x"] = 171,
                                 ["y"] = 2,
-                                ["z"] = 73,
+                                ["z"] = 107.4,
                             },
                             ["minimum"] = {
-                                ["x"] = 109,
+                                ["x"] = 165,
                                 ["y"] = 0,
-                                ["z"] = 63,
+                                ["z"] = 101.4,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:7c4dc428f8d557620bd19691e0f00cb4ce4977e7e05984e722d3082d5a22101b",
+                        ["normalizedGeometryHash"] = "sha256:ca9e220dc62d8fc089f0c3fb88fa53d44f278a2f5f50e0a303afb24e4ecbd07a",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10201,7 +10201,7 @@ return {
                     ["size"] = {
                         ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10214,9 +10214,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 112,
+                            ["x"] = 168,
                             ["y"] = 1,
-                            ["z"] = 68,
+                            ["z"] = 104.4,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10245,18 +10245,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 116,
+                                ["x"] = 171,
                                 ["y"] = 2,
-                                ["z"] = 79.625,
+                                ["z"] = 114.6,
                             },
                             ["minimum"] = {
-                                ["x"] = 108,
+                                ["x"] = 165,
                                 ["y"] = 0,
-                                ["z"] = 72.375,
+                                ["z"] = 108.6,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:5cab60e888d002b507e6767a56010f336a968ebca7c66cd003ded56b23b7a6bd",
+                        ["normalizedGeometryHash"] = "sha256:1439f7c06c19eab848b4fc30f25bd1a02d9bde4f438577908d47dc73bd4dbe28",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10265,9 +10265,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7.25,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10279,9 +10279,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 112,
+                            ["x"] = 168,
                             ["y"] = 1,
-                            ["z"] = 76,
+                            ["z"] = 111.6,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10310,18 +10310,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 114,
+                                ["x"] = 171,
                                 ["y"] = 2,
-                                ["z"] = 81.625,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 106,
+                                ["x"] = 165,
                                 ["y"] = 0,
-                                ["z"] = 74.375,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:7038811201a5039d4973cf5535a5fee3133566b102a1ac12a7c6d471fc585b1c",
+                        ["normalizedGeometryHash"] = "sha256:3008e810c32e0791f415642e2bc223e39087ff4c0bd2a745181c22873b588cbb",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10330,9 +10330,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10344,9 +10344,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 110,
+                            ["x"] = 168,
                             ["y"] = 1,
-                            ["z"] = 78,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10376,18 +10376,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 112,
+                                ["x"] = 162.6,
                                 ["y"] = 2,
-                                ["z"] = 83.625,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 104,
+                                ["x"] = 156.6,
                                 ["y"] = 0,
-                                ["z"] = 76.375,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:d11e5f338c54e30d9d5364cffc0ca43a6b70928892ba2f49a8dd64cbaae5065c",
+                        ["normalizedGeometryHash"] = "sha256:939485d85e9a40b6e725e61be9814f527de97c94402a3581204d99f1669a2e46",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10396,9 +10396,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10411,9 +10411,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 108,
+                            ["x"] = 159.6,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10442,18 +10442,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 103.5,
+                                ["x"] = 155.4,
                                 ["y"] = 2,
-                                ["z"] = 83.5,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 96.5,
+                                ["x"] = 149.4,
                                 ["y"] = 0,
-                                ["z"] = 76.5,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:7a65c2ea311ca501467f518ecb8c0fe3fefd726104b6cd99f98afe653018caef",
+                        ["normalizedGeometryHash"] = "sha256:26474fd301e53759a3acf74dac4c7a5b86431be3fa42a69056ee6f0411f92c7f",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10462,9 +10462,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10476,9 +10476,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 100,
+                            ["x"] = 152.4,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10507,18 +10507,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 100.286607049871,
+                                ["x"] = 147,
                                 ["y"] = 2,
-                                ["z"] = 81.286607049871,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 91.713392950129,
+                                ["x"] = 141,
                                 ["y"] = 0,
-                                ["z"] = 72.713392950129,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:4c29abc1e8cb98706613c36c653e126335cd18d7f4661ad9cb8180a243f52a12",
+                        ["normalizedGeometryHash"] = "sha256:239cd599ae77abfe3a925e380be0c89e7cb169e3cec63cd82025c7c367fe219f",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10527,9 +10527,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10541,13 +10541,13 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 96,
+                            ["x"] = 144,
                             ["y"] = 1,
-                            ["z"] = 77,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
-                            ["y"] = 105,
+                            ["y"] = 90,
                             ["z"] = 0,
                         },
                     },
@@ -10573,18 +10573,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 95.5,
+                                ["x"] = 138.6,
                                 ["y"] = 2,
-                                ["z"] = 83.5,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 88.5,
+                                ["x"] = 132.6,
                                 ["y"] = 0,
-                                ["z"] = 76.5,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:8285a7a16e61aba4f0d703b8587c806479e2deb21a1db205da90d826b6710040",
+                        ["normalizedGeometryHash"] = "sha256:6e7b4ee1c5dcb4a9fb7485cc836bd49b11a4e7e913a7ff86efe48ffd1349b7e4",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10593,9 +10593,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10608,9 +10608,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 92,
+                            ["x"] = 135.6,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10640,20 +10640,20 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 99,
-                                ["y"] = 0.5,
-                                ["z"] = 78,
+                                ["x"] = 147,
+                                ["y"] = 3,
+                                ["z"] = 132,
                             },
                             ["minimum"] = {
-                                ["x"] = 93,
-                                ["y"] = -0.5,
-                                ["z"] = 72,
+                                ["x"] = 141,
+                                ["y"] = 2,
+                                ["z"] = 126,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:9a652f84b2bd99aba6ff86d3c74ebdd310a87e9e846081c369f049cad59acf68",
+                        ["normalizedGeometryHash"] = "sha256:1da19a53fd345f27dcbb7de9842437d4f5ec092d138808a53c5f027cb41d7f05",
                         ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
+                        ["topSurfaceMaximumY"] = 3,
                     },
                     ["id"] = "Stage42Hazard001",
                     ["order"] = 144,
@@ -10675,9 +10675,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 96,
-                            ["y"] = 0,
-                            ["z"] = 75,
+                            ["x"] = 144,
+                            ["y"] = 2.5,
+                            ["z"] = 129,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10706,18 +10706,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 89,
+                                ["x"] = 131.4,
                                 ["y"] = 2,
-                                ["z"] = 85,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 79,
+                                ["x"] = 125.4,
                                 ["y"] = 0,
-                                ["z"] = 75,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:439715115c0d6995a1ac9b7e93ea489eac61685b5c8757203541fc9c5f0c8840",
+                        ["normalizedGeometryHash"] = "sha256:f8760683c047ff4ced9eb43cf4dfa954477ecae061c96d440f7cb85f57621527",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10726,9 +10726,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10740,9 +10740,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 84,
+                            ["x"] = 128.4,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10771,18 +10771,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 85,
+                                ["x"] = 123,
                                 ["y"] = 2,
-                                ["z"] = 85,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 75,
+                                ["x"] = 117,
                                 ["y"] = 0,
-                                ["z"] = 75,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f932945187c62be7c62b677db84cd99adbc119c9a7b716ff9243dadd71622627",
+                        ["normalizedGeometryHash"] = "sha256:352f7918010b71c85a4968ee13ac395c7f9f1c5d9a6f25453f7eb1f60c600d7f",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10791,9 +10791,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10805,9 +10805,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 80,
+                            ["x"] = 120,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10837,18 +10837,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 81,
+                                ["x"] = 114.6,
                                 ["y"] = 2,
-                                ["z"] = 85,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 71,
+                                ["x"] = 108.6,
                                 ["y"] = 0,
-                                ["z"] = 75,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:e07ae51c4a57a57cb21b3a461ec08766596dc1eaf3a6909b43f7bb8147cd1e81",
+                        ["normalizedGeometryHash"] = "sha256:ef5ad4b4f955880f5d10afc36205ba586bc6081dc60568fdff27c1d03da62091",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10857,9 +10857,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10872,9 +10872,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 76,
+                            ["x"] = 111.6,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10903,18 +10903,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 72,
+                                ["x"] = 107.4,
                                 ["y"] = 2,
-                                ["z"] = 83.625,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 64,
+                                ["x"] = 101.4,
                                 ["y"] = 0,
-                                ["z"] = 76.375,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:2c5d125463e8e9ea5faebec15cb31fb6a65c896044f022f3ded5ec55ac317b0e",
+                        ["normalizedGeometryHash"] = "sha256:c59aeb056877a406848594361ed6345eed6d5cd943eeeeef9118967dcd04c62b",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10923,9 +10923,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -10937,9 +10937,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 68,
+                            ["x"] = 104.4,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -10968,18 +10968,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 68,
+                                ["x"] = 99,
                                 ["y"] = 2,
-                                ["z"] = 83.625,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 60,
+                                ["x"] = 93,
                                 ["y"] = 0,
-                                ["z"] = 76.375,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a157ca602730beed2ccc5cbbf1b0a4a341c821404399eea47159aec75c7bc7fc",
+                        ["normalizedGeometryHash"] = "sha256:1303b28d544f639e81fda40ed9f87ab4e4955003ab604b9cc0ef33b360b6e278",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -10988,9 +10988,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11002,9 +11002,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 64,
+                            ["x"] = 96,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11034,18 +11034,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 64,
+                                ["x"] = 90.6,
                                 ["y"] = 2,
-                                ["z"] = 83.625,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 56,
+                                ["x"] = 84.6,
                                 ["y"] = 0,
-                                ["z"] = 76.375,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:190d72df679e5d9fed626f298683305b230728a1e2e8101787048ac19216b97c",
+                        ["normalizedGeometryHash"] = "sha256:03ea48cab882fa781b36cce3288334b63f6707028ee97f595ef5f38d550878bb",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -11054,9 +11054,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11069,9 +11069,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 60,
+                            ["x"] = 87.6,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11100,18 +11100,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 56,
+                                ["x"] = 83.4,
                                 ["y"] = 2,
-                                ["z"] = 84,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 48,
+                                ["x"] = 77.4,
                                 ["y"] = 0,
-                                ["z"] = 76,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:c0b549ff5e69deb9ecf364f56735ef08b8062874ea5c6c63728598ca0bcbd9ea",
+                        ["normalizedGeometryHash"] = "sha256:7bbc59cdf86ad562a0ed9582242c1d89477bc7b79592f28ee2bbfb7db5354069",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -11120,9 +11120,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11134,9 +11134,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 52,
+                            ["x"] = 80.4,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11165,18 +11165,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 52,
+                                ["x"] = 75,
                                 ["y"] = 6,
-                                ["z"] = 84,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 44,
+                                ["x"] = 69,
                                 ["y"] = 4,
-                                ["z"] = 76,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:371d2ba9840d8259f56afb106401675e47728727e156ee6442839ce62e85ad56",
+                        ["normalizedGeometryHash"] = "sha256:011fed1362677d5a57ccf22b91074dbeb397dbcceab36a20bf4288ba416c522b",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 6,
                     },
@@ -11185,9 +11185,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11199,9 +11199,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 48,
+                            ["x"] = 72,
                             ["y"] = 5,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11231,18 +11231,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 48,
+                                ["x"] = 66.6,
                                 ["y"] = 2,
-                                ["z"] = 84,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 40,
+                                ["x"] = 60.6,
                                 ["y"] = 0,
-                                ["z"] = 76,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:b68985b1e1f00dcf5360801bd1d60f8f46af3e55ebdef8c984fae54af148ed2f",
+                        ["normalizedGeometryHash"] = "sha256:cdcf6f377862b6ad6c32c11bc78f28fe91e4d0835a00a330b61aee17acf1f873",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -11251,9 +11251,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11266,9 +11266,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 44,
+                            ["x"] = 63.6,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11298,18 +11298,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 64,
+                                ["x"] = 83,
                                 ["y"] = -22.5,
-                                ["z"] = 96,
+                                ["z"] = 131,
                             },
                             ["minimum"] = {
-                                ["x"] = 32,
+                                ["x"] = 61,
                                 ["y"] = -23.5,
-                                ["z"] = 64,
+                                ["z"] = 109,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:d64ea7315612ec563f65482f2b4b2bc42483137e08703d99880ebd2182e8ca42",
+                        ["normalizedGeometryHash"] = "sha256:6b958e36076db93dcc4172b2a43934117153bc0923a5625d6d214b0db3de2fd7",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = -22.5,
                     },
@@ -11318,9 +11318,9 @@ return {
                     ["role"] = "kill",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 32,
+                        ["x"] = 22,
                         ["y"] = 1,
-                        ["z"] = 32,
+                        ["z"] = 22,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11333,9 +11333,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 48,
+                            ["x"] = 72,
                             ["y"] = -23,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11364,18 +11364,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 39.5,
+                                ["x"] = 59.4,
                                 ["y"] = 2,
-                                ["z"] = 83.5,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 32.5,
+                                ["x"] = 53.4,
                                 ["y"] = 0,
-                                ["z"] = 76.5,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:31e26aa8b2c513a3444ae8d84756a8559ae8c0e5a6253660fb8e22ecb9a24412",
+                        ["normalizedGeometryHash"] = "sha256:0d3736eee82171121764bed69a89bd4c2ffb20cc35ea6a6643cc5a49e5b2d89e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -11384,9 +11384,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11398,9 +11398,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 36,
+                            ["x"] = 56.4,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11429,18 +11429,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 36.286607049871,
+                                ["x"] = 51,
                                 ["y"] = 2,
-                                ["z"] = 87.286607049871,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 27.713392950129,
+                                ["x"] = 45,
                                 ["y"] = 0,
-                                ["z"] = 78.713392950129,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:eed325b1a78b1b0426efb8e7a833ff9d6477d149983201614cd299aedfdc17fd",
+                        ["normalizedGeometryHash"] = "sha256:1fc17de05485f14db4b5816bb170a011e46869859fd6b025ad471d3c702ef116",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -11449,9 +11449,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11463,13 +11463,13 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 32,
+                            ["x"] = 48,
                             ["y"] = 1,
-                            ["z"] = 83,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
-                            ["y"] = 75,
+                            ["y"] = 90,
                             ["z"] = 0,
                         },
                     },
@@ -11495,18 +11495,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 31.5,
+                                ["x"] = 42.6,
                                 ["y"] = 2,
-                                ["z"] = 83.5,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 24.5,
+                                ["x"] = 36.6,
                                 ["y"] = 0,
-                                ["z"] = 76.5,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:087a51ad01c13c54fca6aefcd066012b94a5b5095076082381721418b1a4115a",
+                        ["normalizedGeometryHash"] = "sha256:888a7bfd090e6576b3b563b94adab27d8463ece5957d3ec63f112f2af57a41cb",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -11515,9 +11515,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11530,9 +11530,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 28,
+                            ["x"] = 39.6,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11561,18 +11561,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 25,
+                                ["x"] = 35.4,
                                 ["y"] = 2,
-                                ["z"] = 85,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 15,
+                                ["x"] = 29.4,
                                 ["y"] = 0,
-                                ["z"] = 75,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:5d92a9a1e1de2c5a6568c710f2932d465d45b70d2b2bdee5ab87eabc935b0b92",
+                        ["normalizedGeometryHash"] = "sha256:bb3ae6c68b86e8d610a49d17aee1130a433f7dbdaab71b4436729f43e3894616",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -11581,9 +11581,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11595,9 +11595,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 20,
+                            ["x"] = 32.4,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11626,18 +11626,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 21,
+                                ["x"] = 27,
                                 ["y"] = 2,
-                                ["z"] = 85,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 11,
+                                ["x"] = 21,
                                 ["y"] = 0,
-                                ["z"] = 75,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f85a0c2d3f2a9f9fc0d52db8b3f9dba3983a9829ed72805c61dd7ddb236f916b",
+                        ["normalizedGeometryHash"] = "sha256:72df0d6c15285b59248af088eb92c830c6bbc2e319f5a30cf73d9b33e2b1c132",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -11646,9 +11646,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11660,9 +11660,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 16,
+                            ["x"] = 24,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11692,18 +11692,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 17,
+                                ["x"] = 18.6,
                                 ["y"] = 2,
-                                ["z"] = 85,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 7,
+                                ["x"] = 12.6,
                                 ["y"] = 0,
-                                ["z"] = 75,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:858fc873766d9ee027cec4aa6756eb65d83f0d0ee1ddcb68deba94dca923ff99",
+                        ["normalizedGeometryHash"] = "sha256:6e0ab4cb6f892bee4988c1d09d3d1863d02588af2fa9d1a0e0f07214b071e5de",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -11712,9 +11712,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11727,9 +11727,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 12,
+                            ["x"] = 15.6,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11758,18 +11758,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 7,
+                                ["x"] = 11.4,
                                 ["y"] = 2,
-                                ["z"] = 85,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = 1,
+                                ["x"] = 5.4,
                                 ["y"] = 0,
-                                ["z"] = 75,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a3fc4212381d349933419612a7efeaad63a0746c290ca056a715ab69ecbdebde",
+                        ["normalizedGeometryHash"] = "sha256:3c11f7812ee4ee0c84e0a2b6f0d794454f53f1f0ffa000e6bf3e7ffd65af8d0a",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -11778,7 +11778,7 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 10,
+                        ["x"] = 6,
                         ["y"] = 2,
                         ["z"] = 6,
                     },
@@ -11792,9 +11792,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 4,
+                            ["x"] = 8.4,
                             ["y"] = 1,
-                            ["z"] = 80,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11823,18 +11823,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 5,
+                                ["x"] = 3,
                                 ["y"] = 2,
-                                ["z"] = 87,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = -1,
+                                ["x"] = -3,
                                 ["y"] = 0,
-                                ["z"] = 77,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:9cc7e125b82e063d209941e33a945d2bc16a44771d2c6f43fab887823a464368",
+                        ["normalizedGeometryHash"] = "sha256:00365001646db93e7c34d0421f7424f47ebd7ffd46ecfabb23a1900f3e69e760",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -11845,7 +11845,7 @@ return {
                     ["size"] = {
                         ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11857,9 +11857,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 2,
+                            ["x"] = 0,
                             ["y"] = 1,
-                            ["z"] = 82,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11891,16 +11891,16 @@ return {
                             ["maximum"] = {
                                 ["x"] = 3,
                                 ["y"] = 2,
-                                ["z"] = 89,
+                                ["z"] = 131.4,
                             },
                             ["minimum"] = {
                                 ["x"] = -3,
                                 ["y"] = 0,
-                                ["z"] = 79,
+                                ["z"] = 125.4,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:ccbfe35db5bf8ff996c87860c3ed327fed6a9540b3dd59ce66917bf5c5057c3e",
+                        ["normalizedGeometryHash"] = "sha256:657b00a0b1b3198fff7167417bca08e32d59585a686598e92df48d66b0d1c6af",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -11911,7 +11911,7 @@ return {
                     ["size"] = {
                         ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 10,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -11926,7 +11926,7 @@ return {
                         ["position"] = {
                             ["x"] = 0,
                             ["y"] = 1,
-                            ["z"] = 84,
+                            ["z"] = 128.4,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -11956,20 +11956,20 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = -2,
-                                ["y"] = 0.5,
-                                ["z"] = 83,
+                                ["x"] = -6,
+                                ["y"] = 3,
+                                ["z"] = 123,
                             },
                             ["minimum"] = {
-                                ["x"] = -8,
-                                ["y"] = -0.5,
-                                ["z"] = 77,
+                                ["x"] = -12,
+                                ["y"] = 2,
+                                ["z"] = 117,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:f9d53e4a7314379bfa2be508251cc52b7c81fa296d1c27aa3328ffe2ce2a2b80",
+                        ["normalizedGeometryHash"] = "sha256:dadec42cba81cb5a510a0a21249b78c497e0042688054221da1000e34e9112ab",
                         ["surfaceKind"] = "planar-face",
-                        ["topSurfaceMaximumY"] = 0.5,
+                        ["topSurfaceMaximumY"] = 3,
                     },
                     ["id"] = "Stage48Hazard001",
                     ["order"] = 164,
@@ -11991,9 +11991,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = -5,
-                            ["y"] = 0,
-                            ["z"] = 80,
+                            ["x"] = -9,
+                            ["y"] = 2.5,
+                            ["z"] = 120,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -12022,18 +12022,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 4,
+                                ["x"] = 3,
                                 ["y"] = 2,
-                                ["z"] = 95.625,
+                                ["z"] = 138.6,
                             },
                             ["minimum"] = {
-                                ["x"] = -4,
+                                ["x"] = -3,
                                 ["y"] = 0,
-                                ["z"] = 88.375,
+                                ["z"] = 132.6,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:ecfd4114ba7c22b21403c1cfb3b57b7438278fdbe1d69831683b68f7847935fd",
+                        ["normalizedGeometryHash"] = "sha256:eec42ad31a575700ce0229de0d9f2db604be4060acf631005dbcd7eeabec933d",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -12042,9 +12042,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 8,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 7.25,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -12058,7 +12058,7 @@ return {
                         ["position"] = {
                             ["x"] = 0,
                             ["y"] = 1,
-                            ["z"] = 92,
+                            ["z"] = 135.6,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -12087,18 +12087,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 6,
+                                ["x"] = 3,
                                 ["y"] = 2,
-                                ["z"] = 97.625,
+                                ["z"] = 147,
                             },
                             ["minimum"] = {
-                                ["x"] = -2,
+                                ["x"] = -3,
                                 ["y"] = 0,
-                                ["z"] = 90.375,
+                                ["z"] = 141,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:0b80b759e585ff3c9173ad7e5f60cc83b1b309c9b4fbfa574dfe5283405663d4",
+                        ["normalizedGeometryHash"] = "sha256:138600c970fb24cbd91ea831602910d5ed4ccfb6adbffbb148f666828e196b0e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -12107,9 +12107,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -12121,9 +12121,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 2,
+                            ["x"] = 0,
                             ["y"] = 1,
-                            ["z"] = 94,
+                            ["z"] = 144,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -12153,18 +12153,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 8,
+                                ["x"] = 11.4,
                                 ["y"] = 2,
-                                ["z"] = 99.625,
+                                ["z"] = 147,
                             },
                             ["minimum"] = {
-                                ["x"] = 0,
+                                ["x"] = 5.4,
                                 ["y"] = 0,
-                                ["z"] = 92.375,
+                                ["z"] = 141,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:340dd20d68085251a88a62da7bca5ce0614571d558f21d0cc50b5b6f6cd31027",
+                        ["normalizedGeometryHash"] = "sha256:c82da601c8f6506484e02b6d50cab7100ec8267bbdb8ebd769663642b6f944fa",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -12173,9 +12173,9 @@ return {
                     ["role"] = "checkpoint",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 7.25,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 8,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -12188,9 +12188,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 4,
+                            ["x"] = 8.4,
                             ["y"] = 1,
-                            ["z"] = 96,
+                            ["z"] = 144,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -12219,18 +12219,18 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 22,
+                                ["x"] = 18.6,
                                 ["y"] = 2,
-                                ["z"] = 102,
+                                ["z"] = 147,
                             },
                             ["minimum"] = {
-                                ["x"] = 10,
+                                ["x"] = 12.6,
                                 ["y"] = 0,
-                                ["z"] = 90,
+                                ["z"] = 141,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:a261c463a722dd604d7c3c3bafefce2d244fdf76cf601c18a7f6d6889358c6fd",
+                        ["normalizedGeometryHash"] = "sha256:bb19192c8332ab9b7abe6b9de1446f1bb359666b220a63ef8ce888e5c908426e",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
@@ -12239,9 +12239,9 @@ return {
                     ["role"] = "platform",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 12,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 12,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -12253,9 +12253,139 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 16,
+                            ["x"] = 15.6,
                             ["y"] = 1,
-                            ["z"] = 96,
+                            ["z"] = 144,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = -90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4895EF",
+                        ["colorRole"] = "secondary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 27,
+                                ["y"] = 2,
+                                ["z"] = 147,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 21,
+                                ["y"] = 0,
+                                ["z"] = 141,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:a3a0728a56279966c6c98a6d829fcced71ad114c6983e74695fc2a49009d7e44",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage50Route002",
+                    ["order"] = 169,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-50",
+                        ["sourceStageId"] = "stage-50",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 24,
+                            ["y"] = 1,
+                            ["z"] = 144,
+                        },
+                        ["rotation"] = {
+                            ["x"] = 0,
+                            ["y"] = -90,
+                            ["z"] = 0,
+                        },
+                    },
+                },
+                {
+                    ["appearance"] = {
+                        ["color"] = "#4CC9F0",
+                        ["colorRole"] = "primary",
+                        ["material"] = "SmoothPlastic",
+                    },
+                    ["authority"] = "native-gameplay",
+                    ["behavior"] = {
+                        ["kind"] = "none",
+                    },
+                    ["className"] = "Part",
+                    ["collision"] = {
+                        ["anchored"] = true,
+                        ["canCollide"] = true,
+                        ["canQuery"] = true,
+                        ["canTouch"] = false,
+                    },
+                    ["geometry"] = {
+                        ["axisAlignedBounds"] = {
+                            ["maximum"] = {
+                                ["x"] = 35.4,
+                                ["y"] = 2,
+                                ["z"] = 147,
+                            },
+                            ["minimum"] = {
+                                ["x"] = 29.4,
+                                ["y"] = 0,
+                                ["z"] = 141,
+                            },
+                        },
+                        ["methodId"] = "geometry-evaluator-v0.1",
+                        ["normalizedGeometryHash"] = "sha256:02c2245c65bd0dfbd8fba482681ad6d0ce30ceaf6c2e9610308caa3466df03a2",
+                        ["surfaceKind"] = "planar-face",
+                        ["topSurfaceMaximumY"] = 2,
+                    },
+                    ["id"] = "Stage50Route003",
+                    ["order"] = 170,
+                    ["role"] = "platform",
+                    ["shape"] = "Block",
+                    ["size"] = {
+                        ["x"] = 6,
+                        ["y"] = 2,
+                        ["z"] = 6,
+                    },
+                    ["sourceReferences"] = {
+                        ["sourceAssetIntentIds"] = {
+                            "asset-decoration",
+                            "asset-gameplay-route",
+                        },
+                        ["sourceMechanicIntentId"] = "mechanic-intent-50",
+                        ["sourceStageId"] = "stage-50",
+                    },
+                    ["transform"] = {
+                        ["position"] = {
+                            ["x"] = 32.4,
+                            ["y"] = 1,
+                            ["z"] = 144,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -12284,29 +12414,29 @@ return {
                     ["geometry"] = {
                         ["axisAlignedBounds"] = {
                             ["maximum"] = {
-                                ["x"] = 38,
+                                ["x"] = 42.6,
                                 ["y"] = 2,
-                                ["z"] = 102,
+                                ["z"] = 147,
                             },
                             ["minimum"] = {
-                                ["x"] = 26,
+                                ["x"] = 36.6,
                                 ["y"] = 0,
-                                ["z"] = 90,
+                                ["z"] = 141,
                             },
                         },
                         ["methodId"] = "geometry-evaluator-v0.1",
-                        ["normalizedGeometryHash"] = "sha256:6c722c892ceee1be03a6d7c66f5dcde9608f26139bf7b3c67e184611d611601f",
+                        ["normalizedGeometryHash"] = "sha256:d269d4b3c8427df3988e9de99fe766c529e6348ca230515b0c2efe90717acb70",
                         ["surfaceKind"] = "planar-face",
                         ["topSurfaceMaximumY"] = 2,
                     },
                     ["id"] = "Finish",
-                    ["order"] = 169,
+                    ["order"] = 171,
                     ["role"] = "finish",
                     ["shape"] = "Block",
                     ["size"] = {
-                        ["x"] = 12,
+                        ["x"] = 6,
                         ["y"] = 2,
-                        ["z"] = 12,
+                        ["z"] = 6,
                     },
                     ["sourceReferences"] = {
                         ["sourceAssetIntentIds"] = {
@@ -12319,9 +12449,9 @@ return {
                     },
                     ["transform"] = {
                         ["position"] = {
-                            ["x"] = 32,
+                            ["x"] = 39.6,
                             ["y"] = 1,
-                            ["z"] = 96,
+                            ["z"] = 144,
                         },
                         ["rotation"] = {
                             ["x"] = 0,
@@ -12334,7 +12464,7 @@ return {
         },
     },
     ["limitations"] = {},
-    ["manifestHash"] = "sha256:3a35ee4b893acbf13ac477af1cffa05acee68ce9fa772fbf744f9572e30a889d",
+    ["manifestHash"] = "sha256:75e38ddbe40564a3d09c423357b9382071edf8b193af5e6866e84b2c6ddb7d43",
     ["navigation"] = {
         ["characterPlacement"] = {
             ["orientationPolicy"] = "face-next-safe-route-object",
@@ -12428,7 +12558,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 2,
+                        ["value"] = 0.6,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -12436,8 +12566,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -12447,7 +12577,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:54f35362fd2641bc6ab650be82698017d8c855de549b441f1c43c0ade2e34cac",
+                    ["normalizedInputHash"] = "sha256:715473be2fafe11db407d80204bae25ec69111c9fb964e5374842e29b10af3ac",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 1,
@@ -12489,7 +12619,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -12497,8 +12627,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -12508,7 +12638,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:70d61e81f439e089d7fda1d3fa0e788bcf62342dfb48939670a8b23b8dbdae10",
+                    ["normalizedInputHash"] = "sha256:e9735d90f11fc7ea4fddf563b1d58580492c1b407ffb1d22ab3cbd1c455a7e23",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 2,
@@ -12550,7 +12680,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -12558,8 +12688,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -12569,7 +12699,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:cae3552045bb795ff2bc3e613bc6d3587bcd721df755bf01414f5a110c26725f",
+                    ["normalizedInputHash"] = "sha256:9934c1459efc33f0084c9cc4886bef0f8c7416e64218d38444513c4579d38a08",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 3,
@@ -12611,7 +12741,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -12620,7 +12750,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -12630,7 +12760,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:b6b4ae4ec68f5afcb393cf5254504942c64264de5cd7e51c83a55b8417927e45",
+                    ["normalizedInputHash"] = "sha256:fbbb87d2b30bdd99ae2a44083765efcc95ed5a22a9c4a992726f3a26420b2923",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 4,
@@ -12672,7 +12802,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -12681,7 +12811,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -12691,7 +12821,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:1d0d39f41c393e7883f87067f3d79ebc82ecd3e985d242278963a45477d4d344",
+                    ["normalizedInputHash"] = "sha256:81db23453075ce823f8f470faf4e1576f1972f0929039a93c7ab59e52eaca45b",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 5,
@@ -12733,7 +12863,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -12742,7 +12872,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -12752,7 +12882,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:78d3098e71e213ccb03172d4fc81e9e6b250b1499b225947597deb6112eddc94",
+                    ["normalizedInputHash"] = "sha256:4df4eeb1fb16fd92d9f20142bfe17159bb9fdfa5602bd7cf80f4aab787525a6f",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 6,
@@ -12794,7 +12924,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 2,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -12803,7 +12933,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -12813,7 +12943,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:0460da372a1e97dd1576345b5382ddeb4f9ff96ec2790c9336b435d9b40d31f4",
+                    ["normalizedInputHash"] = "sha256:459f4ece3e3cb9d9c5cbcca3c858582bb41a5840770b3cc92b9fbc2b74b3a13c",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 7,
@@ -12855,7 +12985,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -12864,7 +12994,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -12874,7 +13004,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:8ada2fb34e2d408eae1e7290f69fffc3f778d48875615a83eecf4d83f597517c",
+                    ["normalizedInputHash"] = "sha256:f768dab0ec578277da7a35399cd86b48a34de1e5e9481a4b6b43bceb146b0cd9",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 8,
@@ -12916,7 +13046,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -12925,7 +13055,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -12935,7 +13065,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:37a0a630fc7f2da1157715aa9af1fcb29a7067b60d6659fbd5d24e7467dec598",
+                    ["normalizedInputHash"] = "sha256:6cd1755681df808925e3281275f31857c2380e9efe4d3bb55c30e1d8c7de8f65",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 9,
@@ -12977,7 +13107,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -12985,8 +13115,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -12996,7 +13126,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:c2c5330fda45696cd82ded77f1dc8657e108caace18b2d9f1b554e3cc23f83ca",
+                    ["normalizedInputHash"] = "sha256:0cd1ce5d5fc49667545082606d9e2b32143999050e6629635c6d367661892a7f",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 10,
@@ -13038,7 +13168,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13046,8 +13176,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.000000000001,
-                        ["spanBStuds"] = 7.000000000001,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13057,7 +13187,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:da91b6378f38993dcd53eed130aea927652b63dc6eb646a84429c3bee248d6ae",
+                    ["normalizedInputHash"] = "sha256:eccb73aaf5e0cc45b7f1dc947fc5436de8c1ea95793fa2b57053817996de1f6d",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 11,
@@ -13099,7 +13229,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13107,8 +13237,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13118,7 +13248,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:ee073f2e70be340b3a25a238d890a97a6710a503f23f63f0b59997100d20fb21",
+                    ["normalizedInputHash"] = "sha256:70419920bd1cfc6015684d7223f1015f901c4a93b5916604ad3d61946ea09aaa",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 12,
@@ -13160,7 +13290,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13179,7 +13309,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:e63fb88cfa1ffa6c586b0318cf92bb41d513ded781458c10c47f02770745e6b4",
+                    ["normalizedInputHash"] = "sha256:9becbb8cd7359332703568d6778ddf35638bb907ec4089bb18e87f9ca1c6b995",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 13,
@@ -13221,7 +13351,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13240,7 +13370,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:3bae0b2ac8ae9e05fd89615a6c567be59ab9b121cccf93cc5f92a2b06a5c24a8",
+                    ["normalizedInputHash"] = "sha256:7ca1bdd85e7e50ab2c3549db7bd51e244969be2c7c6ec317c8c0156d9eb38764",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 14,
@@ -13282,7 +13412,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13301,7 +13431,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:0a899774e036517f9facd0bce4b5d83da03ccc60d5127d40dcf59fdfde9a2596",
+                    ["normalizedInputHash"] = "sha256:3c647163cb7b7459922cbf62e415404a8b62a6d459472fe5dbdf9b387cffacab",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 15,
@@ -13343,7 +13473,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13351,8 +13481,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13362,7 +13492,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:a24416238c8d3863c8737ca120b85b5efb6b901ac3d8376fcff8d44dfe23ac50",
+                    ["normalizedInputHash"] = "sha256:4730484c175acc039c1a7955c7cc1a01f82bada1f62db29bace89f64edba6596",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 16,
@@ -13404,7 +13534,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13412,8 +13542,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13423,7 +13553,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:e368c8b2e84fd392057ee2486d512de799c75179b45b73d2c61c979853293ca3",
+                    ["normalizedInputHash"] = "sha256:c1b11893dbec8d7dd49f1cbb3392c0330005fc29cace86b40736ba080bb5fbe9",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 17,
@@ -13465,7 +13595,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13473,8 +13603,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13484,7 +13614,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:653318ef845776d71e0fc169652fe95219ace33fae5cf2efa9c41436af1a8b1b",
+                    ["normalizedInputHash"] = "sha256:1ee28303679dfc36dea93601618a34f940be3f13907df983f57e905ca4292d84",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 18,
@@ -13526,7 +13656,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13535,7 +13665,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13545,7 +13675,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:3e5d95b34b44e7f0ac3dba06b3f3212a2613da524ce5f1df2c05bd667cf5d026",
+                    ["normalizedInputHash"] = "sha256:47ea3042d0811fe2745753905ac391e4ace6ed7b91a6c6882b4e5377cc65ccb3",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 19,
@@ -13587,7 +13717,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13596,7 +13726,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13606,7 +13736,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:9375280aee5a6d4aa92880c0410e5f03bcba407f64b4d70bede691f40b247623",
+                    ["normalizedInputHash"] = "sha256:6b57dbb74c00ac6b02fdf0e770ed062936f8218cd51b806d5aa98cedc9b149ee",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 20,
@@ -13648,7 +13778,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13657,7 +13787,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13667,7 +13797,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:db664420f86ad20ccccb4ec7af3223392e3e2cf4eb758828865a349aac32d95c",
+                    ["normalizedInputHash"] = "sha256:7812b6681a2f2d15fb48fc8c4f75776614e338c26bfb35c759afae10fe23f583",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 21,
@@ -13709,7 +13839,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13717,8 +13847,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13728,7 +13858,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:78ce0f55357c4c08d7d3acd86ec85ef158ce681ade65e0ecd72ac98c628d2827",
+                    ["normalizedInputHash"] = "sha256:1ca985c88d280f17ff65d8a6881f3e8ef796b06ec0a270f152159adb867aa997",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 22,
@@ -13770,7 +13900,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13778,8 +13908,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13789,7 +13919,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:4d3fd1a69b1b01ac3c5a37ca121a5228c5228803d17e528ac665b085464c3070",
+                    ["normalizedInputHash"] = "sha256:97c9b1a1631e3086cd349048f9db2d9db89f93ffaad952f5607957390388ec3f",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 23,
@@ -13831,7 +13961,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13839,8 +13969,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13850,7 +13980,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:da8d252d67746b0cb387d323cfd231f667ddabd0283fc276987765386df46be6",
+                    ["normalizedInputHash"] = "sha256:fcd6b0197fd395955c862bdf4b265bac175d7a478c96753c585a95573b875df2",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 24,
@@ -13892,7 +14022,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13901,7 +14031,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13911,7 +14041,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:6de61ab6b4917003ffd49baa0cb02c6f26cb8837cf8e3f7de4ef7ad42966e528",
+                    ["normalizedInputHash"] = "sha256:f9f44859fe152c37c66453ba79aba1b8eb5d9a5820827142bc9262cbabd8fe7a",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 25,
@@ -13953,7 +14083,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -13962,7 +14092,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -13972,7 +14102,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:3a902381d688fa20f910fbcd81f254c3684e16ae17db0f8e0c00d138757b9548",
+                    ["normalizedInputHash"] = "sha256:111f16f138bb60127ba76a21cfa4f1a425f62252f6404319589045e3b861eea2",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 26,
@@ -14014,7 +14144,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14023,7 +14153,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -14033,7 +14163,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:32451326ba19034b12988967976a9683af9d03723076f8dcf987abf438e0f015",
+                    ["normalizedInputHash"] = "sha256:3536e67437da9be23ec04163d12ffc9b8d7afc69a755f9482cdb04324ab2feb3",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 27,
@@ -14075,7 +14205,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14083,8 +14213,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -14094,7 +14224,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:e7efb931e135c09830d9d308decc49b864950f1539e1e9abe2db7a56bcb08dc3",
+                    ["normalizedInputHash"] = "sha256:b61e9b3e4d3b38635f7553234a1ac31c52e4a7e4313cc5e05d9ebfdbc2553eb8",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 28,
@@ -14136,7 +14266,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14144,8 +14274,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -14155,7 +14285,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:eb180e41e4c5e5447afe3f8c30bc31dc141616d27c9c8cf349d3284bce55dce9",
+                    ["normalizedInputHash"] = "sha256:4471f3ca2cf0afe914b6ee80dc945f69a572713f846df1db1b19859a49449cef",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 29,
@@ -14197,7 +14327,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14205,8 +14335,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -14216,7 +14346,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:db0e4f85357e478eda251c0e623bcdd7e956dadc8bba647fea6db09a7b4db129",
+                    ["normalizedInputHash"] = "sha256:ac7f822f5fa76c080a8060d2b074a3982891dde975347c73ed5caba7c5117b7b",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 30,
@@ -14258,7 +14388,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14277,7 +14407,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:7a51c25a5471561f404eb2471aa0a899f1d973bdbace91a1102c443f35bf0bab",
+                    ["normalizedInputHash"] = "sha256:4ad6c804e35a3cb7f1b05189f67384406565230af11909f5d7c353953546b271",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 31,
@@ -14319,7 +14449,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14338,7 +14468,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:bd4de087cd8ca713c27f9e065f54d18845f9291c05cc6e5ce00bc0fd11f94f57",
+                    ["normalizedInputHash"] = "sha256:c96e4dba0a42a9166776ceaeee5206efcaa23ffb206985c5be164daef7c19666",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 32,
@@ -14380,7 +14510,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14399,7 +14529,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:6c23d015fcface0ea92388c6f32c25701918b7754d74c08ef2d7369b22d866a1",
+                    ["normalizedInputHash"] = "sha256:62fc76ebe4061b885188e08f49e3c5d18f335d4977f8d394d9ffe41d30185db3",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 33,
@@ -14441,7 +14571,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14449,8 +14579,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -14460,7 +14590,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:f59ee5feeee49d78daf3bd683717a07749bbb7c75a2fd0bc26466fe2dc7865ca",
+                    ["normalizedInputHash"] = "sha256:a848c2897b8c208f5b16695adf0ac21b3692372541ac436f54319c036b5464e1",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 34,
@@ -14502,7 +14632,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14510,8 +14640,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.000000000001,
-                        ["spanBStuds"] = 7.000000000001,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -14521,7 +14651,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:8610097dda5ebe4e1674e143da552ace5461b92e878e8462767765c60fa72b49",
+                    ["normalizedInputHash"] = "sha256:6e7dfde9afc41e07aaeb1c35e91d2b283c5b07ed968fb84c5bc58f161c94d4f2",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 35,
@@ -14563,7 +14693,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14571,8 +14701,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -14582,7 +14712,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:aad190ee6088375ff7a5d182aef3a04e20fd2de7e7f9d584c1289555aa583585",
+                    ["normalizedInputHash"] = "sha256:65a1ef132d3989b154b40017436d82fd60512f6707dc3b8bbba99fc36d3823d3",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 36,
@@ -14624,7 +14754,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14643,7 +14773,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:9717d280592590318165311806512c5efaa9810891f4e1e818a431b04278a131",
+                    ["normalizedInputHash"] = "sha256:9c84442ff9e430aa9d5d5e11a518dac966e613f17e0af26c1627a96ad9fbdeb4",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 37,
@@ -14685,7 +14815,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14704,7 +14834,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:2ad0b2721fd3c42d52a0e5c990d62ccc7da9f3bfaa9ed3c29160d3f43654a18b",
+                    ["normalizedInputHash"] = "sha256:c300950fb23491fb31c26addcc9bcd06cd4cf1b33939caeeae2023097ee924aa",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 38,
@@ -14746,7 +14876,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14765,7 +14895,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:696ef0ac1bfb8d3e3c8078abc94a1f1d31fc29ac550f267cd06a004ecbc179df",
+                    ["normalizedInputHash"] = "sha256:93a027e146e6a51c95f5b4a73b16d0280f8357ccfc6282d67f2845fb41babcd7",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 39,
@@ -14807,7 +14937,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14815,8 +14945,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -14826,7 +14956,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:e7fb30d452523976a9a2c3ed3a8628bf3159efd5891dd30a7555045a3d263b88",
+                    ["normalizedInputHash"] = "sha256:f37d07d7b8d915a947302b0caf68fbe30ae320749af2c0918981018f4085b42a",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 40,
@@ -14868,7 +14998,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14876,8 +15006,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -14887,7 +15017,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:e2b5709747cd9b03b87992c347fd7ba1ab12976043757609ee99fafcbe91d8f5",
+                    ["normalizedInputHash"] = "sha256:2d245fc5f4fe5049bb1e83a807c7ef2767f40a39d1a58f2ce765af93fd25fb55",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 41,
@@ -14929,7 +15059,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14937,8 +15067,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -14948,7 +15078,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:6d1e234674eea4123142ec63ce909b4097336ad50f29b18dbba2737e956f3943",
+                    ["normalizedInputHash"] = "sha256:29d711ed9a6da625ae16b437fe97d043105000b1f6b35bda6304e41c4c60fbb0",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 42,
@@ -14990,7 +15120,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -14998,8 +15128,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15009,7 +15139,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:0236d348764dba7c39b0765fee8328260d3f8d3a4fc99cd89545fb1b364460a6",
+                    ["normalizedInputHash"] = "sha256:069bb21c05500e223a91fd1e1e89cc2330e6b5cedc31e0391197453005ced4aa",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 43,
@@ -15051,7 +15181,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15059,8 +15189,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15070,7 +15200,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:2679e478d651a2f5ba90bd6bfc0edafb63d7421b60fe809125e501a6df492ff8",
+                    ["normalizedInputHash"] = "sha256:860fe50a10b8d46ed1d5f8e41b260662169f0c91c5546c9a497a451dec8d30c5",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 44,
@@ -15112,7 +15242,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15120,8 +15250,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15131,7 +15261,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:bd3fd2d5dcb71fb60264e218310f9fcb2c3c5b19995077814023ae9ef9470df8",
+                    ["normalizedInputHash"] = "sha256:88501d2acd40bb3009c44c17e020af286091376ce35b4778c3d479cb2890133b",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 45,
@@ -15173,7 +15303,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15192,7 +15322,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:805d6ded4e46d23f1c96db4a4b02347908a299a7fd3a4438dc9e70756d288c50",
+                    ["normalizedInputHash"] = "sha256:a115241f808a90af7f90028f05c0ba856accf078b19904f19d54f07f65aa85c9",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 46,
@@ -15234,7 +15364,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15253,7 +15383,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:80770301fa04cdc303cc16046bc5159f086ddaaa5fbb1088be96f697b66e6db9",
+                    ["normalizedInputHash"] = "sha256:236e692789fd72bb76a13d7ae66835d39f9f8b64bbacfa0d40ab848dd9a29492",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 47,
@@ -15295,7 +15425,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15314,7 +15444,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:407e4fe3597bc9121e4e8bbf9706bfb59f626642edcf3683d3ca322759005012",
+                    ["normalizedInputHash"] = "sha256:d0cf310c9b59b4d42dd6786f3647bbf0e352c46673e82747240fdab50e404a17",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 48,
@@ -15356,7 +15486,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15364,8 +15494,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15375,7 +15505,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:f8cefd6cb860e5355a424bb3afc4ac127e25865d4130fb01d6544d4a8d859bf3",
+                    ["normalizedInputHash"] = "sha256:a535879b2089463a796c702f3c14131af5e8ea13370499ed0e7739d6618c4490",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 49,
@@ -15417,7 +15547,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15425,8 +15555,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.000000000001,
-                        ["spanBStuds"] = 7.000000000001,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15436,7 +15566,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:9a124295efd4ab675eb25e312e0b49904862676620dfad964cf9f7294b2d87bd",
+                    ["normalizedInputHash"] = "sha256:6caf14e94d6ee93c469e16e8cd3209b50699f1bfd82544b56a95ee1e818e5dc7",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 50,
@@ -15478,7 +15608,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15486,8 +15616,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15497,7 +15627,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:196b5f9c4ede4b2d76e2a88133ca8f0e123551619f889a1be8139baf8ff62a7e",
+                    ["normalizedInputHash"] = "sha256:b1a7c531b65d37c518e4c9ea07ae69063b4810b0f4742c5cfd4a40f85a9b78c2",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 51,
@@ -15539,7 +15669,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15547,8 +15677,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15558,7 +15688,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:8ac1888b007b5aef1ffef18c87912dc56bc62560830b2f9043027871e06d4ea0",
+                    ["normalizedInputHash"] = "sha256:5cb63899df52a2497863e37b07ed38fae72c5f2172a0ee1062baa976aa265adc",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 52,
@@ -15600,7 +15730,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15608,8 +15738,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15619,7 +15749,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:9807cc146f664b74a12f082d98628d7633b19eece3d7800df29fd09bbfdcaf8b",
+                    ["normalizedInputHash"] = "sha256:ce7804daf4e2044f72f25efe5ec78162ec7b94510c228fb3c2a6670361512cce",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 53,
@@ -15661,7 +15791,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15669,8 +15799,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15680,7 +15810,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:b32d2e8e41e9e373d0585a736927ad66b49d125d6d9aa41166090d39bdd727fe",
+                    ["normalizedInputHash"] = "sha256:9ff044aaa6516ade19500988271c03c0a3430d24c1cc9c378e2f050e7ca3cfd3",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 54,
@@ -15722,7 +15852,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15730,8 +15860,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15741,7 +15871,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:11c27b8f94e7d182d05af2538a294c21b30a4ca94d1ac8cc6fcc2061bebb6ca3",
+                    ["normalizedInputHash"] = "sha256:4701bf577ea9a90992709ee90253891528c0466399a4c0b0e66c13bdd5d322c7",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 55,
@@ -15783,7 +15913,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15791,8 +15921,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15802,7 +15932,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:46b232bdd09abef91d8ce13525bc442c6601037372c9d59294db132c541a1835",
+                    ["normalizedInputHash"] = "sha256:1c463fd5136312414c907273f3cf6368dd8b79fbef02e39d89446273a13eb6e9",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 56,
@@ -15844,7 +15974,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15852,8 +15982,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15863,7 +15993,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:9a28680157f42b8df6176206b7552a2751dbcc417298ab0d6a471bd839305bfe",
+                    ["normalizedInputHash"] = "sha256:4d88bd7649a5d24459de4f1ed156435f00bb83864b5c4ec6be84e8d07fe5b4ce",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 57,
@@ -15905,7 +16035,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15913,8 +16043,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15924,7 +16054,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:135ccb057fc114e8d83391c0c506c08d6550cfef00f5a52f09030879ce586eee",
+                    ["normalizedInputHash"] = "sha256:52efbfd83f77de19f83e0e13a9fd6183b22e61094d769e59be05a56957a4ce41",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 58,
@@ -15966,7 +16096,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -15974,8 +16104,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -15985,7 +16115,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:5774d3f588fb5b0df23237b6cb5bc24156fb3b248eb3f1eb41f924d582e47f92",
+                    ["normalizedInputHash"] = "sha256:5b90a0cba5687c16feb5ea7c8f27a050cd1ee15d7eb9ae62d96b3b70f1706c25",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 59,
@@ -16027,7 +16157,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16035,8 +16165,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16046,7 +16176,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:fcd6207c1f65d613bb38727903d81fb02a3167e097570119fb68c9e9ff8e7d06",
+                    ["normalizedInputHash"] = "sha256:ee47dbaf98b6fa112fc5dfe4fb67100d98cb4c09f8d839eadfffab7ddc2d09c6",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 60,
@@ -16088,7 +16218,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16096,8 +16226,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16107,7 +16237,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:f3b2163307ccae8ea38849856786f16ad4412c0754b3f3f52d4b8a67d25e8521",
+                    ["normalizedInputHash"] = "sha256:4cd5ad5486eb6df8a25053d64c69daf4b15cb604b796dd675d98bc74dbc3349c",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 61,
@@ -16149,7 +16279,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16157,8 +16287,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.000000000001,
-                        ["spanBStuds"] = 7.000000000001,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16168,7 +16298,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:e4db166a87e9013105d0c7ebe88a907e95f5270af3c4915702838509b72b45ef",
+                    ["normalizedInputHash"] = "sha256:830bb85e7f861b63eb3ab07cd5f54ba31a56f00e4fac96a27e1b3e5f756c122c",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 62,
@@ -16210,7 +16340,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16218,8 +16348,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16229,7 +16359,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:969f75ac7500e81e8dc32055f234fc807623c66d36a87fe4dd1933442e7339e4",
+                    ["normalizedInputHash"] = "sha256:91fe99e9b1767c2da2f1dc8215afe3ca62dbf83e67250dd1f2901b9cda4f7e12",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 63,
@@ -16271,7 +16401,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16279,8 +16409,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.5,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16290,7 +16420,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:d518126a2c7aacabf7e95f2b26ba9085ef6bc219e2d1c80fad18682e895797a4",
+                    ["normalizedInputHash"] = "sha256:28f65e927fb1f65514b6803971329aa796bbeafdafcaf1f06019e11f9b73249c",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 64,
@@ -16332,7 +16462,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16340,8 +16470,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.5,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16351,7 +16481,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:454a89c1ec165d7fb1d07a6e16a6c83102830e12d070bdaa319d887aa4c0e645",
+                    ["normalizedInputHash"] = "sha256:9925312b5f2460b24806334ad554c490e3b37d105e108246e4411e3fa7893292",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 65,
@@ -16393,7 +16523,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16401,8 +16531,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.5,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16412,7 +16542,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:83ac7ae10860e4f34287a7824566056999832875e7783d4a882da898dae9b6e5",
+                    ["normalizedInputHash"] = "sha256:1bc15787b41a3b92f3f1e8d3a94a7c7c74ac64d991ba416a5d406921d56e01a8",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 66,
@@ -16454,7 +16584,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16463,7 +16593,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16473,7 +16603,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:5f9d154aa201727b6bedd7d67801da9f968c6317bb6cf96bad4dd185418285ca",
+                    ["normalizedInputHash"] = "sha256:48c38346c13e7b6541df56c5e8ba0815091f8da5e7a712d4929b3527a00cf476",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 67,
@@ -16515,7 +16645,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16524,7 +16654,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16534,7 +16664,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:c2092d4b286c5b5ceff9ddc43b1493c4e8b8904aa78ee0789fa290219edf19f5",
+                    ["normalizedInputHash"] = "sha256:b830bd327efe20b837e7c8689a19c5d5370848ee1de9821bdde454464eb27751",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 68,
@@ -16576,7 +16706,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16585,7 +16715,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16595,7 +16725,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:dfcd32ad05be1e6dfe2d21f0dc0cbb8dfd6e24787d9119343e61e82b5794b82d",
+                    ["normalizedInputHash"] = "sha256:ec5669cfd2a590f09fe3ac94c0d5b6a612cf0ed62f3906c2caaaa141441c11e2",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 69,
@@ -16637,7 +16767,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16645,8 +16775,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16656,7 +16786,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:54f4e3168320a6eb3a9a9e6a5e964994c84ca529d01cb32cfab4daf95fbb8707",
+                    ["normalizedInputHash"] = "sha256:d4f904babc638f6790729e3e3cf71f2260040f80205b95d57a3a754a74982424",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 70,
@@ -16698,7 +16828,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16706,8 +16836,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16717,7 +16847,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:d8792f7b632ac0e87ceda326d9be9c1aeaed119d84d2f818e3b3899f25e97a7f",
+                    ["normalizedInputHash"] = "sha256:b0a4412f05853185f40fd5d455a62544171adb62f2f21809e892955c742770a9",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 71,
@@ -16759,7 +16889,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16767,8 +16897,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16778,7 +16908,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:13ee0ee5dc429198a074d86c732fe6ad3f100fb5f6f485422de550e20dc8f106",
+                    ["normalizedInputHash"] = "sha256:e89affecf62dd4717138ecc8f38b1f3ef5da81d5d05e5aa721d16b46c4bc773e",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 72,
@@ -16820,7 +16950,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0.25,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16828,8 +16958,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.5,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16839,7 +16969,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:6cc3e93369eabe8678e37a14e8351efdc0ff6bbd733ac3e741d5dced8897e12e",
+                    ["normalizedInputHash"] = "sha256:0d4278fa3705fb1d4c0e1c8f147bbf75db0644bfe05efe6694d76f4ab1b7c2c3",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 73,
@@ -16881,7 +17011,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16889,8 +17019,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.5,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16900,7 +17030,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:6839a4c0785f649545449c89b48ddd0276e1ed99be79842171a4ec1974f0ea01",
+                    ["normalizedInputHash"] = "sha256:49eb11a403fcc8eef058a2f95314e2d4be64e2eb42e71f324e65598da5495cb6",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 74,
@@ -16942,7 +17072,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -16950,8 +17080,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.5,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -16961,7 +17091,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:082c34bea47acf4bf03a1455bce1e026f26c5c0eedfd70ac32ff9aa4fecd0ca2",
+                    ["normalizedInputHash"] = "sha256:3603bbfc8ffc4c2ba8c5418a2e7c8527e5d7352676fe4566370294502318a3f8",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 75,
@@ -17003,7 +17133,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17011,8 +17141,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.5,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17022,7 +17152,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:e5d2894d4ae5ff19a80a94766ae008276e397df1069272250e5bd999e5acf850",
+                    ["normalizedInputHash"] = "sha256:31d580e05363f927d23541d8fcf90b0a09bb58795abe87e3749a42150c54aae5",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 76,
@@ -17064,7 +17194,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17072,8 +17202,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.5,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17083,7 +17213,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:994fa3371ff4485c07bf281d07ad6309899c6ac43db271b1d1c463e928c1da43",
+                    ["normalizedInputHash"] = "sha256:e7aea37c13fb9190cf626c9105f3ee497628fdff6d1684f25edee4d6c58c92a7",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 77,
@@ -17125,7 +17255,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17133,8 +17263,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.5,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17144,7 +17274,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:965de4db3feb9b90541d0d76c16516e6de9f1146143083bfa34f1be720f4b559",
+                    ["normalizedInputHash"] = "sha256:a4bad7766f17a571041e7a68718e175337ca155e260fcfced9bb9f2316fd77a2",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 78,
@@ -17186,7 +17316,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17194,8 +17324,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17205,7 +17335,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:33036306b8840353b275d60ce2b9e3bfb9659d907a7c6975b868b650951816e6",
+                    ["normalizedInputHash"] = "sha256:bb89a5cc726e13364a190c7d8c59db01d47eff26a1438a61603921695d288e57",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 79,
@@ -17247,7 +17377,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17255,8 +17385,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.000000000001,
-                        ["spanBStuds"] = 7.000000000001,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17266,7 +17396,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:d7bd89fc385fb56646fafdda17aef474e5a12a051342bb78ba87a917b00d2b79",
+                    ["normalizedInputHash"] = "sha256:b7de0dfb936a5a37fb6dde9727484e1514fae11aa5df9eead699759e205967de",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 80,
@@ -17308,7 +17438,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17316,8 +17446,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17327,7 +17457,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:66258762307a6130581ecc8206d992590a1cd828c503ef9964a818f604ee80f8",
+                    ["normalizedInputHash"] = "sha256:9ce9491fdb5c5f5a3ee20e8cf9fbeb0389e74fc55fc52bf7e591ea68736242b3",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 81,
@@ -17369,7 +17499,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17377,8 +17507,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.5,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17388,7 +17518,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:907555ffd41e96b8a39eb16eb0a479db4a08ba832b9530318f0305a72aa8a17a",
+                    ["normalizedInputHash"] = "sha256:277571ee0e5d542b7e119a99acc1bc75a610a505520c366dbc4acaf887d7b165",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 82,
@@ -17430,7 +17560,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17438,8 +17568,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.5,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17449,7 +17579,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:edd36aa38c2a01c5d2cf94cee6ace10b1ccfd4b9dfb351ecc38e6afe6a93b96a",
+                    ["normalizedInputHash"] = "sha256:c26790ff04b38edebdf19cd77385a864c82aa38920845aebe87c79c16a3dc0b6",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 83,
@@ -17491,7 +17621,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17499,8 +17629,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.5,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17510,7 +17640,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:575e0375d306a01220646315e8edacacc3d97e58c5b041807696712adab48d29",
+                    ["normalizedInputHash"] = "sha256:28020ccc98a8739ff6d284adcbe50df1a9248ab59df9864f16ea7c7a05e1dd42",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 84,
@@ -17552,7 +17682,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17571,7 +17701,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:0f6a528a78284546ac70b1603df10a24c2a5aab0b76aa52cd462f69340cee5cb",
+                    ["normalizedInputHash"] = "sha256:fdd817673597d6ff8c5369464ea548d81d82e3daf087703cd6f31ba0f6ac3a47",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 85,
@@ -17613,7 +17743,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17632,7 +17762,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:4d5e2cfce5b0923861f56fc8793d070b701091c25b88b8a7cbc617546115b2dc",
+                    ["normalizedInputHash"] = "sha256:ac021fa011d7236916b48bc9cb7f2c1f449f0c4e459d5485678bf328340eb5e7",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 86,
@@ -17674,7 +17804,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17693,7 +17823,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:3faf0d0c05eb3b783fc59bdcca4820b859f8cc2c90faeec63e8d104c417beea2",
+                    ["normalizedInputHash"] = "sha256:a4bca27b1453d4d0785cf871cefada6329e859d36fed703e63ac83b7f81ed0f9",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 87,
@@ -17735,7 +17865,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 2,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17744,7 +17874,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17754,7 +17884,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:13123b805163c9c5ebd1f8f9aff2ed0941c4ad88208c4da2d406714baa706cef",
+                    ["normalizedInputHash"] = "sha256:3eaeb11cd2efed16ebf6ee97bb69ec3c89deaee299f942aa59859465fa00a3bf",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 88,
@@ -17796,7 +17926,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17805,7 +17935,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17815,7 +17945,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:b774a3358ed5673259dfb8b22a61bd8a9e00535823a6d6a1349828d434b21e89",
+                    ["normalizedInputHash"] = "sha256:82d20190e27efd6c12537a4809d12a5ccd12081b768be7f0ab5b70c047084779",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 89,
@@ -17857,7 +17987,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17866,7 +17996,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17876,7 +18006,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:20ec93bf4ed0b58c8b1369e0615c1dbda0639036242c1d7ae2e2bfe3d04ad5cb",
+                    ["normalizedInputHash"] = "sha256:ad8b34283ccf12899dc4f0e37d99884219e36dc31e74113177a84bf1e8f55254",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 90,
@@ -17918,7 +18048,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17926,8 +18056,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17937,7 +18067,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:b91f7ea8c02f20cdb4560360589a97e5fdbe6c53e7127850cfbb54559fe89309",
+                    ["normalizedInputHash"] = "sha256:e5645ccf017790ff974b459b4412605ee470d146d2da84e4c6406ad72fad8b83",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 91,
@@ -17979,7 +18109,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -17987,8 +18117,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -17998,7 +18128,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:615e3e665953a1c53f772fba3127f4f6bdd3b83244d625b5c6161390ca51ea16",
+                    ["normalizedInputHash"] = "sha256:81a3ce6635a68c0be20463a8137ff9a13ba3df97c88151f65daf2dca0d6cf1f3",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 92,
@@ -18040,7 +18170,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18048,8 +18178,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18059,7 +18189,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:5079b6b4f788f433708c20b276ef7991b14c6faaa3e84b9a7449235a28947a47",
+                    ["normalizedInputHash"] = "sha256:2fac05b3a6759f01f71e9c6aefb2a5c53e0db13d50e492c13767c43da9d94ca5",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 93,
@@ -18101,7 +18231,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18110,7 +18240,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18120,7 +18250,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:0c101b60224bae6ca9078b83a3edaf65f8845de4e7bdfa9b21e64d8c62a85e05",
+                    ["normalizedInputHash"] = "sha256:3f743b96a350cccdc3882af6206e04563364feb3af91698a16baf1d6dc278eea",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 94,
@@ -18162,7 +18292,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18171,7 +18301,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18181,7 +18311,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:31f5dc7cbc65c181dc2ff37d3a1b2cc8876477eb9ead252162270ae3ee34ca73",
+                    ["normalizedInputHash"] = "sha256:1944506905fbe5ab9d930d92f40c391fdcc94fe2ba434099ecce4a8cb5e9ed57",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 95,
@@ -18223,7 +18353,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18232,7 +18362,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18242,7 +18372,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:2be7821a621b12307a69b4dd3154fd8c5155279783b2b737d047a6595e386629",
+                    ["normalizedInputHash"] = "sha256:7ddea27f76f3b3524eeb6112bb8bbed38e04c317100b8c4ab905cb1ba3bc41c8",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 96,
@@ -18284,7 +18414,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18292,8 +18422,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18303,7 +18433,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:8955b428c9f80900cdd019b72523c81adfeddfe21e4f9bbca08fcc7c4c4b9e06",
+                    ["normalizedInputHash"] = "sha256:6fa4d203fec9394c975ad75d920800fff6285a1c78254fe4aa9e31db339a1aa1",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 97,
@@ -18345,7 +18475,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18353,8 +18483,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18364,7 +18494,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:b369cab8373bc2299a2e2d831fd228a9965873ec7ca7fcbe8ee9d833e085fadf",
+                    ["normalizedInputHash"] = "sha256:c0e5d05271e97575344b557e258ed998836f6317d6c483a915c82274f14c9a8d",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 98,
@@ -18406,7 +18536,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18414,8 +18544,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18425,7 +18555,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:0adc2135cf0418a891c661d993a9cf284177251d70bf2ac9f4c1793574205e8a",
+                    ["normalizedInputHash"] = "sha256:0a5e4dc8c5981012719dc29bb1fbae483e18219623edb1b6aec0dc1a0ebac8b1",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 99,
@@ -18467,7 +18597,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18475,8 +18605,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18486,7 +18616,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:f4b62af54c41712b5f0a6a20fe1c7cbc9273e88d8745be21797290bb236b5c5d",
+                    ["normalizedInputHash"] = "sha256:6d14b1dcce4672fb9979bdd90b7e38dd6b8923ddc57ad0011ce4b085635bc919",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 100,
@@ -18528,7 +18658,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18536,8 +18666,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18547,7 +18677,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:393255ff56d57401e8a434693000f320224ac37763df8afe9469fc4fc3f076d7",
+                    ["normalizedInputHash"] = "sha256:eceb4bb27b9bc9ce4f4b3e6c7ed2bb453ab01d5fe3961111ef25d11a38ce13ca",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 101,
@@ -18589,7 +18719,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18597,8 +18727,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18608,7 +18738,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:9e5f1438afe945eb3a93bd9be24169c74381fd02dd015d3a724a6084e8054f3b",
+                    ["normalizedInputHash"] = "sha256:d4161b2ccae5ba3f7ec74ca63b64a1de1875ab092f89cb9933a390e6e7e1e1ec",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 102,
@@ -18650,7 +18780,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18658,8 +18788,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18669,7 +18799,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:ab063a3aac709b1c8b31379ae9616f65d778288a1a8f26da4e8b7063727c8a57",
+                    ["normalizedInputHash"] = "sha256:d6141e37db29814c09abaad655543f00c7c80adce636f12c86aee26cc6b7e768",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 103,
@@ -18711,7 +18841,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18719,8 +18849,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18730,7 +18860,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:8e46e0f078325d47c5694f2fa264874397ec01f1f7cffd768df0fc3708354905",
+                    ["normalizedInputHash"] = "sha256:cdbd726a0ae1b451a7c595b98717c0d9f79118efc9e17b6ce4a539aad19e381f",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 104,
@@ -18772,7 +18902,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18780,8 +18910,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18791,7 +18921,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:6e6a9fac40cef1aba99b66538dfe376d0e3713c8c34faa73dbf334bffd3ae58d",
+                    ["normalizedInputHash"] = "sha256:4911f919e4d56ef828ae87104da6572f38c5d4f3f337b8e13c7ab3190ee08d1a",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 105,
@@ -18833,7 +18963,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18841,8 +18971,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18852,7 +18982,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:5baffa0f63568e9b11f3127709ccbf27cd2a85a967270218410648b08a2e2bf0",
+                    ["normalizedInputHash"] = "sha256:d7484332f5453aaf4e819309bc32209fa05f68a849a6f0de9c44f9ed26897721",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 106,
@@ -18894,7 +19024,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18902,8 +19032,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18913,7 +19043,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:422310297b82ce278e2817f05b4e293236cb30d45262589d14e5187e00c583b6",
+                    ["normalizedInputHash"] = "sha256:9d400fef0bead3cdf06f30a688eb04a2721e9919960c6696c91c19b1ba70243c",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 107,
@@ -18955,7 +19085,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -18963,8 +19093,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -18974,7 +19104,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:b05a395199a74cc03068d3b852d34aca9dd04bbb9415648ca50337cdb62b3c16",
+                    ["normalizedInputHash"] = "sha256:01566177e99e11be83a307a836ef654e0e1e09282f9b2d8e9e63104a4d60e455",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 108,
@@ -19016,7 +19146,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 1,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19025,7 +19155,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19035,7 +19165,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:5c04f935de23bc6aac5cfa88358dcd359255f3381a1dc87ee5c3820ab389dcad",
+                    ["normalizedInputHash"] = "sha256:4b1b953f91d0a4703021557886a744abb45d33ca22f0f286d9e74314a4588bde",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 109,
@@ -19077,7 +19207,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19086,7 +19216,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19096,7 +19226,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:13fecc8d73db51998521a93623f418ea3b953fb4e45ae9689258254268a0efd4",
+                    ["normalizedInputHash"] = "sha256:5074d5a1370e47863fcc2682ee22bb2cd26e0228fc36356e9ba44e41a7e2f8c6",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 110,
@@ -19138,7 +19268,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19147,7 +19277,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19157,7 +19287,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:3b7514d7e8ac056fedd6c14ceb152175035142016c70d515554931d993e6ce24",
+                    ["normalizedInputHash"] = "sha256:e4375c3c96f5c7c22b06216038b2b2e4acc76c8ff2e91a6bae0ef89459782726",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 111,
@@ -19199,7 +19329,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 2,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19208,7 +19338,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19218,7 +19348,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:1c90cb8b86353a1b13e48514021669395efc9178aaed96aded4d51dc9521dbc5",
+                    ["normalizedInputHash"] = "sha256:5f831d8c465b2090c002cb335b2ed13bba6a5ae94362c0e5a66560f3aaf308b9",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 112,
@@ -19260,7 +19390,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19269,7 +19399,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19279,7 +19409,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:00cfb1083b398d7bba812011a75e36aa5a4fc9416c1ed415b356a52db4a11b8e",
+                    ["normalizedInputHash"] = "sha256:9495850b8aa0fb8a4a06f7b272b61f9842c32e93f81b2eecec1f88fc2fea9128",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 113,
@@ -19321,7 +19451,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19330,7 +19460,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 8,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19340,7 +19470,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:ce6d7aaeeac03be87512f9e599bf47b6e93201c88ac752717188600742606aad",
+                    ["normalizedInputHash"] = "sha256:236631bc72b7bec1cdf29395aa03682d621d35f7fe4125f039c47d73c7f7e9e5",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 114,
@@ -19382,7 +19512,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19390,8 +19520,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19401,7 +19531,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:6c532859d14d0002d94fe93ded372508b0b4588c245cdf5af02fc0e57754aa72",
+                    ["normalizedInputHash"] = "sha256:e3a36cb8b0f2b5b595f7e8f2f6b911621115dd653ec5f87bf54a3fb613d8badc",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 115,
@@ -19443,7 +19573,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19451,8 +19581,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19462,7 +19592,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:148029418027406128509228e2aee7475edd5fb5fa1ac443369c7519f1ff9bdc",
+                    ["normalizedInputHash"] = "sha256:6034e96fa19f38476ea455528ce225968359c33a7f1d2da8ba4cd33b000405cd",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 116,
@@ -19504,7 +19634,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19512,8 +19642,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19523,7 +19653,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:c66f5244e2597343558475bbbf8599f94ca95182376461dbf4a2129f7d27062d",
+                    ["normalizedInputHash"] = "sha256:3701ad64a8235043a0649a1da9e1cbe6be47f6ac711f34c879183b7205d67aa5",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 117,
@@ -19565,7 +19695,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19574,7 +19704,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19584,7 +19714,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:7f32518adb4952005379e9072f5cf23a49dfbaab4312c4ca5d817299e0a7d90c",
+                    ["normalizedInputHash"] = "sha256:0f27cd6e18e12769dd3688587f2e9c33e0b9da8019193f39853188f6c081c248",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 118,
@@ -19626,7 +19756,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19635,7 +19765,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19645,7 +19775,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:4342deeeeed68b804e90086f8866e01541eb666e4255a5263550b0a0720c7434",
+                    ["normalizedInputHash"] = "sha256:196826e5b2a071c19024d911bcade7539e751749b7c963f154c33ba7a7102b88",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 119,
@@ -19687,7 +19817,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19696,7 +19826,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19706,7 +19836,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:3c0500b5b6622d2753fbff2b95cfda05b335a6c9733cf7663267003abe3638ed",
+                    ["normalizedInputHash"] = "sha256:c726f2e208a695f2d46e2473ff7af6a1c6b6f011f3eb45a13e5d6541f5532196",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 120,
@@ -19748,7 +19878,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19756,8 +19886,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19767,7 +19897,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:49feb1b72242bba7dd6e30e3ac4aef341e4cd224f3d74fe5155d95430e14e6b9",
+                    ["normalizedInputHash"] = "sha256:d10fe94ee6f8ea8d5bcf1b6d17b67cbfa061530765db9a3410261e348edeef42",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 121,
@@ -19809,7 +19939,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19817,8 +19947,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19828,7 +19958,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:85da26c4178612fa9993283355addc2c4acb825466a47c728c4b8ca55097e613",
+                    ["normalizedInputHash"] = "sha256:e834b50a855d39db612ca1e41ba02534db9ec4cb50ee58bd25f17e3308fe7ce3",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 122,
@@ -19870,7 +20000,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19878,8 +20008,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19889,7 +20019,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:9e7c8fb7a819e2f280f054248add455dede4cbeda3b9f0a76b1c2b855a3649e9",
+                    ["normalizedInputHash"] = "sha256:bbdeef6e9502f9ba5f4223710c8cdbce9db969f3ff6c49fd1939a450b71abcd5",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 123,
@@ -19931,7 +20061,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -19939,8 +20069,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -19950,7 +20080,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:216d7c4203096cc77027a6b2b2332f858a79a21906e06855cbe68151dce884f7",
+                    ["normalizedInputHash"] = "sha256:27f05edb5eb699b259eb5ee429824d7a3f018901a4416de57ff71e38c4a8e0d1",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 124,
@@ -19992,7 +20122,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20000,8 +20130,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.000000000001,
-                        ["spanBStuds"] = 7.000000000001,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20011,7 +20141,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:4780237b8a3147ee0b1b3b63005182a85953476f21e2ef7753d7c8fec60e854d",
+                    ["normalizedInputHash"] = "sha256:617fd19fd4c014af85c8dbb83a7b402b395f252d78819781d112bef17f5f98a0",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 125,
@@ -20053,7 +20183,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20061,8 +20191,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20072,7 +20202,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:373380dbcabb720971b5f3a783607d6217138d677a79dd1fc4cd2cca60f56f49",
+                    ["normalizedInputHash"] = "sha256:23be7aa57e861ada1794be497ee722ff34ca9f8b35ca2f9227c24d53e7853bad",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 126,
@@ -20114,7 +20244,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20122,8 +20252,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20133,7 +20263,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:9f14f86b42a5846366ee6a1c6185f14b004da3588be74ac9661330d5d22f5232",
+                    ["normalizedInputHash"] = "sha256:7f94ffe8defd07148eb73147100cdb0d526be2089e29b892467877519afda0ad",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 127,
@@ -20175,7 +20305,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20183,8 +20313,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20194,7 +20324,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:dcc10f73eb2de964dd2d06387e106d359ad108a78bef1a588b22f8a67ad1525a",
+                    ["normalizedInputHash"] = "sha256:85dc1afc2fc5cef8915ad0049cbcd757b131445d07fd2ea1a0e51be77249cecb",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 128,
@@ -20236,7 +20366,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20244,8 +20374,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20255,7 +20385,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:b0975ec77de7c72c587cbcee4a50ae2929987f2ffa399b103ca85f7978dc3650",
+                    ["normalizedInputHash"] = "sha256:22102e70cd7dbf511975fca25c74c73abefa15722ed73d5b98efda6dcece3c90",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 129,
@@ -20297,7 +20427,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20305,8 +20435,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20316,7 +20446,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:2d52c0d5a2c3c4b27d295e178a915e0cc229339dbca383c6010c2999608dcef6",
+                    ["normalizedInputHash"] = "sha256:024bbd166e0d1cdfe7f953062fec04b799b2a5e3a2b3d7f75ce4504bb8298b96",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 130,
@@ -20358,7 +20488,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20366,8 +20496,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20377,7 +20507,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:b40161082a1474b54779942381b146cf31b228e01203d068800e7826083b71a2",
+                    ["normalizedInputHash"] = "sha256:57202b5a46bcd6f7132f5bbb84dc721287b45d86641102ea52adab3b57392b9d",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 131,
@@ -20419,7 +20549,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20427,8 +20557,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20438,7 +20568,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:04ee988198c738c055345d703b27597fac22dcdfaf08ae3ebe0e80d2e0618557",
+                    ["normalizedInputHash"] = "sha256:2f03a605f53ad1f233fb5dde8571771982c5bf889378c23b7b7022a93b6b1e88",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 132,
@@ -20480,7 +20610,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20488,8 +20618,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20499,7 +20629,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:c74b4a158a1dfdd623d8473397e1ff3023004b8f32418eb6e6f72c0be35915ea",
+                    ["normalizedInputHash"] = "sha256:0abb2a3366bfd7ee2302cf030af361b7f4ffa45159f0c8a25b5eb40e9f8f404c",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 133,
@@ -20541,7 +20671,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20549,8 +20679,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20560,7 +20690,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:97d31a84e239a11a0b577c4e3056b2af70b192facead3199b0e419b379a78e74",
+                    ["normalizedInputHash"] = "sha256:84d4843e97b7f1afa47cdf0384f82a3713bf138fb267fcf0a2b4f5f226337338",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 134,
@@ -20602,7 +20732,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20610,8 +20740,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 8,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20621,7 +20751,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:e1261a81ea9a95f4cb752ed9516b21052579476b21b878a70122ca28c9c2d2a3",
+                    ["normalizedInputHash"] = "sha256:2bc75e2b98e461e17204afc9bdfc7ddf8efcd506622fa623d3693443dfb10af2",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 135,
@@ -20663,7 +20793,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0.5,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20671,8 +20801,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20682,7 +20812,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:48155ac45043238aad8094418d11261b8010840de17dd10b0135618dbc355470",
+                    ["normalizedInputHash"] = "sha256:01857c99bc48e6a000e1b8af53dc26f4597726cde3065867574b00f8672e8e18",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 136,
@@ -20724,7 +20854,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20732,8 +20862,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.000000000001,
-                        ["spanBStuds"] = 7.000000000001,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20743,7 +20873,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:9a28def3cdd45e44ef8ecd9f67db84deca3c50163233e441af4e0cbae3044235",
+                    ["normalizedInputHash"] = "sha256:4d76e60b66fc5a795f56104756cc8e63a7e6eef6117eae93cc213aa70fa4b113",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 137,
@@ -20785,7 +20915,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20793,8 +20923,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7,
-                        ["spanBStuds"] = 7,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20804,7 +20934,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:fe8eb3945df692681416ee989d3ff669485aab159f86177252d5e79c12d0f92b",
+                    ["normalizedInputHash"] = "sha256:8402096dde7fb327674756f115320f09d47e38b5aa317707b5810ca85cdcc687",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 138,
@@ -20846,7 +20976,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20854,8 +20984,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20865,7 +20995,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:fe9191e6a1918e47c18f5a1d72926d74bde035d4dfa69b21cd7052c78e78fbdf",
+                    ["normalizedInputHash"] = "sha256:bb643cb11b575420fd2ad7775f754e958c5b675e2ff617f257f5b334045f1f95",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 139,
@@ -20907,7 +21037,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20915,8 +21045,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20926,7 +21056,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:5fbdb16d76a0d01f16a89b7451495ea09feb179083e712a1c88e0fdd8094165f",
+                    ["normalizedInputHash"] = "sha256:497a60fe360c1b7ec9b0b6eab4b19a78ad3c7e32750e29fc39c4978fdf671fce",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 140,
@@ -20968,7 +21098,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -20976,8 +21106,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 10,
-                        ["spanBStuds"] = 10,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -20987,7 +21117,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:c76d507d06fcad8d1eedc0f16a9ff3330bed0ac5c72026a8b87904fbbd72f99e",
+                    ["normalizedInputHash"] = "sha256:60e56533399d1f7d9e8c996bd7134c35a107f83b6e3caff41f16561b4f26afd8",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 141,
@@ -21029,7 +21159,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -21038,7 +21168,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -21048,7 +21178,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:14413a87d598c14323376f92ef878a54317cc57c0a70303a7b6c65a5aa849ca7",
+                    ["normalizedInputHash"] = "sha256:e46203bc70193c483de29ab9d62e8fde726eb542ec9a3c81c8e9481094a9bce0",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 142,
@@ -21090,7 +21220,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -21099,7 +21229,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -21109,7 +21239,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:5d967838c554b6c60fb848498288113f930b9e89b48f6a1041167691e03a26c6",
+                    ["normalizedInputHash"] = "sha256:6d79773b68ca115da5b429583e34fb52d68dada3ff42cf5cde549340fcd86e69",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 143,
@@ -21151,7 +21281,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -21160,7 +21290,7 @@ return {
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
                         ["spanAStuds"] = 6,
-                        ["spanBStuds"] = 10,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -21170,7 +21300,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:e9ab03751b4023d524371dcff510eb8e68e4e9556a35e6bd8a14d9e0d77f97eb",
+                    ["normalizedInputHash"] = "sha256:9d232fb3a1f60f878bd2ae7a21d325ef0f9f42b10d2607aebf87c9251aca8ca1",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 144,
@@ -21212,7 +21342,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -21220,8 +21350,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -21231,7 +21361,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:d94e6c9700eeedd5acd95306c1fa7dba1bdf51411150cf00a12cb7dce935ccb1",
+                    ["normalizedInputHash"] = "sha256:461edc0678e12d1fe0f93a710792eae4001fbe33213fbbab81775ff4336a4d4e",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 145,
@@ -21273,7 +21403,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -21281,8 +21411,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -21292,7 +21422,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:c510dd6322dcdb2e00f6f08616fdd2ae70f06144a731d92211539f99c27569ef",
+                    ["normalizedInputHash"] = "sha256:565d1930a2e795992285e737ffdf9b333978e5af40880c50ce74681039dfb9cc",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 146,
@@ -21334,7 +21464,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 0,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -21342,8 +21472,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 7.25,
-                        ["spanBStuds"] = 8,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -21353,7 +21483,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:a1f198300c51b7456d5c18a72a6ba75f1bb091f86bd1bc59a4d3dbffb912c43b",
+                    ["normalizedInputHash"] = "sha256:5537650ebdac6de93e962a85be8d857f79b11cc952db1eb979694ee6dd4408ca",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 147,
@@ -21395,7 +21525,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 2,
+                        ["value"] = 1.2,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -21403,8 +21533,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 12,
-                        ["spanBStuds"] = 12,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -21414,7 +21544,7 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:d30ef89c1ff77e558c4fe96bfe551c0c0e35d7835616316bc23eb24e39fa5628",
+                    ["normalizedInputHash"] = "sha256:257d570a9c61d924874ba72db65af37a0eda285c77b2aef4afda10dede93c3c7",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 148,
@@ -21456,7 +21586,7 @@ return {
                         ["method"] = "world-aabb-horizontal-separation",
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
-                        ["value"] = 4,
+                        ["value"] = 2.4,
                     },
                     ["landingRegion"] = {
                         ["approximationKind"] = "exact-native-primitive",
@@ -21464,8 +21594,8 @@ return {
                             "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
                         },
                         ["method"] = "exact-planar-intrinsic-edge-spans-v1",
-                        ["spanAStuds"] = 12,
-                        ["spanBStuds"] = 12,
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
                         ["status"] = "available",
                         ["toleranceStuds"] = 1e-9,
                     },
@@ -21475,12 +21605,134 @@ return {
                         "Surface envelope maxima are not a character landing or feasibility test.",
                         "World AABB overlap does not prove native primitive surface contact.",
                     },
-                    ["normalizedInputHash"] = "sha256:ccb685d49be2de714f75ddf22b0414054135f467063f1c407b17ee8451ba9993",
+                    ["normalizedInputHash"] = "sha256:37d8e3c2a8ea76ae05d333f3f80112a34c60e4be9201a008ba37f834fbb556db",
                     ["outcome"] = "feasible-under-model",
                     ["sourceSurfaceKind"] = "planar-face",
                     ["toGlobalOrder"] = 149,
-                    ["toObjectId"] = "Finish",
+                    ["toObjectId"] = "Stage50Route002",
                     ["transitionId"] = "layout-transition-149",
+                    ["verticalRise"] = {
+                        ["applicability"] = "broad-phase-only",
+                        ["approximationKind"] = "conservative-bounds-delta",
+                        ["limitations"] = {
+                            "Surface envelope maxima are not a character landing or feasibility test.",
+                        },
+                        ["method"] = "surface-envelope-height-delta",
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                        ["value"] = 0,
+                    },
+                },
+                {
+                    ["destinationSurfaceKind"] = "planar-face",
+                    ["downwardDrop"] = {
+                        ["applicability"] = "broad-phase-only",
+                        ["approximationKind"] = "conservative-bounds-delta",
+                        ["limitations"] = {
+                            "Surface envelope maxima are not a character landing or feasibility test.",
+                        },
+                        ["method"] = "surface-envelope-height-delta",
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                        ["value"] = 0,
+                    },
+                    ["fromGlobalOrder"] = 149,
+                    ["fromObjectId"] = "Stage50Route002",
+                    ["horizontalSeparation"] = {
+                        ["applicability"] = "broad-phase-only",
+                        ["approximationKind"] = "conservative-lower-bound",
+                        ["limitations"] = {
+                            "World AABB overlap does not prove native primitive surface contact.",
+                        },
+                        ["method"] = "world-aabb-horizontal-separation",
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                        ["value"] = 2.4,
+                    },
+                    ["landingRegion"] = {
+                        ["approximationKind"] = "exact-native-primitive",
+                        ["limitations"] = {
+                            "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
+                        },
+                        ["method"] = "exact-planar-intrinsic-edge-spans-v1",
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                    },
+                    ["limitations"] = {
+                        "Classification is relative to the selected deterministic model, not exact Roblox physics.",
+                        "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
+                        "Surface envelope maxima are not a character landing or feasibility test.",
+                        "World AABB overlap does not prove native primitive surface contact.",
+                    },
+                    ["normalizedInputHash"] = "sha256:927071adc76a7c5e30fdfa15cb474c3cde2037ebfd3675d37550a3eb0dcb4712",
+                    ["outcome"] = "feasible-under-model",
+                    ["sourceSurfaceKind"] = "planar-face",
+                    ["toGlobalOrder"] = 150,
+                    ["toObjectId"] = "Stage50Route003",
+                    ["transitionId"] = "layout-transition-150",
+                    ["verticalRise"] = {
+                        ["applicability"] = "broad-phase-only",
+                        ["approximationKind"] = "conservative-bounds-delta",
+                        ["limitations"] = {
+                            "Surface envelope maxima are not a character landing or feasibility test.",
+                        },
+                        ["method"] = "surface-envelope-height-delta",
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                        ["value"] = 0,
+                    },
+                },
+                {
+                    ["destinationSurfaceKind"] = "planar-face",
+                    ["downwardDrop"] = {
+                        ["applicability"] = "broad-phase-only",
+                        ["approximationKind"] = "conservative-bounds-delta",
+                        ["limitations"] = {
+                            "Surface envelope maxima are not a character landing or feasibility test.",
+                        },
+                        ["method"] = "surface-envelope-height-delta",
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                        ["value"] = 0,
+                    },
+                    ["fromGlobalOrder"] = 150,
+                    ["fromObjectId"] = "Stage50Route003",
+                    ["horizontalSeparation"] = {
+                        ["applicability"] = "broad-phase-only",
+                        ["approximationKind"] = "conservative-lower-bound",
+                        ["limitations"] = {
+                            "World AABB overlap does not prove native primitive surface contact.",
+                        },
+                        ["method"] = "world-aabb-horizontal-separation",
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                        ["value"] = 1.2,
+                    },
+                    ["landingRegion"] = {
+                        ["approximationKind"] = "exact-native-primitive",
+                        ["limitations"] = {
+                            "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
+                        },
+                        ["method"] = "exact-planar-intrinsic-edge-spans-v1",
+                        ["spanAStuds"] = 6,
+                        ["spanBStuds"] = 6,
+                        ["status"] = "available",
+                        ["toleranceStuds"] = 1e-9,
+                    },
+                    ["limitations"] = {
+                        "Classification is relative to the selected deterministic model, not exact Roblox physics.",
+                        "Landing fit uses intrinsic planar edge spans and does not model character pose or input timing.",
+                        "Surface envelope maxima are not a character landing or feasibility test.",
+                        "World AABB overlap does not prove native primitive surface contact.",
+                    },
+                    ["normalizedInputHash"] = "sha256:f17a607c455e5266038883c6ace62da104235ed50194a0bb5ae79216fd249d7a",
+                    ["outcome"] = "feasible-under-model",
+                    ["sourceSurfaceKind"] = "planar-face",
+                    ["toGlobalOrder"] = 151,
+                    ["toObjectId"] = "Finish",
+                    ["transitionId"] = "layout-transition-151",
                     ["verticalRise"] = {
                         ["applicability"] = "broad-phase-only",
                         ["approximationKind"] = "conservative-bounds-delta",
@@ -22386,9 +22638,21 @@ return {
             },
             {
                 ["globalOrder"] = 149,
-                ["objectId"] = "Finish",
+                ["objectId"] = "Stage50Route002",
                 ["stageId"] = "layout-stage-50",
                 ["stageOrder"] = 2,
+            },
+            {
+                ["globalOrder"] = 150,
+                ["objectId"] = "Stage50Route003",
+                ["stageId"] = "layout-stage-50",
+                ["stageOrder"] = 3,
+            },
+            {
+                ["globalOrder"] = 151,
+                ["objectId"] = "Finish",
+                ["stageId"] = "layout-stage-50",
+                ["stageOrder"] = 4,
             },
         },
         ["routeId"] = "layout-route-58f6d582f3d19102",
@@ -22541,6 +22805,8 @@ return {
             "Stage49Route002",
             "Checkpoint049",
             "Stage50Route001",
+            "Stage50Route002",
+            "Stage50Route003",
             "Finish",
         },
         ["sourceRouteId"] = "required-safe-route",
@@ -23089,6 +23355,8 @@ return {
                 ["order"] = 50,
                 ["safeRouteObjectIds"] = {
                     "Stage50Route001",
+                    "Stage50Route002",
+                    "Stage50Route003",
                     "Finish",
                 },
                 ["sourceStageId"] = "stage-50",
@@ -23100,41 +23368,41 @@ return {
     ["provenance"] = {
         ["generationBundleHash"] = "sha256:b76a95b13e3f07d3fe18b61c96b4558aacbf71c8312e868f04a42e5e32c7a5ee",
         ["generatorConfigurationHash"] = "sha256:756d387f618bc1811d606e202e99d2f8e74d166c4f437bf4d7e12c65337ef668",
-        ["layoutBundleHash"] = "sha256:0bba660db1b88508431caae28a7293ac1eb09c71ae3f818d50b4f0412af31854",
-        ["layoutConfigurationHash"] = "sha256:86eb7a47e49ecc50c3c8c1dad0493d8921864c3d87e7d9bbc899ae84caeca329",
-        ["layoutSpecHash"] = "sha256:43e50d1415c3bd93f0d2877578e820991f9b49b5e54ce2874ccac6f37e5d1f32",
+        ["layoutBundleHash"] = "sha256:426213b1e2a1688ddd057fac2c4e95becba33a570b7b1649e0a24a984d650de3",
+        ["layoutConfigurationHash"] = "sha256:2b5e95301355cc71f640b62081a522be48cd6dfdbf0340336b2004a0f49d44bc",
+        ["layoutSpecHash"] = "sha256:ccbd7969ba79ab2314f91891e1156ca000fb042f36f47e56a41c5356ce61e0ed",
         ["layoutSpecId"] = "layout-spec-cde82d6eb09a743b",
         ["mechanicCatalogHash"] = "sha256:94d10afa7e63bc81ebe50c2084b436b90497022c7ac1f4792040f4508c32027a",
         ["mechanicLayoutDefinitionHashes"] = {
-            "sha256:6df27726ee9663bb36f3a38952434ac33f46b64fcd7eaa225cba645845a2011d",
-            "sha256:b9f04b7dd5d8a1dd416fbb8bb28787158bfd71c2f438611920a9de06c8bb2a64",
-            "sha256:378ad7fd7c5e5de85730861227f2e8e1e589e515b28ea6cb20d2513d29b3cd05",
-            "sha256:3447240af3a43259363cfbba2b8231529acd3043f69319c2d54897be262b8f38",
-            "sha256:f33bea0692e7eff4dd8edbba03183c88d45050f090c1abb08c1f298c497a90ec",
-            "sha256:0956d827b3eb7c0d647fe83c96165731421ec5c841ea2db4d0b487ffdd053f22",
-            "sha256:c4e84f1263fcdd4721553a30dd804415ba4b54bfcea0baf68ad0a1a6fa9aea86",
-            "sha256:b93d3dcec9fbaf6fc88d4292358fe3db11675fd6dadd01778f2cad3eded6c769",
-            "sha256:2be069a184e338e88d10c9fdf76bf0222a4655b50b4e54aae9d9c1eac87c6aad",
+            "sha256:67ddf0d8d03634e65092b66a1d37cec4d0f35cc5f42a945b1a58917457d9c03f",
+            "sha256:405339fff5caad5f9fb195c33b09013ad48b012a98a2ed66e49a6d0afabc216b",
+            "sha256:eecd5934fffb4dcc6b06c0f0ea85f6f88beb1fa4c5259b8b0ffd4c4991a58408",
+            "sha256:f23f31f338301fef762667ee51e5bcf69e91734c0579246e089ab8a6d6c2b4c0",
+            "sha256:61e2d0db429b5bee1554869d7224c3f0221ff6dcc41a9c37aba0b2b332b7f8a8",
+            "sha256:bd35c647b0a9b0985c2ed4253a9fcd3fdc2f3f8474bc5dcf772b11871cad53cf",
+            "sha256:c5e6dce029da77ddc6dd6b86a93498e9364c8fc4de8eb65b397327cbf70ae72f",
+            "sha256:3f6a244d730f6bcd6369a2b0841a35430f4ee62c57aa9467f73c51de1b371795",
+            "sha256:19e888d3cd8b0a03aafb86d447efd0e39cb4856485638edf1549128a5db4f528",
         },
         ["obbySpecHash"] = "sha256:cde82d6eb09a743bfcbb7905900d164ba1d544c291c6a6a22f8399ce99fcd392",
         ["obbySpecId"] = "obby-1a298a2030b2ffc4",
     },
-    ["sceneId"] = "place-spec-43e50d1415c3bd93-scene",
+    ["sceneId"] = "place-spec-ccbd7969ba79ab23-scene",
     ["schemaVersion"] = "0.3",
     ["seed"] = 42,
     ["seedIdentity"] = "sha256:9f08996ea2344b005273f85348838979039b1b40bd7663ddaa178e9dd70e203c",
-    ["sourcePlaceSpecHash"] = "sha256:886286e1ea19b841708b18b5353267485b26deef0700a3f1434287af5dbbf42a",
-    ["sourceSpecId"] = "place-spec-43e50d1415c3bd93",
+    ["sourcePlaceSpecHash"] = "sha256:6da75de8f417eaa5e2fb6fb7ac702645e1465dbbd096fffa0fb05f5df05bf3b3",
+    ["sourceSpecId"] = "place-spec-ccbd7969ba79ab23",
     ["worldBounds"] = {
         ["maximum"] = {
-            ["x"] = 130,
+            ["x"] = 182,
             ["y"] = 15,
-            ["z"] = 110,
+            ["z"] = 158,
         },
         ["minimum"] = {
-            ["x"] = -24,
+            ["x"] = -26,
             ["y"] = -25.5,
-            ["z"] = -18,
+            ["z"] = -14,
         },
     },
 }
