@@ -30,7 +30,7 @@ return function(test, expect)
     test("defers replacement placement until yield and applies only the final session", function()
         local harness = G2RuntimeHarnessV03.new()
         local player = harness:newPlayer(101)
-        local character = harness:newCharacter(player)
+        harness:newCharacter(player)
         harness:addPlayer(player)
         local builder = BuilderV03.new(harness.runtime)
         local captureByResult = {}
