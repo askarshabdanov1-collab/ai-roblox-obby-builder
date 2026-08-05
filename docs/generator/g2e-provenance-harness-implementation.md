@@ -41,6 +41,11 @@ The field is a source/release identity, not a claim that a committed `.rbxlx` em
 commit containing that same binary. The repository ignores `.rbxlx` and `build/`, so no
 self-referential artifact commit is required.
 
+The focused automated gate is `npm run g2e:provenance:test`, and `npm run validate` invokes it. The
+eight cases cover Git-derived identity, explicit-override precedence, malformed and uppercase
+overrides, absent Git metadata, identical-input determinism, changed output for changed provenance,
+metadata exclusion, and absence of the historical fallback.
+
 ## Bounded acceptance controls
 
 The acceptance-only code now implements all six harness groups identified by the remaining-gap
