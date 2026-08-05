@@ -21,6 +21,12 @@
             "Value": "0.3"
           }
         },
+        "ExecutionMode": {
+          "$className": "StringValue",
+          "$properties": {
+            "Value": "production"
+          }
+        },
         "ExpectedManifestHash": {
           "$className": "StringValue",
           "$properties": {

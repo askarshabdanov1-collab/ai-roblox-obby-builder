@@ -1,5 +1,5 @@
 {
-  "name": "AIObbyBuilderG2eStudioAcceptance",
+  "name": "AIObbyBuilderDefaultStudioAcceptance",
   "tree": {
     "$className": "DataModel",
     "ReplicatedStorage": {
@@ -8,6 +8,9 @@
       }
     },
     "ServerScriptService": {
+      "ObbyBootstrap": {
+        "$path": "src/ServerScriptService/ObbyBootstrap.server.luau"
+      },
       "G2eAcceptanceBootstrap": {
         "$path": "g2e/G2eAcceptanceBootstrap.server.luau"
       },
@@ -57,6 +60,9 @@
       },
       "GeneratedManifests": {
         "$className": "Folder",
+        "VerticalSliceManifest": {
+          "$path": "generated/VerticalSliceManifest.luau"
+        },
         "G2ReferenceManifestV03": {
           "$path": "generated/G2ReferenceManifestV03.luau"
         }
@@ -66,9 +72,6 @@
       },
       "G2eManifests": {
         "$className": "Folder",
-        "G2ReferenceManifestV03": {
-          "$path": "generated/G2ReferenceManifestV03.luau"
-        },
         "G2Maximum50ManifestV03": {
           "$path": "generated/G2Maximum50ManifestV03.luau"
         },

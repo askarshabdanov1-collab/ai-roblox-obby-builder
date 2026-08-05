@@ -2,11 +2,12 @@
 
 This is the required engine-dependent G2 acceptance protocol. It supplements Luau tests; it is not
 Studio automation and must not be reported as passed until a human has performed and recorded every
-applicable observation. The [2026-07-31 Studio evidence](./g2e-studio-evidence-2026-07-31.md)
-records the reference, `maximum-50`, zero-checkpoint, failure-boundary, and Phase 0 pre-cutover runs
-as historical executions. The provenance-fixed artifact and bounded controls are ready for the
-exact seven-session rerun in [the final rerun sheet](./g2e-final-studio-rerun.md). Pre-cutover G2e
-remains incomplete until those human sessions and their complete evidence package are reviewed.
+applicable observation. The accepted pre-cutover package under `docs/generator/evidence` records the
+reference, `maximum-50`, zero-checkpoint, failure-boundary, and Phase 0 executions against the
+isolated harness. The default cutover requires a distinct seven-session rerun through the official
+default-runtime acceptance mode in [the final rerun sheet](./g2e-final-studio-rerun.md).
+Post-default-cutover G2e remains incomplete until those human sessions and their complete evidence
+package are reviewed.
 
 ## Measurement environment
 
@@ -28,31 +29,50 @@ observations.
 
 ## Build protocol
 
-1. Run `npm ci`, `npm run g2:fixtures:check`, `npm run validate`, and
-   `npm run roblox:g2e:build`.
-2. For pre-cutover collection, open the produced G2 smoke place, not the then-active `0.2` default
-   place.
-3. Confirm no scene exists before the test bootstrap invokes the opt-in `0.3` builder.
-4. Run one cold reference build after opening the place.
-5. Run five same-manifest reference rebuilds in the same server.
-6. Replace reference with the distinct valid replacement fixture, then replace back.
-7. Start a fresh server and run one cold `maximum-50` build plus five repeated same-manifest
-   rebuilds.
-8. Perform the two-player behavior procedure for the reference and zero-checkpoint fixtures.
-9. Run every test-only failure injection in a separate fresh server and confirm the previous scene
-   result specified by the transaction matrix.
-10. Rerun the existing Phase 0 Studio smoke unchanged as the `0.2` regression oracle.
+Run `npm ci`, `npm run g2:fixtures:check`, and `npm run validate` before either build below.
 
-The accepted pre-cutover evidence records that isolated-harness path. After the default cutover, a
-separate Studio rerun must explicitly exercise the `0.3` selection built from
-`roblox/default.project.json`; this cutover PR does not perform or complete that rerun.
+### Production default-place diagnostic
+
+`npm run roblox:build` builds `roblox/default.project.json` as `build/AIObbyBuilder.rbxlx` with
+`RuntimeConfiguration.Version = "0.3"` and `ExecutionMode = "production"`. Opening that place is a
+production diagnostic only: `ObbyBootstrap` automatically builds the accepted reference scene and
+the project does not map or activate the G2e acceptance harness. A successful diagnostic cannot be
+reported as post-cutover Studio acceptance.
+
+### Post-default-cutover acceptance build
+
+Run `npm run roblox:default-acceptance:build` and open
+`build/AIObbyBuilderDefaultStudioAcceptance.rbxlx`. The committed
+`roblox/default-studio-acceptance.project.json` retains the production default project's
+`ObbyBootstrap`, complete `ObbyRuntime` mapping, `GeneratedManifests` mapping, SceneManifest `0.3`
+selection, accepted reference module, and accepted manifest hash. Its only runtime selection change
+is `ExecutionMode = "studio-acceptance"`; it also maps the bounded G2e harness and additional
+session fixtures. The shared fail-closed selector prevents `ObbyBootstrap` from building
+automatically, after which the harness exposes `G2eControl` and emits the zero-root precondition.
+
+This is the official post-cutover artifact. Do not insert scripts manually and do not substitute
+`roblox/g2e-smoke.project.json`. That isolated project remains only as the preserved pre-cutover
+artifact path.
+
+For the official artifact:
+
+1. Confirm no scene exists when the controls-ready marker appears.
+2. Run one cold reference build after opening the place.
+3. Run five same-manifest reference rebuilds in the same server.
+4. Replace reference with the distinct valid replacement fixture, then replace back.
+5. Start a fresh server and run one cold `maximum-50` build plus five repeated same-manifest
+   rebuilds.
+6. Perform the two-player behavior procedure for the reference and zero-checkpoint fixtures.
+7. Run every test-only failure injection in a separate fresh server and confirm the previous scene
+   result specified by the transaction matrix.
+8. Rerun the existing Phase 0 Studio smoke unchanged as the `0.2` regression oracle.
 
 Cold means the first runtime build after opening a fresh Studio server session. Repeated means the
 same valid manifest is rebuilt with a new runtime generation token without restarting that server.
 The bootstrap must expose `G2eControl` while `[G2 precondition]` reports zero active roots; it must
 not build reference automatically.
 
-`npm run roblox:g2e:build` embeds deterministic source provenance before Rojo runs. An explicitly
+Both G2e build commands embed deterministic source provenance before Rojo runs. An explicitly
 supplied `G2E_REPOSITORY_COMMIT` takes precedence over Git and represents the reviewed release/source
 commit. Without the override, the build uses `git rev-parse HEAD^{commit}`. Both paths require
 exactly 40 lowercase hexadecimal characters and fail closed when missing or malformed. Studio does
@@ -237,11 +257,8 @@ Output, and exact pass/fail checklist to the relevant PR. Manual Studio executio
 G2 runtime acceptance and must be repeated after the final default cutover. A procedure document or
 successful Luau test is not a substitute for execution.
 
-The [2026-07-31 Studio evidence](./g2e-studio-evidence-2026-07-31.md) identifies the implementation
-commit, fixture manifest hash, built artifact and its SHA-256, supplied Studio/OS environment, and
-the machine-emitted, manual, and harness-limitation evidence separately. The required pre-cutover
-build, gameplay, failure-boundary, and Phase 0 sequences now have supplied completion evidence, but
-missing environment fields, complete fixed-schema cold/repeated measurement and Output records, and
-the remaining functional observations keep that historical artifact incomplete. The repaired
-artifact identity and exact pending commands are in `g2e-final-studio-rerun.md`. The required
-post-cutover rerun remains future work.
+The accepted pre-cutover evidence identifies the implementation commit, fixture hashes, built
+artifact and SHA-256, Studio/OS environment, complete bounded records, observations, Output, and
+provenance. It remains historical evidence for the isolated project and is not evidence for the
+default selector. The official post-cutover artifact identity and exact pending commands are in
+`g2e-final-studio-rerun.md`; that rerun remains unexecuted.
