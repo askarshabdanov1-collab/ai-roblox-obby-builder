@@ -5,29 +5,32 @@ does not widen, reinterpret, or migrate `0.2` records.
 
 ## Compatibility matrix
 
-| Concern                        | SceneManifest `0.2`                                          | SceneManifest `0.3` G2 policy                                                                 |
-| ------------------------------ | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| Active status after G2d        | Active default                                               | Opt-in library only; not selected by bootstrap                                                |
-| Manifest transport             | `roblox/generated/VerticalSliceManifest.luau`                | G1d/G2 fixture; not selected by the default project                                           |
-| Validator                      | `ManifestValidator.luau`                                     | `ManifestValidatorV03.luau` with G2b parity implemented                                       |
-| Builder                        | Existing `Builder`/`SceneBuilderCore`                        | `BuilderV03` plus G2c core; no production caller                                              |
-| Gameplay session               | Existing `PlayerProgress` and runtime                        | `RuntimeSessionV03`, implemented but not default                                              |
-| Owner marker                   | `AIObbyBuilder/0.2`                                          | `AIObbyBuilder/0.3`                                                                           |
-| Stage/checkpoint bounds        | Legacy maximum 20; checkpoint required                       | 5–50 stages; zero checkpoints allowed                                                         |
-| Version selection              | Current bootstrap is implicitly `0.2`                        | Future explicit server-lifetime selection                                                     |
-| Cross-version coercion         | Rejected                                                     | Rejected                                                                                      |
-| Live cross-version replacement | Not supported                                                | Prohibited                                                                                    |
-| Studio evidence                | [Phase 0 regression recorded](./phase0-smoke-2026-07-31.txt) | [Pre-cutover sequences completed](./g2e-studio-evidence-2026-07-31.md); evidence gaps pending |
+| Concern                        | SceneManifest `0.2` rollback                                 | SceneManifest `0.3` default after cutover                                                                 |
+| ------------------------------ | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| Active status                  | Committed rollback selection                                 | Active default                                                                                            |
+| Manifest transport             | `roblox/generated/VerticalSliceManifest.luau`                | `roblox/generated/G2ReferenceManifestV03.luau`                                                            |
+| Validator                      | `ManifestValidator.luau`                                     | `ManifestValidatorV03.luau`                                                                               |
+| Builder                        | Existing `Builder`/`SceneBuilderCore`                        | `BuilderV03` plus G2c core                                                                                |
+| Gameplay session               | Existing `PlayerProgress` and runtime                        | `RuntimeSessionV03`                                                                                       |
+| Owner marker                   | `AIObbyBuilder/0.2`                                          | `AIObbyBuilder/0.3`                                                                                       |
+| Stage/checkpoint bounds        | Legacy maximum 20; checkpoint required                       | 5–50 stages; zero checkpoints allowed                                                                     |
+| Version selection              | `RuntimeConfiguration.Version = "0.2"`                       | `RuntimeConfiguration.Version = "0.3"`                                                                    |
+| Cross-version coercion         | Rejected                                                     | Rejected                                                                                                  |
+| Live cross-version replacement | Not supported                                                | Prohibited                                                                                                |
+| Studio evidence                | [Phase 0 regression recorded](./phase0-smoke-2026-07-31.txt) | [Pre-cutover acceptance recorded](./evidence/g2e-final-observation-sheet.txt); post-cutover rerun pending |
 
 ## Server-lifetime selection
 
-One server runs one runtime version. The future selector must be explicit, fail closed on an unknown
-value, and load only one builder. Running both builders would duplicate `Players` and
-`CharacterAdded` bindings and is prohibited. Changing versions requires a fresh server.
+One server runs one runtime version. `roblox/default.project.json` commits the explicit
+`RuntimeConfiguration.Version` selector and both versioned manifest transports. The bootstrap reads
+the selector once, accepts only `0.2` or `0.3`, and requires only the selected builder. An unknown
+value fails closed before either builder is loaded. Running both builders would duplicate `Players`
+and `CharacterAdded` bindings and is prohibited. Changing versions requires a configuration change,
+a rebuilt place, and a fresh server.
 
-The default project and `ObbyBootstrap.server.luau` remain unchanged throughout G2a–G2e. A final,
-separately reviewed cutover may select `0.3` only after automated validation and manual Studio
-acceptance. It must retain a documented way to select `0.2`.
+The separately reviewed default cutover selects `0.3` after automated validation and the accepted
+pre-cutover Studio evidence. It does not complete or claim the post-default-cutover Studio rerun
+required by `g2-studio-acceptance.md` and `g2e-final-studio-rerun.md`.
 
 ## Ownership rules
 
@@ -39,9 +42,11 @@ acceptance. It must retain a documented way to select `0.2`.
 ## Rollback procedure
 
 1. Stop admitting new servers on the `0.3` configuration.
-2. Select the committed `0.2` runtime configuration.
+2. In `roblox/default.project.json`, set the `RuntimeConfiguration.Version` StringValue property from
+   `"0.3"` to `"0.2"`. Leave both versioned manifest mappings and the bootstrap unchanged.
 3. Start a fresh server; do not replace a live `0.3` root with `0.2`.
-4. Load `roblox/generated/VerticalSliceManifest.luau` through the existing bootstrap.
+4. Rebuild the default place. The bootstrap selects `Builder` and loads
+   `roblox/generated/VerticalSliceManifest.luau`; it does not load `BuilderV03`.
 5. Run `npm run validate`, build `roblox/smoke.project.json`, and execute the Phase 0 Studio smoke
    procedure if the rollback follows a relevant Roblox/runtime change.
 6. Confirm the root is owned by `AIObbyBuilder/0.2` and no `0.3` runtime session is present.
