@@ -19,19 +19,27 @@ Command Bar block sampled `Player.Character` before a scheduler resume made a ch
 available. The following assert correctly stopped the block before placement observation. This is
 also historical failed-session evidence and completes no checkbox.
 
+The third Session 1 attempt against superseded artifact
+`886AC77250805E7088B48729391B5336765AA6B444877DBC4216AFDC8DB305BC` proved the precondition and
+all eight reference-sequence builds. It then proved that the first value returned by
+`Players:GetPlayers()` had a non-nil `Character` but no direct `BasePart` after 120 scheduler
+resumes. That artifact did not inspect player 2, so the historical Output cannot establish player
+2's readiness or whether the first value was a Studio placeholder. It completes no checkbox.
+
 ## Fixed artifact identity
 
 | Field                         | Required value                                                                           |
 | ----------------------------- | ---------------------------------------------------------------------------------------- |
 | Artifact path                 | `C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder\build\G2eStudioAcceptance.rbxlx` |
-| Artifact SHA-256              | `886AC77250805E7088B48729391B5336765AA6B444877DBC4216AFDC8DB305BC`                       |
-| Embedded `repositoryCommit`   | `685813a2265165a46dfe4d0b686934abf285ce23`                                               |
+| Artifact SHA-256              | `D1C689A2D18B715BA42BF9475B9D6E78AB31D8AE5C4BB3CA26362BB9AA39849A`                       |
+| Embedded `repositoryCommit`   | `cbe5a5c43debe21cb144829cb704c6b378d1e80a`                                               |
 | Runtime implementation commit | `1379849686525d88c71245626e0360a00f1d48a9`                                               |
 | Provenance implementation     | `2046121c5e5505397601ac7c6630a9fea9f0831b`                                               |
 | Harness implementation        | `70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`                                               |
 | Placement-observer repair     | `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`                                               |
 | Stale-character readiness     | `56c2b51291b8e918a1c9559277a2590e18ee06af`                                               |
 | Stale-probe BasePart guard    | `685813a2265165a46dfe4d0b686934abf285ce23`                                               |
+| Deterministic ready selection | `cbe5a5c43debe21cb144829cb704c6b378d1e80a`                                               |
 | Measurement schema            | `g2-studio-measurement-v2`                                                               |
 | Control-result schema         | `g2e-control-result-v1`                                                                  |
 
@@ -78,17 +86,32 @@ records do not replace complete Output.
   local control = game:GetService("ServerStorage").G2eControl
   local result = control.RunReferenceColdAndReplacementSequence:Invoke()
   assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
+  ```
+
+- **Avatar-readiness actions:**
+  1. Stop and visually confirm that both Studio client windows show their avatars as present and
+     fully formed after the replacement sequence.
+  2. If either avatar is absent or visibly incomplete, do not run another command. Preserve Output
+     and invalidate the session.
+  3. When both avatars are visible, run this separate server Command Bar block exactly once:
+
+  ```lua
+  local control = game:GetService("ServerStorage").G2eControl
+  local result = control.CheckPlayerCharacterReadiness:Invoke()
+  assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
   result = control.VerifyStaleHazardCallback:Invoke()
   assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
   result = control.ObservePlayerPlacement:Invoke("initial")
   assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
   ```
 
-  `VerifyStaleHazardCallback` independently waits at most 120 scheduler resumes for Player A's
-  active character BasePart before exercising the retired session callback. It uses no timed sleep.
-  Exhaustion fails closed as `g2e-stale-character-unavailable` at `player.Character` or
-  `g2e-stale-character-part-unavailable` at `player.Character.BasePart`. A PASS still requires one
-  stale-generation rejection, zero lethal actions, and no current-scene mutation.
+  `CheckPlayerCharacterReadiness` immediately requires exactly two connected players and a real
+  character BasePart for each. `VerifyStaleHazardCallback` independently scans every player on each
+  of at most 120 scheduler resumes, sorts candidates by numeric `UserId`, and selects the first ready
+  candidate in that stable order. Neither control emits UserIds or hierarchy data. Failures
+  distinguish player count, no Character, no BasePart, ambiguous/mixed no-ready state, and invalid
+  player identity. A PASS still requires one stale-generation rejection, zero lethal actions, and
+  no current-scene mutation.
 
   `ObservePlayerPlacement("initial")` waits a maximum of 120 scheduler resumes for the two runtime
   placement callbacks. It compares the CFrames captured immediately when the final active

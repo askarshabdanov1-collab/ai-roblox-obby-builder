@@ -14,6 +14,8 @@ Stale-character readiness repair commit: `56c2b51291b8e918a1c9559277a2590e18ee06
 
 Stale-probe BasePart guard commit: `685813a2265165a46dfe4d0b686934abf285ce23`
 
+Deterministic ready-player repair commit: `cbe5a5c43debe21cb144829cb704c6b378d1e80a`
+
 The documentation commit is the commit containing this file and is intentionally obtained from Git
 history rather than self-referenced here.
 
@@ -116,21 +118,36 @@ one stale rejection, zero lethal actions, and no current-scene mutation.
 The Studio adapter accepts only `FindFirstChildWhichIsA("BasePart")`; a non-Part child merely named
 `HumanoidRootPart` cannot satisfy readiness.
 
+### Session 1 deterministic ready-player repair
+
+The third Session 1 attempt proved the precondition and reference sequence, then recorded that
+`Players:GetPlayers()[1]` had a `Character` but no BasePart after the bound. The old diagnostic did
+not inspect player 2, so it cannot establish player 2 readiness or identify the first player as a
+Studio placeholder. No G2e project setting disables character autoload or appearance loading.
+
+The acceptance-only repair scans all connected players on every scheduler resume and sorts by
+numeric `UserId` before selecting the first ready candidate. UserIds remain internal; bounded Output
+contains only stable slot and readiness counts. Failures distinguish zero players, all missing
+Character, all missing BasePart, mixed no-ready state, and invalid or ambiguous player identity. An
+immediate `CheckPlayerCharacterReadiness` control requires both Studio players to have real
+BaseParts. The operator procedure separates the sequence from that handshake and requires visual
+confirmation in both client windows before stale verification. Production runtime remains unchanged.
+
 ## Rebuilt artifact identity
 
 The reviewed harness commit was built from a clean working tree with:
 
 ```powershell
-$env:G2E_REPOSITORY_COMMIT = "685813a2265165a46dfe4d0b686934abf285ce23"
+$env:G2E_REPOSITORY_COMMIT = "cbe5a5c43debe21cb144829cb704c6b378d1e80a"
 npm run roblox:g2e:build
 ```
 
 | Field                      | Value                                                              |
 | -------------------------- | ------------------------------------------------------------------ |
 | Artifact                   | `build/G2eStudioAcceptance.rbxlx`                                  |
-| Size                       | `2,809,583` bytes                                                  |
-| SHA-256                    | `886AC77250805E7088B48729391B5336765AA6B444877DBC4216AFDC8DB305BC` |
-| Embedded repository commit | `685813a2265165a46dfe4d0b686934abf285ce23`                         |
+| Size                       | `2,816,523` bytes                                                  |
+| SHA-256                    | `D1C689A2D18B715BA42BF9475B9D6E78AB31D8AE5C4BB3CA26362BB9AA39849A` |
+| Embedded repository commit | `cbe5a5c43debe21cb144829cb704c6b378d1e80a`                         |
 | Provenance schema          | `g2e-build-provenance-v1`                                          |
 | Rojo project               | `roblox/g2e-smoke.project.json`                                    |
 | Working tree before build  | Tracked files clean; preserved untracked evidence excluded         |

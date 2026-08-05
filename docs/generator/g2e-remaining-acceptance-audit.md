@@ -39,13 +39,22 @@ character before the scheduler had made a BasePart available. Readiness repair
 `56c2b51291b8e918a1c9559277a2590e18ee06af` adds a 120-resume acceptance-only bound with typed
 missing-character and missing-Part failures; it does not weaken the stale assertion or change
 production runtime behavior. Commit `685813a2265165a46dfe4d0b686934abf285ce23` additionally requires
-the probe to be an actual `BasePart`. The current artifact is SHA-256
+the probe to be an actual `BasePart`. That superseded readiness artifact is SHA-256
 `886AC77250805E7088B48729391B5336765AA6B444877DBC4216AFDC8DB305BC`, size `2,809,583` bytes, with
 embedded `repositoryCommit=685813a2265165a46dfe4d0b686934abf285ce23`.
 
+The third Session 1 attempt proved that `Players:GetPlayers()[1]` had a `Character` but no BasePart
+after the bound. Its artifact never inspected player 2, so no stronger avatar-state conclusion is
+valid. Deterministic-selection repair `cbe5a5c43debe21cb144829cb704c6b378d1e80a` scans every player,
+sorts candidates internally by numeric `UserId`, exposes no IDs, and adds an immediate two-avatar
+readiness handshake. The operator sequence is now split around visual confirmation of both clients.
+The current artifact is SHA-256
+`D1C689A2D18B715BA42BF9475B9D6E78AB31D8AE5C4BB3CA26362BB9AA39849A`, size `2,816,523` bytes, with
+embedded `repositoryCommit=cbe5a5c43debe21cb144829cb704c6b378d1e80a`.
+
 The current recommendation remains `READY_FOR_FINAL_EVIDENCE_COLLECTION`. Session 1 must restart
 from a fresh server with the replacement artifact, so exactly seven fresh Studio sessions remain.
-No failed or repeated line from either superseded attempt completes a requirement. The historical
+No failed or repeated line from any superseded attempt completes a requirement. The historical
 classification table and historical Output remain unchanged.
 
 The audit inspected the committed Studio protocols and evidence; Phase 0 smoke procedure and

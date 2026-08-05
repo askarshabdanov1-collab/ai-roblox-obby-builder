@@ -93,6 +93,16 @@ Run the following from the server Command Bar after the controls-ready message:
 local control = game:GetService("ServerStorage").G2eControl
 local result = control.RunReferenceColdAndReplacementSequence:Invoke()
 assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
+```
+
+After the sequence, confirm in both client windows that both avatars are visible and fully formed.
+If either is absent or incomplete, preserve Output and invalidate the session. Once both are visible,
+run this separate server Command Bar block exactly once:
+
+```lua
+local control = game:GetService("ServerStorage").G2eControl
+local result = control.CheckPlayerCharacterReadiness:Invoke()
+assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
 result = control.VerifyStaleHazardCallback:Invoke()
 assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
 result = control.ObservePlayerPlacement:Invoke("initial")
@@ -101,11 +111,13 @@ result = control.InspectHazard:Invoke("Stage04Hazard001")
 assert(result.status == "PASS", result.diagnosticCode .. ":" .. result.diagnosticField)
 ```
 
-The stale-hazard control waits at most 120 scheduler resumes for Player A's character BasePart; it
-does not use an arbitrary wall-clock sleep. Exhaustion returns a typed FAIL distinguishing a missing
-`player.Character` from a character with no `BasePart`. A successful probe still resolves a real
-player-character touch and must increment the retired session's stale rejection exactly once with
-zero lethal action or current-scene mutation.
+The readiness handshake immediately requires exactly two connected players and a real character
+BasePart for each. The stale-hazard control then scans every player for at most 120 scheduler
+resumes, sorts candidates by numeric `UserId`, and selects the first ready candidate in that stable
+order. It emits counts/slots only, never UserIds or hierarchy data. Exhaustion returns typed FAIL
+records distinguishing no Character, no BasePart, no ready player, invalid identity, and wrong
+player count. A successful probe still resolves a real player-character touch and must increment the
+retired session's stale rejection exactly once with zero lethal action or current-scene mutation.
 
 The placement observer emits `g2e-placement-observation-v2`. It waits for the active session's
 deferred placement callbacks and records each HumanoidRootPart CFrame immediately after the real
