@@ -1,0 +1,19 @@
+G2e Studio Acceptance Evidence
+Session: 1
+Fixture: reference
+Role: Client 2 / Player B
+Artifact SHA-256: D1C689A2D18B715BA42BF9475B9D6E78AB31D8AE5C4BB3CA26362BB9AA39849A
+Embedded repository commit: cbe5a5c43debe21cb144829cb704c6b378d1e80a
+
+Client 2 Output was empty for the complete Session 1 run.
+
+Manual observations:
+- Player B character was visible and fully formed before readiness verification.
+- Player B did not touch a checkpoint before the hazard test.
+- Player B touched Stage04Hazard001 and died.
+- Player B respawned at the initial Spawn.
+- Player B remained unfinished while Player A completed Finish.
+- Player B later touched Finish once.
+- Server-side ObserveFinishIsolation("both-finished") returned PASS.
+
+Evidence status: PASS

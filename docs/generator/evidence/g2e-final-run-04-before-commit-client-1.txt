@@ -1,0 +1,16 @@
+G2e Studio Acceptance Evidence
+Session: 4
+Boundary: before-commit
+Role: Client 1
+Artifact SHA-256: D1C689A2D18B715BA42BF9475B9D6E78AB31D8AE5C4BB3CA26362BB9AA39849A
+Embedded repository commit: cbe5a5c43debe21cb144829cb704c6b378d1e80a
+
+Client 1 Output was empty for the complete Session 4 run.
+
+Server-side RunFailureBoundarySequence("before-commit") returned PASS.
+The injected failure code was builder-injected-failure.
+The previously committed reference root and session remained active.
+Exactly one active root remained after the refused build.
+The runtime measurement reported zero errors, zero warnings, and zero orphans.
+
+Evidence status: PASS

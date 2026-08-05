@@ -1,0 +1,25 @@
+﻿G2e Studio Acceptance Artifact Identity
+
+Artifact path:
+C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder\build\G2eStudioAcceptance.rbxlx
+
+Artifact size:
+2816523 bytes
+
+Artifact SHA-256:
+D1C689A2D18B715BA42BF9475B9D6E78AB31D8AE5C4BB3CA26362BB9AA39849A
+
+Embedded repository commit:
+cbe5a5c43debe21cb144829cb704c6b378d1e80a
+
+Evidence collection branch:
+feat/phase-g2e-studio-acceptance
+
+Evidence collection status:
+Seven fresh-server Studio sessions completed.
+
+Measurement schema:
+g2-studio-measurement-v2
+
+Control-result schema:
+g2e-control-result-v1
