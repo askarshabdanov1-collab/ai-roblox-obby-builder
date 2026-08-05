@@ -5,6 +5,7 @@ local Players = game:GetService("Players")
 
 local BuilderV03 = require(ReplicatedStorage.ObbyRuntime.BuilderV03)
 local G2eAcceptanceHarness = require(ServerScriptService.G2eAcceptanceHarness)
+local G2eCharacterPartReadinessV1 = require(ServerScriptService.G2eCharacterPartReadinessV1)
 local G2eControlProtocol = require(ServerScriptService.G2eControlProtocol)
 local G2eBuildProvenance = require(ServerStorage.G2eBuildProvenance)
 
@@ -183,10 +184,14 @@ function api:verifyStaleHazardCallback()
     assert(part ~= nil, "previous G2e hazard Part is unavailable")
     local players = Players:GetPlayers()
     local player = players[1]
-    local character = player and player.Character or nil
-    local hit = character
-        and (character:FindFirstChild("HumanoidRootPart") or character:FindFirstChildWhichIsA("BasePart"))
-    assert(hit ~= nil, "an active player character Part is required for stale-callback verification")
+    assert(player ~= nil, "an active player is required for stale-callback verification")
+    local readiness, readinessFailure = G2eCharacterPartReadinessV1.await(player, function(character)
+        return character:FindFirstChild("HumanoidRootPart") or character:FindFirstChildWhichIsA("BasePart")
+    end, task.wait)
+    if readiness == nil then
+        return nil, readinessFailure
+    end
+    local hit = readiness.hit
     local before = self.previous.session:acceptanceSnapshot()
     local accepted = self.previous.session:_handleTouch(part, record, hit)
     local after = self.previous.session:acceptanceSnapshot()
@@ -201,7 +206,9 @@ function api:verifyStaleHazardCallback()
         objectId = record.id,
         staleCallbackRejections = rejectionDelta,
         staleAcceptedActions = lethalDelta,
-    })
+        characterWaitIterations = readiness.waitIterations,
+    }),
+        nil
 end
 
 function api:runReferenceColdAndReplacementSequence()

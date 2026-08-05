@@ -2,6 +2,7 @@ local G2eObservationV03 = require("../g2e/G2eObservationV03")
 local G2eGameplayObservationV03 = require("../g2e/G2eGameplayObservationV03")
 local G2eControlProtocol = require("../g2e/G2eControlProtocol")
 local G2eAcceptanceRecordsV1 = require("../g2e/G2eAcceptanceRecordsV1")
+local G2eCharacterPartReadinessV1 = require("../g2e/G2eCharacterPartReadinessV1")
 local G2ePlacementCaptureV1 = require("../g2e/G2ePlacementCaptureV1")
 local referenceManifest = require("../generated/G2ReferenceManifestV03")
 local boundary20Manifest = require("../generated/G2Boundary20ManifestV03")
@@ -82,6 +83,59 @@ local function mutableCopy(value)
 end
 
 return function(test, expect)
+    test("waits for a character that is not yet available", function()
+        local player = { Character = nil }
+        local character = { part = "ready-part" }
+        local resumes = 0
+        local receipt, failure = G2eCharacterPartReadinessV1.await(player, function(value)
+            return value.part
+        end, function()
+            resumes += 1
+            if resumes == 2 then
+                player.Character = character
+            end
+        end, 3)
+
+        expect(failure == nil, "readiness failed after the character became available")
+        expect(receipt.character == character and receipt.hit == "ready-part", "ready character Part changed")
+        expect(receipt.waitIterations == 2, "character readiness wait count changed")
+    end)
+
+    test("waits for an existing character to receive a BasePart", function()
+        local character = { part = nil }
+        local player = { Character = character }
+        local receipt, failure = G2eCharacterPartReadinessV1.await(player, function(value)
+            return value.part
+        end, function()
+            character.part = "delayed-part"
+        end, 2)
+
+        expect(failure == nil, "readiness failed after the BasePart became available")
+        expect(receipt.hit == "delayed-part" and receipt.waitIterations == 1, "delayed BasePart was not bounded")
+    end)
+
+    test("fails closed with a typed diagnostic when the character never becomes available", function()
+        local receipt, failure = G2eCharacterPartReadinessV1.await({ Character = nil }, function()
+            return nil
+        end, function() end, 2)
+
+        expect(receipt == nil, "missing character unexpectedly passed readiness")
+        expect(failure.code == "g2e-stale-character-unavailable", "missing-character code changed")
+        expect(failure.field == "player.Character", "missing-character field changed")
+        expect(failure.waitIterations == 2, "missing-character wait was not exhausted")
+    end)
+
+    test("fails closed with a typed diagnostic when a character never receives a BasePart", function()
+        local receipt, failure = G2eCharacterPartReadinessV1.await({ Character = {} }, function()
+            return nil
+        end, function() end, 2)
+
+        expect(receipt == nil, "partless character unexpectedly passed readiness")
+        expect(failure.code == "g2e-stale-character-part-unavailable", "missing-Part code changed")
+        expect(failure.field == "player.Character.BasePart", "missing-Part field changed")
+        expect(failure.waitIterations == 2, "missing-Part wait was not exhausted")
+    end)
+
     test("captures exact placement before physics settling or player movement", function()
         local player = { id = "player-a" }
         local character = { observedCFrame = "studio-spawn", checkpointOrder = 0 }

@@ -710,7 +710,15 @@ function G2eAcceptanceHarness.bindControl(api)
             return G2eControlProtocol.success("InspectHazard", { fixtureId = api.currentFixtureId })
         end,
         VerifyStaleHazardCallback = function()
-            api:verifyStaleHazardCallback()
+            local receipt, failure = api:verifyStaleHazardCallback()
+            if receipt == nil then
+                return G2eControlProtocol.failure(
+                    "VerifyStaleHazardCallback",
+                    failure.code,
+                    failure.field,
+                    failure.message
+                )
+            end
             return G2eControlProtocol.success("VerifyStaleHazardCallback", { fixtureId = api.currentFixtureId })
         end,
         ObservePlayerPlacement = function(phase)

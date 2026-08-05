@@ -137,6 +137,49 @@ return function(test, expect)
         expect(harness.tracker.activeConnections == second.session:connectionCount() + 3, "old connections leaked")
     end)
 
+    test("rejects a direct stale hazard callback without current-scene mutation", function()
+        local harness = G2RuntimeHarnessV03.new()
+        local player = harness:newPlayer(101)
+        local character = harness:newCharacter(player)
+        harness:addPlayer(player)
+        local builder = BuilderV03.new(harness.runtime)
+        local first = build(builder, reference)
+        local hazardRecord = nil
+        for _, record in ipairs(first.session.candidate.plan.gameplayRecords) do
+            if record.role == "kill" then
+                hazardRecord = record
+                break
+            end
+        end
+        expect(hazardRecord ~= nil, "reference hazard record is unavailable")
+        local hazardPart = first.session.candidate.partById[hazardRecord.id]
+        local second = build(builder, replacement)
+        local currentRoot = second.root
+        local currentBefore = second.session:acceptanceSnapshot()
+        local staleBefore = first.session:acceptanceSnapshot()
+        local healthBefore = character.humanoid.Health
+
+        local accepted = first.session:_handleTouch(hazardPart, hazardRecord, harness:hit(player, character))
+
+        local currentAfter = second.session:acceptanceSnapshot()
+        local staleAfter = first.session:acceptanceSnapshot()
+        expect(accepted == false, "direct stale hazard callback was accepted")
+        expect(
+            staleAfter.staleCallbackRejections == staleBefore.staleCallbackRejections + 1,
+            "direct stale callback did not reach the generation rejection"
+        )
+        expect(staleAfter.lethalActions == staleBefore.lethalActions, "stale session performed a lethal action")
+        expect(character.humanoid.Health == healthBefore, "stale callback mutated the character")
+        expect(
+            builder:currentSession() == second.session and second.root == currentRoot,
+            "current scene identity changed"
+        )
+        expect(
+            currentAfter.lethalActions == currentBefore.lethalActions,
+            "stale callback mutated current acceptance state"
+        )
+    end)
+
     test("preserves ID-based progress across a same-manifest rebuild", function()
         local harness = G2RuntimeHarnessV03.new()
         local player = harness:newPlayer(101)

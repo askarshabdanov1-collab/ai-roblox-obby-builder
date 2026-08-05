@@ -20,6 +20,9 @@
       "G2eControlProtocol": {
         "$path": "g2e/G2eControlProtocol.luau"
       },
+      "G2eCharacterPartReadinessV1": {
+        "$path": "g2e/G2eCharacterPartReadinessV1.luau"
+      },
       "G2eObservationV03": {
         "$path": "g2e/G2eObservationV03.luau"
       },
