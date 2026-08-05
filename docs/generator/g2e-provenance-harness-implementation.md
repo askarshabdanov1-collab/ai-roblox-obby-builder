@@ -12,6 +12,8 @@ Placement-observer repair commit: `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`
 
 Stale-character readiness repair commit: `56c2b51291b8e918a1c9559277a2590e18ee06af`
 
+Stale-probe BasePart guard commit: `685813a2265165a46dfe4d0b686934abf285ce23`
+
 The documentation commit is the commit containing this file and is intentionally obtained from Git
 history rather than self-referenced here.
 
@@ -111,21 +113,24 @@ argument. Exhaustion returns `g2e-control-result-v1` FAIL with either
 `g2e-stale-character-part-unavailable`/`player.Character.BasePart`. The original assertion remains:
 one stale rejection, zero lethal actions, and no current-scene mutation.
 
+The Studio adapter accepts only `FindFirstChildWhichIsA("BasePart")`; a non-Part child merely named
+`HumanoidRootPart` cannot satisfy readiness.
+
 ## Rebuilt artifact identity
 
 The reviewed harness commit was built from a clean working tree with:
 
 ```powershell
-$env:G2E_REPOSITORY_COMMIT = "56c2b51291b8e918a1c9559277a2590e18ee06af"
+$env:G2E_REPOSITORY_COMMIT = "685813a2265165a46dfe4d0b686934abf285ce23"
 npm run roblox:g2e:build
 ```
 
 | Field                      | Value                                                              |
 | -------------------------- | ------------------------------------------------------------------ |
 | Artifact                   | `build/G2eStudioAcceptance.rbxlx`                                  |
-| Size                       | `2,809,631` bytes                                                  |
-| SHA-256                    | `4A6AC116F11DB2E4A36FEB6A51FE051F1D9DDC82921153A1A927AE8BBE776871` |
-| Embedded repository commit | `56c2b51291b8e918a1c9559277a2590e18ee06af`                         |
+| Size                       | `2,809,583` bytes                                                  |
+| SHA-256                    | `886AC77250805E7088B48729391B5336765AA6B444877DBC4216AFDC8DB305BC` |
+| Embedded repository commit | `685813a2265165a46dfe4d0b686934abf285ce23`                         |
 | Provenance schema          | `g2e-build-provenance-v1`                                          |
 | Rojo project               | `roblox/g2e-smoke.project.json`                                    |
 | Working tree before build  | Tracked files clean; preserved untracked evidence excluded         |

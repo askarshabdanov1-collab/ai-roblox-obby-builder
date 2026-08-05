@@ -24,13 +24,14 @@ also historical failed-session evidence and completes no checkbox.
 | Field                         | Required value                                                                           |
 | ----------------------------- | ---------------------------------------------------------------------------------------- |
 | Artifact path                 | `C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder\build\G2eStudioAcceptance.rbxlx` |
-| Artifact SHA-256              | `4A6AC116F11DB2E4A36FEB6A51FE051F1D9DDC82921153A1A927AE8BBE776871`                       |
-| Embedded `repositoryCommit`   | `56c2b51291b8e918a1c9559277a2590e18ee06af`                                               |
+| Artifact SHA-256              | `886AC77250805E7088B48729391B5336765AA6B444877DBC4216AFDC8DB305BC`                       |
+| Embedded `repositoryCommit`   | `685813a2265165a46dfe4d0b686934abf285ce23`                                               |
 | Runtime implementation commit | `1379849686525d88c71245626e0360a00f1d48a9`                                               |
 | Provenance implementation     | `2046121c5e5505397601ac7c6630a9fea9f0831b`                                               |
 | Harness implementation        | `70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`                                               |
 | Placement-observer repair     | `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`                                               |
 | Stale-character readiness     | `56c2b51291b8e918a1c9559277a2590e18ee06af`                                               |
+| Stale-probe BasePart guard    | `685813a2265165a46dfe4d0b686934abf285ce23`                                               |
 | Measurement schema            | `g2-studio-measurement-v2`                                                               |
 | Control-result schema         | `g2e-control-result-v1`                                                                  |
 
