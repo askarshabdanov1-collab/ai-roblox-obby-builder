@@ -30,7 +30,8 @@ observations.
 
 1. Run `npm ci`, `npm run g2:fixtures:check`, `npm run validate`, and
    `npm run roblox:g2e:build`.
-2. Open the produced G2 smoke place, not the active `0.2` default place.
+2. For pre-cutover collection, open the produced G2 smoke place, not the then-active `0.2` default
+   place.
 3. Confirm no scene exists before the test bootstrap invokes the opt-in `0.3` builder.
 4. Run one cold reference build after opening the place.
 5. Run five same-manifest reference rebuilds in the same server.
@@ -41,6 +42,10 @@ observations.
 9. Run every test-only failure injection in a separate fresh server and confirm the previous scene
    result specified by the transaction matrix.
 10. Rerun the existing Phase 0 Studio smoke unchanged as the `0.2` regression oracle.
+
+The accepted pre-cutover evidence records that isolated-harness path. After the default cutover, a
+separate Studio rerun must explicitly exercise the `0.3` selection built from
+`roblox/default.project.json`; this cutover PR does not perform or complete that rerun.
 
 Cold means the first runtime build after opening a fresh Studio server session. Repeated means the
 same valid manifest is rebuilt with a new runtime generation token without restarting that server.

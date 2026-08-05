@@ -13,10 +13,28 @@
       }
     },
     "ServerStorage": {
+      "RuntimeConfiguration": {
+        "$className": "Folder",
+        "Version": {
+          "$className": "StringValue",
+          "$properties": {
+            "Value": "0.3"
+          }
+        },
+        "ExpectedManifestHash": {
+          "$className": "StringValue",
+          "$properties": {
+            "Value": "sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146"
+          }
+        }
+      },
       "GeneratedManifests": {
         "$className": "Folder",
         "VerticalSliceManifest": {
           "$path": "generated/VerticalSliceManifest.luau"
+        },
+        "G2ReferenceManifestV03": {
+          "$path": "generated/G2ReferenceManifestV03.luau"
         }
       }
     }

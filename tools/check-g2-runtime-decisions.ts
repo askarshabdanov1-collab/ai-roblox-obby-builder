@@ -129,12 +129,33 @@ async function checkDecisions(): Promise<void> {
 
   const defaultProject = await readFile("roblox/default.project.json", "utf8");
   if (
+    !defaultProject.includes('"RuntimeConfiguration"') ||
+    !defaultProject.includes('"Value": "0.3"') ||
+    !defaultProject.includes(
+      "sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146",
+    ) ||
     !defaultProject.includes("VerticalSliceManifest") ||
-    defaultProject.includes("G1dReferenceManifest")
+    !defaultProject.includes("G2ReferenceManifestV03")
   )
     throw new Error(
-      "the active default project must remain on the 0.2 manifest in G2a",
+      "the active default project must select 0.3 and retain the 0.2 rollback manifest",
     );
+
+  const bootstrap = await readFile(
+    "roblox/src/ServerScriptService/ObbyBootstrap.server.luau",
+    "utf8",
+  );
+  for (const marker of [
+    'runtimeVersion == "0.2"',
+    'runtimeVersion == "0.3"',
+    "ObbyRuntime.Builder)",
+    "ObbyRuntime.BuilderV03)",
+    "runtimeConfiguration.ExpectedManifestHash.Value",
+    "unsupported SceneManifest runtime version",
+  ]) {
+    if (!bootstrap.includes(marker))
+      throw new Error(`the default runtime selector is missing: ${marker}`);
+  }
 
   console.log(
     `G2 runtime decisions complete (${Object.keys(documents).length} documents; authoritative transport matches G1d)`,
