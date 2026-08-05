@@ -29,7 +29,7 @@ export class G2eProvenanceError extends Error {
 }
 
 function validateCommit(value: string, source: G2eProvenanceSource): string {
-  const commit = value.trim();
+  const commit = source === "git" ? value.trim() : value;
   if (!COMMIT_PATTERN.test(commit)) {
     throw new G2eProvenanceError(
       source === "environment"

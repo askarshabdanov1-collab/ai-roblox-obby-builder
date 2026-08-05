@@ -28,8 +28,13 @@ describe("G2e artifact build provenance", () => {
     ).toEqual({ repositoryCommit: RELEASE_COMMIT, source: "environment" });
   });
 
-  it("rejects malformed and uppercase overrides", () => {
-    for (const override of ["abc", GIT_COMMIT.toUpperCase()]) {
+  it("rejects malformed, padded, and uppercase overrides", () => {
+    for (const override of [
+      "abc",
+      ` ${GIT_COMMIT}`,
+      `${GIT_COMMIT}\n`,
+      GIT_COMMIT.toUpperCase(),
+    ]) {
       expect(() => resolveG2eRepositoryCommit({ override })).toThrow(
         G2eProvenanceError,
       );
