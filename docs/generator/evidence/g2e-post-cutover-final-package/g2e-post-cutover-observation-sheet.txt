@@ -1,0 +1,94 @@
+﻿G2e Post-Default-Cutover Studio Acceptance Observation Sheet
+
+Artifact SHA-256:
+2C1079BFE3B53BD3A02A8DB99838C59E42C1A878853224D77D9AEF8EEAB14FFF
+
+Embedded repository commit:
+944a35af47e5cb234dcc4480c8a51ffa435e5fb4
+
+Expected reference manifest hash:
+sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146
+
+Session 1 - Reference two-player acceptance
+Status: PASS
+- Zero-root precondition passed.
+- Reference cold index 1 passed.
+- Repeated indices 1 through 5 passed.
+- Replacement indices 1 and 2 passed.
+- Both player Characters and BaseParts were ready.
+- Initial runtime placement matched Spawn for both players.
+- Stale Stage04 hazard callback was rejected.
+- Player A activated Checkpoint001.
+- Player A died on Stage04Hazard001 and respawned at Checkpoint001.
+- Player B acquired no checkpoint.
+- Player B died independently and respawned at Spawn.
+- Respawn placement observations passed.
+- Hazard inspection and gameplay observations passed.
+- Two lethal actions and two respawns were observed.
+- Finish state remained isolated and idempotent.
+- Progress and stale callback sequence passed.
+- Ownership refusal sequence passed.
+- Static fixture and part inspection sequence passed.
+- Both client Output files were empty.
+
+Session 2 - Maximum 50-stage acceptance
+Status: PASS
+- maximum-50 was the first build.
+- Cold index 1 and repeated indices 1 through 5 passed.
+- Exactly one active root remained after every build.
+- Errors, warnings, and orphans were zero.
+- Fifty stages and fifty zones were observed.
+- Client Output was empty.
+
+Session 3 - Zero-checkpoint two-player acceptance
+Status: PASS
+- minimum-zero-checkpoint cold index 1 passed.
+- Two independent deaths and respawns were observed.
+- Both players respawned at Spawn.
+- Internal checkpoint state remained clear.
+- Visible checkpoint attributes remained clear.
+- Both runtime placements exactly matched Spawn within tolerance.
+- Both client Output files were empty.
+
+Session 4 - Before-commit failure boundary
+Status: PASS
+- Cold reference index 1 passed.
+- Expected failure code was builder-injected-failure.
+- Previous root and runtime session remained active.
+- Exactly one active root remained.
+- Errors, warnings, and orphans were zero.
+- Client Output was empty.
+
+Session 5 - After-retire failure boundary
+Status: PASS
+- Cold reference index 1 passed.
+- Expected failure code was commit-injected-failure.
+- Previous root and runtime session remained active.
+- Exactly one active root remained.
+- Errors, warnings, and orphans were zero.
+- Client Output was empty.
+- A separate invalid attempt containing Roblox Studio CoreGui CreatorType errors is excluded and documented.
+
+Session 6 - After-publish failure boundary
+Status: PASS
+- Cold reference index 1 passed.
+- Expected failure code was commit-injected-failure.
+- Previous root and runtime session remained active.
+- Exactly one active root remained.
+- Errors, warnings, and orphans were zero.
+- Client Output was empty.
+
+Session 7 - Before-pointer failure boundary
+Status: PASS
+- Cold reference index 1 passed.
+- Expected failure code was commit-injected-failure.
+- Previous root and runtime session remained active.
+- Exactly one active root remained.
+- Errors, warnings, and orphans were zero.
+- Client Output was empty.
+
+Final observation:
+All seven required fresh-server post-default-cutover Studio sessions produced PASS control results.
+
+Scope and review note:
+This sheet records observed session results. Final post-default-cutover acceptance remains subject to review of the complete package, bounded JSONL, verbatim Output, identity, provenance, and SHA-256 index.

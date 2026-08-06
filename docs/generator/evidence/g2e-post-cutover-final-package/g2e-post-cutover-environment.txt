@@ -1,0 +1,61 @@
+﻿G2e Post-Default-Cutover Studio Acceptance Environment Record
+
+Evidence collection date:
+2026-08-06
+
+Operating system:
+Windows 10 Pro 10.0.19045 build 19045
+
+Roblox Studio version:
+0.732.0.7321040
+
+Repository path:
+C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder
+
+Evidence collection branch:
+main
+
+Artifact path:
+C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder\build\AIObbyBuilderDefaultStudioAcceptance.rbxlx
+
+Artifact size:
+2833254 bytes
+
+Artifact SHA-256:
+2C1079BFE3B53BD3A02A8DB99838C59E42C1A878853224D77D9AEF8EEAB14FFF
+
+Embedded repository commit:
+944a35af47e5cb234dcc4480c8a51ffa435e5fb4
+
+Runtime version:
+0.3
+
+Execution mode:
+studio-acceptance
+
+Expected reference manifest hash:
+sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146
+
+Measurement schema:
+g2-studio-measurement-v2
+
+Control-result schema:
+g2e-control-result-v1
+
+Studio test configuration:
+- Session 1: two players
+- Session 2: one player
+- Session 3: two players
+- Sessions 4 through 7: one player each
+
+Evidence summary:
+- Seven independent fresh-server post-default-cutover Studio sessions completed.
+- Sixteen canonical final run evidence files preserved.
+- Seven server Output files preserved.
+- Nine client Output files preserved; all nine are empty because no client Output was produced.
+- Invalid and aborted attempts are documented separately.
+- 89 bounded JSON records extracted from final server Output.
+- No final session reported an unexplained server or client Output error.
+
+Review status:
+Package generated for review. Final post-default-cutover PASS must not be claimed until package contents and hashes are reviewed.

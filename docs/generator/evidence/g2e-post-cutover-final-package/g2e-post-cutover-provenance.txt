@@ -1,0 +1,40 @@
+﻿G2e Post-Default-Cutover Studio Acceptance Provenance Statement
+
+The evidence package was collected from:
+C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder\build\AIObbyBuilderDefaultStudioAcceptance.rbxlx
+
+The tested artifact had SHA-256:
+2C1079BFE3B53BD3A02A8DB99838C59E42C1A878853224D77D9AEF8EEAB14FFF
+
+The artifact embedded repository commit:
+944a35af47e5cb234dcc4480c8a51ffa435e5fb4
+
+The runtime configuration was:
+- Runtime version 0.3
+- Execution mode studio-acceptance
+- Expected reference manifest hash sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146
+
+The final evidence collection consisted of seven independent fresh-server Roblox Studio sessions:
+1. Reference two-player functional and replacement acceptance.
+2. Maximum 50-stage cold and repeated acceptance.
+3. Zero-checkpoint two-player respawn acceptance.
+4. Before-commit failure-boundary acceptance.
+5. After-retire failure-boundary acceptance.
+6. After-publish failure-boundary acceptance.
+7. Before-pointer failure-boundary acceptance.
+
+Complete server Output was preserved in seven canonical server files.
+Every active client Output was preserved in nine canonical client files.
+All nine final client Output files are empty because no client-side Output was produced during those valid sessions.
+
+89 bounded JSON records were extracted verbatim into:
+g2e-post-cutover-bounded-records.jsonl
+
+SHA-256 hashes of the sixteen canonical final run evidence files and the aborted-session record were written to:
+g2e-post-cutover-output-sha256.txt
+
+Invalid, aborted, placeholder, duplicate, and superseded rerun files are excluded from the final package.
+The excluded attempts remain outside this package for diagnostic and audit purposes.
+
+All seven final sessions returned PASS control results.
+Final post-default-cutover PASS must not be claimed until this complete package is reviewed.

@@ -1,0 +1,37 @@
+﻿G2e Post-Default-Cutover Studio Acceptance Artifact Identity
+
+Artifact path:
+C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder\build\AIObbyBuilderDefaultStudioAcceptance.rbxlx
+
+Artifact size:
+2833254 bytes
+
+Artifact SHA-256:
+2C1079BFE3B53BD3A02A8DB99838C59E42C1A878853224D77D9AEF8EEAB14FFF
+
+Embedded repository commit:
+944a35af47e5cb234dcc4480c8a51ffa435e5fb4
+
+Evidence collection branch:
+main
+
+Runtime version:
+0.3
+
+Execution mode:
+studio-acceptance
+
+Expected reference manifest hash:
+sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146
+
+Measurement schema:
+g2-studio-measurement-v2
+
+Control-result schema:
+g2e-control-result-v1
+
+Evidence collection status:
+Seven required fresh-server post-default-cutover Studio sessions completed.
+
+Review status:
+Package generated for review. Final PASS is not claimed by this identity record.

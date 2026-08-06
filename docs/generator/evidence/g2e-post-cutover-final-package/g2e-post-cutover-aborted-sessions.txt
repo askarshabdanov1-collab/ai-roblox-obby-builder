@@ -1,0 +1,47 @@
+G2e Post-Cutover Aborted Sessions Log
+======================================
+
+Repository:
+askarshabdanov1-collab/ai-roblox-obby-builder
+
+Acceptance commit:
+944a35af47e5cb234dcc4480c8a51ffa435e5fb4
+
+Artifact:
+build/AIObbyBuilderDefaultStudioAcceptance.rbxlx
+
+Artifact SHA-256:
+2C1079BFE3B53BD3A02A8DB99838C59E42C1A878853224D77D9AEF8EEAB14FFF
+
+2026-08-06 14:19 +03:00 — Session 01 invalidated
+
+Session:
+G2E-POST-CUTOVER-01-REFERENCE
+
+Disposition:
+ABORTED / INVALID — EXCLUDED FROM ACCEPTANCE EVIDENCE
+
+Reason:
+The manual two-player hazard sequence was not completed according to the documented procedure.
+The recorded runtime evidence did not establish the required Stage04Hazard001 flow for Player B,
+and the mandatory stale-hazard callback verification was absent from this fresh session.
+
+Observed incomplete evidence:
+- Player A checkpoint respawn was recorded.
+- Only one lethal player and one respawn were recorded.
+- Initial-spawn fallback preservation for Player B was not established.
+- Second-player independence was not established.
+- Stale-callback rejection was not established.
+- The final gameplay observation reported status FAIL with manual checks remaining.
+
+Classification:
+Operator procedure error. This record does not establish a product or runtime regression.
+
+Action:
+The session was stopped and excluded from the PASS evidence set.
+Session 01 must be repeated from the beginning in a fresh two-player server using the exact
+documented command and manual-action order.
+
+Evidence handling:
+Do not include this session in the final accepted seven-session evidence package.
+Retain this note only as an audit record explaining why the session was discarded.
