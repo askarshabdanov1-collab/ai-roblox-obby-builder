@@ -1,10 +1,10 @@
 # G2e post-default-cutover Studio rerun sheet
 
-Status: `READY_FOR_POST_DEFAULT_CUTOVER_EVIDENCE_COLLECTION`
+Status: `PASS`
 
-This sheet contains exactly seven required fresh-server sessions. It does not record their
-execution. Historical pre-cutover Output and failed attempts remain preserved under
-`docs/generator/evidence`; they do not complete a post-cutover checkbox and must not be overwritten.
+This sheet records the reviewed execution of exactly seven required fresh-server sessions.
+Post-default-cutover G2e Studio acceptance: PASS. Historical pre-cutover Output and failed attempts
+remain preserved under `docs/generator/evidence` and were not used as post-cutover evidence.
 
 ## Post-default-cutover artifact identity
 
@@ -16,10 +16,22 @@ execution. Historical pre-cutover Output and failed attempts remain preserved un
 | Runtime version             | `0.3`                                                                     |
 | Execution mode              | `studio-acceptance`                                                       |
 | Expected reference hash     | `sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146` |
-| Artifact SHA-256            | Record after the reviewed build                                           |
-| Embedded `repositoryCommit` | Record after the reviewed build                                           |
+| Artifact SHA-256            | `2C1079BFE3B53BD3A02A8DB99838C59E42C1A878853224D77D9AEF8EEAB14FFF`        |
+| Embedded `repositoryCommit` | `944a35af47e5cb234dcc4480c8a51ffa435e5fb4`                                |
+| Evidence commit             | `cc4cb64`                                                                 |
+| Evidence package            | `docs/generator/evidence/g2e-post-cutover-final-package.zip`              |
+| Evidence package SHA-256    | `525590EFFFA058E8045340989F169776AB1FC2B031E93096DB1BC9ED3ADB3E09`        |
 | Measurement schema          | `g2-studio-measurement-v2`                                                |
 | Control-result schema       | `g2e-control-result-v1`                                                   |
+
+## Final review result
+
+The complete package passed integrity and acceptance review: 24 package files, 17 indexed evidence
+files, 89 valid bounded JSON records, seven server outputs, and nine empty client outputs. Review
+found zero manifest mismatches, zero unexpected commits, and zero integrity errors. All seven
+session results below are `PASS`.
+
+This is a technical acceptance result. It does not imply external stakeholder approval.
 
 Before Session 1, record the environment fields required by `g2-studio-acceptance.md` and verify
 the artifact hash with `Get-FileHash`. This environment capture is not an eighth Studio session.
@@ -50,7 +62,7 @@ records do not replace complete Output.
 
 ## Session 1 — `G2E-POST-CUTOVER-01-REFERENCE`
 
-- [ ] Completed and evidence reviewed.
+- [x] Completed and evidence reviewed.
 - **Fresh server:** Required. Any prior build invalidates the session.
 - **Players:** Two.
 - **Artifact:** Reviewed post-default-cutover artifact above.
@@ -154,7 +166,7 @@ records do not replace complete Output.
 
 ## Session 2 — `G2E-POST-CUTOVER-02-MAXIMUM-50`
 
-- [ ] Completed and evidence reviewed.
+- [x] Completed and evidence reviewed.
 - **Fresh server:** Required; no reference or manual build may run first.
 - **Players:** One.
 - **Server evidence file:** `g2e-post-cutover-run-02-maximum-50-server.txt`.
@@ -176,7 +188,7 @@ records do not replace complete Output.
 
 ## Session 3 — `G2E-POST-CUTOVER-03-ZERO-CHECKPOINT`
 
-- [ ] Completed and evidence reviewed.
+- [x] Completed and evidence reviewed.
 - **Fresh server:** Required.
 - **Players:** Two.
 - **Server evidence file:** `g2e-post-cutover-run-03-zero-checkpoint-server.txt`.
@@ -207,7 +219,7 @@ records do not replace complete Output.
 
 ## Session 4 — `G2E-POST-CUTOVER-04-BEFORE-COMMIT`
 
-- [ ] Completed and evidence reviewed.
+- [x] Completed and evidence reviewed.
 - **Fresh server:** Mandatory.
 - **Players:** One.
 - **Evidence:** `g2e-post-cutover-run-04-before-commit-server.txt` and
@@ -226,7 +238,7 @@ records do not replace complete Output.
 
 ## Session 5 — `G2E-POST-CUTOVER-05-AFTER-RETIRE`
 
-- [ ] Completed and evidence reviewed.
+- [x] Completed and evidence reviewed.
 - **Fresh server:** Mandatory.
 - **Players:** One.
 - **Evidence:** `g2e-post-cutover-run-05-after-retire-server.txt` and
@@ -245,7 +257,7 @@ records do not replace complete Output.
 
 ## Session 6 — `G2E-POST-CUTOVER-06-AFTER-PUBLISH`
 
-- [ ] Completed and evidence reviewed.
+- [x] Completed and evidence reviewed.
 - **Fresh server:** Mandatory.
 - **Players:** One.
 - **Evidence:** `g2e-post-cutover-run-06-after-publish-server.txt` and
@@ -264,7 +276,7 @@ records do not replace complete Output.
 
 ## Session 7 — `G2E-POST-CUTOVER-07-BEFORE-POINTER`
 
-- [ ] Completed and evidence reviewed.
+- [x] Completed and evidence reviewed.
 - **Fresh server:** Mandatory.
 - **Players:** One.
 - **Evidence:** `g2e-post-cutover-run-07-before-pointer-server.txt` and
@@ -281,7 +293,6 @@ records do not replace complete Output.
 - **Expected duration:** 3–5 minutes.
 - **Combination rule:** Combining with any other boundary invalidates this session.
 
-After all seven checkboxes are complete, package the environment record, exact bounded JSONL,
-verbatim outputs, observation sheet, output hash index, artifact identity, and provenance statement.
-Do not mark post-default-cutover G2e `PASS` until that package is reviewed. This runbook and its
-buildable artifact do not record or claim Studio execution.
+The reviewed package contains the environment record, exact bounded JSONL, verbatim outputs,
+observation sheet, output hash index, artifact identity, provenance statement, and package inventory.
+It is preserved at the evidence-package path and SHA-256 recorded above.
