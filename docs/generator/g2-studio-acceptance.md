@@ -4,10 +4,10 @@ This is the required engine-dependent G2 acceptance protocol. It supplements Lua
 Studio automation and must not be reported as passed until a human has performed and recorded every
 applicable observation. The accepted pre-cutover package under `docs/generator/evidence` records the
 reference, `maximum-50`, zero-checkpoint, failure-boundary, and Phase 0 executions against the
-isolated harness. The default cutover requires a distinct seven-session rerun through the official
-default-runtime acceptance mode in [the final rerun sheet](./g2e-final-studio-rerun.md).
-Post-default-cutover G2e remains incomplete until those human sessions and their complete evidence
-package are reviewed.
+isolated harness. The distinct seven-session rerun through the official default-runtime acceptance
+mode is recorded in [the final rerun sheet](./g2e-final-studio-rerun.md). Post-default-cutover G2e
+Studio acceptance: PASS. This is a technical acceptance result, not a claim of external stakeholder
+approval.
 
 ## Measurement environment
 
@@ -260,5 +260,11 @@ successful Luau test is not a substitute for execution.
 The accepted pre-cutover evidence identifies the implementation commit, fixture hashes, built
 artifact and SHA-256, Studio/OS environment, complete bounded records, observations, Output, and
 provenance. It remains historical evidence for the isolated project and is not evidence for the
-default selector. The official post-cutover artifact identity and exact pending commands are in
-`g2e-final-studio-rerun.md`; that rerun remains unexecuted.
+default selector.
+
+The reviewed post-cutover package records `PASS` against tested commit
+`944a35af47e5cb234dcc4480c8a51ffa435e5fb4` and evidence commit `cc4cb64`. The artifact SHA-256 is
+`2C1079BFE3B53BD3A02A8DB99838C59E42C1A878853224D77D9AEF8EEAB14FFF`. The evidence ZIP is
+`docs/generator/evidence/g2e-post-cutover-final-package.zip`, with SHA-256
+`525590EFFFA058E8045340989F169776AB1FC2B031E93096DB1BC9ED3ADB3E09`. The final integrity and
+session review is recorded in [the final rerun sheet](./g2e-final-studio-rerun.md).

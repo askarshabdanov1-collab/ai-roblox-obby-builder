@@ -5,20 +5,20 @@ does not widen, reinterpret, or migrate `0.2` records.
 
 ## Compatibility matrix
 
-| Concern                        | SceneManifest `0.2` rollback                                 | SceneManifest `0.3` default after cutover                                                                 |
-| ------------------------------ | ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| Active status                  | Committed rollback selection                                 | Active default                                                                                            |
-| Manifest transport             | `roblox/generated/VerticalSliceManifest.luau`                | `roblox/generated/G2ReferenceManifestV03.luau`                                                            |
-| Validator                      | `ManifestValidator.luau`                                     | `ManifestValidatorV03.luau`                                                                               |
-| Builder                        | Existing `Builder`/`SceneBuilderCore`                        | `BuilderV03` plus G2c core                                                                                |
-| Gameplay session               | Existing `PlayerProgress` and runtime                        | `RuntimeSessionV03`                                                                                       |
-| Owner marker                   | `AIObbyBuilder/0.2`                                          | `AIObbyBuilder/0.3`                                                                                       |
-| Stage/checkpoint bounds        | Legacy maximum 20; checkpoint required                       | 5–50 stages; zero checkpoints allowed                                                                     |
-| Version selection              | `RuntimeConfiguration.Version = "0.2"`                       | `RuntimeConfiguration.Version = "0.3"`                                                                    |
-| Production execution mode      | `RuntimeConfiguration.ExecutionMode = "production"`          | `RuntimeConfiguration.ExecutionMode = "production"`                                                       |
-| Cross-version coercion         | Rejected                                                     | Rejected                                                                                                  |
-| Live cross-version replacement | Not supported                                                | Prohibited                                                                                                |
-| Studio evidence                | [Phase 0 regression recorded](./phase0-smoke-2026-07-31.txt) | [Pre-cutover acceptance recorded](./evidence/g2e-final-observation-sheet.txt); post-cutover rerun pending |
+| Concern                        | SceneManifest `0.2` rollback                                 | SceneManifest `0.3` default after cutover                            |
+| ------------------------------ | ------------------------------------------------------------ | -------------------------------------------------------------------- |
+| Active status                  | Committed rollback selection                                 | Active default                                                       |
+| Manifest transport             | `roblox/generated/VerticalSliceManifest.luau`                | `roblox/generated/G2ReferenceManifestV03.luau`                       |
+| Validator                      | `ManifestValidator.luau`                                     | `ManifestValidatorV03.luau`                                          |
+| Builder                        | Existing `Builder`/`SceneBuilderCore`                        | `BuilderV03` plus G2c core                                           |
+| Gameplay session               | Existing `PlayerProgress` and runtime                        | `RuntimeSessionV03`                                                  |
+| Owner marker                   | `AIObbyBuilder/0.2`                                          | `AIObbyBuilder/0.3`                                                  |
+| Stage/checkpoint bounds        | Legacy maximum 20; checkpoint required                       | 5–50 stages; zero checkpoints allowed                                |
+| Version selection              | `RuntimeConfiguration.Version = "0.2"`                       | `RuntimeConfiguration.Version = "0.3"`                               |
+| Production execution mode      | `RuntimeConfiguration.ExecutionMode = "production"`          | `RuntimeConfiguration.ExecutionMode = "production"`                  |
+| Cross-version coercion         | Rejected                                                     | Rejected                                                             |
+| Live cross-version replacement | Not supported                                                | Prohibited                                                           |
+| Studio evidence                | [Phase 0 regression recorded](./phase0-smoke-2026-07-31.txt) | [Post-default-cutover acceptance: PASS](./g2e-final-studio-rerun.md) |
 
 ## Server-lifetime selection
 
@@ -35,9 +35,10 @@ harness. The committed `roblox/default-studio-acceptance.project.json` changes o
 mode to `studio-acceptance` for the default 0.3 path, adds the bounded harness/session fixtures, and
 begins with zero generated roots. It is an evidence-collection artifact, not a production default.
 
-The separately reviewed default cutover selects `0.3` after automated validation and the accepted
-pre-cutover Studio evidence. It does not complete or claim the post-default-cutover Studio rerun
-required by `g2-studio-acceptance.md` and `g2e-final-studio-rerun.md`.
+The separately reviewed default cutover selected `0.3` after automated validation and the accepted
+pre-cutover Studio evidence. The required post-default-cutover Studio rerun subsequently passed
+against tested commit `944a35af47e5cb234dcc4480c8a51ffa435e5fb4`; its reviewed package and
+technical acceptance result are recorded in `g2e-final-studio-rerun.md`.
 
 ## Ownership rules
 
