@@ -68,6 +68,7 @@
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",
     "roblox:build": "tsx tools/prepare-build.ts && rojo build roblox/default.project.json --output build/AIObbyBuilder.rbxlx && rojo build roblox/smoke.project.json --output build/Phase0Smoke.rbxlx && rojo sourcemap roblox/default.project.json --output build/roblox-sourcemap.json",
+    "roblox:default-acceptance:build": "tsx tools/prepare-g2e-build.ts && rojo build roblox/default-studio-acceptance.project.json --output build/AIObbyBuilderDefaultStudioAcceptance.rbxlx",
     "roblox:format": "stylua roblox/src roblox/tests roblox/smoke roblox/g2e roblox/generated",
     "roblox:format:check": "stylua --check roblox/src roblox/tests roblox/smoke roblox/g2e roblox/generated",
     "roblox:g2e:build": "tsx tools/prepare-g2e-build.ts && rojo build roblox/g2e-smoke.project.json --output build/G2eStudioAcceptance.rbxlx",
@@ -78,7 +79,7 @@
     "test": "vitest run",
     "toolchain:install": "rokit install",
     "typecheck": "tsc --noEmit",
-    "validate": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run contracts:check && npm run evaluator:contracts:check && npm run evaluator:route:check && npm run evaluator:scoring:check && npm run evaluator:fixtures:check && npm run generator:contracts:check && npm run generator:fixtures:check && npm run generator:determinism:check && npm run layout:check && npm run layout:projection:check && npm run layout:workflow:check && npm run g2:decisions:check && npm run g2:fixtures:check && npm run fixtures:check && npm run test && npm run g2e:provenance:test && npm run security:secrets && npm run security:dependencies && npm run roblox:format:check && npm run roblox:lint && npm run roblox:test && npm run roblox:build && npm run roblox:g2e:build"
+    "validate": "npm run format:check && npm run lint && npm run typecheck && npm run build && npm run contracts:check && npm run evaluator:contracts:check && npm run evaluator:route:check && npm run evaluator:scoring:check && npm run evaluator:fixtures:check && npm run generator:contracts:check && npm run generator:fixtures:check && npm run generator:determinism:check && npm run layout:check && npm run layout:projection:check && npm run layout:workflow:check && npm run g2:decisions:check && npm run g2:fixtures:check && npm run fixtures:check && npm run test && npm run g2e:provenance:test && npm run security:secrets && npm run security:dependencies && npm run roblox:format:check && npm run roblox:lint && npm run roblox:test && npm run roblox:build && npm run roblox:g2e:build && npm run roblox:default-acceptance:build"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

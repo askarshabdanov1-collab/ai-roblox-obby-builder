@@ -80,9 +80,11 @@ const existingRuntimeModules = Object.freeze([
   "roblox/src/ReplicatedStorage/ObbyRuntime/Builder.luau",
   "roblox/src/ReplicatedStorage/ObbyRuntime/ManifestValidator.luau",
   "roblox/src/ReplicatedStorage/ObbyRuntime/ManifestValidatorV03.luau",
+  "roblox/src/ReplicatedStorage/ObbyRuntime/RuntimeSelector.luau",
   "roblox/src/ReplicatedStorage/ObbyRuntime/SceneBuilderCore.luau",
   "roblox/src/ServerScriptService/ObbyBootstrap.server.luau",
   "roblox/default.project.json",
+  "roblox/default-studio-acceptance.project.json",
   "roblox/smoke.project.json",
 ]);
 
@@ -131,6 +133,7 @@ async function checkDecisions(): Promise<void> {
   if (
     !defaultProject.includes('"RuntimeConfiguration"') ||
     !defaultProject.includes('"Value": "0.3"') ||
+    !defaultProject.includes('"Value": "production"') ||
     !defaultProject.includes(
       "sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146",
     ) ||
@@ -141,6 +144,28 @@ async function checkDecisions(): Promise<void> {
       "the active default project must select 0.3 and retain the 0.2 rollback manifest",
     );
 
+  const acceptanceProject = await readFile(
+    "roblox/default-studio-acceptance.project.json",
+    "utf8",
+  );
+  for (const marker of [
+    '"Value": "0.3"',
+    '"Value": "studio-acceptance"',
+    "sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146",
+    "src/ReplicatedStorage/ObbyRuntime",
+    "src/ServerScriptService/ObbyBootstrap.server.luau",
+    "generated/VerticalSliceManifest.luau",
+    "generated/G2ReferenceManifestV03.luau",
+    "g2e/G2eAcceptanceBootstrap.server.luau",
+    "generated/G2Maximum50ManifestV03.luau",
+    "generated/G2ZeroCheckpointManifestV03.luau",
+  ]) {
+    if (!acceptanceProject.includes(marker))
+      throw new Error(
+        `the default Studio acceptance project is missing: ${marker}`,
+      );
+  }
+
   const bootstrap = await readFile(
     "roblox/src/ServerScriptService/ObbyBootstrap.server.luau",
     "utf8",
@@ -150,8 +175,12 @@ async function checkDecisions(): Promise<void> {
     'runtimeVersion == "0.3"',
     "ObbyRuntime.Builder)",
     "ObbyRuntime.BuilderV03)",
+    "RuntimeSelector.resolve",
+    'selection.executionMode == "production"',
+    'selection.executionMode == "studio-acceptance"',
     "runtimeConfiguration.ExpectedManifestHash.Value",
     "unsupported SceneManifest runtime version",
+    "unsupported runtime execution mode",
   ]) {
     if (!bootstrap.includes(marker))
       throw new Error(`the default runtime selector is missing: ${marker}`);

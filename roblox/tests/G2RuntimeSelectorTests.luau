@@ -1,0 +1,33 @@
+local RuntimeSelector = require("../src/ReplicatedStorage/ObbyRuntime/RuntimeSelector")
+
+return function(test, expect)
+    test("selects production 0.3 with automatic build", function()
+        local selection, selectionError = RuntimeSelector.resolve("0.3", "production")
+        expect(selectionError == nil, "production 0.3 returned an error")
+        expect(selection ~= nil and selection.autoBuild, "production 0.3 did not select automatic build")
+        expect(selection.runtimeVersion == "0.3", "production runtime version changed")
+    end)
+
+    test("selects Studio acceptance 0.3 without automatic build", function()
+        local selection, selectionError = RuntimeSelector.resolve("0.3", "studio-acceptance")
+        expect(selectionError == nil, "Studio acceptance 0.3 returned an error")
+        expect(selection ~= nil and not selection.autoBuild, "Studio acceptance selected automatic build")
+        expect(selection.executionMode == "studio-acceptance", "Studio acceptance mode changed")
+    end)
+
+    test("retains production 0.2 rollback", function()
+        local selection, selectionError = RuntimeSelector.resolve("0.2", "production")
+        expect(selectionError == nil, "production 0.2 returned an error")
+        expect(selection ~= nil and selection.autoBuild, "production 0.2 did not select automatic build")
+        expect(selection.runtimeVersion == "0.2", "rollback runtime version changed")
+    end)
+
+    test("fails closed on unknown or incompatible selections", function()
+        local unknownVersion = RuntimeSelector.resolve("0.4", "production")
+        local unknownMode = RuntimeSelector.resolve("0.3", "preview")
+        local unsupportedCombination = RuntimeSelector.resolve("0.2", "studio-acceptance")
+        expect(unknownVersion == nil, "unknown runtime version was accepted")
+        expect(unknownMode == nil, "unknown execution mode was accepted")
+        expect(unsupportedCombination == nil, "Studio acceptance activated the 0.2 rollback runtime")
+    end)
+end

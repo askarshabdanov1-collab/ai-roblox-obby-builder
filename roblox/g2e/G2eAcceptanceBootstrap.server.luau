@@ -3,6 +3,13 @@ local ServerStorage = game:GetService("ServerStorage")
 local ServerScriptService = game:GetService("ServerScriptService")
 local Players = game:GetService("Players")
 
+local runtimeConfiguration = ServerStorage.RuntimeConfiguration
+local RuntimeSelector = require(ReplicatedStorage.ObbyRuntime.RuntimeSelector)
+local selection, selectionError =
+    RuntimeSelector.resolve(runtimeConfiguration.Version.Value, runtimeConfiguration.ExecutionMode.Value)
+assert(selection ~= nil, selectionError)
+assert(selection.executionMode == "studio-acceptance", "G2e controls require Studio acceptance mode")
+
 local BuilderV03 = require(ReplicatedStorage.ObbyRuntime.BuilderV03)
 local G2eAcceptanceHarness = require(ServerScriptService.G2eAcceptanceHarness)
 local G2eCharacterPartReadinessV1 = require(ServerScriptService.G2eCharacterPartReadinessV1)
@@ -17,11 +24,12 @@ assert(
     "G2e repository commit provenance is invalid"
 )
 
+local defaultManifests = ServerStorage.GeneratedManifests
 local manifests = ServerStorage.G2eManifests
 local fixtures = table.freeze({
     reference = table.freeze({
-        module = manifests.G2ReferenceManifestV03,
-        expectedHash = "sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146",
+        module = defaultManifests.G2ReferenceManifestV03,
+        expectedHash = runtimeConfiguration.ExpectedManifestHash.Value,
         hazardObjectId = "Stage04Hazard001",
     }),
     ["maximum-50"] = table.freeze({

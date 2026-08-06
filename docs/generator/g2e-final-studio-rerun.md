@@ -1,47 +1,25 @@
-# G2e final pre-cutover Studio rerun sheet
+# G2e post-default-cutover Studio rerun sheet
 
-Status: `READY_FOR_FINAL_EVIDENCE_COLLECTION`
+Status: `READY_FOR_POST_DEFAULT_CUTOVER_EVIDENCE_COLLECTION`
 
 This sheet contains exactly seven required fresh-server sessions. It does not record their
-execution. Historical 2026-07-31 runs remain preserved, but their stale machine provenance cannot
-close commit-bound acceptance for this artifact.
+execution. Historical pre-cutover Output and failed attempts remain preserved under
+`docs/generator/evidence`; they do not complete a post-cutover checkbox and must not be overwritten.
 
-The first Session 1 attempt against superseded artifact
-`37C53E0FA4E9B2B3FD7444CCFDB5AD12025028B8ED6CEAC7E4C077C87EFC275F` failed in the placement
-observer. Its complete Output, including later accidental repeated invocations, is historical
-failed-session evidence. It does not complete any checkbox and must not be reinterpreted as a cold
-sequence defect. Session 1 must restart in a fresh server with the fixed artifact below.
+## Post-default-cutover artifact identity
 
-The second Session 1 attempt against superseded artifact
-`C74BDBAAC5EE31F736CEF0A2A4F0FD0F95767A4276B0CC8514F6BFC93C52A5F0` proved the precondition and
-all eight reference-sequence builds, then failed stale-hazard verification because the synchronous
-Command Bar block sampled `Player.Character` before a scheduler resume made a character BasePart
-available. The following assert correctly stopped the block before placement observation. This is
-also historical failed-session evidence and completes no checkbox.
-
-The third Session 1 attempt against superseded artifact
-`886AC77250805E7088B48729391B5336765AA6B444877DBC4216AFDC8DB305BC` proved the precondition and
-all eight reference-sequence builds. It then proved that the first value returned by
-`Players:GetPlayers()` had a non-nil `Character` but no direct `BasePart` after 120 scheduler
-resumes. That artifact did not inspect player 2, so the historical Output cannot establish player
-2's readiness or whether the first value was a Studio placeholder. It completes no checkbox.
-
-## Fixed artifact identity
-
-| Field                         | Required value                                                                           |
-| ----------------------------- | ---------------------------------------------------------------------------------------- |
-| Artifact path                 | `C:\Users\lawdir\Documents\Codex\ai-roblox-obby-builder\build\G2eStudioAcceptance.rbxlx` |
-| Artifact SHA-256              | `D1C689A2D18B715BA42BF9475B9D6E78AB31D8AE5C4BB3CA26362BB9AA39849A`                       |
-| Embedded `repositoryCommit`   | `cbe5a5c43debe21cb144829cb704c6b378d1e80a`                                               |
-| Runtime implementation commit | `1379849686525d88c71245626e0360a00f1d48a9`                                               |
-| Provenance implementation     | `2046121c5e5505397601ac7c6630a9fea9f0831b`                                               |
-| Harness implementation        | `70e2c1ec3d3ed8cdcdd7f51e118beb1494f5b50c`                                               |
-| Placement-observer repair     | `cbf36e21feb0b99ffaaee9b48c95e88e9be37c1b`                                               |
-| Stale-character readiness     | `56c2b51291b8e918a1c9559277a2590e18ee06af`                                               |
-| Stale-probe BasePart guard    | `685813a2265165a46dfe4d0b686934abf285ce23`                                               |
-| Deterministic ready selection | `cbe5a5c43debe21cb144829cb704c6b378d1e80a`                                               |
-| Measurement schema            | `g2-studio-measurement-v2`                                                               |
-| Control-result schema         | `g2e-control-result-v1`                                                                  |
+| Field                       | Required value                                                            |
+| --------------------------- | ------------------------------------------------------------------------- |
+| Build command               | `npm run roblox:default-acceptance:build`                                 |
+| Rojo project                | `roblox/default-studio-acceptance.project.json`                           |
+| Artifact path               | `build/AIObbyBuilderDefaultStudioAcceptance.rbxlx`                        |
+| Runtime version             | `0.3`                                                                     |
+| Execution mode              | `studio-acceptance`                                                       |
+| Expected reference hash     | `sha256:606e679659ba1461ba1baaa87f1f10bf7953dfc071da40ebaa6d39c2caa62146` |
+| Artifact SHA-256            | Record after the reviewed build                                           |
+| Embedded `repositoryCommit` | Record after the reviewed build                                           |
+| Measurement schema          | `g2-studio-measurement-v2`                                                |
+| Control-result schema       | `g2e-control-result-v1`                                                   |
 
 Before Session 1, record the environment fields required by `g2-studio-acceptance.md` and verify
 the artifact hash with `Get-FileHash`. This environment capture is not an eighth Studio session.
@@ -70,15 +48,15 @@ Capture every complete line with these prefixes:
 Complete server Output and every active client Output must be preserved verbatim. Extracted JSON
 records do not replace complete Output.
 
-## Session 1 — `G2E-FINAL-01-REFERENCE`
+## Session 1 — `G2E-POST-CUTOVER-01-REFERENCE`
 
 - [ ] Completed and evidence reviewed.
 - **Fresh server:** Required. Any prior build invalidates the session.
 - **Players:** Two.
-- **Artifact:** Fixed artifact above.
-- **Server evidence file:** `g2e-final-run-01-reference-server.txt`.
-- **Client evidence files:** `g2e-final-run-01-reference-client-1.txt` and
-  `g2e-final-run-01-reference-client-2.txt`.
+- **Artifact:** Reviewed post-default-cutover artifact above.
+- **Server evidence file:** `g2e-post-cutover-run-01-reference-server.txt`.
+- **Client evidence files:** `g2e-post-cutover-run-01-reference-client-1.txt` and
+  `g2e-post-cutover-run-01-reference-client-2.txt`.
 - **Expected duration:** 20–30 minutes.
 - **Initial commands:**
 
@@ -174,13 +152,13 @@ records do not replace complete Output.
 - **Combination rule:** The bounded functional/static/refusal commands above belong to this session.
   Combining it with a failure-boundary session invalidates the boundary evidence.
 
-## Session 2 — `G2E-FINAL-02-MAXIMUM-50`
+## Session 2 — `G2E-POST-CUTOVER-02-MAXIMUM-50`
 
 - [ ] Completed and evidence reviewed.
 - **Fresh server:** Required; no reference or manual build may run first.
 - **Players:** One.
-- **Server evidence file:** `g2e-final-run-02-maximum-50-server.txt`.
-- **Client evidence file:** `g2e-final-run-02-maximum-50-client-1.txt`.
+- **Server evidence file:** `g2e-post-cutover-run-02-maximum-50-server.txt`.
+- **Client evidence file:** `g2e-post-cutover-run-02-maximum-50-client-1.txt`.
 - **Command:**
 
   ```lua
@@ -196,14 +174,14 @@ records do not replace complete Output.
 - **Expected duration:** 8–12 minutes.
 - **Combination rule:** Cannot be combined with another session.
 
-## Session 3 — `G2E-FINAL-03-ZERO-CHECKPOINT`
+## Session 3 — `G2E-POST-CUTOVER-03-ZERO-CHECKPOINT`
 
 - [ ] Completed and evidence reviewed.
 - **Fresh server:** Required.
 - **Players:** Two.
-- **Server evidence file:** `g2e-final-run-03-zero-checkpoint-server.txt`.
-- **Client evidence files:** `g2e-final-run-03-zero-checkpoint-client-1.txt` and
-  `g2e-final-run-03-zero-checkpoint-client-2.txt`.
+- **Server evidence file:** `g2e-post-cutover-run-03-zero-checkpoint-server.txt`.
+- **Client evidence files:** `g2e-post-cutover-run-03-zero-checkpoint-client-1.txt` and
+  `g2e-post-cutover-run-03-zero-checkpoint-client-2.txt`.
 - **Initial command:**
 
   ```lua
@@ -227,13 +205,13 @@ records do not replace complete Output.
 - **Expected duration:** 6–10 minutes.
 - **Combination rule:** Do not combine with another session.
 
-## Session 4 — `G2E-FINAL-04-BEFORE-COMMIT`
+## Session 4 — `G2E-POST-CUTOVER-04-BEFORE-COMMIT`
 
 - [ ] Completed and evidence reviewed.
 - **Fresh server:** Mandatory.
 - **Players:** One.
-- **Evidence:** `g2e-final-run-04-before-commit-server.txt` and
-  `g2e-final-run-04-before-commit-client-1.txt`.
+- **Evidence:** `g2e-post-cutover-run-04-before-commit-server.txt` and
+  `g2e-post-cutover-run-04-before-commit-client-1.txt`.
 - **Command:**
 
   ```lua
@@ -246,13 +224,13 @@ records do not replace complete Output.
 - **Expected duration:** 3–5 minutes.
 - **Combination rule:** Combining with any other boundary invalidates this session.
 
-## Session 5 — `G2E-FINAL-05-AFTER-RETIRE`
+## Session 5 — `G2E-POST-CUTOVER-05-AFTER-RETIRE`
 
 - [ ] Completed and evidence reviewed.
 - **Fresh server:** Mandatory.
 - **Players:** One.
-- **Evidence:** `g2e-final-run-05-after-retire-server.txt` and
-  `g2e-final-run-05-after-retire-client-1.txt`.
+- **Evidence:** `g2e-post-cutover-run-05-after-retire-server.txt` and
+  `g2e-post-cutover-run-05-after-retire-client-1.txt`.
 - **Command:**
 
   ```lua
@@ -265,13 +243,13 @@ records do not replace complete Output.
 - **Expected duration:** 3–5 minutes.
 - **Combination rule:** Combining with any other boundary invalidates this session.
 
-## Session 6 — `G2E-FINAL-06-AFTER-PUBLISH`
+## Session 6 — `G2E-POST-CUTOVER-06-AFTER-PUBLISH`
 
 - [ ] Completed and evidence reviewed.
 - **Fresh server:** Mandatory.
 - **Players:** One.
-- **Evidence:** `g2e-final-run-06-after-publish-server.txt` and
-  `g2e-final-run-06-after-publish-client-1.txt`.
+- **Evidence:** `g2e-post-cutover-run-06-after-publish-server.txt` and
+  `g2e-post-cutover-run-06-after-publish-client-1.txt`.
 - **Command:**
 
   ```lua
@@ -284,13 +262,13 @@ records do not replace complete Output.
 - **Expected duration:** 3–5 minutes.
 - **Combination rule:** Combining with any other boundary invalidates this session.
 
-## Session 7 — `G2E-FINAL-07-BEFORE-POINTER`
+## Session 7 — `G2E-POST-CUTOVER-07-BEFORE-POINTER`
 
 - [ ] Completed and evidence reviewed.
 - **Fresh server:** Mandatory.
 - **Players:** One.
-- **Evidence:** `g2e-final-run-07-before-pointer-server.txt` and
-  `g2e-final-run-07-before-pointer-client-1.txt`.
+- **Evidence:** `g2e-post-cutover-run-07-before-pointer-server.txt` and
+  `g2e-post-cutover-run-07-before-pointer-client-1.txt`.
 - **Command:**
 
   ```lua
@@ -305,5 +283,5 @@ records do not replace complete Output.
 
 After all seven checkboxes are complete, package the environment record, exact bounded JSONL,
 verbatim outputs, observation sheet, output hash index, artifact identity, and provenance statement.
-Do not mark pre-cutover G2e `PASS` until that package is reviewed. The separate future
-post-default-cutover rerun remains incomplete.
+Do not mark post-default-cutover G2e `PASS` until that package is reviewed. This runbook and its
+buildable artifact do not record or claim Studio execution.
