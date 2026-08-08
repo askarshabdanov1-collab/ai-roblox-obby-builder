@@ -96,7 +96,10 @@ remains unproven until that prototype demonstrates repeatable slot creation and 
 
 The repository-owned guard model, pinned human-probe target, capability matrix, and exact
 human-only evidence procedure are recorded in [Studio feasibility milestone](studio-feasibility-milestone.md).
-That record does not claim a Studio probe result or select an automated transport.
+Its [bounded 2026-08-08 human-probe batch](evidence/studio-feasibility-human-probes-2026-08-08.json)
+records only manual Play/Stop/close/reopen observations and unavailable capability boundaries. It
+does not claim authenticated transport, evidence binding, a signed recovery record, Studio
+acceptance, or selection of an automated transport.
 
 ### Required permissions and Studio settings
 

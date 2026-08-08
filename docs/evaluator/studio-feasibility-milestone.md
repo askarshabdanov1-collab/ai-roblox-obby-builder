@@ -1,7 +1,9 @@
 # Studio feasibility milestone
 
-**Status:** Repository guard model complete; human-only Studio probes pending. No production Studio
-plugin, bridge, endpoint, unattended automation, or Studio acceptance result is introduced here.
+**Status:** Repository guard model complete. A bounded, partial human-only Studio observation is
+recorded below; it does not select a transport or establish Studio acceptance. No production Studio
+plugin, bridge, endpoint, unattended automation, or automated Studio acceptance result is introduced
+here.
 
 This decision record implements the repository-owned portion of issue #23. It is a deterministic,
 pure TypeScript model in `apps/orchestrator/src/studio-feasibility.ts`; it does not open a socket,
@@ -10,15 +12,15 @@ account credential.
 
 ## Pinned feasibility target
 
-| Component              | Pinned target                             | Status                                                                                           |
-| ---------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| Roblox Studio / engine | `0.732.0.7321040`                         | Human-only target derived from accepted G2e environment evidence; not executed by this milestone |
-| Windows                | Windows 10 Pro `10.0.19045` build `19045` | Human-only target; no probe result claimed                                                       |
-| Protocol               | `studio-feasibility-protocol` `1.0.0`     | Implemented repository model                                                                     |
-| Plugin                 | `not-built`                               | Deliberate no-go: no production or prototype Studio plugin is added                              |
-| Bridge                 | `not-built`                               | Deliberate no-go: no HTTP, WebSocket, MCP, or other Studio bridge is added                       |
-| Orchestrator           | `@obby/orchestrator` `0.2.0`              | Hosts the pure guard model only                                                                  |
-| Multiplayer            | `unsupported-unproven`                    | Not enabled by negotiation or lifecycle state                                                    |
+| Component              | Pinned target                             | Status                                                                                                                                              |
+| ---------------------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Roblox Studio / engine | `0.732.0.7321040`                         | Human-only target derived from accepted G2e environment evidence; the recorded observation used `0.732.0.7321043`, so it cannot inherit this target |
+| Windows                | Windows 10 Pro `10.0.19045` build `19045` | Human-only target; the recorded observation used `19045.6456`, so it cannot inherit this target                                                     |
+| Protocol               | `studio-feasibility-protocol` `1.0.0`     | Implemented repository model                                                                                                                        |
+| Plugin                 | `not-built`                               | Deliberate no-go: no production or prototype Studio plugin is added                                                                                 |
+| Bridge                 | `not-built`                               | Deliberate no-go: no HTTP, WebSocket, MCP, or other Studio bridge is added                                                                          |
+| Orchestrator           | `@obby/orchestrator` `0.2.0`              | Hosts the pure guard model only                                                                                                                     |
+| Multiplayer            | `unsupported-unproven`                    | Not enabled by negotiation or lifecycle state                                                                                                       |
 
 The Studio/engine and Windows values are pinned test targets, not an assertion that this branch was
 run in that environment. A new Studio or Windows build requires a new human probe record; it cannot
@@ -45,12 +47,32 @@ npm run evaluator:studio-feasibility:test
 
 ## Capability matrix
 
-| Candidate                                       | Repository model                                              | Human-only feasibility question                                                                                    | Rejection / no-go condition                                                                            | Current result         |
-| ----------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ---------------------- |
-| Plugin-originated loopback HTTP polling         | Negotiated identifier only; no listener/client is implemented | Can explicitly enabled `HttpService` reach an authenticated `127.0.0.1`/`::1` endpoint within lease/cancel bounds? | HTTP disabled, peer/origin cannot be bound, broad network required, or cleanup guarantees not met      | `human-probe-pending`  |
-| Plugin-originated loopback WebSocket proxy      | Negotiated identifier only; no proxy/client is implemented    | Does the pinned Studio/plugin environment expose an audited client path that authenticates every frame?            | Unsupported API, LAN/broad network exposure, missing frame authentication, or unavailable cancellation | `human-probe-pending`  |
-| File-based user-mediated signed bundle exchange | Documented manual fallback; no filesystem API is implemented  | Can a user explicitly export/import a bounded signed bundle and verify its hash without path escape?               | Hash cannot be verified, path scope is ambiguous, or user confirmation is absent                       | `manual-fallback-only` |
-| MCP-hosted bridge with narrow Studio adapter    | Negotiated identifier only; no MCP adapter is implemented     | Can a capability-allowlisted adapter authenticate Studio-originated evidence without hiding provenance?            | Any arbitrary Studio/script/tool execution, filesystem/shell access, or opaque provenance              | `human-probe-pending`  |
+| Candidate                                       | Repository model                                              | Human-only feasibility question                                                                                    | Rejection / no-go condition                                                                            | Current result             |
+| ----------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | -------------------------- |
+| Plugin-originated loopback HTTP polling         | Negotiated identifier only; no listener/client is implemented | Can explicitly enabled `HttpService` reach an authenticated `127.0.0.1`/`::1` endpoint within lease/cancel bounds? | HTTP disabled, peer/origin cannot be bound, broad network required, or cleanup guarantees not met      | `manual-evidence-required` |
+| Plugin-originated loopback WebSocket proxy      | Negotiated identifier only; no proxy/client is implemented    | Does the pinned Studio/plugin environment expose an audited client path that authenticates every frame?            | Unsupported API, LAN/broad network exposure, missing frame authentication, or unavailable cancellation | `UNSUPPORTED`              |
+| File-based user-mediated signed bundle exchange | Documented manual fallback; no filesystem API is implemented  | Can a user explicitly export/import a bounded signed bundle and verify its hash without path escape?               | Hash cannot be verified, path scope is ambiguous, or user confirmation is absent                       | `manual-evidence-required` |
+| MCP-hosted bridge with narrow Studio adapter    | Negotiated identifier only; no MCP adapter is implemented     | Can a capability-allowlisted adapter authenticate Studio-originated evidence without hiding provenance?            | Any arbitrary Studio/script/tool execution, filesystem/shell access, or opaque provenance              | `UNSUPPORTED`              |
+
+## Recorded human-only Studio observation
+
+The bounded records in [human-probes](evidence/studio-feasibility-human-probes-2026-08-08.json)
+contain the complete reported observation set. They were taken on Windows 10 Pro 22H2, OS build
+`19045.6456`, with Roblox Studio `0.732.0.7321043` (64-bit) on
+`zbuck2release-732-control`. Those observed patch builds differ from the pinned target above and
+therefore cannot establish compatibility for it.
+
+| Probe | Status                     | What was observed                                                                                                                                                    | What remains unproven                                                                                                                 |
+| ----- | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| SF-01 | `manual-evidence-required` | Explorer and Properties were available. The local unpublished Baseplate was not published; HTTP stayed unchanged. No scripts/plugins or prohibited access were used. | Full permission/capability inventory and HTTP eligibility require a separately reviewed, explicitly configured probe.                 |
+| SF-02 | `UNSUPPORTED`              | No bridge/plugin existed, HTTP was not enabled, and no candidate transport was connected.                                                                            | Authentication, loopback/origin constraints, version negotiation, replay/expiry/oversize rejection, and cancellation.                 |
+| SF-03 | `manual-evidence-required` | Single-player Play created a character; normal Stop, and a repeated Play/Stop, returned to Edit mode with the Baseplate visually preserved.                          | Execution/scene/manifest/generation binding, bounded observation capture, stale/replay/oversize rejection, and interruption handling. |
+| SF-04 | `manual-evidence-required` | Closing Studio during active Play produced no save prompt; reopening the local Baseplate returned to Edit mode with the Baseplate visually preserved.                | Identity/ownership verification, evaluator-owned cleanup, and the required signed bounded recovery export.                            |
+
+The observation did **not** use Roblox/Open Cloud credentials, asset upload, arbitrary network
+access, or a published experience. Experience Settings for the unpublished local place required
+"Save to Roblox"; publication was declined, so **Allow HTTP Requests** was not changed. This is a
+capability boundary, not a failed authenticated transport attempt.
 
 ## Repository model
 
@@ -138,7 +160,10 @@ Expected result: recovery is either visibly complete and recorded, or remains
 
 ## Human-probe evidence format
 
-Each probe produces one UTF-8 LF-only JSON document and any referenced bounded artifacts:
+Each probe produces one UTF-8 LF-only JSON record and any referenced bounded artifacts. A committed
+human-probe batch may contain those records under a top-level `probes` array, as the recorded batch
+above does. `binding` is `null` when no runtime bridge captured the required values; placeholder
+identities are forbidden. A non-`PASS` record never selects a transport or proves a runtime contract:
 
 ```json
 {
@@ -150,6 +175,7 @@ Each probe produces one UTF-8 LF-only JSON document and any referenced bounded a
     "windowsVersion": "exact observed value",
     "protocolVersion": "1.0.0"
   },
+  "selectedTransportCandidate": "none | documented candidate ID",
   "binding": {
     "executionId": "opaque execution ID",
     "sceneId": "opaque scene ID",
@@ -164,15 +190,16 @@ Each probe produces one UTF-8 LF-only JSON document and any referenced bounded a
 }
 ```
 
-The record must state the selected candidate or `none`, the exact rejected condition where applicable,
-and SHA-256 values for every retained artifact. It must not contain session secrets, Roblox account
+The record must state the selected candidate or `none`, the exact unavailable/rejected condition where
+applicable, and SHA-256 values for every retained artifact. It must not contain session secrets, Roblox account
 credentials/cookies, filesystem paths, shell commands, arbitrary payload bodies, usernames/user IDs,
 chat, or broad Studio logs.
 
 ## Limitations and no-go findings
 
-- No actual Studio capability, transport, API, security setting, or lifecycle behavior was measured
-  by this branch.
+- The recorded observation proves only the narrow manual Play/Stop/close/reopen facts stated above;
+  it does not prove a Studio capability inventory, transport, API, security setting, or evidence-bound
+  lifecycle behavior.
 - No candidate transport is approved; `manual-fallback-only` is not an automated transport.
 - No production Studio plugin, bridge, local HTTP endpoint, WebSocket proxy, MCP adapter, evidence
   collector, screenshot collector, or unattended automation exists.
