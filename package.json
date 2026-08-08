@@ -28,6 +28,7 @@
     "evaluator:scoring:test": "vitest run packages/scoring-engine",
     "evaluator:scoring:check": "tsx tools/check-e1c-fixtures.ts",
     "evaluator:report:test": "vitest run packages/scoring-engine/test/markdown.test.ts packages/scoring-engine/test/e1c-fixtures.test.ts",
+    "evaluator:studio-feasibility:test": "vitest run apps/orchestrator/test/studio-feasibility.test.ts",
     "evaluator:cli:test": "vitest run apps/evaluator-cli",
     "evaluator:fixtures:generate": "tsx tools/generate-e1c-fixtures.ts",
     "evaluator:fixtures:check": "tsx tools/check-e1c-fixtures.ts",

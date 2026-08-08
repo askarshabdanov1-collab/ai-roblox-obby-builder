@@ -94,6 +94,10 @@ precede implementation. It must test permissions, transport, lifecycle recovery,
 control, and evidence integrity against a pinned Studio/engine version. Multiplayer automation
 remains unproven until that prototype demonstrates repeatable slot creation and isolation.
 
+The repository-owned guard model, pinned human-probe target, capability matrix, and exact
+human-only evidence procedure are recorded in [Studio feasibility milestone](studio-feasibility-milestone.md).
+That record does not claim a Studio probe result or select an automated transport.
+
 ### Required permissions and Studio settings
 
 The feasibility prototype must inventory and minimize:
