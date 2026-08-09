@@ -1,0 +1,9 @@
+{
+  "name": "AIObbyBuilderStudioFeasibilityDev",
+  "tree": {
+    "$className": "Plugin",
+    "StudioFeasibility": {
+      "$path": "studio-feasibility/StudioFeasibility.plugin.luau"
+    }
+  }
+}

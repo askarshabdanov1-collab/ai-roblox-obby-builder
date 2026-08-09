@@ -204,6 +204,13 @@ function isIdentifier(value: unknown): value is string {
   return typeof value === "string" && /^[a-z][a-z0-9-]{2,63}$/.test(value);
 }
 
+function isGenerationToken(value: unknown): value is string {
+  return (
+    isIdentifier(value) ||
+    (typeof value === "string" && /^g2d-generation-v1:[1-9][0-9]*$/.test(value))
+  );
+}
+
 function isSha256(value: unknown): value is `sha256:${string}` {
   return typeof value === "string" && /^sha256:[a-f0-9]{64}$/.test(value);
 }
@@ -239,7 +246,7 @@ function validBinding(value: unknown): value is StudioBinding {
     typeof value.generatedRootOwner === "string" &&
     /^AIObbyBuilder\/[0-9]+\.[0-9]+$/.test(value.generatedRootOwner) &&
     isSha256(value.manifestHash) &&
-    isIdentifier(value.sceneGeneration) &&
+    isGenerationToken(value.sceneGeneration) &&
     isIdentifier(value.playtestSessionId)
   );
 }
@@ -519,7 +526,7 @@ function validStudioEvidenceEnvelope(
     typeof value.generatedRootOwner === "string" &&
     /^AIObbyBuilder\/[0-9]+\.[0-9]+$/.test(value.generatedRootOwner) &&
     isSha256(value.manifestHash) &&
-    isIdentifier(value.sceneGeneration) &&
+    isGenerationToken(value.sceneGeneration) &&
     isIdentifier(value.playtestSessionId) &&
     isSafePositiveInteger(value.sequence) &&
     value.payload instanceof Uint8Array &&

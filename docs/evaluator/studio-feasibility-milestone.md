@@ -1,9 +1,8 @@
 # Studio feasibility milestone
 
-**Status:** Repository guard model complete. A bounded, partial human-only Studio observation is
-recorded below; it does not select a transport or establish Studio acceptance. No production Studio
-plugin, bridge, endpoint, unattended automation, or automated Studio acceptance result is introduced
-here.
+**Status:** Repository guard model and a development-only loopback HTTP prototype are complete. No
+Studio acceptance result is introduced here; the human-only transport/lifecycle matrix remains
+pending.
 
 This decision record implements the repository-owned portion of issue #23. It is a deterministic,
 pure TypeScript model in `apps/orchestrator/src/studio-feasibility.ts`; it does not open a socket,
@@ -17,8 +16,8 @@ account credential.
 | Roblox Studio / engine | `0.732.0.7321040`                         | Human-only target derived from accepted G2e environment evidence; the recorded observation used `0.732.0.7321043`, so it cannot inherit this target |
 | Windows                | Windows 10 Pro `10.0.19045` build `19045` | Human-only target; the recorded observation used `19045.6456`, so it cannot inherit this target                                                     |
 | Protocol               | `studio-feasibility-protocol` `1.0.0`     | Implemented repository model                                                                                                                        |
-| Plugin                 | `not-built`                               | Deliberate no-go: no production or prototype Studio plugin is added                                                                                 |
-| Bridge                 | `not-built`                               | Deliberate no-go: no HTTP, WebSocket, MCP, or other Studio bridge is added                                                                          |
+| Plugin                 | `0.1.0-dev`                               | Development-only local plugin; no production distribution or call site                                                                              |
+| Bridge                 | `0.1.0-dev`                               | Development-only Node HTTP bridge, bound only to `127.0.0.1:4318`                                                                                   |
 | Orchestrator           | `@obby/orchestrator` `0.2.0`              | Hosts the pure guard model only                                                                                                                     |
 | Multiplayer            | `unsupported-unproven`                    | Not enabled by negotiation or lifecycle state                                                                                                       |
 
@@ -28,10 +27,12 @@ inherit a pass from this document.
 
 ## Decision
 
-No automated transport is selected. The repository model admits a transport only after both peers
-negotiate a documented compatible capability intersection, all integrity features are present, and
-the adapter ID is allowlisted. This branch supplies neither peer nor adapter implementation, so the
-only usable operational fallback remains a user-mediated signed bundle exchange.
+The selected feasibility candidate is development-only plugin-originated loopback HTTP polling. The
+repository model admits it only after both peers negotiate a documented compatible capability
+intersection, all integrity features are present, and the adapter ID is allowlisted. The prototype
+does not select a production transport: a missing plugin permission, unavailable `HttpService`, or
+any non-loopback peer is `manual-evidence-required` or rejected before a command is accepted. The
+user-mediated signed bundle exchange remains the operational fallback.
 
 The model fails closed for unknown protocol majors, malformed offers, unapproved adapters, missing
 integrity features, unavailable required capabilities, unavailable/unknown transports, non-loopback
@@ -47,12 +48,12 @@ npm run evaluator:studio-feasibility:test
 
 ## Capability matrix
 
-| Candidate                                       | Repository model                                              | Human-only feasibility question                                                                                    | Rejection / no-go condition                                                                            | Current result             |
-| ----------------------------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | -------------------------- |
-| Plugin-originated loopback HTTP polling         | Negotiated identifier only; no listener/client is implemented | Can explicitly enabled `HttpService` reach an authenticated `127.0.0.1`/`::1` endpoint within lease/cancel bounds? | HTTP disabled, peer/origin cannot be bound, broad network required, or cleanup guarantees not met      | `manual-evidence-required` |
-| Plugin-originated loopback WebSocket proxy      | Negotiated identifier only; no proxy/client is implemented    | Does the pinned Studio/plugin environment expose an audited client path that authenticates every frame?            | Unsupported API, LAN/broad network exposure, missing frame authentication, or unavailable cancellation | `UNSUPPORTED`              |
-| File-based user-mediated signed bundle exchange | Documented manual fallback; no filesystem API is implemented  | Can a user explicitly export/import a bounded signed bundle and verify its hash without path escape?               | Hash cannot be verified, path scope is ambiguous, or user confirmation is absent                       | `manual-evidence-required` |
-| MCP-hosted bridge with narrow Studio adapter    | Negotiated identifier only; no MCP adapter is implemented     | Can a capability-allowlisted adapter authenticate Studio-originated evidence without hiding provenance?            | Any arbitrary Studio/script/tool execution, filesystem/shell access, or opaque provenance              | `UNSUPPORTED`              |
+| Candidate                                       | Repository model                                                              | Human-only feasibility question                                                                         | Rejection / no-go condition                                                                            | Current result             |
+| ----------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------- |
+| Plugin-originated loopback HTTP polling         | Development-only local plugin and `127.0.0.1` bridge; no production call site | Can an explicitly approved plugin reach the local bridge within lease/cancel bounds?                    | Missing plugin permission, non-loopback peer, failed HMAC/version/binding, or cleanup uncertainty      | `human-probe-pending`      |
+| Plugin-originated loopback WebSocket proxy      | Negotiated identifier only; no proxy/client is implemented                    | Does the pinned Studio/plugin environment expose an audited client path that authenticates every frame? | Unsupported API, LAN/broad network exposure, missing frame authentication, or unavailable cancellation | `UNSUPPORTED`              |
+| File-based user-mediated signed bundle exchange | Documented manual fallback; no filesystem API is implemented                  | Can a user explicitly export/import a bounded signed bundle and verify its hash without path escape?    | Hash cannot be verified, path scope is ambiguous, or user confirmation is absent                       | `manual-evidence-required` |
+| MCP-hosted bridge with narrow Studio adapter    | Negotiated identifier only; no MCP adapter is implemented                     | Can a capability-allowlisted adapter authenticate Studio-originated evidence without hiding provenance? | Any arbitrary Studio/script/tool execution, filesystem/shell access, or opaque provenance              | `UNSUPPORTED`              |
 
 ## Recorded human-only Studio observation
 

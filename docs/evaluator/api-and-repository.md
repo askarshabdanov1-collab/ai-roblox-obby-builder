@@ -198,8 +198,9 @@ Proposed prefix: `/api/evaluator/v1`.
 | `POST /preferences`                              | Record an enabled-study HumanPreferenceLabel                                                  |
 | `POST /correction-proposals`                     | Generate advisory correction proposal                                                         |
 
-No endpoint in E0 is implemented. The Studio feasibility milestone adds only a pure repository
-guard model; it does not implement a local HTTP, WebSocket, MCP, or Studio endpoint.
+No production endpoint in E0 is implemented. The Studio feasibility milestone adds a
+development-only loopback HTTP bridge for a manually supervised plugin probe; it is not an E0 API,
+does not expose WebSocket or MCP, and has no production call site.
 
 ## Asynchronous job semantics
 
