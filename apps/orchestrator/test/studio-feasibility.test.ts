@@ -140,7 +140,10 @@ describe("Studio feasibility local plugin artifact", () => {
     );
 
     expect(source).toContain("local armed = false");
-    expect(source).toContain("arm.Click:Connect(function()");
+    for (const button of ["arm", "submitEvidence", "stop", "recover"]) {
+      expect(source).toContain(`${button}.Activated:Connect(function()`);
+      expect(source).not.toContain(`${button}.Click:Connect(function()`);
+    }
     expect(source).toContain("RunService.Heartbeat:Connect(function()");
     expect(source).toContain("not RunService:IsRunning()");
     expect(source).toContain('send("reconcile"');

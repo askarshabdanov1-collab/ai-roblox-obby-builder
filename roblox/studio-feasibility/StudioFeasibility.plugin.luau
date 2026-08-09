@@ -227,7 +227,7 @@ local function handshakeAndStart(value)
     return true, { handshake = response, start = started, binding = value }
 end
 
-arm.Click:Connect(function()
+arm.Activated:Connect(function()
     if RunService:IsRunning() then
         show({ ok = false, code = "arm-requires-edit-mode" })
         return
@@ -289,12 +289,12 @@ RunService.Heartbeat:Connect(function()
     autoStartInFlight = false
 end)
 
-stop.Click:Connect(function()
+stop.Activated:Connect(function()
     local response, code = send("stop", {})
     show({ stop = response, code = code, binding = binding })
 end)
 
-submitEvidence.Click:Connect(function()
+submitEvidence.Activated:Connect(function()
     if binding == nil then
         show({ ok = false, code = "binding-required" })
         return
@@ -317,7 +317,7 @@ submitEvidence.Click:Connect(function()
     end
     show({ evidence = response, code = code, binding = binding })
 end)
-recover.Click:Connect(function()
+recover.Activated:Connect(function()
     local response, code = send("reconcile", { binding = binding })
     show({ recovery = response, code = code, binding = binding })
 end)
