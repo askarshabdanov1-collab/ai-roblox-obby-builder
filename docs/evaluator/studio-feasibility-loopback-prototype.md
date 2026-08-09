@@ -33,25 +33,31 @@ asset-upload, MCP, WebSocket, or broad-network capability.
 2. Start the bridge in a second terminal: `npm run evaluator:studio-feasibility:bridge`. Keep that
    terminal local and visible; it prints the one-time activation JSON and must be stopped when the
    probe ends.
-3. Open `build/AIObbyBuilder.rbxlx` in Roblox Studio. Do not publish it. Import the locally built
-   `build/AIObbyBuilderStudioFeasibilityDev.rbxm` through Studio's local plugin installation flow;
-   approve a plugin permission only for `127.0.0.1` if Studio presents one. Do not approve any other
-   host. Do not enable **Allow HTTP Requests** for the place: plugin localhost permission is the only
-   expected network permission.
-4. In **Plugins → AI Obby Builder Dev**, open **Studio feasibility**. Paste the activation JSON, then
+3. Install the locally built plugin through Studio rather than copying its `.rbxm` into the Plugins
+   directory. Open a throwaway local Baseplate, drag
+   `build/AIObbyBuilderStudioFeasibilityDev.rbxm` into **Explorer**, expand its model, select the
+   `StudioFeasibility` Script, and choose **Plugins → Save as Local Plugin**. Studio owns the local
+   plugin installation and will expose it after a restart. The build intentionally has a `Model`
+   root so this import-and-install flow contains a loadable Script; it is not a serialized `Plugin`
+   instance. Do not publish the Baseplate.
+4. Open `build/AIObbyBuilder.rbxlx` in Roblox Studio. Do not publish it. Approve a plugin permission
+   only for `127.0.0.1` if Studio presents one. Do not approve any other host. Do not enable
+   **Allow HTTP Requests** for the place: plugin localhost permission is the only expected network
+   permission.
+5. In **Plugins → AI Obby Builder Dev**, open **Studio feasibility**. Paste the activation JSON, then
    start a single-player Play session. Wait until the production default 0.3 root is visible.
-5. Click **Handshake + Start**. The widget must display `executionId`, `sceneId` (`place-<id>`),
+6. Click **Handshake + Start**. The widget must display `executionId`, `sceneId` (`place-<id>`),
    `manifestHash`, `sceneGeneration`, `playtestSessionId`, and `generatedRootOwner`. Expected owner
    is `AIObbyBuilder/0.3`; any missing or different root is a fail-closed
    `generated-root-required` or `invalid-generated-root-binding` result.
-6. Capture only the redacted result code and the six displayed binding values. Do not capture the
+7. Capture only the redacted result code and the six displayed binding values. Do not capture the
    activation secret. Click **Submit evidence** once; it submits only the fixed bounded
    `binding-observed` record. Then click **Stop** and confirm the returned result is successful.
-7. In a separate fresh session, click **Recovery export** while the bridge session is still running
+8. In a separate fresh session, click **Recovery export** while the bridge session is still running
    to simulate the bridge/plugin interruption path. The response contains a bounded signed recovery
    JSON and signature. Copy those two fields into a new redacted record; never include the activation
    secret, terminal path, account identity, or broad Studio Output. Then stop Play manually.
-8. Stop the bridge with Ctrl+C, close the plugin, and manually restore Edit mode. If any state cannot
+9. Stop the bridge with Ctrl+C, close the plugin, and manually restore Edit mode. If any state cannot
    be verified, record `manual-recovery-required`; do not retry automatically.
 
 ## Required probe matrix
@@ -60,7 +66,7 @@ Run each row in a fresh bridge process and record the result code, not a PASS in
 
 | Case                                      | How to exercise                                                                                     | Expected bridge result                                               |
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Valid handshake                           | Follow steps 1–5 with the current activation.                                                       | `ok: true`, exact binding displayed.                                 |
+| Valid handshake                           | Follow steps 1–6 with the current activation.                                                       | `ok: true`, exact binding displayed.                                 |
 | Unknown major                             | Use the development harness test; the plugin does not offer an unsafe free-form editor.             | `protocol-major-mismatch`                                            |
 | Missing `integrity-v1`                    | Development harness test.                                                                           | `missing-integrity-feature`                                          |
 | Unapproved adapter                        | Development harness test.                                                                           | `unapproved-adapter`                                                 |

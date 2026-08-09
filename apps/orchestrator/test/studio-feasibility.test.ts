@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 import { describe, expect, it } from "vitest";
 
 import {
@@ -16,6 +18,15 @@ import {
 } from "../src/studio-feasibility.js";
 
 const encoder = new TextEncoder();
+
+type StudioFeasibilityPluginProject = {
+  tree: {
+    $className: string;
+    StudioFeasibility: {
+      $path: string;
+    };
+  };
+};
 
 const binding: StudioBinding = {
   executionId: "execution-001",
@@ -96,6 +107,27 @@ describe("Studio feasibility capability negotiation", () => {
         selectedTransport: "http-polling",
       }),
     ).toMatchObject({ ok: false, code: "unapproved-adapter" });
+  });
+});
+
+describe("Studio feasibility local plugin artifact", () => {
+  it("uses an importable Model root with exactly the local-plugin Script source", () => {
+    const project = JSON.parse(
+      readFileSync(
+        new URL(
+          "../../../roblox/studio-feasibility.plugin.project.json",
+          import.meta.url,
+        ),
+        "utf8",
+      ),
+    ) as StudioFeasibilityPluginProject;
+
+    expect(project.tree).toEqual({
+      $className: "Model",
+      StudioFeasibility: {
+        $path: "studio-feasibility/StudioFeasibility.plugin.luau",
+      },
+    });
   });
 });
 
