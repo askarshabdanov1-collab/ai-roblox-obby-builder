@@ -44,15 +44,22 @@ asset-upload, MCP, WebSocket, or broad-network capability.
    only for `127.0.0.1` if Studio presents one. Do not approve any other host. Do not enable
    **Allow HTTP Requests** for the place: plugin localhost permission is the only expected network
    permission.
-5. In **Plugins → AI Obby Builder Dev**, open **Studio feasibility**. Paste the activation JSON, then
-   start a single-player Play session. Wait until the production default 0.3 root is visible.
-6. Click **Handshake + Start**. The widget must display `executionId`, `sceneId` (`place-<id>`),
-   `manifestHash`, `sceneGeneration`, `playtestSessionId`, and `generatedRootOwner`. Expected owner
-   is `AIObbyBuilder/0.3`; any missing or different root is a fail-closed
-   `generated-root-required` or `invalid-generated-root-binding` result.
-7. Capture only the redacted result code and the six displayed binding values. Do not capture the
-   activation secret. Click **Submit evidence** once; it submits only the fixed bounded
-   `binding-observed` record. Then click **Stop** and confirm the returned result is successful.
+5. In **Plugins → AI Obby Builder Dev**, open **Studio feasibility** in Edit mode. Paste the activation
+   JSON and click **Prepare / Arm**. The plugin clears the TextBox and retains the activation only in
+   its current-process memory; closing the widget does not clear it, but Studio restart, plugin reload,
+   or expiry does. It never uses plugin settings or a file for `secretHex`.
+6. Start one single-player Play session. Do not reopen the widget during Play. Its plugin `Heartbeat`
+   watcher waits for `Workspace.GeneratedObby`, validates the 0.3 ownership/hash/generation binding,
+   and automatically sends the handshake (`reconcile`) followed by `start`. A valid status is
+   `armed-started` and displays `executionId`, `sceneId` (`place-<id>`), `manifestHash`,
+   `sceneGeneration`, `playtestSessionId`, and `generatedRootOwner`. Expected owner is
+   `AIObbyBuilder/0.3`; any missing or different root is fail-closed as `generated-root-required` or
+   `invalid-generated-root-binding`.
+7. Click Studio **Stop**. In Edit mode, reopen **Studio feasibility** and confirm its in-memory
+   binding/status is still present. Capture only the redacted result code and the six displayed
+   binding values. Do not capture the activation secret. Click **Submit evidence** once; it submits
+   only the fixed bounded `binding-observed` record. Then click plugin **Stop** and confirm the
+   returned result is successful.
 8. In a separate fresh session, click **Recovery export** while the bridge session is still running
    to simulate the bridge/plugin interruption path. The response contains a bounded signed recovery
    JSON and signature. Copy those two fields into a new redacted record; never include the activation
@@ -66,7 +73,7 @@ Run each row in a fresh bridge process and record the result code, not a PASS in
 
 | Case                                      | How to exercise                                                                                     | Expected bridge result                                               |
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Valid handshake                           | Follow steps 1–6 with the current activation.                                                       | `ok: true`, exact binding displayed.                                 |
+| Valid handshake                           | Follow steps 1–7 with the current activation.                                                       | `ok: true`, exact binding displayed.                                 |
 | Unknown major                             | Use the development harness test; the plugin does not offer an unsafe free-form editor.             | `protocol-major-mismatch`                                            |
 | Missing `integrity-v1`                    | Development harness test.                                                                           | `missing-integrity-feature`                                          |
 | Unapproved adapter                        | Development harness test.                                                                           | `unapproved-adapter`                                                 |

@@ -129,6 +129,25 @@ describe("Studio feasibility local plugin artifact", () => {
       },
     });
   });
+
+  it("arms activation only in process memory and starts after Play exposes the generated root", () => {
+    const source = readFileSync(
+      new URL(
+        "../../../roblox/studio-feasibility/StudioFeasibility.plugin.luau",
+        import.meta.url,
+      ),
+      "utf8",
+    );
+
+    expect(source).toContain("local armed = false");
+    expect(source).toContain("arm.Click:Connect(function()");
+    expect(source).toContain("RunService.Heartbeat:Connect(function()");
+    expect(source).toContain("not RunService:IsRunning()");
+    expect(source).toContain('send("reconcile"');
+    expect(source).toContain('send("start", {})');
+    expect(source).not.toContain("plugin:SetSetting");
+    expect(source).not.toContain("plugin:GetSetting");
+  });
 });
 
 describe("authenticated loopback messages", () => {

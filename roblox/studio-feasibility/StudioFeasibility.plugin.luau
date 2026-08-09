@@ -1,6 +1,7 @@
 -- Development-only Studio feasibility plugin. It stores no settings and has no production call site.
 local EncodingService = game:GetService("EncodingService")
 local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
 
 local ORIGIN = "roblox-studio-plugin://ai-obby-builder-studio-feasibility"
 local MAXIMUM_BYTES = 65536
@@ -8,6 +9,9 @@ local sequence = 1
 local evidenceSequence = 1
 local activation = nil
 local binding = nil
+local armed = false
+local autoStartInFlight = false
+local lastArmedProbeAt = 0
 
 local toolbar = plugin:CreateToolbar("AI Obby Builder Dev")
 local toggle = toolbar:CreateButton("Studio feasibility", "Open the development-only loopback probe", "")
@@ -25,7 +29,7 @@ panel.Parent = widget
 local input = Instance.new("TextBox")
 input.ClearTextOnFocus = false
 input.MultiLine = true
-input.PlaceholderText = "Paste one bridge activation JSON from the local terminal"
+input.PlaceholderText = "Paste activation in Edit mode, then Prepare / Arm"
 input.Size = UDim2.new(1, -16, 0, 130)
 input.Position = UDim2.fromOffset(8, 8)
 input.TextWrapped = true
@@ -40,7 +44,7 @@ status.Size = UDim2.new(1, -16, 0, 100)
 status.TextWrapped = true
 status.TextXAlignment = Enum.TextXAlignment.Left
 status.TextYAlignment = Enum.TextYAlignment.Top
-status.Text = "Paste activation, then use Handshake/Start only while the generated 0.3 root is visible."
+status.Text = "Paste activation in Edit mode and Prepare / Arm. It is kept only in this Studio process."
 status.Parent = panel
 
 local function button(text, x)
@@ -52,7 +56,7 @@ local function button(text, x)
     return value
 end
 
-local handshakeStart = button("Handshake + Start", 8)
+local arm = button("Prepare / Arm", 8)
 local submitEvidence = button("Submit evidence", 118)
 local stop = button("Stop", 228)
 local recover = button("Recovery", 338)
@@ -183,7 +187,51 @@ end
 toggle.Click:Connect(function()
     widget.Enabled = not widget.Enabled
 end)
-handshakeStart.Click:Connect(function()
+
+local function capabilityOffer()
+    return {
+        protocolVersion = "1.0.0",
+        studioVersion = "manual-observation",
+        windowsVersion = "manual-observation",
+        pluginVersion = "0.1.0-dev",
+        bridgeVersion = "0.1.0-dev",
+        orchestratorVersion = "0.2.0",
+        adapterId = "studio-feasibility-model-v1",
+        transports = { "http-polling" },
+        playtestModes = { "single-player" },
+        captureCapabilities = { "none" },
+        securityFeatures = {
+            "loopback-only-v1",
+            "message-auth-v1",
+            "sequence-v1",
+            "expiry-v1",
+            "payload-digest-v1",
+            "integrity-v1",
+        },
+        maximumPayloadBytes = 65536,
+    }
+end
+
+local function handshakeAndStart(value)
+    local response, requestCode = send("reconcile", {
+        binding = value,
+        capabilityOffer = capabilityOffer(),
+    })
+    if response == nil then
+        return false, { ok = false, code = requestCode }
+    end
+    local started, startCode = send("start", {})
+    if started == nil or started.ok ~= true then
+        return false, { handshake = response, start = started, code = startCode }
+    end
+    return true, { handshake = response, start = started, binding = value }
+end
+
+arm.Click:Connect(function()
+    if RunService:IsRunning() then
+        show({ ok = false, code = "arm-requires-edit-mode" })
+        return
+    end
     local ok, parsed = pcall(function()
         return HttpService:JSONDecode(input.Text)
     end)
@@ -196,43 +244,51 @@ handshakeStart.Click:Connect(function()
         show({ ok = false, code = "invalid-activation" })
         return
     end
+    if hexToBytes(parsed.secretHex) == nil then
+        show({ ok = false, code = "invalid-activation-secret" })
+        return
+    end
     activation = parsed
+    binding = nil
+    sequence = 1
+    evidenceSequence = 1
+    armed = true
+    input.Text = ""
+    show({
+        ok = true,
+        code = "armed-waiting-for-generated-root",
+        executionId = activation.executionId,
+    })
+end)
+
+RunService.Heartbeat:Connect(function()
+    if not armed or autoStartInFlight or not RunService:IsRunning() then
+        return
+    end
+    if os.clock() - lastArmedProbeAt < 0.25 then
+        return
+    end
+    lastArmedProbeAt = os.clock()
+    if workspace:FindFirstChild("GeneratedObby") == nil then
+        return
+    end
+    autoStartInFlight = true
     local value, code = currentBinding()
     if value == nil then
+        armed = false
         show({ ok = false, code = code })
-        return
+    else
+        local started, result = handshakeAndStart(value)
+        armed = false
+        if started then
+            show({ ok = true, code = "armed-started", binding = value, result = result })
+        else
+            show(result)
+        end
     end
-    local response, requestCode = send("reconcile", {
-        binding = value,
-        capabilityOffer = {
-            protocolVersion = "1.0.0",
-            studioVersion = "manual-observation",
-            windowsVersion = "manual-observation",
-            pluginVersion = "0.1.0-dev",
-            bridgeVersion = "0.1.0-dev",
-            orchestratorVersion = "0.2.0",
-            adapterId = "studio-feasibility-model-v1",
-            transports = { "http-polling" },
-            playtestModes = { "single-player" },
-            captureCapabilities = { "none" },
-            securityFeatures = {
-                "loopback-only-v1",
-                "message-auth-v1",
-                "sequence-v1",
-                "expiry-v1",
-                "payload-digest-v1",
-                "integrity-v1",
-            },
-            maximumPayloadBytes = 65536,
-        },
-    })
-    if response == nil then
-        show({ ok = false, code = requestCode })
-        return
-    end
-    local started, startCode = send("start", {})
-    show({ handshake = response, start = started, code = startCode, binding = value })
+    autoStartInFlight = false
 end)
+
 stop.Click:Connect(function()
     local response, code = send("stop", {})
     show({ stop = response, code = code, binding = binding })
