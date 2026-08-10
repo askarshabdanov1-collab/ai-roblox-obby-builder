@@ -10,7 +10,7 @@ the user's plugin permission decision; if permission or `HttpService` is unavail
 ## Repository artifacts
 
 - plugin project: `roblox/studio-feasibility.plugin.project.json`
-- built plugin: `build/AIObbyBuilderStudioFeasibilityDev.rbxm`
+- built plugin: `build/AIObbyBuilderStudioFeasibilityDevLocalV3.rbxm`
 - bridge command: `npm run evaluator:studio-feasibility:bridge`
 - production-default diagnostic place: `build/AIObbyBuilder.rbxlx`, from `npm run roblox:build`
 
@@ -35,11 +35,13 @@ asset-upload, MCP, WebSocket, or broad-network capability.
    probe ends.
 3. Install the locally built plugin through Studio rather than copying its `.rbxm` into the Plugins
    directory. Open a throwaway local Baseplate, drag
-   `build/AIObbyBuilderStudioFeasibilityDev.rbxm` into **Explorer**, expand its model, select the
-   `StudioFeasibility` Script, and choose **Plugins → Save as Local Plugin**. Studio owns the local
-   plugin installation and will expose it after a restart. The build intentionally has a `Model`
-   root so this import-and-install flow contains a loadable Script; it is not a serialized `Plugin`
-   instance. Do not publish the Baseplate.
+   `build/AIObbyBuilderStudioFeasibilityDevLocalV3.rbxm` into **Explorer**, expand its model, select
+   the `StudioFeasibilityLocalV3` Script, and choose **Plugins → Save as Local Plugin**. Studio owns
+   the local plugin installation and will expose it after a restart. This version has a deliberately
+   unique Script identity, so Studio writes a separate local plugin rather than silently continuing
+   to load an older `StudioFeasibility.rbxmx`; use only the toolbar and widget marked `local-v3`.
+   The build intentionally has a `Model` root so this import-and-install flow contains a loadable
+   Script; it is not a serialized `Plugin` instance. Do not publish the Baseplate.
 4. Open `build/AIObbyBuilder.rbxlx` in Roblox Studio. Do not publish it. Approve a plugin permission
    only for `127.0.0.1` if Studio presents one. Do not approve any other host. Do not enable
    **Allow HTTP Requests** for the place: plugin localhost permission is the only expected network

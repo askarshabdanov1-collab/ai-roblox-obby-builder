@@ -72,7 +72,7 @@
     "lint": "eslint . --max-warnings=0",
     "roblox:build": "tsx tools/prepare-build.ts && rojo build roblox/default.project.json --output build/AIObbyBuilder.rbxlx && rojo build roblox/smoke.project.json --output build/Phase0Smoke.rbxlx && rojo sourcemap roblox/default.project.json --output build/roblox-sourcemap.json",
     "roblox:default-acceptance:build": "tsx tools/prepare-g2e-build.ts && rojo build roblox/default-studio-acceptance.project.json --output build/AIObbyBuilderDefaultStudioAcceptance.rbxlx",
-    "roblox:studio-feasibility:plugin:build": "rojo build roblox/studio-feasibility.plugin.project.json --output build/AIObbyBuilderStudioFeasibilityDev.rbxm",
+    "roblox:studio-feasibility:plugin:build": "rojo build roblox/studio-feasibility.plugin.project.json --output build/AIObbyBuilderStudioFeasibilityDevLocalV3.rbxm",
     "roblox:format": "stylua roblox/src roblox/tests roblox/smoke roblox/g2e roblox/generated roblox/studio-feasibility",
     "roblox:format:check": "stylua --check roblox/src roblox/tests roblox/smoke roblox/g2e roblox/generated roblox/studio-feasibility",
     "roblox:g2e:build": "tsx tools/prepare-g2e-build.ts && rojo build roblox/g2e-smoke.project.json --output build/G2eStudioAcceptance.rbxlx",

@@ -5,6 +5,7 @@ local RunService = game:GetService("RunService")
 
 local ORIGIN = "roblox-studio-plugin://ai-obby-builder-studio-feasibility"
 local MAXIMUM_BYTES = 65536
+local BUILD_MARKER = "local-v3"
 local sequence = 1
 local evidenceSequence = 1
 local activation = nil
@@ -13,25 +14,36 @@ local armed = false
 local autoStartInFlight = false
 local lastArmedProbeAt = 0
 
-local toolbar = plugin:CreateToolbar("AI Obby Builder Dev")
-local toggle = toolbar:CreateButton("Studio feasibility", "Open the development-only loopback probe", "")
+local toolbar = plugin:CreateToolbar("AI Obby Builder Dev " .. BUILD_MARKER)
+local toggle =
+    toolbar:CreateButton("Studio feasibility " .. BUILD_MARKER, "Open the development-only loopback probe", "")
 local widget = plugin:CreateDockWidgetPluginGuiAsync(
-    "AIObbyBuilderStudioFeasibility",
+    "AIObbyBuilderStudioFeasibility" .. BUILD_MARKER,
     DockWidgetPluginGuiInfo.new(Enum.InitialDockState.Float, false, false, 460, 330, 360, 220)
 )
-widget.Title = "Studio feasibility (development only)"
+widget.Title = "Studio feasibility " .. BUILD_MARKER .. " (development only)"
 
 local panel = Instance.new("Frame")
 panel.Size = UDim2.fromScale(1, 1)
 panel.BackgroundTransparency = 1
 panel.Parent = widget
 
+local marker = Instance.new("TextLabel")
+marker.BackgroundTransparency = 1
+marker.Position = UDim2.fromOffset(8, 6)
+marker.Size = UDim2.new(1, -16, 0, 18)
+marker.Text = "Build " .. BUILD_MARKER .. " · development only"
+marker.TextColor3 = Color3.fromRGB(120, 200, 255)
+marker.TextSize = 14
+marker.TextXAlignment = Enum.TextXAlignment.Left
+marker.Parent = panel
+
 local input = Instance.new("TextBox")
 input.ClearTextOnFocus = false
 input.MultiLine = true
 input.PlaceholderText = "Paste activation in Edit mode, then Prepare / Arm"
 input.Size = UDim2.new(1, -16, 0, 120)
-input.Position = UDim2.fromOffset(8, 8)
+input.Position = UDim2.fromOffset(8, 28)
 input.TextColor3 = Color3.fromRGB(240, 240, 240)
 input.TextWrapped = true
 input.TextXAlignment = Enum.TextXAlignment.Left
@@ -42,7 +54,7 @@ local status = Instance.new("TextLabel")
 status.BackgroundColor3 = Color3.fromRGB(36, 40, 50)
 status.BackgroundTransparency = 0
 status.BorderSizePixel = 0
-status.Position = UDim2.fromOffset(8, 136)
+status.Position = UDim2.fromOffset(8, 156)
 status.Size = UDim2.new(1, -16, 0, 125)
 status.TextColor3 = Color3.fromRGB(240, 240, 240)
 status.TextSize = 14

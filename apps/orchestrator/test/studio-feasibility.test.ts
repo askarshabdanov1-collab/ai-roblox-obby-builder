@@ -22,7 +22,7 @@ const encoder = new TextEncoder();
 type StudioFeasibilityPluginProject = {
   tree: {
     $className: string;
-    StudioFeasibility: {
+    StudioFeasibilityLocalV3: {
       $path: string;
     };
   };
@@ -124,7 +124,7 @@ describe("Studio feasibility local plugin artifact", () => {
 
     expect(project.tree).toEqual({
       $className: "Model",
-      StudioFeasibility: {
+      StudioFeasibilityLocalV3: {
         $path: "studio-feasibility/StudioFeasibility.plugin.luau",
       },
     });
@@ -140,6 +140,11 @@ describe("Studio feasibility local plugin artifact", () => {
     );
 
     expect(source).toContain("local armed = false");
+    expect(source).toContain('local BUILD_MARKER = "local-v3"');
+    expect(source).toContain('"AI Obby Builder Dev " .. BUILD_MARKER');
+    expect(source).toContain(
+      '"Build " .. BUILD_MARKER .. " · development only"',
+    );
     for (const button of ["arm", "submitEvidence", "stop", "recover"]) {
       expect(source).toContain(`${button}.Activated:Connect(function()`);
       expect(source).not.toContain(`${button}.Click:Connect(function()`);
@@ -152,7 +157,9 @@ describe("Studio feasibility local plugin artifact", () => {
     expect(source).toContain('code = "activation-json-parse-failed"');
     expect(source).toContain('warn("Studio feasibility: " .. encoded)');
     expect(source).toContain("status.Visible = true");
-    expect(source).toContain("status.TextColor3 = Color3.fromRGB(240, 240, 240)");
+    expect(source).toContain(
+      "status.TextColor3 = Color3.fromRGB(240, 240, 240)",
+    );
     expect(source).toContain("status.BackgroundTransparency = 0");
     expect(source).not.toContain("plugin:SetSetting");
     expect(source).not.toContain("plugin:GetSetting");
