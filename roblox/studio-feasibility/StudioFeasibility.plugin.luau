@@ -30,17 +30,23 @@ local input = Instance.new("TextBox")
 input.ClearTextOnFocus = false
 input.MultiLine = true
 input.PlaceholderText = "Paste activation in Edit mode, then Prepare / Arm"
-input.Size = UDim2.new(1, -16, 0, 130)
+input.Size = UDim2.new(1, -16, 0, 120)
 input.Position = UDim2.fromOffset(8, 8)
+input.TextColor3 = Color3.fromRGB(240, 240, 240)
 input.TextWrapped = true
 input.TextXAlignment = Enum.TextXAlignment.Left
 input.TextYAlignment = Enum.TextYAlignment.Top
 input.Parent = panel
 
 local status = Instance.new("TextLabel")
-status.BackgroundTransparency = 1
-status.Position = UDim2.fromOffset(8, 145)
-status.Size = UDim2.new(1, -16, 0, 100)
+status.BackgroundColor3 = Color3.fromRGB(36, 40, 50)
+status.BackgroundTransparency = 0
+status.BorderSizePixel = 0
+status.Position = UDim2.fromOffset(8, 136)
+status.Size = UDim2.new(1, -16, 0, 125)
+status.TextColor3 = Color3.fromRGB(240, 240, 240)
+status.TextSize = 14
+status.Visible = true
 status.TextWrapped = true
 status.TextXAlignment = Enum.TextXAlignment.Left
 status.TextYAlignment = Enum.TextYAlignment.Top
@@ -49,6 +55,7 @@ status.Parent = panel
 
 local function button(text, x)
     local value = Instance.new("TextButton")
+    value.Active = true
     value.Size = UDim2.fromOffset(106, 30)
     value.Position = UDim2.fromOffset(x, 285)
     value.Text = text
@@ -181,7 +188,9 @@ local function send(command, payload)
 end
 
 local function show(value)
-    status.Text = HttpService:JSONEncode(value)
+    local encoded = HttpService:JSONEncode(value)
+    status.Text = encoded
+    warn("Studio feasibility: " .. encoded)
 end
 
 toggle.Click:Connect(function()
@@ -228,20 +237,44 @@ local function handshakeAndStart(value)
 end
 
 arm.Activated:Connect(function()
+    show({ ok = true, code = "arming" })
     if RunService:IsRunning() then
         show({ ok = false, code = "arm-requires-edit-mode" })
+        return
+    end
+    if input.Text == "" then
+        show({ ok = false, code = "activation-required" })
         return
     end
     local ok, parsed = pcall(function()
         return HttpService:JSONDecode(input.Text)
     end)
-    if
-        not ok
-        or type(parsed) ~= "table"
-        or parsed.protocolVersion ~= "1.0.0"
-        or parsed.bridgeUrl ~= "http://127.0.0.1:4318"
-    then
-        show({ ok = false, code = "invalid-activation" })
+    if not ok then
+        show({ ok = false, code = "activation-json-parse-failed" })
+        return
+    end
+    if type(parsed) ~= "table" then
+        show({ ok = false, code = "activation-must-be-object" })
+        return
+    end
+    if parsed.protocolVersion ~= "1.0.0" then
+        show({ ok = false, code = "activation-protocol-mismatch" })
+        return
+    end
+    if parsed.bridgeUrl ~= "http://127.0.0.1:4318" then
+        show({ ok = false, code = "activation-bridge-url-invalid" })
+        return
+    end
+    if type(parsed.sessionId) ~= "string" or type(parsed.executionId) ~= "string" then
+        show({ ok = false, code = "activation-identity-invalid" })
+        return
+    end
+    if type(parsed.expiresAtEpochMs) ~= "number" or parsed.maximumPayloadBytes ~= MAXIMUM_BYTES then
+        show({ ok = false, code = "activation-bound-invalid" })
+        return
+    end
+    if parsed.origin ~= ORIGIN then
+        show({ ok = false, code = "activation-origin-invalid" })
         return
     end
     if hexToBytes(parsed.secretHex) == nil then

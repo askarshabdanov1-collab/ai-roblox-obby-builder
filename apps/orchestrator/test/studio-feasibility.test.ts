@@ -148,6 +148,12 @@ describe("Studio feasibility local plugin artifact", () => {
     expect(source).toContain("not RunService:IsRunning()");
     expect(source).toContain('send("reconcile"');
     expect(source).toContain('send("start", {})');
+    expect(source).toContain('show({ ok = true, code = "arming" })');
+    expect(source).toContain('code = "activation-json-parse-failed"');
+    expect(source).toContain('warn("Studio feasibility: " .. encoded)');
+    expect(source).toContain("status.Visible = true");
+    expect(source).toContain("status.TextColor3 = Color3.fromRGB(240, 240, 240)");
+    expect(source).toContain("status.BackgroundTransparency = 0");
     expect(source).not.toContain("plugin:SetSetting");
     expect(source).not.toContain("plugin:GetSetting");
   });
