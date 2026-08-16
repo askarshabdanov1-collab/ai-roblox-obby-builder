@@ -137,6 +137,13 @@ Transport availability is actively probed without changing Studio state:
 No transport is selected in E0. Manual signed bundle import is the required fallback when automation
 or local networking is unavailable.
 
+The issue #23 `local-v3` human probe additionally proved that the installed plugin's edit-context
+`Workspace` did not expose `GeneratedObby` created in the separate server simulation during Play.
+Plugin-driven server-root detection and Play auto-start are therefore `unsupported-unproven` for the
+pinned Studio build. The reviewed `local-v4` feasibility fallback keeps authenticated loopback
+transport, but requires a human to observe and transcribe the bounded scene/owner/hash/generation
+binding from Studio's Server view; the resulting record remains `manual-evidence-required`.
+
 ### Responsibilities
 
 The future Studio plugin or MCP bridge will:

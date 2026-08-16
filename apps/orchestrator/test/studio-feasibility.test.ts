@@ -22,7 +22,7 @@ const encoder = new TextEncoder();
 type StudioFeasibilityPluginProject = {
   tree: {
     $className: string;
-    StudioFeasibilityLocalV3: {
+    StudioFeasibilityLocalV4: {
       $path: string;
     };
   };
@@ -124,13 +124,13 @@ describe("Studio feasibility local plugin artifact", () => {
 
     expect(project.tree).toEqual({
       $className: "Model",
-      StudioFeasibilityLocalV3: {
+      StudioFeasibilityLocalV4: {
         $path: "studio-feasibility/StudioFeasibility.plugin.luau",
       },
     });
   });
 
-  it("arms activation only in process memory and starts after Play exposes the generated root", () => {
+  it("arms activation only in process memory and verifies a human-observed runtime binding", () => {
     const source = readFileSync(
       new URL(
         "../../../roblox/studio-feasibility/StudioFeasibility.plugin.luau",
@@ -140,17 +140,25 @@ describe("Studio feasibility local plugin artifact", () => {
     );
 
     expect(source).toContain("local armed = false");
-    expect(source).toContain('local BUILD_MARKER = "local-v3"');
+    expect(source).toContain('local BUILD_MARKER = "local-v4"');
     expect(source).toContain('"AI Obby Builder Dev " .. BUILD_MARKER');
     expect(source).toContain(
       '"Build " .. BUILD_MARKER .. " · development only"',
     );
-    for (const button of ["arm", "submitEvidence", "stop", "recover"]) {
+    for (const button of [
+      "arm",
+      "verifyObserved",
+      "submitEvidence",
+      "stop",
+      "recover",
+    ]) {
       expect(source).toContain(`${button}.Activated:Connect(function()`);
       expect(source).not.toContain(`${button}.Click:Connect(function()`);
     }
-    expect(source).toContain("RunService.Heartbeat:Connect(function()");
-    expect(source).toContain("not RunService:IsRunning()");
+    expect(source).toContain("local function contextSnapshot()");
+    expect(source).toContain('code = "manual-runtime-observation-required"');
+    expect(source).toContain('return nil, "observed-binding-required"');
+    expect(source).not.toContain("RunService.Heartbeat:Connect(function()");
     expect(source).toContain('send("reconcile"');
     expect(source).toContain('send("start", {})');
     expect(source).toContain('show({ ok = true, code = "arming" })');

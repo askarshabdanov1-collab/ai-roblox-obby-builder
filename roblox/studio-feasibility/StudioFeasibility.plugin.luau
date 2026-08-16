@@ -5,14 +5,12 @@ local RunService = game:GetService("RunService")
 
 local ORIGIN = "roblox-studio-plugin://ai-obby-builder-studio-feasibility"
 local MAXIMUM_BYTES = 65536
-local BUILD_MARKER = "local-v3"
+local BUILD_MARKER = "local-v4"
 local sequence = 1
 local evidenceSequence = 1
 local activation = nil
 local binding = nil
 local armed = false
-local autoStartInFlight = false
-local lastArmedProbeAt = 0
 
 local toolbar = plugin:CreateToolbar("AI Obby Builder Dev " .. BUILD_MARKER)
 local toggle =
@@ -62,23 +60,26 @@ status.Visible = true
 status.TextWrapped = true
 status.TextXAlignment = Enum.TextXAlignment.Left
 status.TextYAlignment = Enum.TextYAlignment.Top
-status.Text = "Paste activation in Edit mode and Prepare / Arm. It is kept only in this Studio process."
+status.Text = "Arm in Edit mode, observe the server root during Play, then verify its bounded binding after Stop."
 status.Parent = panel
 
 local function button(text, x)
     local value = Instance.new("TextButton")
     value.Active = true
-    value.Size = UDim2.fromOffset(106, 30)
-    value.Position = UDim2.fromOffset(x, 285)
+    value.Size = UDim2.fromOffset(84, 30)
+    value.Position = UDim2.fromOffset(x, 290)
     value.Text = text
+    value.TextSize = 12
+    value.TextWrapped = true
     value.Parent = panel
     return value
 end
 
 local arm = button("Prepare / Arm", 8)
-local submitEvidence = button("Submit evidence", 118)
-local stop = button("Stop", 228)
-local recover = button("Recovery", 338)
+local verifyObserved = button("Verify observed", 96)
+local submitEvidence = button("Submit evidence", 184)
+local stop = button("Stop", 272)
+local recover = button("Recovery", 360)
 
 local function hexToBytes(value)
     if type(value) ~= "string" or #value ~= 64 or string.find(value, "[^0-9a-f]") then
@@ -122,29 +123,47 @@ local function hmac(secret, message)
     return base64Url(sha256(xorBytes(key, 0x5c) .. sha256(xorBytes(key, 0x36) .. message)))
 end
 
-local function currentBinding()
+local function contextSnapshot()
+    return {
+        isRunning = RunService:IsRunning(),
+        isEdit = RunService:IsEdit(),
+        pluginWorkspaceRootVisible = workspace:FindFirstChild("GeneratedObby") ~= nil,
+        placeId = game.PlaceId,
+    }
+end
+
+local function observedBindingFromInput()
     if activation == nil then
         return nil, "activation-required"
     end
-    local root = workspace:FindFirstChild("GeneratedObby")
-    if root == nil then
-        return nil, "generated-root-required"
+    if input.Text == "" then
+        return nil, "observed-binding-required"
     end
-    local owner = root:GetAttribute("GeneratedBy")
-    local manifestHash = root:GetAttribute("ManifestHash")
-    local generationToken = root:GetAttribute("GenerationToken")
-    if owner ~= "AIObbyBuilder/0.3" or type(manifestHash) ~= "string" or type(generationToken) ~= "string" then
-        return nil, "invalid-generated-root-binding"
+    local ok, observed = pcall(function()
+        return HttpService:JSONDecode(input.Text)
+    end)
+    if not ok or type(observed) ~= "table" then
+        return nil, "observed-binding-json-invalid"
     end
-    binding = {
+    local expectedSceneId = "place-" .. tostring(game.PlaceId)
+    if observed.sceneId ~= expectedSceneId then
+        return nil, "observed-binding-wrong-scene"
+    end
+    if observed.generatedRootOwner ~= "AIObbyBuilder/0.3" then
+        return nil, "observed-binding-wrong-owner"
+    end
+    if type(observed.manifestHash) ~= "string" or type(observed.sceneGeneration) ~= "string" then
+        return nil, "observed-binding-identity-invalid"
+    end
+    return {
         executionId = activation.executionId,
-        sceneId = "place-" .. tostring(game.PlaceId),
-        generatedRootOwner = owner,
-        manifestHash = manifestHash,
-        sceneGeneration = generationToken,
+        sceneId = observed.sceneId,
+        generatedRootOwner = observed.generatedRootOwner,
+        manifestHash = observed.manifestHash,
+        sceneGeneration = observed.sceneGeneration,
         playtestSessionId = "playtest-" .. HttpService:GenerateGUID(false),
-    }
-    return binding, nil
+    },
+        nil
 end
 
 local function send(command, payload)
@@ -299,39 +318,45 @@ arm.Activated:Connect(function()
     evidenceSequence = 1
     armed = true
     input.Text = ""
+    input.PlaceholderText = "After Stop, paste the bounded server-observed binding JSON"
     show({
         ok = true,
-        code = "armed-waiting-for-generated-root",
+        code = "manual-runtime-observation-required",
         executionId = activation.executionId,
+        context = contextSnapshot(),
     })
 end)
 
-RunService.Heartbeat:Connect(function()
-    if not armed or autoStartInFlight or not RunService:IsRunning() then
+verifyObserved.Activated:Connect(function()
+    if not armed or activation == nil then
+        show({ ok = false, code = "activation-required", context = contextSnapshot() })
         return
     end
-    if os.clock() - lastArmedProbeAt < 0.25 then
+    if RunService:IsRunning() then
+        show({ ok = false, code = "observed-binding-requires-edit-mode", context = contextSnapshot() })
         return
     end
-    lastArmedProbeAt = os.clock()
-    if workspace:FindFirstChild("GeneratedObby") == nil then
-        return
-    end
-    autoStartInFlight = true
-    local value, code = currentBinding()
+    local value, code = observedBindingFromInput()
     if value == nil then
-        armed = false
-        show({ ok = false, code = code })
-    else
-        local started, result = handshakeAndStart(value)
-        armed = false
-        if started then
-            show({ ok = true, code = "armed-started", binding = value, result = result })
-        else
-            show(result)
-        end
+        show({ ok = false, code = code, context = contextSnapshot() })
+        return
     end
-    autoStartInFlight = false
+    local started, result = handshakeAndStart(value)
+    armed = false
+    if started then
+        binding = value
+        input.Text = ""
+        show({
+            ok = true,
+            code = "manual-observed-binding-verified",
+            limitation = "plugin-server-runtime-datamodel-unavailable",
+            binding = value,
+            result = result,
+            context = contextSnapshot(),
+        })
+    else
+        show(result)
+    end
 end)
 
 stop.Activated:Connect(function()
