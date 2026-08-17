@@ -1,0 +1,393 @@
+-- Development-only Studio feasibility plugin. It stores no settings and has no production call site.
+local EncodingService = game:GetService("EncodingService")
+local HttpService = game:GetService("HttpService")
+local RunService = game:GetService("RunService")
+
+local ORIGIN = "roblox-studio-plugin://ai-obby-builder-studio-feasibility"
+local MAXIMUM_BYTES = 65536
+local BUILD_MARKER = "local-v4"
+local sequence = 1
+local evidenceSequence = 1
+local activation = nil
+local binding = nil
+local armed = false
+
+local toolbar = plugin:CreateToolbar("AI Obby Builder Dev " .. BUILD_MARKER)
+local toggle =
+    toolbar:CreateButton("Studio feasibility " .. BUILD_MARKER, "Open the development-only loopback probe", "")
+local widget = plugin:CreateDockWidgetPluginGuiAsync(
+    "AIObbyBuilderStudioFeasibility" .. BUILD_MARKER,
+    DockWidgetPluginGuiInfo.new(Enum.InitialDockState.Float, false, false, 460, 330, 360, 220)
+)
+widget.Title = "Studio feasibility " .. BUILD_MARKER .. " (development only)"
+
+local panel = Instance.new("Frame")
+panel.Size = UDim2.fromScale(1, 1)
+panel.BackgroundTransparency = 1
+panel.Parent = widget
+
+local marker = Instance.new("TextLabel")
+marker.BackgroundTransparency = 1
+marker.Position = UDim2.fromOffset(8, 6)
+marker.Size = UDim2.new(1, -16, 0, 18)
+marker.Text = "Build " .. BUILD_MARKER .. " · development only"
+marker.TextColor3 = Color3.fromRGB(120, 200, 255)
+marker.TextSize = 14
+marker.TextXAlignment = Enum.TextXAlignment.Left
+marker.Parent = panel
+
+local input = Instance.new("TextBox")
+input.ClearTextOnFocus = false
+input.MultiLine = true
+input.PlaceholderText = "Paste activation in Edit mode, then Prepare / Arm"
+input.Size = UDim2.new(1, -16, 0, 120)
+input.Position = UDim2.fromOffset(8, 28)
+input.TextColor3 = Color3.fromRGB(240, 240, 240)
+input.TextWrapped = true
+input.TextXAlignment = Enum.TextXAlignment.Left
+input.TextYAlignment = Enum.TextYAlignment.Top
+input.Parent = panel
+
+local status = Instance.new("TextLabel")
+status.BackgroundColor3 = Color3.fromRGB(36, 40, 50)
+status.BackgroundTransparency = 0
+status.BorderSizePixel = 0
+status.Position = UDim2.fromOffset(8, 156)
+status.Size = UDim2.new(1, -16, 0, 125)
+status.TextColor3 = Color3.fromRGB(240, 240, 240)
+status.TextSize = 14
+status.Visible = true
+status.TextWrapped = true
+status.TextXAlignment = Enum.TextXAlignment.Left
+status.TextYAlignment = Enum.TextYAlignment.Top
+status.Text = "Arm in Edit mode, observe the server root during Play, then verify its bounded binding after Stop."
+status.Parent = panel
+
+local function button(text, x)
+    local value = Instance.new("TextButton")
+    value.Active = true
+    value.Size = UDim2.fromOffset(84, 30)
+    value.Position = UDim2.fromOffset(x, 290)
+    value.Text = text
+    value.TextSize = 12
+    value.TextWrapped = true
+    value.Parent = panel
+    return value
+end
+
+local arm = button("Prepare / Arm", 8)
+local verifyObserved = button("Verify observed", 96)
+local submitEvidence = button("Submit evidence", 184)
+local stop = button("Stop", 272)
+local recover = button("Recovery", 360)
+
+local function hexToBytes(value)
+    if type(value) ~= "string" or #value ~= 64 or string.find(value, "[^0-9a-f]") then
+        return nil
+    end
+    local bytes = {}
+    for index = 1, #value, 2 do
+        table.insert(bytes, string.char(tonumber(string.sub(value, index, index + 1), 16)))
+    end
+    return table.concat(bytes)
+end
+
+local function xorBytes(value, mask)
+    local parts = {}
+    for index = 1, #value do
+        parts[index] = string.char(bit32.bxor(string.byte(value, index), mask))
+    end
+    return table.concat(parts)
+end
+
+local function base64Url(value)
+    local encoded = buffer.tostring(EncodingService:Base64Encode(buffer.fromstring(value)))
+    return string.gsub(string.gsub(string.gsub(encoded, "+", "-"), "/", "_"), "=", "")
+end
+
+local function sha256(value)
+    return EncodingService:ComputeStringHash(value, Enum.HashAlgorithm.Sha256)
+end
+
+local function sha256Hex(value)
+    local parts = {}
+    for index = 1, #value do
+        parts[index] = string.format("%02x", string.byte(value, index))
+    end
+    return "sha256:" .. table.concat(parts)
+end
+
+local function hmac(secret, message)
+    local key = if #secret > 64 then sha256(secret) else secret
+    key = key .. string.rep("\0", 64 - #key)
+    return base64Url(sha256(xorBytes(key, 0x5c) .. sha256(xorBytes(key, 0x36) .. message)))
+end
+
+local function contextSnapshot()
+    return {
+        isRunning = RunService:IsRunning(),
+        isEdit = RunService:IsEdit(),
+        pluginWorkspaceRootVisible = workspace:FindFirstChild("GeneratedObby") ~= nil,
+        placeId = game.PlaceId,
+    }
+end
+
+local function observedBindingFromInput()
+    if activation == nil then
+        return nil, "activation-required"
+    end
+    if input.Text == "" then
+        return nil, "observed-binding-required"
+    end
+    local ok, observed = pcall(function()
+        return HttpService:JSONDecode(input.Text)
+    end)
+    if not ok or type(observed) ~= "table" then
+        return nil, "observed-binding-json-invalid"
+    end
+    local expectedSceneId = "place-" .. tostring(game.PlaceId)
+    if observed.sceneId ~= expectedSceneId then
+        return nil, "observed-binding-wrong-scene"
+    end
+    if observed.generatedRootOwner ~= "AIObbyBuilder/0.3" then
+        return nil, "observed-binding-wrong-owner"
+    end
+    if type(observed.manifestHash) ~= "string" or type(observed.sceneGeneration) ~= "string" then
+        return nil, "observed-binding-identity-invalid"
+    end
+    return {
+        executionId = activation.executionId,
+        sceneId = observed.sceneId,
+        generatedRootOwner = observed.generatedRootOwner,
+        manifestHash = observed.manifestHash,
+        sceneGeneration = observed.sceneGeneration,
+        playtestSessionId = "playtest-" .. HttpService:GenerateGUID(false),
+    },
+        nil
+end
+
+local function send(command, payload)
+    if activation == nil then
+        return nil, "activation-required"
+    end
+    local raw = HttpService:JSONEncode(payload)
+    if #raw > MAXIMUM_BYTES then
+        return nil, "payload-too-large"
+    end
+    local secret = hexToBytes(activation.secretHex)
+    if secret == nil then
+        return nil, "invalid-activation-secret"
+    end
+    local digest = sha256Hex(raw)
+    local preimage = table.concat({
+        "1.0.0",
+        activation.sessionId,
+        tostring(sequence),
+        "request-" .. tostring(sequence),
+        tostring(activation.expiresAtEpochMs),
+        command,
+        digest,
+        "127.0.0.1",
+        ORIGIN,
+    }, "\n")
+    local message = {
+        protocolVersion = "1.0.0",
+        sessionId = activation.sessionId,
+        sequence = sequence,
+        requestId = "request-" .. tostring(sequence),
+        expiresAtEpochMs = activation.expiresAtEpochMs,
+        command = command,
+        payloadBase64 = buffer.tostring(EncodingService:Base64Encode(buffer.fromstring(raw))),
+        payloadDigest = digest,
+        peerAddress = "127.0.0.1",
+        origin = ORIGIN,
+        authenticationTag = hmac(secret, preimage),
+    }
+    local ok, response = pcall(function()
+        return HttpService:RequestAsync({
+            Url = activation.bridgeUrl .. "/v1/message",
+            Method = "POST",
+            Headers = { ["Content-Type"] = "application/json" },
+            Body = HttpService:JSONEncode(message),
+        })
+    end)
+    if not ok or not response.Success then
+        return nil, "loopback-request-failed"
+    end
+    sequence += 1
+    return HttpService:JSONDecode(response.Body), nil
+end
+
+local function show(value)
+    local encoded = HttpService:JSONEncode(value)
+    status.Text = encoded
+    warn("Studio feasibility: " .. encoded)
+end
+
+toggle.Click:Connect(function()
+    widget.Enabled = not widget.Enabled
+end)
+
+local function capabilityOffer()
+    return {
+        protocolVersion = "1.0.0",
+        studioVersion = "manual-observation",
+        windowsVersion = "manual-observation",
+        pluginVersion = "0.1.0-dev",
+        bridgeVersion = "0.1.0-dev",
+        orchestratorVersion = "0.2.0",
+        adapterId = "studio-feasibility-model-v1",
+        transports = { "http-polling" },
+        playtestModes = { "single-player" },
+        captureCapabilities = { "none" },
+        securityFeatures = {
+            "loopback-only-v1",
+            "message-auth-v1",
+            "sequence-v1",
+            "expiry-v1",
+            "payload-digest-v1",
+            "integrity-v1",
+        },
+        maximumPayloadBytes = 65536,
+    }
+end
+
+local function handshakeAndStart(value)
+    local response, requestCode = send("reconcile", {
+        binding = value,
+        capabilityOffer = capabilityOffer(),
+    })
+    if response == nil then
+        return false, { ok = false, code = requestCode }
+    end
+    local started, startCode = send("start", {})
+    if started == nil or started.ok ~= true then
+        return false, { handshake = response, start = started, code = startCode }
+    end
+    return true, { handshake = response, start = started, binding = value }
+end
+
+arm.Activated:Connect(function()
+    show({ ok = true, code = "arming" })
+    if RunService:IsRunning() then
+        show({ ok = false, code = "arm-requires-edit-mode" })
+        return
+    end
+    if input.Text == "" then
+        show({ ok = false, code = "activation-required" })
+        return
+    end
+    local ok, parsed = pcall(function()
+        return HttpService:JSONDecode(input.Text)
+    end)
+    if not ok then
+        show({ ok = false, code = "activation-json-parse-failed" })
+        return
+    end
+    if type(parsed) ~= "table" then
+        show({ ok = false, code = "activation-must-be-object" })
+        return
+    end
+    if parsed.protocolVersion ~= "1.0.0" then
+        show({ ok = false, code = "activation-protocol-mismatch" })
+        return
+    end
+    if parsed.bridgeUrl ~= "http://127.0.0.1:4318" then
+        show({ ok = false, code = "activation-bridge-url-invalid" })
+        return
+    end
+    if type(parsed.sessionId) ~= "string" or type(parsed.executionId) ~= "string" then
+        show({ ok = false, code = "activation-identity-invalid" })
+        return
+    end
+    if type(parsed.expiresAtEpochMs) ~= "number" or parsed.maximumPayloadBytes ~= MAXIMUM_BYTES then
+        show({ ok = false, code = "activation-bound-invalid" })
+        return
+    end
+    if parsed.origin ~= ORIGIN then
+        show({ ok = false, code = "activation-origin-invalid" })
+        return
+    end
+    if hexToBytes(parsed.secretHex) == nil then
+        show({ ok = false, code = "invalid-activation-secret" })
+        return
+    end
+    activation = parsed
+    binding = nil
+    sequence = 1
+    evidenceSequence = 1
+    armed = true
+    input.Text = ""
+    input.PlaceholderText = "After Stop, paste the bounded server-observed binding JSON"
+    show({
+        ok = true,
+        code = "manual-runtime-observation-required",
+        executionId = activation.executionId,
+        context = contextSnapshot(),
+    })
+end)
+
+verifyObserved.Activated:Connect(function()
+    if not armed or activation == nil then
+        show({ ok = false, code = "activation-required", context = contextSnapshot() })
+        return
+    end
+    if RunService:IsRunning() then
+        show({ ok = false, code = "observed-binding-requires-edit-mode", context = contextSnapshot() })
+        return
+    end
+    local value, code = observedBindingFromInput()
+    if value == nil then
+        show({ ok = false, code = code, context = contextSnapshot() })
+        return
+    end
+    local started, result = handshakeAndStart(value)
+    armed = false
+    if started then
+        binding = value
+        input.Text = ""
+        show({
+            ok = true,
+            code = "manual-observed-binding-verified",
+            limitation = "plugin-server-runtime-datamodel-unavailable",
+            binding = value,
+            result = result,
+            context = contextSnapshot(),
+        })
+    else
+        show(result)
+    end
+end)
+
+stop.Activated:Connect(function()
+    local response, code = send("stop", {})
+    show({ stop = response, code = code, binding = binding })
+end)
+
+submitEvidence.Activated:Connect(function()
+    if binding == nil then
+        show({ ok = false, code = "binding-required" })
+        return
+    end
+    local observation = HttpService:JSONEncode({ event = "binding-observed" })
+    local response, code = send("submit-evidence", {
+        executionId = binding.executionId,
+        sceneId = binding.sceneId,
+        generatedRootOwner = binding.generatedRootOwner,
+        manifestHash = binding.manifestHash,
+        sceneGeneration = binding.sceneGeneration,
+        playtestSessionId = binding.playtestSessionId,
+        sequence = evidenceSequence,
+        payloadBase64 = buffer.tostring(EncodingService:Base64Encode(buffer.fromstring(observation))),
+        payloadDigest = sha256Hex(observation),
+        completionMarker = true,
+    })
+    if response ~= nil and response.ok == true then
+        evidenceSequence += 1
+    end
+    show({ evidence = response, code = code, binding = binding })
+end)
+recover.Activated:Connect(function()
+    local response, code = send("reconcile", { binding = binding })
+    show({ recovery = response, code = code, binding = binding })
+end)

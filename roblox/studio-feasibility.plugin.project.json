@@ -1,0 +1,9 @@
+{
+  "name": "AIObbyBuilderStudioFeasibilityDevLocalV4",
+  "tree": {
+    "$className": "Model",
+    "StudioFeasibilityLocalV4": {
+      "$path": "studio-feasibility/StudioFeasibility.plugin.luau"
+    }
+  }
+}

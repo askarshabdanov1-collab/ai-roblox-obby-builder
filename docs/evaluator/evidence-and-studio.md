@@ -94,6 +94,13 @@ precede implementation. It must test permissions, transport, lifecycle recovery,
 control, and evidence integrity against a pinned Studio/engine version. Multiplayer automation
 remains unproven until that prototype demonstrates repeatable slot creation and isolation.
 
+The repository-owned guard model, pinned human-probe target, capability matrix, and exact
+human-only evidence procedure are recorded in [Studio feasibility milestone](studio-feasibility-milestone.md).
+Its [bounded 2026-08-08 human-probe batch](evidence/studio-feasibility-human-probes-2026-08-08.json)
+records only manual Play/Stop/close/reopen observations and unavailable capability boundaries. It
+does not claim authenticated transport, evidence binding, a signed recovery record, Studio
+acceptance, or selection of an automated transport.
+
 ### Required permissions and Studio settings
 
 The feasibility prototype must inventory and minimize:
@@ -129,6 +136,13 @@ Transport availability is actively probed without changing Studio state:
 
 No transport is selected in E0. Manual signed bundle import is the required fallback when automation
 or local networking is unavailable.
+
+The issue #23 `local-v3` human probe additionally proved that the installed plugin's edit-context
+`Workspace` did not expose `GeneratedObby` created in the separate server simulation during Play.
+Plugin-driven server-root detection and Play auto-start are therefore `unsupported-unproven` for the
+pinned Studio build. The reviewed `local-v4` feasibility fallback keeps authenticated loopback
+transport, but requires a human to observe and transcribe the bounded scene/owner/hash/generation
+binding from Studio's Server view; the resulting record remains `manual-evidence-required`.
 
 ### Responsibilities
 

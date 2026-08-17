@@ -54,6 +54,7 @@ retention. Popularity indicators are contextual metadata, never ground-truth qua
 - [Evidence, Studio integration, and screenshots](evidence-and-studio.md)
 - [Visual evaluation, reference data, human labels, and analytics](visual-data-and-feedback.md)
 - [MCP, local API, and repository structure](api-and-repository.md)
+- [Studio feasibility milestone](studio-feasibility-milestone.md)
 - [Phase E1 rule-based implementation plan](phase-e1-plan.md)
 - [Phase E1a implementation completion record](phase-e1a-completion.md)
 - [Phase E1b implementation record](phase-e1b-implementation.md)
@@ -67,7 +68,7 @@ retention. Popularity indicators are contextual metadata, never ground-truth qua
 | E1a                           | Evaluator contracts, content hashes, metric catalog/profile, fixtures, and geometry primitives                                | Route verdict engine, scoring workflow, CLI, integrations                 |
 | E1b                           | Safe-route topology and coarse playability evidence                                                                           | Aggregate/category workflow, public CLI, runtime evidence                 |
 | E1c                           | Invariant gates, E1 category results, reports, CLI, and end-to-end fixtures                                                   | Visual models, external datasets, Studio, analytics, corrections          |
-| Studio feasibility milestone  | Permissions/transport/lifecycle prototype before automation                                                                   | Assumed multiplayer reliability or production plugin                      |
+| Studio feasibility milestone  | Repository guard model and human-only permissions/transport/lifecycle probes before automation                                | Assumed multiplayer reliability or production plugin                      |
 | Future runtime evidence phase | Authenticated Studio evidence collector and deterministic screenshot capture                                                  | Learned scoring unless separately approved                                |
 | Future visual phase           | Audited, pinned visual workers and calibrated weak-signal fusion                                                              | A single “beauty” ground truth                                            |
 | Future calibration phase      | Consented human preferences and first-party analytics calibration                                                             | Private competitor analytics or causal retention claims                   |

@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "studio-feasibility-probe-batch-v1",
+  "probes": [
+    {
+      "schemaVersion": "studio-feasibility-probe-v1",
+      "probeId": "SF-01",
+      "status": "manual-evidence-required",
+      "environment": {
+        "studioVersion": "0.732.0.7321043 (64-bit)",
+        "studioChannel": "zbuck2release-732-control",
+        "windowsVersion": "Windows 10 Pro 22H2 (OS Build 19045.6456)",
+        "protocolVersion": "1.0.0"
+      },
+      "selectedTransportCandidate": "none",
+      "binding": null,
+      "observations": [
+        "A fresh local unpublished Baseplate was opened manually.",
+        "Explorer and Properties were available.",
+        "Experience Settings required Save to Roblox; publication was declined.",
+        "Allow HTTP Requests was not changed.",
+        "No scripts or plugins were added.",
+        "No credentials, Open Cloud, asset upload, or arbitrary network access were used."
+      ],
+      "artifactHashes": [],
+      "limitations": [
+        "Plugin, active-place, selection, camera, screenshot, and performance capability inventory was not completed.",
+        "HTTP eligibility requires a separately reviewed manual probe without publishing this observation."
+      ]
+    },
+    {
+      "schemaVersion": "studio-feasibility-probe-v1",
+      "probeId": "SF-02",
+      "status": "UNSUPPORTED",
+      "environment": {
+        "studioVersion": "0.732.0.7321043 (64-bit)",
+        "studioChannel": "zbuck2release-732-control",
+        "windowsVersion": "Windows 10 Pro 22H2 (OS Build 19045.6456)",
+        "protocolVersion": "1.0.0"
+      },
+      "selectedTransportCandidate": "none",
+      "binding": null,
+      "observations": [
+        "No runtime bridge or Studio plugin existed for a transport probe.",
+        "Allow HTTP Requests remained unchanged.",
+        "No HTTP, WebSocket, signed-bundle, or MCP transport was connected."
+      ],
+      "artifactHashes": [],
+      "limitations": [
+        "Authenticated transport, loopback/origin enforcement, version negotiation, replay rejection, expiry rejection, oversized-payload rejection, and cancellation were not tested.",
+        "This status does not reject a future reviewed candidate; it records that no candidate is implemented or testable here."
+      ]
+    },
+    {
+      "schemaVersion": "studio-feasibility-probe-v1",
+      "probeId": "SF-03",
+      "status": "manual-evidence-required",
+      "environment": {
+        "studioVersion": "0.732.0.7321043 (64-bit)",
+        "studioChannel": "zbuck2release-732-control",
+        "windowsVersion": "Windows 10 Pro 22H2 (OS Build 19045.6456)",
+        "protocolVersion": "1.0.0"
+      },
+      "selectedTransportCandidate": "none",
+      "binding": null,
+      "observations": [
+        "Single-player Play started and a character was created.",
+        "Normal Stop returned Studio to Edit mode and the Baseplate was visually preserved.",
+        "A repeated Play followed by Stop also returned Studio to Edit mode and visually preserved the Baseplate."
+      ],
+      "artifactHashes": [],
+      "limitations": [
+        "No execution ID, scene ID, manifest hash, generated-root owner, generation token, playtest-session ID, or bounded observation was captured.",
+        "No stale, wrong-scene, wrong-generation, replayed, oversized, or interrupted evidence rejection was tested."
+      ]
+    },
+    {
+      "schemaVersion": "studio-feasibility-probe-v1",
+      "probeId": "SF-04",
+      "status": "manual-evidence-required",
+      "environment": {
+        "studioVersion": "0.732.0.7321043 (64-bit)",
+        "studioChannel": "zbuck2release-732-control",
+        "windowsVersion": "Windows 10 Pro 22H2 (OS Build 19045.6456)",
+        "protocolVersion": "1.0.0"
+      },
+      "selectedTransportCandidate": "none",
+      "binding": null,
+      "observations": [
+        "Studio was closed manually during active single-player Play.",
+        "No save prompt appeared on close.",
+        "After reopening the local Baseplate, Studio was in Edit mode and the Baseplate was visually preserved.",
+        "No scripts, plugins, or evaluator-owned temporary objects were added."
+      ],
+      "artifactHashes": [],
+      "limitations": [
+        "Active-place identity, ownership/hash/generation, and evaluator-owned temporary IDs were not captured or verified.",
+        "No signed bounded recovery export was created. Interrupted work did not resume because no bridge or session existed."
+      ]
+    }
+  ],
+  "batchLimitations": [
+    "This batch does not claim Studio acceptance or select a transport.",
+    "Multiplayer remains unsupported-unproven.",
+    "The batch contains no credentials, account identifiers, usernames, filesystem paths, payload bodies, or broad Studio logs."
+  ]
+}

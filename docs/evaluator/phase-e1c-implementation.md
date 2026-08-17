@@ -230,4 +230,7 @@ npm run evaluator:smoke
 - [x] Staged no-network CLI with typed errors, durability attempts, and bounded paths/input/output/work.
 - [x] Generated positive/negative end-to-end fixtures and non-mutating drift check.
 - [x] Ubuntu/Windows CI use the root `npm run validate` gate.
-- [ ] Studio/runtime checkpoint isolation collection remains a later feasibility milestone.
+- [x] Repository-only Studio feasibility guard model and human-only probe procedure added; no Studio
+      execution or runtime evidence collection is claimed.
+- [ ] Studio/runtime checkpoint isolation collection remains a later human feasibility and runtime
+      evidence milestone.
